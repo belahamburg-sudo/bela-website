@@ -113,21 +113,21 @@ export default async function DashboardPage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-20">
             <p className="eyebrow mb-6">Dashboard</p>
-            <h1 className="font-heading text-5xl lg:text-6xl leading-[1.05] text-white">
-              Deine AI-Goldmining-{" "}
-              <em className="gold-text not-italic">Zentrale.</em>
+            <h1 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2.5rem,5vw,5rem)" }}>
+              DEINE AI-GOLDMINING-{" "}
+              <span className="gold-text">ZENTRALE.</span>
             </h1>
-            <p className="mt-5 text-white/40 text-lg max-w-xl">
+            <p className="mt-5 text-cream/45 text-lg max-w-xl">
               Hier findest du alle deine Kurse und deinen Lernfortschritt.
             </p>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 divide-x divide-white/[0.06] mb-20 border-y border-white/[0.06] py-6">
+          <div className="grid grid-cols-3 divide-x divide-gold-300/10 mb-20 border-y border-gold-300/10 py-6">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center px-8 py-4">
-                <p className="font-heading text-4xl lg:text-5xl text-white mb-1">{stat.value}</p>
-                <p className="text-sm text-white/40 uppercase tracking-[0.15em]">{stat.label}</p>
+                <p className="font-heading tracking-gta text-4xl lg:text-5xl text-cream mb-1">{stat.value}</p>
+                <p className="gta-label">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -136,8 +136,8 @@ export default async function DashboardPage() {
           <div className="mb-16">
             <p className="eyebrow mb-8">Deine Kurse</p>
             {purchasedCourses.length === 0 ? (
-              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-12 text-center">
-                <p className="text-white/40 mb-6">Noch keine Kurse gekauft.</p>
+              <div className="rounded-sm border border-gold-300/10 bg-cream/[0.02] p-12 text-center">
+                <p className="text-cream/40 mb-6">Noch keine Kurse gekauft.</p>
                 <Button href="/dashboard/kurse">Kurse entdecken</Button>
               </div>
             ) : (
@@ -156,11 +156,11 @@ export default async function DashboardPage() {
 
           {/* Mehr entdecken — only shown when unpurchased courses exist */}
           {hasUnpurchasedCourses && (
-            <div className="panel-surface rounded-2xl p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div className="panel-surface rounded-sm p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
               <div>
                 <p className="eyebrow mb-2">Mehr entdecken</p>
-                <h2 className="font-heading text-2xl text-cream">Weitere Kurse entdecken</h2>
-                <p className="mt-2 text-white/40 text-sm max-w-md">
+                <h2 className="font-heading tracking-gta text-2xl text-cream">Weitere Kurse entdecken</h2>
+                <p className="mt-2 text-cream/40 text-sm max-w-md">
                   Entdecke alle verfügbaren Kurse und erweitere dein AI-Goldmining-Wissen.
                 </p>
               </div>

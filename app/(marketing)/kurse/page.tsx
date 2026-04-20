@@ -70,26 +70,26 @@ export default function CoursesPage() {
           className="mb-16"
         >
           <p className="eyebrow mb-6">Kurs-Shop</p>
-          <h1 className="font-heading text-5xl lg:text-6xl leading-[1.05] text-white max-w-2xl">
-            Digitale Produkte{" "}
-            <em className="gold-text not-italic">lernen, bauen und verkaufen.</em>
+          <h1 className="font-heading tracking-gta leading-none text-cream max-w-2xl" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
+            DIGITALE PRODUKTE{" "}
+            <span className="gold-text">LERNEN, BAUEN UND VERKAUFEN.</span>
           </h1>
-          <p className="mt-5 text-white/40 text-lg max-w-xl">
+          <p className="mt-5 text-cream/45 text-lg max-w-xl">
             Vom ersten Produkt über Templates bis zum Funnel-System.
           </p>
         </motion.div>
 
-        {/* Tab filter — minimal underline style */}
-        <div className="flex gap-0 mb-12 border-b border-white/[0.06]">
+        {/* Tab filter */}
+        <div className="flex gap-0 mb-12 border-b border-gold-300/10">
           {TABS.map((tab) => (
             <button
               key={tab.value}
               type="button"
               onClick={() => switchTab(tab.value)}
-              className={`px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px ${
+              className={`px-5 py-3 text-xs font-bold uppercase tracking-[0.12em] transition-colors border-b-2 -mb-px ${
                 activeTab === tab.value
                   ? "border-gold-300 text-gold-300"
-                  : "border-transparent text-white/40 hover:text-white/70"
+                  : "border-transparent text-cream/35 hover:text-cream/65"
               }`}
             >
               {tab.label}
@@ -108,7 +108,7 @@ export default function CoursesPage() {
 
         {filtered.length === 0 && (
           <div className="py-24 text-center">
-            <p className="text-white/30 text-lg">Keine Kurse in dieser Kategorie.</p>
+            <p className="text-cream/30 text-lg">Keine Kurse in dieser Kategorie.</p>
           </div>
         )}
       </div>

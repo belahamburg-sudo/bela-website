@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Inter } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "@/components/site-header";
-import { Footer } from "@/components/footer";
 import { AuthHashHandler } from "@/components/auth-hash-handler";
 
 const heading = Bebas_Neue({
@@ -24,6 +22,13 @@ export const metadata: Metadata = {
   description:
     "Baue mit AI digitale Produkte und verkaufe sie automatisiert. Templates, Guides, Mini-Kurse. Einmal erstellt, dauerhaft vermarktet.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+    shortcut: "/favicon.svg",
+  },
   openGraph: {
     title: "Bela Goldmann | AI Goldmining",
     description:
@@ -53,9 +58,7 @@ export default function RootLayout({
           Zum Inhalt springen
         </a>
         <AuthHashHandler />
-        <SiteHeader />
-        <main id="main">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

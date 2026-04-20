@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart, Loader2 } from "lucide-react";
+import { ShoppingCart, Loader2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
@@ -21,9 +21,11 @@ export function CheckoutButton({
   label?: string;
 }) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   async function startCheckout() {
+    setError(null);
     let userEmail: string | null = null;
 
     if (hasSupabasePublicEnv()) {
@@ -55,25 +57,42 @@ export function CheckoutButton({
         body: JSON.stringify({ courseSlug, userEmail })
       });
       const result = (await response.json()) as CheckoutResult;
-      if (!response.ok) throw new Error(result.message || "Checkout konnte nicht gestartet werden.");
+
+      if (!response.ok) {
+        setError(result.message || "Checkout konnte nicht gestartet werden.");
+        return;
+      }
+
       if (result.url) {
         window.location.href = result.url;
+        return;
       }
+
+      // Should never reach here but guard anyway
+      setError("Kein Checkout-Link erhalten. Bitte versuche es erneut.");
     } catch {
-      router.push(`/checkout/cancel?course=${courseSlug}`);
+      setError("Verbindungsfehler. Bitte prüfe deine Internetverbindung und versuche es erneut.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Button onClick={startCheckout} disabled={loading} className="w-full sm:w-auto">
-      {loading ? (
-        <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
-      ) : (
-        <ShoppingCart aria-hidden className="h-4 w-4" />
-      )}
-      {label}
-    </Button>
+    <div className="space-y-3">
+      <Button onClick={startCheckout} disabled={loading} className="w-full sm:w-auto">
+        {loading ? (
+          <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
+        ) : (
+          <ShoppingCart aria-hidden className="h-4 w-4" />
+        )}
+        {label}
+      </Button>
+      {error ? (
+        <p role="alert" className="flex items-start gap-2 text-sm text-red-400 font-medium">
+          <AlertCircle className="h-4 w-4 flex-none mt-0.5" aria-hidden />
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }
