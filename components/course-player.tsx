@@ -4,6 +4,7 @@ import { CheckCircle2, Clock, Download, FileText, Lock, PlayCircle } from "lucid
 import { useMemo, useState } from "react";
 import type { DbCourse, DbLesson } from "@/lib/db-types";
 import { cn } from "@/lib/utils";
+import { toggleLessonProgress } from "@/app/(dashboard)/dashboard/kurse/[slug]/actions";
 import { Button } from "./button";
 
 export function CoursePlayer({
@@ -33,9 +34,26 @@ export function CoursePlayer({
   }
 
   function markDone() {
-    const next = completed.includes(activeId) ? completed : [...completed, activeId];
+    const isCurrentlyDone = completed.includes(activeId);
+    const next = isCurrentlyDone
+      ? completed.filter((id) => id !== activeId)
+      : [...completed, activeId];
+
+    // Optimistic update — immediate UI response
     setCompleted(next);
-    // Server Action wiring added in Plan 05-03
+
+    // DB write in background with rollback on error
+    toggleLessonProgress(activeId, !isCurrentlyDone).then((result) => {
+      if (!result.ok) {
+        setCompleted(completed);
+      }
+    });
+
+    // Auto-advance only when marking done (not un-marking)
+    if (!isCurrentlyDone) {
+      const nextLesson = lessons[currentIndex + 1];
+      if (nextLesson) setActiveId(nextLesson.id);
+    }
   }
 
   const progress = lessons.length ? Math.round((completed.length / lessons.length) * 100) : 0;
