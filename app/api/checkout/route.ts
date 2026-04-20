@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/utils";
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { courseSlug?: string };
+    const body = (await request.json()) as { courseSlug?: string; userEmail?: string };
     const course = body.courseSlug ? getCourse(body.courseSlug) : null;
 
     if (!course) {
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
       mode: "payment",
       success_url: absoluteUrl(`/checkout/success?session_id={CHECKOUT_SESSION_ID}&course=${course.slug}`),
       cancel_url: absoluteUrl(`/checkout/cancel?course=${course.slug}`),
+      ...(body.userEmail ? { customer_email: body.userEmail } : {}),
       line_items: [
         {
           quantity: 1,
@@ -43,7 +44,8 @@ export async function POST(request: Request) {
         }
       ],
       metadata: {
-        course_slug: course.slug
+        course_slug: course.slug,
+        ...(body.userEmail ? { user_email: body.userEmail } : {})
       }
     });
 

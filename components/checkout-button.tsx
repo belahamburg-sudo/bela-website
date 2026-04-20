@@ -3,6 +3,8 @@
 import { ShoppingCart, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { hasSupabasePublicEnv } from "@/lib/env";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { Button } from "./button";
 
 type CheckoutResult = {
@@ -22,10 +24,27 @@ export function CheckoutButton({
   const router = useRouter();
 
   async function startCheckout() {
-    const demoUser = typeof window !== "undefined" ? localStorage.getItem("ai-goldmining-demo-user") : null;
-    if (!demoUser) {
-      router.push(`/login?redirect=/kurse/${courseSlug}`);
-      return;
+    let userEmail: string | null = null;
+
+    if (hasSupabasePublicEnv()) {
+      const supabase = getSupabaseBrowserClient();
+      const { data } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+      if (!data.user) {
+        router.push(`/login?redirect=/kurse/${courseSlug}`);
+        return;
+      }
+      userEmail = data.user.email ?? null;
+    } else {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("ai-goldmining-demo-user") : null;
+      if (!raw) {
+        router.push(`/login?redirect=/kurse/${courseSlug}`);
+        return;
+      }
+      try {
+        userEmail = (JSON.parse(raw) as { email?: string }).email ?? null;
+      } catch {
+        // malformed demo entry — proceed without email
+      }
     }
 
     setLoading(true);
@@ -33,7 +52,7 @@ export function CheckoutButton({
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseSlug })
+        body: JSON.stringify({ courseSlug, userEmail })
       });
       const result = (await response.json()) as CheckoutResult;
       if (!response.ok) throw new Error(result.message || "Checkout konnte nicht gestartet werden.");

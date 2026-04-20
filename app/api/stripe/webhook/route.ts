@@ -38,14 +38,27 @@ export async function POST(request: Request) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const courseSlug = session.metadata?.course_slug;
+    const userEmail = session.metadata?.user_email ?? session.customer_details?.email;
     const supabase = getSupabaseAdminClient();
 
     if (courseSlug && supabase) {
+      let userId: string | null = null;
+
+      if (userEmail) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("email", userEmail)
+          .maybeSingle();
+        userId = data?.id ?? null;
+      }
+
       await supabase.from("purchases").insert({
+        user_id: userId,
         course_slug: courseSlug,
         stripe_session_id: session.id,
         stripe_customer_id:
-          typeof session.customer === "string" ? session.customer : session.customer?.id,
+          typeof session.customer === "string" ? session.customer : (session.customer as Stripe.Customer | null)?.id ?? null,
         amount_total: session.amount_total,
         currency: session.currency,
         status: "paid"
