@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Lock } from "lucide-react";
 import { CheckoutButton } from "@/components/checkout-button";
 import type { DbCourse } from "@/lib/db-types";
@@ -46,12 +47,12 @@ export function PaywallScreen({ course }: PaywallScreenProps) {
         </div>
 
         {/* Back link */}
-        <a
+        <Link
           href="/dashboard/kurse"
           className="mt-6 inline-block text-sm text-white/30 transition-colors hover:text-white/60"
         >
           ← Zurück zur Kursbibliothek
-        </a>
+        </Link>
       </div>
     </div>
   );
