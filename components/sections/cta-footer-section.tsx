@@ -24,7 +24,7 @@ const SOCIALS = [
 export function CtaFooterSection() {
   return (
     <footer className="relative">
-      <div className="relative overflow-hidden pb-20 pt-32">
+      <div className="relative overflow-hidden pb-24 pt-40">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[500px]"
@@ -63,9 +63,9 @@ export function CtaFooterSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-16 max-w-lg rounded-2xl border border-gold-500/15 bg-obsidian/60 p-6 backdrop-blur-xl"
+            className="mx-auto mt-16 max-w-lg"
           >
-            <p className="mb-4 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-gold-300">
+            <p className="mb-4 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-gold-300 text-center">
               Newsletter
             </p>
             <LeadForm source="newsletter" compact />

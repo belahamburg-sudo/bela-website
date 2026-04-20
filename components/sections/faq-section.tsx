@@ -12,7 +12,7 @@ export function FaqSection() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="py-32 bg-obsidian"
+      className="py-40 bg-obsidian"
     >
       <div className="mx-auto max-w-3xl px-6">
         <SectionHeading

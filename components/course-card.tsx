@@ -4,7 +4,13 @@ import type { Course } from "@/lib/content";
 import { formatEuro } from "@/lib/utils";
 import { Badge } from "./badge";
 
-export function CourseCard({ course }: { course: Course }) {
+type CourseCardProps = {
+  course: Course;
+  progress?: number;
+  status?: "Neu" | "In Bearbeitung" | "Abgeschlossen";
+};
+
+export function CourseCard({ course, progress, status }: CourseCardProps) {
   return (
     <article className="card-glow panel-surface group relative overflow-hidden rounded-[1.5rem]">
       {/* Image wrapper with gradient fade */}
@@ -47,6 +53,29 @@ export function CourseCard({ course }: { course: Course }) {
         <p className="mt-4 line-clamp-3 text-sm leading-[1.75] text-muted">
           {course.description}
         </p>
+
+        {typeof progress === "number" && (
+          <div className="mt-5 pt-5 border-t border-white/[0.06]">
+            <div className="flex items-center justify-between mb-2">
+              {status && (
+                <span className={`text-xs font-semibold uppercase tracking-[0.15em] ${
+                  status === "Abgeschlossen" ? "text-gold-300" :
+                  status === "In Bearbeitung" ? "text-white/60" :
+                  "text-white/30"
+                }`}>
+                  {status}
+                </span>
+              )}
+              <span className="text-xs text-white/30 ml-auto">{progress}%</span>
+            </div>
+            <div className="h-[2px] w-full bg-white/[0.06] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-gold-500 to-gold-300 rounded-full transition-all duration-1000"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         <a
           href={`/kurse/${course.slug}`}

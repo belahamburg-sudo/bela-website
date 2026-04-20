@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { animate } from "animejs";
 import Link from "next/link";
 import ProductCanvas from "@/components/hero-3d-canvas";
 
@@ -122,6 +123,30 @@ function BuildTerminal() {
 }
 
 export function HeroSection() {
+  const eyebrowRef = useRef<HTMLParagraphElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (eyebrowRef.current) {
+      animate(eyebrowRef.current, {
+        opacity: [0, 1],
+        translateY: [10, 0],
+        duration: 600,
+        delay: 150,
+        ease: "outExpo",
+      });
+    }
+    if (subRef.current) {
+      animate(subRef.current, {
+        opacity: [0, 1],
+        translateY: [16, 0],
+        duration: 700,
+        delay: 550,
+        ease: "outExpo",
+      });
+    }
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-obsidian">
       {/* Ambient glow */}
@@ -139,14 +164,9 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text */}
           <div>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="eyebrow mb-4"
-            >
+            <p ref={eyebrowRef} className="eyebrow mb-4" style={{ opacity: 0 }}>
               AI Goldmining
-            </motion.p>
+            </p>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -157,14 +177,9 @@ export function HeroSection() {
               <Typewriter phrases={TYPEWRITER_PHRASES} />
             </motion.h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.6 }}
-              className="text-lg text-white/60 mb-10 max-w-lg leading-relaxed"
-            >
+            <p ref={subRef} className="text-lg text-white/60 mb-10 max-w-lg leading-relaxed" style={{ opacity: 0 }}>
               Lerne mit AI in kürzester Zeit digitale Produkte zu erstellen — Kurse, Templates, Guides — und verkaufe sie vollautomatisch.
-            </motion.p>
+            </p>
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}

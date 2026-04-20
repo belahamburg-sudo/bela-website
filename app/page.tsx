@@ -1,4 +1,5 @@
 import { HeroSection } from "@/components/sections/hero-section";
+import { StatsSection } from "@/components/sections/stats-section";
 import { ProblemSection } from "@/components/sections/problem-section";
 import { MethodSection } from "@/components/sections/method-section";
 import { ProductsSection } from "@/components/sections/products-section";
@@ -11,6 +12,7 @@ export default function HomePage() {
     <>
       <style>{`body > footer { display: none; }`}</style>
       <HeroSection />
+      <StatsSection />
       <ProblemSection />
       <MethodSection />
       <ProductsSection />

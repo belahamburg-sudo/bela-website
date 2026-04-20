@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { animate, onScroll, stagger, svg } from "animejs";
 
 const STEPS = [
   {
@@ -30,77 +30,117 @@ const STEPS = [
   },
 ];
 
-function StepCard({ step, index }: { step: (typeof STEPS)[0]; index: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.65, delay: index * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-      className="relative rounded-2xl border border-gold-500/15 bg-gradient-to-br from-gold-500/5 to-transparent p-8 overflow-hidden group"
-    >
-      {/* Glow on hover */}
-      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background: "radial-gradient(400px circle at 50% 0%, rgba(214,168,79,0.08), transparent 70%)" }}
-      />
-
-      <div className="flex items-start justify-between mb-6">
-        <span className="font-heading text-6xl text-gold-300/20 leading-none select-none">{step.num}</span>
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300/50 mt-2">{step.detail}</span>
-      </div>
-
-      <h3 className="font-heading text-3xl text-white mb-4">{step.title}</h3>
-      <p className="text-white/50 leading-relaxed">{step.copy}</p>
-
-      {/* Bottom connector line */}
-      <div className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-gold-300/20 to-transparent" />
-    </motion.div>
-  );
-}
-
 export function MethodSection() {
-  const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const stepsRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<SVGPathElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const cleanups: Array<() => void> = [];
+
+    if (headingRef.current) {
+      const anim = animate(headingRef.current, {
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 800,
+        ease: "outExpo",
+        autoplay: false,
+      });
+      const obs = onScroll({
+        target: headingRef.current,
+        enter: "bottom-=10% top",
+        onEnter: () => anim.play(),
+      });
+      cleanups.push(() => { anim.revert(); obs.revert(); });
+    }
+
+    if (lineRef.current) {
+      const drawable = svg.createDrawable(lineRef.current);
+      const lineAnim = animate(drawable, {
+        draw: ["0 0", "0 1"],
+        duration: 1400,
+        ease: "outExpo",
+        autoplay: false,
+      });
+      const lineObs = onScroll({
+        target: lineRef.current,
+        enter: "bottom-=15% top",
+        onEnter: () => lineAnim.play(),
+      });
+      cleanups.push(() => { lineAnim.revert(); lineObs.revert(); });
+    }
+
+    if (stepsRef.current) {
+      const rows = stepsRef.current.querySelectorAll<HTMLElement>(".step-row");
+      const anim = animate(rows, {
+        opacity: [0, 1],
+        translateY: [40, 0],
+        delay: stagger(150),
+        duration: 800,
+        ease: "outExpo",
+        autoplay: false,
+      });
+      const obs = onScroll({
+        target: stepsRef.current,
+        enter: "bottom-=10% top",
+        onEnter: () => anim.play(),
+      });
+      cleanups.push(() => { anim.revert(); obs.revert(); });
+    }
+
+    return () => cleanups.forEach((fn) => fn());
+  }, []);
 
   return (
-    <section ref={ref} className="relative py-32 bg-obsidian overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-gold-300/4 blur-[150px]" />
+    <section className="relative py-40 bg-obsidian overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full bg-gold-300/3 blur-[160px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6">
-        <div className="text-center mb-16">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.5 }}
-            className="eyebrow mb-3"
-          >
-            Die Methode
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.1, duration: 0.6 }}
-            className="font-heading text-4xl lg:text-5xl text-white"
-          >
+        <div ref={headingRef} className="mb-8" style={{ opacity: 0 }}>
+          <p className="eyebrow mb-6">Die Methode</p>
+          <h2 className="font-heading text-5xl lg:text-6xl leading-[1.05] text-white max-w-2xl">
             Von der Idee zur{" "}
             <em className="gold-text not-italic">digitalen Goldmine.</em>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="mt-4 text-white/50 max-w-xl mx-auto"
-          >
+          </h2>
+          <p className="mt-5 text-white/40 max-w-lg text-lg">
             Vier Schritte. Ein System. Einmal aufgebaut, dauerhaft aktiv.
-          </motion.p>
+          </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          {STEPS.map((step, i) => (
-            <StepCard key={step.num} step={step} index={i} />
+        {/* Animated SVG divider line */}
+        <svg className="w-full overflow-visible mb-4" height="1" aria-hidden>
+          <path
+            ref={lineRef}
+            d="M0,0.5 L2000,0.5"
+            stroke="rgba(214,168,79,0.2)"
+            strokeWidth="1"
+            fill="none"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+
+        <div ref={stepsRef} className="space-y-0">
+          {STEPS.map((step) => (
+            <div
+              key={step.num}
+              className="step-row grid grid-cols-[5rem_1fr] lg:grid-cols-[8rem_1fr] gap-8 lg:gap-16 py-12 border-t border-white/[0.06] items-start"
+              style={{ opacity: 0 }}
+            >
+              <span className="font-heading text-5xl lg:text-7xl text-gold-300/20 leading-none select-none pt-1">
+                {step.num}
+              </span>
+              <div className="grid lg:grid-cols-[1fr_auto] gap-6 items-start">
+                <div>
+                  <h3 className="font-heading text-3xl lg:text-4xl text-white mb-3">{step.title}</h3>
+                  <p className="text-white/50 leading-relaxed max-w-xl">{step.copy}</p>
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300/40 whitespace-nowrap pt-2 hidden lg:block">
+                  {step.detail}
+                </span>
+              </div>
+            </div>
           ))}
         </div>
       </div>

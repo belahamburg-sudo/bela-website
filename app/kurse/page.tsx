@@ -1,39 +1,116 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { animate, createLayout, stagger } from "animejs";
 import { CourseCard } from "@/components/course-card";
-import { SectionHeading } from "@/components/section-heading";
 import { courses } from "@/lib/content";
+import type { Course } from "@/lib/content";
+
+type Tab = "Alle" | "Start" | "Aufbau" | "System" | "Bundle";
+
+const TABS: { label: string; value: Tab }[] = [
+  { label: "Alle", value: "Alle" },
+  { label: "Einsteiger", value: "Start" },
+  { label: "Fortgeschrittene", value: "Aufbau" },
+  { label: "Systeme", value: "System" },
+  { label: "Bundle", value: "Bundle" },
+];
+
+function filterCourses(tab: Tab): Course[] {
+  if (tab === "Alle") return courses;
+  return courses.filter((c) => c.level === tab);
+}
 
 export default function CoursesPage() {
+  const [activeTab, setActiveTab] = useState<Tab>("Alle");
+  const gridRef = useRef<HTMLDivElement>(null);
+  const layoutRef = useRef<ReturnType<typeof createLayout> | null>(null);
+  const hasAnimatedIn = useRef(false);
+
+  const filtered = filterCourses(activeTab);
+
+  useEffect(() => {
+    if (!gridRef.current) return;
+    layoutRef.current = createLayout(gridRef.current);
+    return () => { layoutRef.current?.revert(); };
+  }, []);
+
+  useEffect(() => {
+    if (!gridRef.current || hasAnimatedIn.current) return;
+    hasAnimatedIn.current = true;
+    const cards = gridRef.current.querySelectorAll<HTMLElement>(".course-card-wrap");
+    animate(cards, {
+      opacity: [0, 1],
+      translateY: [40, 0],
+      delay: stagger(100),
+      duration: 600,
+      ease: "outExpo",
+    });
+  }, []);
+
+  function switchTab(tab: Tab) {
+    if (!layoutRef.current) {
+      setActiveTab(tab);
+      return;
+    }
+    layoutRef.current.update(
+      () => setActiveTab(tab),
+      { duration: 500, ease: "outExpo", delay: stagger(60) }
+    );
+  }
+
   return (
-    <section className="py-24 bg-obsidian min-h-screen">
+    <section className="py-32 bg-obsidian min-h-screen">
       <div className="mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="mb-16"
         >
-          <SectionHeading
-            eyebrow="Kurs-Shop"
-            title="Digitale Produkte lernen, bauen und verkaufen."
-            copy="Der Starter-Katalog zeigt die erste Produktleiter für AI Goldmining: vom ersten Produkt über Templates und Mini-Kurse bis zum Funnel-System."
-          />
+          <p className="eyebrow mb-6">Kurs-Shop</p>
+          <h1 className="font-heading text-5xl lg:text-6xl leading-[1.05] text-white max-w-2xl">
+            Digitale Produkte{" "}
+            <em className="gold-text not-italic">lernen, bauen und verkaufen.</em>
+          </h1>
+          <p className="mt-5 text-white/40 text-lg max-w-xl">
+            Vom ersten Produkt über Templates bis zum Funnel-System.
+          </p>
         </motion.div>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {courses.map((course, i) => (
-            <motion.div
-              key={course.slug}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.1 + i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+        {/* Tab filter — minimal underline style */}
+        <div className="flex gap-0 mb-12 border-b border-white/[0.06]">
+          {TABS.map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => switchTab(tab.value)}
+              className={`px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px ${
+                activeTab === tab.value
+                  ? "border-gold-300 text-gold-300"
+                  : "border-transparent text-white/40 hover:text-white/70"
+              }`}
             >
-              <CourseCard course={course} />
-            </motion.div>
+              {tab.label}
+            </button>
           ))}
         </div>
+
+        {/* Course grid with createLayout */}
+        <div ref={gridRef} className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((course) => (
+            <div key={course.slug} className="course-card-wrap">
+              <CourseCard course={course} />
+            </div>
+          ))}
+        </div>
+
+        {filtered.length === 0 && (
+          <div className="py-24 text-center">
+            <p className="text-white/30 text-lg">Keine Kurse in dieser Kategorie.</p>
+          </div>
+        )}
       </div>
     </section>
   );

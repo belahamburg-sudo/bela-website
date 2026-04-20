@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { animate, onScroll, stagger } from "animejs";
 import { Check, X } from "lucide-react";
-import { SectionHeading } from "@/components/section-heading";
 
 const ANTI_PROMISES = [
   "Garantierte 20K im Monat",
@@ -23,79 +23,126 @@ const REAL_PROMISES = [
 ];
 
 export function AntihypeSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const antiRef = useRef<HTMLUListElement>(null);
+  const realRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const cleanups: Array<() => void> = [];
+
+    if (headingRef.current) {
+      const anim = animate(headingRef.current, {
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 800,
+        ease: "outExpo",
+        autoplay: false,
+      });
+      const obs = onScroll({
+        target: headingRef.current,
+        enter: "bottom-=10% top",
+        onEnter: () => anim.play(),
+      });
+      cleanups.push(() => { anim.revert(); obs.revert(); });
+    }
+
+    if (antiRef.current) {
+      const items = antiRef.current.querySelectorAll<HTMLElement>("li");
+      const anim = animate(items, {
+        opacity: [0, 1],
+        translateX: [-30, 0],
+        delay: stagger(80),
+        duration: 600,
+        ease: "outExpo",
+        autoplay: false,
+      });
+      const obs = onScroll({
+        target: antiRef.current,
+        enter: "bottom-=10% top",
+        onEnter: () => anim.play(),
+      });
+      cleanups.push(() => { anim.revert(); obs.revert(); });
+    }
+
+    if (realRef.current) {
+      const items = realRef.current.querySelectorAll<HTMLElement>("li");
+      const anim = animate(items, {
+        opacity: [0, 1],
+        translateX: [30, 0],
+        delay: stagger(80, { start: 200 }),
+        duration: 600,
+        ease: "outExpo",
+        autoplay: false,
+      });
+      const obs = onScroll({
+        target: realRef.current,
+        enter: "bottom-=10% top",
+        onEnter: () => anim.play(),
+      });
+      cleanups.push(() => { anim.revert(); obs.revert(); });
+    }
+
+    return () => cleanups.forEach((fn) => fn());
+  }, []);
+
   return (
-    <section className="relative overflow-hidden border-y border-gold-500/10 bg-obsidian/80 py-32">
-      <div className="mx-auto max-w-7xl px-6">
-        <SectionHeading
-          eyebrow="Klartext"
-          title={
-            <>
-              Was du hier{" "}
-              <em className="gold-text not-italic">nicht</em> bekommst.
-            </>
-          }
-          copy="Weil es wichtig ist, das klar zu sagen."
-        />
+    <section ref={sectionRef} className="relative py-40 bg-obsidian overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-gold-300/3 blur-[140px]" />
+      </div>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-2">
-          {/* Left — what you don't get */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="rounded-2xl border border-red-500/15 bg-red-950/[0.04] p-8"
-          >
-            <p className="flex items-center gap-3 font-heading text-lg text-red-300/80 mb-6">
-              <X className="h-5 w-5" aria-hidden />
-              Bekommst du nicht
+      <div className="relative mx-auto max-w-7xl px-6">
+        <div ref={headingRef} className="mb-16" style={{ opacity: 0 }}>
+          <p className="eyebrow mb-6">Klartext</p>
+          <h2 className="font-heading text-5xl lg:text-6xl leading-[1.05] text-white max-w-2xl">
+            Was du hier{" "}
+            <em className="gold-text not-italic">nicht</em> bekommst.
+          </h2>
+          <p className="mt-4 text-white/40 text-lg max-w-md">
+            Weil es wichtig ist, das klar zu sagen.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-0 lg:divide-x lg:divide-white/[0.06]">
+          {/* Left — strikethrough */}
+          <div className="lg:pr-16 pb-12 lg:pb-0">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/25 mb-8">
+              <X className="h-3.5 w-3.5" aria-hidden />
+              Nicht hier
             </p>
-            <ul className="space-y-4">
-              {ANTI_PROMISES.map((promise, i) => (
-                <motion.li
+            <ul ref={antiRef} className="space-y-5">
+              {ANTI_PROMISES.map((promise) => (
+                <li
                   key={promise}
-                  initial={{ opacity: 0, x: -16 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.07 }}
-                  className="text-base text-white/40 line-through decoration-red-400/40 decoration-[1.5px]"
+                  className="text-xl text-white/30 line-through decoration-white/15 decoration-[1px]"
+                  style={{ opacity: 0 }}
                 >
                   {promise}
-                </motion.li>
+                </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
 
-          {/* Right — what you do get */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="rounded-2xl border border-gold-300/20 bg-gradient-to-br from-gold-500/8 to-transparent p-8"
-          >
-            <p className="flex items-center gap-3 font-heading text-lg text-gold-200 mb-6">
-              <Check className="h-5 w-5" aria-hidden />
-              Bekommst du stattdessen
+          {/* Right — what you get */}
+          <div className="lg:pl-16 border-t border-white/[0.06] pt-12 lg:border-t-0 lg:pt-0">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold-300 mb-8">
+              <Check className="h-3.5 w-3.5" aria-hidden />
+              Stattdessen
             </p>
-            <ul className="space-y-4">
-              {REAL_PROMISES.map((promise, i) => (
-                <motion.li
+            <ul ref={realRef} className="space-y-5">
+              {REAL_PROMISES.map((promise) => (
+                <li
                   key={promise}
-                  initial={{ opacity: 0, x: 16 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.07 }}
-                  className="flex items-center gap-3 text-base text-white/80"
+                  className="flex items-start gap-3 text-xl text-white/70"
+                  style={{ opacity: 0 }}
                 >
-                  <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-gold-500/15">
-                    <Check className="h-3 w-3 text-gold-300" aria-hidden />
-                  </span>
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold-300/60 shrink-0" />
                   {promise}
-                </motion.li>
+                </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

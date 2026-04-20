@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
+import { createLayout, stagger, animate, onScroll } from "animejs";
 import { cn } from "@/lib/utils";
 
 export type FaqItem = {
@@ -11,45 +12,83 @@ export type FaqItem = {
 
 export function Faq({ items }: { items: FaqItem[] }) {
   const [open, setOpen] = useState<number | null>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const layoutRef = useRef<ReturnType<typeof createLayout> | null>(null);
+  const itemsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    layoutRef.current = createLayout(containerRef.current);
+    return () => { layoutRef.current?.revert(); };
+  }, []);
+
+  useEffect(() => {
+    if (!itemsRef.current) return;
+    const rows = itemsRef.current.querySelectorAll<HTMLDivElement>(".faq-row");
+    const anim = animate(rows, {
+      opacity: [0, 1],
+      translateY: [20, 0],
+      delay: stagger(80),
+      duration: 600,
+      ease: "outExpo",
+      autoplay: false,
+    });
+    const obs = onScroll({
+      target: itemsRef.current,
+      enter: "bottom-=10% top",
+      onEnter: () => anim.play(),
+    });
+    return () => { anim.revert(); obs.revert(); };
+  }, []);
+
+  function toggle(i: number) {
+    if (!layoutRef.current) {
+      setOpen((prev) => (prev === i ? null : i));
+      return;
+    }
+    layoutRef.current.update(
+      () => setOpen((prev) => (prev === i ? null : i)),
+      { duration: 450, ease: "outExpo" }
+    );
+  }
 
   return (
-    <div className="panel-surface overflow-hidden rounded-[1.5rem]">
+    <div ref={itemsRef} className="divide-y divide-white/[0.06]">
       {items.map((item, i) => {
         const isOpen = open === i;
         return (
           <div
             key={item.q}
-            className={cn(
-              "border-b border-gold-500/10 last:border-b-0",
-              isOpen && "bg-gradient-to-b from-gold-500/[0.04] to-transparent"
-            )}
+            ref={i === 0 ? containerRef : undefined}
+            className={cn("faq-row py-1", isOpen && "pb-2")}
+            style={{ opacity: 0 }}
           >
             <button
               type="button"
-              onClick={() => setOpen(isOpen ? null : i)}
+              onClick={() => toggle(i)}
               aria-expanded={isOpen}
-              className="focus-ring group flex w-full items-center justify-between gap-6 px-6 py-6 text-left sm:px-8"
+              className="focus-ring group flex w-full items-center justify-between gap-6 py-6 text-left"
             >
-              <span className="font-heading text-[1.02rem] font-bold text-cream sm:text-[1.15rem]">
+              <span className="font-heading text-[1.05rem] lg:text-[1.15rem] text-white">
                 {item.q}
               </span>
               <span
                 className={cn(
-                  "relative flex h-9 w-9 flex-none items-center justify-center rounded-full border transition-all duration-300",
+                  "relative flex h-8 w-8 flex-none items-center justify-center rounded-full border transition-all duration-300",
                   isOpen
                     ? "rotate-45 border-gold-300/50 bg-gold-500/10 text-gold-200"
-                    : "border-gold-500/20 bg-obsidian/60 text-muted group-hover:border-gold-300/40 group-hover:text-gold-200"
+                    : "border-white/15 text-white/40 group-hover:border-gold-300/40 group-hover:text-gold-200"
                 )}
               >
-                <Plus className="h-4 w-4" aria-hidden />
+                <Plus className="h-3.5 w-3.5" aria-hidden />
               </span>
             </button>
             <div
-              className="grid overflow-hidden transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="grid overflow-hidden transition-[grid-template-rows] duration-450 ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
             >
               <div className="min-h-0">
-                <p className="px-6 pb-7 text-[0.98rem] leading-[1.8] text-muted sm:px-8">
+                <p className="pb-6 text-base leading-[1.85] text-white/50">
                   {item.a}
                 </p>
               </div>

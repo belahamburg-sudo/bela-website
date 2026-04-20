@@ -13,7 +13,7 @@ export function ProductsSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="relative py-32 bg-obsidian overflow-hidden">
+    <section ref={ref} className="relative py-40 bg-obsidian overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/4 blur-[120px]" />
       </div>
@@ -36,7 +36,7 @@ export function ProductsSection() {
           />
         </motion.div>
 
-        <div className="mt-14 grid gap-7 lg:grid-cols-2">
+        <div className="mt-16 grid gap-8 lg:grid-cols-2">
           {featuredCourses.map((course, i) => (
             <motion.div
               key={course.slug}
