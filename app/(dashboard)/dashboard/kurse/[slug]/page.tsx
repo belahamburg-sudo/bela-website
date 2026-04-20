@@ -9,19 +9,19 @@ import { getCourse } from "@/lib/content";
 
 async function fetchCourseAndAccess(
   slug: string
-): Promise<{ course: DbCourse | null; hasPurchase: boolean }> {
+): Promise<{ course: DbCourse | null; hasPurchase: boolean; completedLessonIds: string[] }> {
   if (!hasSupabasePublicEnv()) {
-    return { course: null, hasPurchase: false };
+    return { course: null, hasPurchase: false, completedLessonIds: [] };
   }
 
   const supabase = await getSupabaseServerClient();
-  if (!supabase) return { course: null, hasPurchase: false };
+  if (!supabase) return { course: null, hasPurchase: false, completedLessonIds: [] };
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [courseResult, purchaseResult] = await Promise.all([
+  const [courseResult, purchaseResult, progressResult] = await Promise.all([
     supabase
       .from("courses")
       .select("*, modules(*, lessons(*))")
@@ -37,10 +37,16 @@ async function fetchCourseAndAccess(
           .eq("status", "paid")
           .maybeSingle()
       : Promise.resolve({ data: null }),
+    user
+      ? supabase
+          .from("lesson_progress")
+          .select("lesson_id")
+          .eq("user_id", user.id)
+      : Promise.resolve({ data: [] }),
   ]);
 
   if (courseResult.error || !courseResult.data) {
-    return { course: null, hasPurchase: false };
+    return { course: null, hasPurchase: false, completedLessonIds: [] };
   }
 
   const rawCourse = courseResult.data as DbCourse & {
@@ -56,6 +62,9 @@ async function fetchCourseAndAccess(
   return {
     course: rawCourse,
     hasPurchase: Boolean(purchaseResult.data),
+    completedLessonIds: (progressResult.data ?? []).map(
+      (r: { lesson_id: string }) => r.lesson_id
+    ),
   };
 }
 
@@ -65,7 +74,7 @@ export default async function DashboardCoursePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { course: dbCourse, hasPurchase } = await fetchCourseAndAccess(slug);
+  const { course: dbCourse, hasPurchase, completedLessonIds } = await fetchCourseAndAccess(slug);
 
   if (dbCourse) {
     return (
@@ -73,7 +82,7 @@ export default async function DashboardCoursePage({
         {hasPurchase ? (
           <section className="py-10 sm:py-14">
             <div className="container-shell">
-              <CoursePlayer course={dbCourse} />
+              <CoursePlayer course={dbCourse} initialCompleted={completedLessonIds} />
             </div>
           </section>
         ) : (
