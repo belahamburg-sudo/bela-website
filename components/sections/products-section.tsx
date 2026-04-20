@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/button";
 import { CourseCard } from "@/components/course-card";
@@ -9,11 +8,8 @@ import { SectionHeading } from "@/components/section-heading";
 import { featuredCourses } from "@/lib/content";
 
 export function ProductsSection() {
-  const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
-
   return (
-    <section ref={ref} className="relative py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-40 bg-obsidian overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/4 blur-[120px]" />
       </div>
@@ -21,7 +17,8 @@ export function ProductsSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
           <SectionHeading
