@@ -36,3 +36,12 @@ export type DbCourse = {
   is_active: boolean;
   modules: DbModule[];
 };
+
+export type DbProfile = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  goal: string | null;
+  onboarding_complete: boolean;
+  created_at: string;
+};
