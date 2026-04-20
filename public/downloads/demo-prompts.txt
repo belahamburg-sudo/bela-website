@@ -1,0 +1,14 @@
+AI Goldmining Demo-Prompts
+
+1. Analysiere meine Produktidee fuer ein digitales Produkt:
+   Zielgruppe: [Zielgruppe]
+   Problem: [Problem]
+   Gewuenschtes Ergebnis: [Ergebnis]
+
+2. Erstelle daraus ein klares Angebot mit:
+   - Name
+   - Nutzenversprechen
+   - 3 Modulen
+   - 5 Bulletpoints fuer die Verkaufsseite
+
+3. Pruefe, ob das Produkt klein genug fuer einen Mini-Kurs ist und schlage eine schlankere Version vor.

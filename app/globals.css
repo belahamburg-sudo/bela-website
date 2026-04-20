@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --background: #050505;
+  --foreground: #f5f2e9;
+  --gold: #ffd76a;
+  --gold-deep: #d6a84f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  background: #050505;
+  color: var(--foreground);
+  font-family: var(--font-body), Inter, ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-ligatures: none;
+  text-rendering: geometricPrecision;
+  position: relative;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.45;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.70 0 0 0 0 0.38 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+main {
+  position: relative;
+  z-index: 3;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(255, 215, 106, 0.34);
+  color: #fff6d8;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(214, 168, 79, 0.18);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(214, 168, 79, 0.32);
+}
+
+@layer components {
+  .container-shell {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-10;
+  }
+
+  .container-narrow {
+    @apply mx-auto w-full max-w-5xl px-5 sm:px-6 lg:px-10;
+  }
+
+  .hairline {
+    @apply border-[0.5px] border-gold-500/15;
+  }
+
+  .panel-surface {
+    @apply relative rounded-[1.35rem] border-[0.5px] border-gold-500/15 bg-gradient-to-b from-panel/80 to-graphite/60 backdrop-blur-xl;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04), 0 20px 60px -30px rgba(0, 0, 0, 0.8);
+  }
+
+  .panel-surface-glow {
+    @apply panel-surface;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(255, 215, 106, 0.08),
+      0 30px 80px -30px rgba(214, 168, 79, 0.25);
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-gold-300;
+  }
+
+  .eyebrow::before {
+    content: "";
+    @apply block h-[1px] w-8 bg-gold-500/40;
+  }
+
+  .gold-text {
+    background: linear-gradient(180deg, #FFE99D 0%, #D6A84F 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .gold-text-shine {
+    background: linear-gradient(
+      110deg,
+      #FFE99D 20%,
+      #FFF6D8 35%,
+      #FFD76A 50%,
+      #D6A84F 65%,
+      #FFE99D 80%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 4s ease-in-out infinite;
+  }
+
+  .divider-gold {
+    @apply relative h-px w-full;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(214, 168, 79, 0.3) 25%,
+      rgba(255, 215, 106, 0.5) 50%,
+      rgba(214, 168, 79, 0.3) 75%,
+      transparent 100%
+    );
+  }
+
+  .btn-shimmer {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .btn-shimmer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 40%,
+      rgba(255, 246, 216, 0.5) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+
+  .btn-shimmer:hover::before {
+    transform: translateX(100%);
+  }
+
+  .pin-spacer-fix > .pin-spacer {
+    display: flex !important;
+    width: 100% !important;
+  }
+}
+
+@layer utilities {
+  .text-stroke-gold {
+    -webkit-text-stroke: 1px rgba(214, 168, 79, 0.4);
+    color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
