@@ -1,53 +1,89 @@
 import { notFound } from "next/navigation";
 import { AuthGate } from "@/components/auth-gate";
 import { CoursePlayer } from "@/components/course-player";
+import { PaywallScreen } from "@/components/paywall-screen";
 import type { DbCourse, DbModule } from "@/lib/db-types";
 import { hasSupabasePublicEnv } from "@/lib/env";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getCourse } from "@/lib/content";
 
-async function fetchCourse(slug: string): Promise<DbCourse | null> {
-  if (!hasSupabasePublicEnv()) return null;
-  const supabase = getSupabaseBrowserClient();
-  if (!supabase) return null;
+async function fetchCourseAndAccess(
+  slug: string
+): Promise<{ course: DbCourse | null; hasPurchase: boolean }> {
+  if (!hasSupabasePublicEnv()) {
+    return { course: null, hasPurchase: false };
+  }
 
-  const { data, error } = await supabase
-    .from("courses")
-    .select("*, modules(*, lessons(*))")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return { course: null, hasPurchase: false };
 
-  if (error || !data) return null;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const course = data as DbCourse & { modules: Array<DbModule & { lessons: DbModule["lessons"] }> };
-  course.modules = (course.modules as DbModule[])
+  const [courseResult, purchaseResult] = await Promise.all([
+    supabase
+      .from("courses")
+      .select("*, modules(*, lessons(*))")
+      .eq("slug", slug)
+      .eq("is_active", true)
+      .single(),
+    user
+      ? supabase
+          .from("purchases")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("course_slug", slug)
+          .eq("status", "paid")
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  if (courseResult.error || !courseResult.data) {
+    return { course: null, hasPurchase: false };
+  }
+
+  const rawCourse = courseResult.data as DbCourse & {
+    modules: Array<DbModule & { lessons: DbModule["lessons"] }>;
+  };
+  rawCourse.modules = (rawCourse.modules as DbModule[])
     .sort((a, b) => a.position - b.position)
     .map((mod) => ({
       ...mod,
       lessons: [...mod.lessons].sort((a, b) => a.position - b.position),
     }));
 
-  return course;
+  return {
+    course: rawCourse,
+    hasPurchase: Boolean(purchaseResult.data),
+  };
 }
 
-export default async function DashboardCoursePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function DashboardCoursePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-
-  const dbCourse = await fetchCourse(slug);
+  const { course: dbCourse, hasPurchase } = await fetchCourseAndAccess(slug);
 
   if (dbCourse) {
     return (
       <AuthGate>
-        <section className="py-10 sm:py-14">
-          <div className="container-shell">
-            <CoursePlayer course={dbCourse} />
-          </div>
-        </section>
+        {hasPurchase ? (
+          <section className="py-10 sm:py-14">
+            <div className="container-shell">
+              <CoursePlayer course={dbCourse} />
+            </div>
+          </section>
+        ) : (
+          <PaywallScreen course={dbCourse} />
+        )}
       </AuthGate>
     );
   }
 
+  // Fallback to static content
   const staticCourse = getCourse(slug);
   if (!staticCourse) notFound();
 
@@ -78,13 +114,10 @@ export default async function DashboardCoursePage({ params }: { params: Promise<
     })),
   };
 
+  // Static fallback always shows paywall (purchase check unavailable without Supabase env)
   return (
     <AuthGate>
-      <section className="py-10 sm:py-14">
-        <div className="container-shell">
-          <CoursePlayer course={fallbackCourse} />
-        </div>
-      </section>
+      <PaywallScreen course={fallbackCourse} />
     </AuthGate>
   );
 }
