@@ -15,3 +15,4 @@ tsconfig.tsbuildinfo
 .vercel
 .remember
 docs/superpowers
+.superpowers

@@ -2,13 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-
-const ProductCanvas = dynamic(() => import("@/components/hero-3d-canvas"), {
-  ssr: false,
-  loading: () => null,
-});
+import ProductCanvas from "@/components/hero-3d-canvas";
 
 const TYPEWRITER_PHRASES = [
   "Digitale Produkte mit AI bauen.",
