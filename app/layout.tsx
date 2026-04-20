@@ -3,6 +3,7 @@ import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { Footer } from "@/components/footer";
+import { AuthHashHandler } from "@/components/auth-hash-handler";
 
 const heading = Instrument_Serif({
   subsets: ["latin"],
@@ -52,6 +53,7 @@ export default function RootLayout({
         >
           Zum Inhalt springen
         </a>
+        <AuthHashHandler />
         <SiteHeader />
         <main id="main">{children}</main>
         <Footer />
