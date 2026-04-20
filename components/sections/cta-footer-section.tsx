@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/button";
@@ -24,27 +25,36 @@ const SOCIALS = [
 export function CtaFooterSection() {
   return (
     <footer className="relative">
-      <div className="relative overflow-hidden pb-24 pt-40">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[500px]"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 50% at 50% 100%, rgba(214,168,79,0.15), transparent 70%)",
-          }}
-        />
+      {/* ── Big CTA — cinematic banner style ── */}
+      <div className="relative overflow-hidden">
+        {/* AI Goldmining banner image */}
+        <div className="absolute inset-0" aria-hidden>
+          <Image
+            src="/assets/ai-goldmining-banner.jpeg"
+            alt=""
+            fill
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-obsidian/60 via-obsidian/50 to-obsidian" />
+          <div className="absolute inset-0 bg-gradient-to-r from-obsidian/40 to-obsidian/70" />
+        </div>
 
-        <div className="relative mx-auto max-w-7xl px-6 text-center">
+        <div className="relative mx-auto max-w-7xl px-6 py-40 text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <h2 className="mx-auto max-w-3xl font-heading text-5xl lg:text-6xl text-white">
-              Hör auf zu warten.
+            <p className="eyebrow mb-6 justify-center">Letzte Chance</p>
+            <h2
+              className="mx-auto max-w-4xl font-heading tracking-gta leading-none text-cream"
+              style={{ fontSize: "clamp(2.8rem,6vw,6.5rem)" }}
+            >
+              HÖR AUF ZU WARTEN.
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/50">
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-cream/50">
               Gratis-Webinar, Telegram oder Newsletter — such dir einen Einstieg aus.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -65,66 +75,71 @@ export function CtaFooterSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mx-auto mt-16 max-w-lg"
           >
-            <p className="mb-4 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-gold-300 text-center">
-              Newsletter
-            </p>
+            <p className="gta-label mb-4 text-center">Newsletter</p>
             <LeadForm source="newsletter" compact />
           </motion.div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="divider-gold" />
-      </div>
-
-      <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="relative flex h-10 w-10 items-center justify-center">
-                <span className="absolute inset-0 rounded-xl bg-gradient-to-br from-gold-200 to-gold-700" />
-                <span className="absolute inset-[1px] rounded-[11px] bg-obsidian" />
-                <svg
-                  viewBox="0 0 24 24"
-                  className="relative h-5 w-5 text-gold-300"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
-                >
-                  <path d="M4 20 L12 4 L20 20 Z" />
-                  <path d="M8 14 L16 14" opacity="0.6" />
-                </svg>
-              </span>
-              <div>
-                <p className="font-heading text-lg text-white">Bela Goldmann</p>
-                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-gold-300">
-                  AI Goldmining
-                </p>
-              </div>
-            </div>
-            <p className="mt-5 max-w-sm text-sm leading-7 text-white/40">
-              Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen. Kein Guru-Playbook. Eine Methode mit realistischem Zielrahmen.
-            </p>
-          </div>
-
-          <FooterColumn title="Produkt" items={navItems} />
-          <FooterColumn title="Rechtliches" items={LEGAL} />
-          <FooterColumn title="Social" items={SOCIALS} external />
+      {/* ── Footer links ── */}
+      <div className="bg-obsidian border-t border-gold-300/10">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="divider-gold" />
         </div>
 
-        <div className="divider-gold mt-14" />
+        <div className="mx-auto max-w-7xl px-6 py-16">
+          <div className="grid gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <GtaLogoMark />
+                <div>
+                  <p className="font-heading tracking-gta text-xl text-cream">Bela Goldmann</p>
+                  <p className="gta-label">AI Goldmining</p>
+                </div>
+              </div>
+              <p className="max-w-sm text-sm leading-7 text-cream/40">
+                Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen. Kein Guru-Playbook. Eine Methode mit realistischem Zielrahmen.
+              </p>
+            </div>
 
-        <div className="mt-8 flex flex-col items-start justify-between gap-3 text-xs text-white/30 sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} Bela Goldmann · AI Goldmining. Alle Rechte vorbehalten.</p>
-          <p className="text-[0.68rem] uppercase tracking-[0.22em] text-gold-500/60">
-            Gebaut für Umsetzer — nicht für Zuschauer.
-          </p>
+            <FooterColumn title="Produkt" items={navItems} />
+            <FooterColumn title="Rechtliches" items={LEGAL} />
+            <FooterColumn title="Social" items={SOCIALS} external />
+          </div>
+
+          <div className="divider-gold mt-14" />
+
+          <div className="mt-8 flex flex-col items-start justify-between gap-3 text-xs text-cream/25 sm:flex-row sm:items-center">
+            <p>© {new Date().getFullYear()} Bela Goldmann · AI Goldmining. Alle Rechte vorbehalten.</p>
+            <p className="gta-label opacity-50">
+              Gebaut für Umsetzer — nicht für Zuschauer.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+function GtaLogoMark() {
+  return (
+    <span className="relative flex h-10 w-10 items-center justify-center shrink-0">
+      <span className="absolute inset-0 rounded-sm bg-gradient-to-br from-gold-200 to-gold-600" />
+      <span className="absolute inset-[1.5px] rounded-sm bg-obsidian" />
+      <svg
+        viewBox="0 0 24 24"
+        className="relative h-5 w-5 text-gold-300"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+        aria-hidden
+      >
+        <path d="M4 20 L12 4 L20 20 Z" />
+        <path d="M8 14 L16 14" opacity="0.6" />
+      </svg>
+    </span>
   );
 }
 
@@ -139,9 +154,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <p className="mb-5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-gold-300">
-        {title}
-      </p>
+      <p className="gta-label mb-5">{title}</p>
       <ul className="grid gap-3">
         {items.map((item) => (
           <li key={item.href}>
@@ -149,7 +162,7 @@ function FooterColumn({
               href={item.href}
               target={external ? "_blank" : undefined}
               rel={external ? "noopener noreferrer" : undefined}
-              className="group inline-flex items-center gap-1.5 text-sm text-white/40 transition-colors hover:text-white"
+              className="group inline-flex items-center gap-1.5 text-sm text-cream/40 transition-colors hover:text-cream"
             >
               {item.label}
               {external ? (

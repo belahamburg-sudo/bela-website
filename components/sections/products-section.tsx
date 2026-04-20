@@ -4,14 +4,13 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/button";
 import { CourseCard } from "@/components/course-card";
-import { SectionHeading } from "@/components/section-heading";
 import { featuredCourses } from "@/lib/content";
 
 export function ProductsSection() {
   return (
-    <section className="relative py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-40 bg-obsidian overflow-hidden scratch-border">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/4 blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/[0.05] blur-[120px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6">
@@ -20,20 +19,22 @@ export function ProductsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
+          className="mb-16"
         >
-          <SectionHeading
-            eyebrow="Starter-Katalog"
-            title={
-              <>
-                Mini-Kurse mit einem{" "}
-                <span className="gold-text">klaren Ergebnis.</span>
-              </>
-            }
-            copy="Jeder Kurs ist klein genug für schnelle Umsetzung und konkret genug, damit du weißt, was du bekommst."
-          />
+          <p className="eyebrow mb-6">Starter-Katalog</p>
+          <h2
+            className="font-heading tracking-gta leading-none text-cream max-w-3xl"
+            style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}
+          >
+            MINI-KURSE MIT EINEM{" "}
+            <span className="gold-text">KLAREN ERGEBNIS.</span>
+          </h2>
+          <p className="mt-5 max-w-2xl text-base leading-[1.75] text-cream/45 sm:text-lg">
+            Jeder Kurs ist klein genug für schnelle Umsetzung und konkret genug, damit du weißt, was du bekommst.
+          </p>
         </motion.div>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-2">
+        <div className="mt-4 grid gap-6 lg:grid-cols-2">
           {featuredCourses.map((course, i) => (
             <motion.div
               key={course.slug}
@@ -41,7 +42,7 @@ export function ProductsSection() {
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6, delay: i * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
             >
               <CourseCard course={course} />
             </motion.div>

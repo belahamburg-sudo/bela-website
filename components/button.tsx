@@ -16,18 +16,18 @@ type ButtonProps = {
 
 const variants = {
   primary:
-    "btn-shimmer bg-gradient-to-b from-gold-200 to-gold-400 text-obsidian hover:from-gold-100 hover:to-gold-300 shadow-[0_10px_40px_-10px_rgba(214,168,79,0.55)] border border-gold-300/50",
+    "btn-shimmer bg-gradient-to-b from-gold-200 to-gold-400 text-obsidian hover:from-gold-100 hover:to-gold-300 shadow-[0_8px_30px_-8px_rgba(160,107,0,0.7)] border border-gold-300/60",
   secondary:
-    "border border-gold-500/20 bg-panel/60 text-cream hover:border-gold-300/60 hover:bg-gold-500/[0.07] backdrop-blur-md",
+    "border border-gold-300/25 bg-panel/60 text-cream hover:border-gold-300/60 hover:bg-gold-300/[0.06] backdrop-blur-md",
   outline:
-    "border border-gold-500/30 bg-transparent text-cream hover:border-gold-300 hover:bg-gold-500/5",
-  ghost: "text-cream hover:bg-white/[0.04]"
+    "border border-gold-300/35 bg-transparent text-cream hover:border-gold-300 hover:bg-gold-300/[0.05]",
+  ghost: "text-cream hover:bg-cream/[0.04]"
 };
 
 const sizes = {
-  sm: "min-h-9 px-4 py-2 text-[0.82rem]",
-  md: "min-h-11 px-5 py-3 text-sm",
-  lg: "min-h-[52px] px-7 py-4 text-[0.95rem]"
+  sm: "min-h-9 px-5 py-2 text-[0.78rem]",
+  md: "min-h-11 px-6 py-3 text-sm",
+  lg: "min-h-[52px] px-8 py-4 text-[0.9rem]"
 };
 
 export function Button({
@@ -43,7 +43,7 @@ export function Button({
   rel
 }: ButtonProps) {
   const classes = cn(
-    "focus-ring relative inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-[-0.005em] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50",
+    "focus-ring relative inline-flex items-center justify-center gap-2 rounded-sm font-bold uppercase tracking-[0.12em] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50",
     variants[variant],
     sizes[size],
     className

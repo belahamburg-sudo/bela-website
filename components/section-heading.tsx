@@ -33,14 +33,15 @@ export function SectionHeading({
       ) : null}
       <Tag
         className={cn(
-          "font-heading text-balance text-display-md font-bold text-cream",
+          "font-heading tracking-gta leading-none text-cream",
+          "text-[clamp(2rem,4vw,4rem)]",
           titleClassName
         )}
       >
         {title}
       </Tag>
       {copy ? (
-        <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.75] text-muted sm:text-lg">
+        <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.75] text-cream/45 sm:text-lg">
           {copy}
         </p>
       ) : null}

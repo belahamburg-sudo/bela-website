@@ -16,14 +16,12 @@ export function StatsSection() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
-
     const obs = onScroll({
       target: sectionRef.current,
       enter: "bottom-=10% top",
       onEnter: () => {
         if (hasAnimated.current) return;
         hasAnimated.current = true;
-
         STATS.forEach((stat, i) => {
           const el = countersRef.current[i];
           if (!el) return;
@@ -39,24 +37,36 @@ export function StatsSection() {
         });
       },
     });
-
     return () => { obs.revert(); };
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative py-20 bg-obsidian">
-      <div className="relative mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-3 divide-x divide-white/[0.06]">
-          {STATS.map((stat, i) => (
-            <div key={stat.label} className="text-center px-8 py-4">
-              <p className="font-heading text-5xl lg:text-6xl text-white mb-2">
-                <span ref={(el) => { countersRef.current[i] = el; }}>
-                  0{stat.suffix}
-                </span>
-              </p>
-              <p className="text-sm text-white/40 uppercase tracking-[0.15em]">{stat.label}</p>
-            </div>
-          ))}
+    <section ref={sectionRef} className="relative py-0 bg-obsidian scratch-border">
+      {/* Cinematic banner with heist image as tinted backdrop */}
+      <div className="relative overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/assets/heist-action.jpeg')",
+            filter: "brightness(0.18) saturate(0.7)",
+          }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-obsidian via-obsidian/80 to-obsidian" aria-hidden />
+
+        <div className="relative mx-auto max-w-7xl px-6 py-16">
+          <div className="grid grid-cols-3 divide-x divide-gold-300/10">
+            {STATS.map((stat, i) => (
+              <div key={stat.label} className="text-center px-6 py-6">
+                <p className="font-heading tracking-gta text-cream mb-1" style={{ fontSize: "clamp(2.8rem,5vw,5.5rem)" }}>
+                  <span ref={(el) => { countersRef.current[i] = el; }}>
+                    0{stat.suffix}
+                  </span>
+                </p>
+                <p className="gta-label">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

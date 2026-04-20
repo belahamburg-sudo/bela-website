@@ -1,16 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Inter } from "next/font/google";
+import { Bebas_Neue, Inter } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { Footer } from "@/components/footer";
 import { AuthHashHandler } from "@/components/auth-hash-handler";
 
-const heading = Instrument_Serif({
+const heading = Bebas_Neue({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-heading",
   weight: "400",
-  style: ["normal", "italic"]
 });
 
 const body = Inter({
@@ -29,14 +28,14 @@ export const metadata: Metadata = {
     title: "Bela Goldmann | AI Goldmining",
     description:
       "Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen.",
-    images: ["/assets/generated/hero-ai-gold.svg"]
+    images: ["/assets/ai-goldmining-banner.jpeg"]
   }
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#050505"
+  themeColor: "#0a0806"
 };
 
 export default function RootLayout({
@@ -49,7 +48,7 @@ export default function RootLayout({
       <body>
         <a
           href="#main"
-          className="focus-ring fixed left-4 top-4 z-[100] -translate-y-20 rounded-full bg-gold-300 px-4 py-3 text-sm font-bold text-obsidian transition focus:translate-y-0"
+          className="focus-ring fixed left-4 top-4 z-[100] -translate-y-20 rounded-sm bg-gold-300 px-4 py-3 text-sm font-bold text-obsidian transition focus:translate-y-0"
         >
           Zum Inhalt springen
         </a>

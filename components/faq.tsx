@@ -48,12 +48,12 @@ export function Faq({ items }: { items: FaqItem[] }) {
     }
     layoutRef.current.update(
       () => setOpen((prev) => (prev === i ? null : i)),
-      { duration: 450, ease: "outExpo" }
+      { duration: 400, ease: "outExpo" }
     );
   }
 
   return (
-    <div ref={itemsRef} className="divide-y divide-white/[0.06]">
+    <div ref={itemsRef} className="divide-y divide-gold-300/10">
       {items.map((item, i) => {
         const isOpen = open === i;
         return (
@@ -69,26 +69,26 @@ export function Faq({ items }: { items: FaqItem[] }) {
               aria-expanded={isOpen}
               className="focus-ring group flex w-full items-center justify-between gap-6 py-6 text-left"
             >
-              <span className="font-heading text-[1.05rem] lg:text-[1.15rem] text-white">
+              <span className="font-heading tracking-gta text-[1.1rem] lg:text-[1.25rem] text-cream">
                 {item.q}
               </span>
               <span
                 className={cn(
-                  "relative flex h-8 w-8 flex-none items-center justify-center rounded-full border transition-all duration-300",
+                  "relative flex h-8 w-8 flex-none items-center justify-center rounded-sm border transition-all duration-300",
                   isOpen
-                    ? "rotate-45 border-gold-300/50 bg-gold-500/10 text-gold-200"
-                    : "border-white/15 text-white/40 group-hover:border-gold-300/40 group-hover:text-gold-200"
+                    ? "rotate-45 border-gold-300/60 bg-gold-300/10 text-gold-200"
+                    : "border-cream/15 text-cream/35 group-hover:border-gold-300/40 group-hover:text-gold-200"
                 )}
               >
                 <Plus className="h-3.5 w-3.5" aria-hidden />
               </span>
             </button>
             <div
-              className="grid overflow-hidden transition-[grid-template-rows] duration-450 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="grid overflow-hidden transition-[grid-template-rows] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
             >
               <div className="min-h-0">
-                <p className="pb-6 text-base leading-[1.85] text-white/50">
+                <p className="pb-6 text-base leading-[1.85] text-cream/45">
                   {item.a}
                 </p>
               </div>

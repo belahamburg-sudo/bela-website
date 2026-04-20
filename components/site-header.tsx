@@ -20,50 +20,51 @@ export function SiteHeader() {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
   return (
     <header
       className={cn(
-        "fixed left-0 right-0 top-0 z-50 transition-all duration-500",
+        "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-gold-500/10 bg-obsidian/80 backdrop-blur-2xl"
+          ? "border-b border-gold-300/10 bg-obsidian/92 backdrop-blur-2xl"
           : "border-b border-transparent bg-transparent"
       )}
     >
-      <div className="container-shell flex min-h-[72px] items-center justify-between gap-4">
-        <Link href="/" className="focus-ring group -ml-1 flex items-center gap-3 rounded-2xl px-1 py-1">
-          <LogoMark />
+      <div className="container-shell flex min-h-[68px] items-center justify-between gap-4">
+        {/* Logo */}
+        <Link href="/" className="focus-ring group -ml-1 flex items-center gap-3 rounded-sm px-1 py-1">
+          <GtaLogoMark />
           <span className="flex flex-col leading-none">
-            <span className="font-heading text-[0.95rem] font-bold tracking-[-0.01em] text-cream">
+            <span className="font-heading tracking-gta text-[1.15rem] text-cream">
               Bela Goldmann
             </span>
-            <span className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-gold-300">
+            <span className="gta-label mt-0.5">
               AI Goldmining
             </span>
           </span>
         </Link>
 
-        <nav aria-label="Hauptnavigation" className="hidden items-center gap-1 lg:flex">
+        {/* Desktop nav */}
+        <nav aria-label="Hauptnavigation" className="hidden items-center gap-0.5 lg:flex">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="focus-ring group relative rounded-full px-4 py-2 text-sm font-medium text-muted transition-colors hover:text-cream"
+              className="focus-ring group relative rounded-sm px-4 py-2 text-sm font-semibold uppercase tracking-[0.1em] text-cream/50 transition-colors hover:text-cream"
             >
               <span className="relative z-10">{item.label}</span>
-              <span className="absolute inset-0 rounded-full bg-gold-500/[0.06] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+              <span className="absolute inset-x-0 bottom-0 h-[2px] bg-gold-300 scale-x-0 transition-transform duration-200 group-hover:scale-x-100 origin-left" />
             </Link>
           ))}
         </nav>
 
+        {/* Desktop CTA */}
         <div className="hidden items-center gap-3 lg:flex">
           <Link
             href="/login"
-            className="focus-ring rounded-full px-4 py-2 text-sm font-medium text-muted transition-colors hover:text-cream"
+            className="focus-ring rounded-sm px-4 py-2 text-sm font-semibold uppercase tracking-[0.1em] text-cream/45 transition-colors hover:text-cream"
           >
             Login
           </Link>
@@ -72,19 +73,21 @@ export function SiteHeader() {
           </Button>
         </div>
 
+        {/* Mobile hamburger */}
         <button
           type="button"
           aria-label={open ? "Menü schließen" : "Menü öffnen"}
           aria-expanded={open}
-          className="focus-ring inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-gold-500/20 bg-panel/80 text-cream backdrop-blur-md lg:hidden"
+          className="focus-ring inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm border border-gold-300/25 bg-panel/80 text-cream backdrop-blur-md lg:hidden"
           onClick={() => setOpen((c) => !c)}
         >
-          {open ? <X aria-hidden size={20} /> : <Menu aria-hidden size={20} />}
+          {open ? <X aria-hidden size={18} /> : <Menu aria-hidden size={18} />}
         </button>
       </div>
 
+      {/* Mobile drawer */}
       {open ? (
-        <div className="fixed inset-x-0 top-[72px] bottom-0 z-40 overflow-y-auto border-t border-gold-500/10 bg-obsidian/95 backdrop-blur-2xl lg:hidden">
+        <div className="fixed inset-x-0 top-[68px] bottom-0 z-40 overflow-y-auto border-t border-gold-300/10 bg-obsidian/97 backdrop-blur-2xl lg:hidden">
           <nav
             className="container-shell flex flex-col gap-1 py-6"
             aria-label="Mobile Navigation"
@@ -93,12 +96,12 @@ export function SiteHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="focus-ring group flex items-center justify-between rounded-2xl border border-transparent px-5 py-4 text-lg font-medium text-cream transition-colors hover:border-gold-500/20 hover:bg-gold-500/[0.04]"
+                className="focus-ring group flex items-center justify-between rounded-sm border border-transparent px-5 py-4 font-heading tracking-gta text-2xl text-cream transition-colors hover:border-gold-300/20 hover:bg-gold-300/[0.04]"
                 onClick={() => setOpen(false)}
                 style={{ animationDelay: `${i * 40}ms` }}
               >
                 <span>{item.label}</span>
-                <span className="text-gold-300 opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="text-gold-300 opacity-0 transition-opacity group-hover:opacity-100 text-base">
                   →
                 </span>
               </Link>
@@ -123,19 +126,19 @@ export function SiteHeader() {
   );
 }
 
-function LogoMark() {
+function GtaLogoMark() {
   return (
-    <span className="relative flex h-9 w-9 items-center justify-center">
-      <span className="absolute inset-0 rounded-[10px] bg-gradient-to-br from-gold-200 via-gold-400 to-gold-700 opacity-90" />
-      <span className="absolute inset-[1px] rounded-[9px] bg-obsidian" />
+    <span className="relative flex h-9 w-9 items-center justify-center shrink-0">
+      <span className="absolute inset-0 rounded-sm bg-gradient-to-br from-gold-200 via-gold-400 to-gold-600 opacity-90" />
+      <span className="absolute inset-[1.5px] rounded-sm bg-obsidian" />
       <svg
         viewBox="0 0 24 24"
         className="relative h-5 w-5 text-gold-300"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth="2.5"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
         aria-hidden
       >
         <path d="M4 20 L12 4 L20 20 Z" />

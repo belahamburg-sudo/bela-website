@@ -11,7 +11,7 @@ import {
   LogOut,
   Menu,
   X,
-  Zap,
+  Pickaxe,
 } from "lucide-react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
@@ -42,14 +42,14 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+      className={`flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-bold uppercase tracking-[0.1em] transition-colors ${
         isActive
-          ? "bg-gold-500/10 text-gold-300"
-          : "text-white/50 hover:bg-white/[0.04] hover:text-white/80"
+          ? "bg-gold-300/10 text-gold-300 border-l-2 border-gold-300"
+          : "text-cream/45 hover:bg-cream/[0.04] hover:text-cream/80 border-l-2 border-transparent"
       }`}
     >
       <Icon
-        className={`h-4 w-4 flex-shrink-0 ${isActive ? "text-gold-300" : "text-white/40"}`}
+        className={`h-4 w-4 flex-shrink-0 ${isActive ? "text-gold-300" : "text-cream/30"}`}
       />
       {label}
     </Link>
@@ -76,12 +76,12 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
       <Link
         href="/dashboard"
         onClick={onNavClick}
-        className="flex items-center gap-2.5 border-b border-white/[0.06] px-4 py-6"
+        className="flex items-center gap-2.5 border-b border-gold-300/10 px-4 py-6"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-gold-500/20 bg-gold-500/15">
-          <Zap className="h-4 w-4 text-gold-300" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-gold-300/25 bg-gold-300/10">
+          <Pickaxe className="h-4 w-4 text-gold-300" />
         </div>
-        <span className="font-heading text-base font-bold text-cream">
+        <span className="font-heading tracking-gta text-base text-cream">
           AI Goldmining
         </span>
       </Link>
@@ -94,10 +94,10 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
       </nav>
 
       {/* Logout */}
-      <div className="border-t border-white/[0.06] px-3 py-4">
+      <div className="border-t border-gold-300/10 px-3 py-4">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/40 transition-colors hover:bg-white/[0.04] hover:text-white/70"
+          className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-bold uppercase tracking-[0.1em] text-cream/35 transition-colors hover:bg-cream/[0.04] hover:text-cream/65"
         >
           <LogOut className="h-4 w-4 flex-shrink-0" />
           Abmelden
@@ -113,26 +113,26 @@ export function DashboardSidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-60 lg:flex-shrink-0 lg:flex-col border-r border-white/[0.06] bg-graphite">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-60 lg:flex-shrink-0 lg:flex-col border-r border-gold-300/10 bg-graphite">
         <SidebarContent />
       </aside>
 
-      {/* Desktop spacer — pushes content right on lg+ */}
+      {/* Desktop spacer */}
       <div className="hidden lg:block lg:w-60 lg:flex-shrink-0" aria-hidden />
 
       {/* Mobile top bar */}
-      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-white/[0.06] bg-graphite/90 px-4 backdrop-blur-sm lg:hidden">
+      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-gold-300/10 bg-graphite/95 px-4 backdrop-blur-sm lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-gold-500/20 bg-gold-500/15">
-            <Zap className="h-3.5 w-3.5 text-gold-300" />
+          <div className="flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/25 bg-gold-300/10">
+            <Pickaxe className="h-3.5 w-3.5 text-gold-300" />
           </div>
-          <span className="font-heading text-sm font-bold text-cream">
+          <span className="font-heading tracking-gta text-sm text-cream">
             AI Goldmining
           </span>
         </Link>
         <button
           onClick={() => setMobileOpen(true)}
-          className="rounded-lg p-2 text-white/50 transition-colors hover:bg-white/[0.06] hover:text-white/80"
+          className="rounded-sm p-2 text-cream/45 transition-colors hover:bg-cream/[0.06] hover:text-cream/80"
           aria-label="Navigation öffnen"
         >
           <Menu className="h-5 w-5" />
@@ -147,14 +147,14 @@ export function DashboardSidebar() {
         {mobileOpen && (
           <>
             <motion.div
-              className="fixed inset-0 z-40 bg-black/60"
+              className="fixed inset-0 z-40 bg-black/70"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
-              className="fixed inset-y-0 left-0 z-50 w-60 border-r border-white/[0.06] bg-graphite"
+              className="fixed inset-y-0 left-0 z-50 w-60 border-r border-gold-300/10 bg-graphite"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
@@ -163,7 +163,7 @@ export function DashboardSidebar() {
               <div className="absolute right-3 top-3">
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-lg p-2 text-white/40 transition-colors hover:bg-white/[0.06] hover:text-white/70"
+                  className="rounded-sm p-2 text-cream/35 transition-colors hover:bg-cream/[0.06] hover:text-cream/65"
                   aria-label="Navigation schließen"
                 >
                   <X className="h-4 w-4" />

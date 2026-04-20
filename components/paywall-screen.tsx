@@ -12,44 +12,43 @@ export function PaywallScreen({ course }: PaywallScreenProps) {
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-6 py-20">
       <div className="w-full max-w-lg text-center">
-        {/* Lock icon */}
-        <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-500/20 bg-gold-500/[0.06]">
+        {/* Lock icon — GTA vault style */}
+        <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-sm border border-gold-300/25 bg-gold-300/[0.06] relative">
+          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-gold-300/50" aria-hidden />
+          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-gold-300/50" aria-hidden />
           <Lock className="h-7 w-7 text-gold-300" />
         </div>
 
-        {/* Eyebrow */}
-        <p className="eyebrow mb-4">Kurs freischalten</p>
+        <p className="eyebrow mb-4 justify-center">Kurs freischalten</p>
 
-        {/* Course title */}
-        <h1 className="mb-3 font-heading text-3xl text-cream lg:text-4xl">
+        <h1 className="mb-3 font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.8rem,3.5vw,3rem)" }}>
           {course.title}
         </h1>
 
-        {/* Tagline */}
         {course.tagline && (
-          <p className="mb-6 text-base font-medium text-gold-200">{course.tagline}</p>
+          <p className="mb-6 text-base font-semibold text-gold-300/80">{course.tagline}</p>
         )}
 
-        {/* Description */}
         {course.description && (
-          <p className="mx-auto mb-8 max-w-sm text-sm leading-relaxed text-white/50">
+          <p className="mx-auto mb-8 max-w-sm text-sm leading-relaxed text-cream/45">
             {course.description}
           </p>
         )}
 
         {/* Price + CTA */}
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
-          <p className="mb-2 text-sm text-white/40">Einmaliger Kauf</p>
-          <p className="mb-6 font-heading text-4xl text-cream">
+        <div className="rounded-sm border border-gold-300/15 bg-cream/[0.02] p-6 relative">
+          <div className="absolute top-0 left-0 w-5 h-5 border-t border-l border-gold-300/40" aria-hidden />
+          <div className="absolute bottom-0 right-0 w-5 h-5 border-b border-r border-gold-300/40" aria-hidden />
+          <p className="mb-2 gta-label text-cream/40">Einmaliger Kauf</p>
+          <p className="mb-6 font-heading tracking-gta text-5xl text-cream">
             {formatEuro(course.price_cents)}
           </p>
           <CheckoutButton courseSlug={course.slug} label="Jetzt freischalten" />
         </div>
 
-        {/* Back link */}
         <Link
           href="/dashboard/kurse"
-          className="mt-6 inline-block text-sm text-white/30 transition-colors hover:text-white/60"
+          className="mt-6 inline-block text-sm text-cream/30 transition-colors hover:text-cream/60"
         >
           ← Zurück zur Kursbibliothek
         </Link>

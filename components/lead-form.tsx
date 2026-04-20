@@ -81,8 +81,8 @@ export function LeadForm({ source, compact, ctaLabel }: LeadFormProps) {
           role="status"
           className={
             status === "error"
-              ? "flex items-center gap-2 text-sm font-medium text-red-300"
-              : "flex items-center gap-2 text-sm font-medium text-gold-200"
+              ? "flex items-center gap-2 text-sm font-semibold text-red-400"
+              : "flex items-center gap-2 text-sm font-semibold text-gold-300"
           }
         >
           {status === "error" ? (
@@ -93,7 +93,7 @@ export function LeadForm({ source, compact, ctaLabel }: LeadFormProps) {
           {message}
         </p>
       ) : null}
-      <p className="text-[0.7rem] leading-relaxed text-muted">
+      <p className="text-[0.7rem] leading-relaxed text-cream/35">
         Mit der Anmeldung akzeptierst du die Datenschutzerklärung. Abmeldung jederzeit möglich.
       </p>
     </form>
@@ -120,7 +120,7 @@ function Field({
   return (
     <div className="group relative">
       <label
-        className="mb-2 block text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-gold-300"
+        className="mb-2 block gta-label text-gold-300/80"
         htmlFor={id}
       >
         {label}
@@ -133,14 +133,7 @@ function Field({
           autoComplete={autoComplete}
           required={required}
           placeholder={placeholder}
-          className="focus-ring peer min-h-12 w-full rounded-xl border border-gold-500/15 bg-obsidian/80 px-4 text-cream placeholder:text-muted/70 transition-colors focus:border-gold-300/60"
-        />
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-transparent transition-all duration-300 peer-focus:ring-gold-300/30"
-          style={{
-            boxShadow: "0 0 0 0 rgba(255, 215, 106, 0)"
-          }}
+          className="focus-ring peer min-h-12 w-full rounded-sm border border-gold-300/15 bg-obsidian/80 px-4 text-cream placeholder:text-cream/30 transition-colors focus:border-gold-300/50"
         />
       </div>
     </div>
