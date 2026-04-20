@@ -32,14 +32,14 @@ export function CheckoutButton({
       const supabase = getSupabaseBrowserClient();
       const { data } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
       if (!data.user) {
-        router.push(`/login?redirect=/kurse/${courseSlug}`);
+        router.push(`/login?redirect=/dashboard/kurse/${courseSlug}`);
         return;
       }
       userEmail = data.user.email ?? null;
     } else {
       const raw = typeof window !== "undefined" ? localStorage.getItem("ai-goldmining-demo-user") : null;
       if (!raw) {
-        router.push(`/login?redirect=/kurse/${courseSlug}`);
+        router.push(`/login?redirect=/dashboard/kurse/${courseSlug}`);
         return;
       }
       try {
