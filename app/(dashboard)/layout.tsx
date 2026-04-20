@@ -1,3 +1,5 @@
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
+
 export default function DashboardLayout({
   children,
 }: {
@@ -5,8 +7,8 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex min-h-screen bg-obsidian">
-      {/* DashboardSidebar added in Plan 02 */}
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <DashboardSidebar />
+      <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }
