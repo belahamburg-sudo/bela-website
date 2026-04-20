@@ -28,7 +28,9 @@ async function fetchProfile(): Promise<{ profile: DbProfile | null; email: strin
 export default async function ProfilePage() {
   const { profile, email } = await fetchProfile();
 
-  if (!profile) {
+  // Only redirect server-side when Supabase is configured and no session exists.
+  // In demo mode (no env vars), AuthGate handles auth client-side via localStorage.
+  if (hasSupabasePublicEnv() && !profile) {
     redirect("/login");
   }
 
@@ -46,8 +48,8 @@ export default async function ProfilePage() {
 
           <div className="panel-surface max-w-lg rounded-2xl p-8">
             <ProfileForm
-              initialName={profile.full_name ?? ""}
-              initialGoal={profile.goal ?? ""}
+              initialName={profile?.full_name ?? ""}
+              initialGoal={profile?.goal ?? ""}
               email={email}
             />
           </div>

@@ -38,8 +38,8 @@ export default function WebinarPage() {
             className="object-cover object-center"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-obsidian/82" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-obsidian" />
+          <div className="absolute inset-0 bg-obsidian/88" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-obsidian" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[1fr_0.9fr] lg:items-center">
@@ -47,7 +47,9 @@ export default function WebinarPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="relative"
           >
+            <div className="absolute -inset-8 rounded-sm bg-obsidian/60 backdrop-blur-[2px] -z-10" aria-hidden />
             <p className="eyebrow mb-6">Kostenloses Training</p>
             <h1 className="font-heading tracking-gta leading-none text-cream mb-6" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
               WIE DU MIT AI DEIN ERSTES DIGITALES PRODUKT BAUST UND{" "}

@@ -1,8 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { navItems } from "@/lib/content";
-import { LeadForm } from "@/components/lead-form";
 
 export function Footer() {
   const legal = [
@@ -24,39 +22,6 @@ export function Footer() {
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold-300/50 to-transparent" />
 
       <div className="container-shell py-20">
-        {/* Newsletter strip with gold-bars atmosphere */}
-        <div className="relative mb-16 overflow-hidden rounded-sm border border-gold-300/20">
-          <div className="absolute inset-0" aria-hidden>
-            <Image
-              src="/assets/gold-bars.jpeg"
-              alt=""
-              fill
-              className="object-cover object-center"
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 bg-obsidian/88" />
-          </div>
-          {/* Corner accents */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold-300/50" aria-hidden />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-gold-300/50" aria-hidden />
-
-          <div className="relative grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-end p-10 sm:p-14">
-            <div>
-              <p className="eyebrow mb-5">Newsletter</p>
-              <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.8rem,3.5vw,3.5rem)" }}>
-                EIN IMPULS PRO WOCHE.{" "}
-                <span className="gold-text">NULL FLUFF.</span>
-              </h2>
-              <p className="mt-5 max-w-xl text-pretty leading-[1.75] text-cream/45">
-                Konkrete Produktideen, AI-Prompts, Launch-Breakdowns und Verkaufspsychologie. Kein Hype, keine Garantien, kein Spam.
-              </p>
-            </div>
-            <div className="rounded-sm border border-gold-300/15 bg-obsidian/70 p-6 backdrop-blur-xl">
-              <LeadForm source="newsletter" />
-            </div>
-          </div>
-        </div>
-
         {/* Main grid */}
         <div className="grid gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
