@@ -28,8 +28,8 @@ export function SiteHeader() {
       className={cn(
         "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-gold-300/10 bg-obsidian/92 backdrop-blur-2xl"
-          : "border-b border-transparent bg-transparent"
+          ? "border-b border-gold-300/10 bg-obsidian/96 backdrop-blur-2xl"
+          : "border-b border-gold-300/[0.06] bg-obsidian/80 backdrop-blur-xl"
       )}
     >
       <div className="container-shell flex min-h-[68px] items-center justify-between gap-4">
