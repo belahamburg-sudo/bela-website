@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
-import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { SiteHeader } from "@/components/site-header";
 import { Footer } from "@/components/footer";
 
@@ -54,9 +53,7 @@ export default function RootLayout({
           Zum Inhalt springen
         </a>
         <SiteHeader />
-        <SmoothScrollProvider>
-          <main id="main">{children}</main>
-        </SmoothScrollProvider>
+        <main id="main">{children}</main>
         <Footer />
       </body>
     </html>

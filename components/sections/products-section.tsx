@@ -1,102 +1,68 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/button";
 import { CourseCard } from "@/components/course-card";
 import { SectionHeading } from "@/components/section-heading";
 import { featuredCourses } from "@/lib/content";
 
-gsap.registerPlugin(ScrollTrigger);
-
 export function ProductsSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const prefersReduced =
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-
-    const cards = section.querySelectorAll<HTMLElement>("[data-product-card]");
-    const cta = section.querySelector<HTMLElement>("[data-cta]");
-
-    gsap.fromTo(
-      cards,
-      { scale: 0.85, opacity: 0, filter: "blur(8px)" },
-      {
-        scale: 1,
-        opacity: 1,
-        filter: "blur(0px)",
-        duration: 1,
-        stagger: 0.15,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 80%",
-          end: "top 30%",
-          scrub: 1
-        }
-      }
-    );
-
-    if (cta) {
-      gsap.fromTo(
-        cta,
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: cta,
-            start: "top 90%",
-            toggleActions: "play none none none"
-          }
-        }
-      );
-    }
-
-    return () => {
-      ScrollTrigger.getAll().forEach((st) => {
-        if (st.trigger === section || st.trigger === cta) st.kill();
-      });
-    };
-  }, []);
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={sectionRef} className="py-28 sm:py-36">
-      <div className="container-shell">
-        <SectionHeading
-          eyebrow="Starter-Katalog"
-          title={
-            <>
-              Mini-Kurse mit einem{" "}
-              <span className="gold-text">klaren Ergebnis.</span>
-            </>
-          }
-          copy="Jeder Kurs ist klein genug für schnelle Umsetzung und konkret genug, damit du weißt, was du bekommst."
-        />
+    <section ref={ref} className="relative py-32 bg-obsidian overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/4 blur-[120px]" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
+          <SectionHeading
+            eyebrow="Starter-Katalog"
+            title={
+              <>
+                Mini-Kurse mit einem{" "}
+                <span className="gold-text">klaren Ergebnis.</span>
+              </>
+            }
+            copy="Jeder Kurs ist klein genug für schnelle Umsetzung und konkret genug, damit du weißt, was du bekommst."
+          />
+        </motion.div>
 
         <div className="mt-14 grid gap-7 lg:grid-cols-2">
-          {featuredCourses.map((course) => (
-            <div key={course.slug} data-product-card>
+          {featuredCourses.map((course, i) => (
+            <motion.div
+              key={course.slug}
+              initial={{ opacity: 0, y: 40, scale: 0.97 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, delay: i * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            >
               <CourseCard course={course} />
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        <div data-cta className="mt-10 text-center opacity-0">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-10 text-center"
+        >
           <Button href="/kurse" variant="outline" size="lg">
             Alle Kurse entdecken
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
