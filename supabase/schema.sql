@@ -39,10 +39,12 @@ create table if not exists public.lessons (
   id uuid primary key default uuid_generate_v4(),
   module_id uuid not null references public.modules(id) on delete cascade,
   title text not null,
-  summary text,
+  description text,
   video_url text,
   duration text,
-  position integer not null default 0
+  position integer not null default 0,
+  -- resources shape: [{ "label": string, "type": "PDF" | "Template" | "Prompt", "href": string }]
+  resources jsonb not null default '[]'::jsonb
 );
 
 create table if not exists public.purchases (

@@ -2,11 +2,11 @@
 
 import { CheckCircle2, Download, FileText, Lock, PlayCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { Course, Lesson } from "@/lib/content";
+import type { DbCourse, DbLesson } from "@/lib/db-types";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 
-export function CoursePlayer({ course }: { course: Course }) {
+export function CoursePlayer({ course }: { course: DbCourse }) {
   const lessons = useMemo(
     () => course.modules.flatMap((module) => module.lessons.map((lesson) => ({ ...lesson, moduleTitle: module.title }))),
     [course]
@@ -14,7 +14,7 @@ export function CoursePlayer({ course }: { course: Course }) {
   const [activeId, setActiveId] = useState(lessons[0]?.id || "");
   const [completed, setCompleted] = useState<string[]>([]);
   const storageKey = `ai-goldmining-progress-${course.slug}`;
-  const activeLesson = lessons.find((lesson) => lesson.id === activeId) as (Lesson & { moduleTitle: string }) | undefined;
+  const activeLesson = lessons.find((lesson) => lesson.id === activeId) as (DbLesson & { moduleTitle: string }) | undefined;
 
   useEffect(() => {
     const saved = localStorage.getItem(storageKey);
@@ -82,7 +82,7 @@ export function CoursePlayer({ course }: { course: Course }) {
           <div className="panel-surface overflow-hidden rounded-[1.35rem]">
             <div className="aspect-video bg-black">
               <iframe
-                src={activeLesson.videoUrl}
+                src={activeLesson.video_url ?? ""}
                 title={activeLesson.title}
                 className="h-full w-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -92,7 +92,7 @@ export function CoursePlayer({ course }: { course: Course }) {
             <div className="p-6">
               <p className="eyebrow">{activeLesson.moduleTitle}</p>
               <h1 className="mt-3 font-heading text-3xl font-black text-cream">{activeLesson.title}</h1>
-              <p className="mt-4 max-w-3xl text-base leading-8 text-muted">{activeLesson.summary}</p>
+              <p className="mt-4 max-w-3xl text-base leading-8 text-muted">{activeLesson.description}</p>
               <Button onClick={markDone} className="mt-6">
                 <CheckCircle2 aria-hidden className="h-4 w-4" />
                 Als erledigt markieren
