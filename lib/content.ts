@@ -241,6 +241,171 @@ export const courses: Course[] = [
     ]
   },
   {
+    slug: "ai-content-factory",
+    title: "AI Content Factory",
+    tagline: "Content-System mit AI aufbauen",
+    description:
+      "Von einer Idee zu 30 Tagen geplanten Content — ohne täglich neu nachdenken zu müssen. Dein AI-getriebenes Content-System.",
+    priceCents: 3400,
+    image: "/assets/generated/course-starter.svg",
+    level: "Aufbau",
+    audience: "Creator, die konsistent publizieren wollen",
+    outcome:
+      "Ein vollständiges Content-System: Themenplanung, Formate, Distribution und AI-Prompts für 30 Tage.",
+    includes: [
+      "Content-Planung Framework",
+      "AI-Prompt-System für Texte und Skripte",
+      "Redaktionskalender Vorlage",
+      "Multi-Format-Recycling-System"
+    ],
+    modules: [
+      {
+        id: "m1",
+        title: "Das Content-System bauen",
+        lessons: [
+          {
+            id: "l1",
+            title: "Warum die meisten Content-Pläne scheitern",
+            duration: "14 Min.",
+            summary:
+              "Der Unterschied zwischen einem Content-Plan und einem Content-System. Systeme produzieren sich halb selbst.",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            resources: sharedResources
+          },
+          {
+            id: "l2",
+            title: "Themen-Mining mit AI",
+            duration: "19 Min.",
+            summary:
+              "Wie du aus deinem Wissen 90 Themen in 20 Minuten ableitest — und welche davon wirklich geklickt werden.",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            resources: sharedResources
+          }
+        ]
+      },
+      {
+        id: "m2",
+        title: "Produktion und Recycling",
+        lessons: [
+          {
+            id: "l3",
+            title: "Ein Asset, fünf Formate",
+            duration: "22 Min.",
+            summary:
+              "Newsletter → LinkedIn Post → Reel → Thread → Carousel. Der Multiplikationsworkflow mit einem AI-Prompt-Loop.",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            resources: sharedResources
+          }
+        ]
+      }
+    ]
+  },
+  {
+    slug: "prompt-engineering-pro",
+    title: "Prompt Engineering Pro",
+    tagline: "AI wirklich steuern lernen",
+    description:
+      "Nicht die nächste Prompt-Sammlung — sondern das mentale Modell dahinter. Wie du AI-Outputs reproduzierbar gut machst.",
+    priceCents: 2900,
+    image: "/assets/generated/course-minikurs.svg",
+    level: "Start",
+    audience: "Alle, die mit AI arbeiten und besser werden wollen",
+    outcome:
+      "Ein eigenes Prompt-Framework, das auf deine Use Cases passt — übertragbar auf jedes AI-Tool.",
+    includes: [
+      "Prompt-Struktur Mastersheet",
+      "50 bewährte Basis-Prompts",
+      "Role-Prompting-System",
+      "Output-Debugging-Guide"
+    ],
+    modules: [
+      {
+        id: "m1",
+        title: "Wie AI wirklich funktioniert",
+        lessons: [
+          {
+            id: "l1",
+            title: "Das mentale Modell hinter Prompts",
+            duration: "16 Min.",
+            summary:
+              "AI ist kein Suchmaschinen-Ersatz. Das richtige Framing macht den Unterschied zwischen mittelmäßigem und exzellentem Output.",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            resources: sharedResources
+          },
+          {
+            id: "l2",
+            title: "Struktur, Kontext und Constraints",
+            duration: "21 Min.",
+            summary:
+              "Die drei Hebel jedes starken Prompts — und warum die meisten nur einen benutzen.",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            resources: sharedResources
+          }
+        ]
+      }
+    ]
+  },
+  {
+    slug: "digital-product-launch",
+    title: "Digital Product Launch",
+    tagline: "Launch-System in 14 Tagen",
+    description:
+      "Kein Launch ohne Plan. Die 14-Tage-Launch-Sequenz: Warm-up, Presale, Launch, Follow-up — alles strukturiert mit AI.",
+    priceCents: 4400,
+    image: "/assets/generated/course-funnel.svg",
+    level: "System",
+    audience: "Alle, die ein fertiges Produkt endlich launchen wollen",
+    outcome:
+      "Eine vollständige Launch-Sequenz in 14 Tagen — mit AI-generierten Texten für jeden Schritt.",
+    includes: [
+      "14-Tage Launch-Kalender",
+      "E-Mail-Sequenz (7 Mails)",
+      "Social-Media-Launch-Texte",
+      "Checkout-Optimierungs-Checkliste"
+    ],
+    modules: [
+      {
+        id: "m1",
+        title: "Launch-Vorbereitung",
+        lessons: [
+          {
+            id: "l1",
+            title: "Die Psychologie eines erfolgreichen Launch",
+            duration: "18 Min.",
+            summary:
+              "Warum Launches scheitern — und wie du Dringlichkeit aufbaust, ohne unecht zu wirken.",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            resources: sharedResources
+          },
+          {
+            id: "l2",
+            title: "Presale und Warm-up aufbauen",
+            duration: "25 Min.",
+            summary:
+              "Die ersten 7 Tage entscheiden. Der Warm-up-Prozess, der echtes Interesse erzeugt bevor das Produkt live geht.",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            resources: sharedResources
+          }
+        ]
+      },
+      {
+        id: "m2",
+        title: "Launch und Follow-up",
+        lessons: [
+          {
+            id: "l3",
+            title: "Launch-Tag: Was wirklich passiert",
+            duration: "20 Min.",
+            summary:
+              "Stunde für Stunde am Launch-Tag — worauf du achtest, was du sendest und wie du auf Einwände reagierst.",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            resources: sharedResources
+          }
+        ]
+      }
+    ]
+  },
+  {
     slug: "ai-goldmining-starter-pack",
     title: "AI Goldmining Starter Pack",
     tagline: "Alle Startkurse im Bundle",

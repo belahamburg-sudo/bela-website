@@ -28,11 +28,9 @@ async function fetchProfile(): Promise<{ profile: DbProfile | null; email: strin
 export default async function ProfilePage() {
   const { profile, email } = await fetchProfile();
 
-  // Only redirect server-side when Supabase is configured and no session exists.
-  // In demo mode (no env vars), AuthGate handles auth client-side via localStorage.
-  if (hasSupabasePublicEnv() && !profile) {
-    redirect("/login");
-  }
+  // AuthGate handles the redirect client-side after checking the live session.
+  // Server-side redirect is skipped here because the middleware keeps tokens refreshed —
+  // a null profile at render time just means the session cookie hasn't landed yet.
 
   return (
     <AuthGate>
