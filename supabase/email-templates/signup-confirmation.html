@@ -1,0 +1,119 @@
+<!--
+  ============================================================
+  SUPABASE EMAIL TEMPLATE: Signup Confirmation
+  ============================================================
+  HOW TO USE:
+  1. Go to Supabase Dashboard → Authentication → Email Templates
+  2. Select "Confirm signup"
+  3. Paste the HTML below (everything after this comment block)
+     into the "Message body (HTML)" field
+  4. Set Subject to: Willkommen bei AI Goldmining — Bestätige deinen Zugang
+  5. Set From to: Bela Goldmann <Bela@goldmvnn.com>
+     (configured via SMTP settings → Resend)
+  6. Click Save
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Bestätige deinen Zugang — AI Goldmining</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0806; font-family: Arial, Helvetica, sans-serif;">
+
+  <!-- Outer wrapper table -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #0a0806; min-height: 100vh;">
+    <tr>
+      <td align="center" style="padding: 48px 16px;">
+
+        <!-- Main container -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 560px; background-color: #100e0b; border: 1px solid rgba(240,180,41,0.2); border-top: 3px solid #F0B429;">
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding: 36px 40px 28px 40px;">
+              <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #F0B429; text-transform: uppercase; text-decoration: none;">AI GOLDMINING</p>
+              <p style="margin: 8px 0 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #a89070; letter-spacing: 1px; text-transform: uppercase;">Dein Wissen. Automatisiert vermarktet.</p>
+            </td>
+          </tr>
+
+          <!-- Gold divider -->
+          <tr>
+            <td style="padding: 0 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="height: 1px; background-color: #F0B429; font-size: 0; line-height: 0;">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 36px 40px 20px 40px;">
+              <h1 style="margin: 0 0 20px 0; font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: bold; letter-spacing: 3px; color: #e8d5b0; text-transform: uppercase;">BESTÄTIGE DEINEN ZUGANG</h1>
+              <p style="margin: 0 0 16px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color: #e8d5b0;">
+                Hallo {{ .Email }},
+              </p>
+              <p style="margin: 0 0 16px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color: #e8d5b0;">
+                vielen Dank für deine Registrierung bei AI Goldmining. Du bist nur einen Klick davon entfernt, vollen Zugang zu erhalten.
+              </p>
+              <p style="margin: 0 0 32px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color: #a89070;">
+                Bitte bestätige deine E-Mail-Adresse, um deinen Account zu aktivieren.
+              </p>
+            </td>
+          </tr>
+
+          <!-- CTA Button -->
+          <tr>
+            <td align="center" style="padding: 0 40px 36px 40px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="background-color: #F0B429;">
+                    <a href="{{ .ConfirmationURL }}" target="_blank" style="display: inline-block; padding: 14px 32px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; font-weight: bold; color: #0a0806; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;">E-Mail bestätigen</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Link fallback -->
+          <tr>
+            <td style="padding: 0 40px 32px 40px;">
+              <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 1.6; color: #a89070;">
+                Falls der Button nicht funktioniert, kopiere diesen Link in deinen Browser:<br />
+                <a href="{{ .ConfirmationURL }}" style="color: #c4a55a; word-break: break-all;">{{ .ConfirmationURL }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Gold divider -->
+          <tr>
+            <td style="padding: 0 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="height: 1px; background-color: rgba(240,180,41,0.3); font-size: 0; line-height: 0;">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding: 24px 40px;">
+              <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #a89070; letter-spacing: 1px;">AI Goldmining · Bela Goldmann</p>
+              <p style="margin: 6px 0 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #a89070;">Diese E-Mail wurde automatisch versandt. Bitte nicht antworten.</p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- End main container -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
