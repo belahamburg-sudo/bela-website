@@ -1,8 +1,8 @@
 <!--
-  SUPABASE EMAIL TEMPLATE: Signup Confirmation
-  Template: "Confirm signup"
-  Subject:  Willkommen bei AI Goldmining — Bestätige deinen Zugang
-  Variables: {{ .ConfirmationURL }}, {{ .Email }}
+  SUPABASE EMAIL TEMPLATE: Change Email Address
+  Template: "Change email address"
+  Subject:  Neue E-Mail-Adresse bestätigen — AI Goldmining
+  Variables: {{ .ConfirmationURL }}, {{ .Email }}, {{ .NewEmail }}
 -->
 <!DOCTYPE html>
 <html lang="de">
@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Bestätige deinen Zugang — AI Goldmining</title>
+  <title>E-Mail-Adresse ändern — AI Goldmining</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #0a0806; font-family: Arial, Helvetica, sans-serif;">
 
@@ -20,12 +20,12 @@
 
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 560px;">
 
-        <!-- Bela photo header -->
+        <!-- Header -->
         <tr>
-          <td style="background-color: #100e0b; border: 1px solid rgba(240,180,41,0.25); border-bottom: none; border-top: 3px solid #F0B429; padding: 0; overflow: hidden;">
+          <td style="background-color: #100e0b; border: 1px solid rgba(240,180,41,0.25); border-bottom: none; border-top: 3px solid #F0B429; padding: 0;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
-                <td style="padding: 32px 40px 28px 40px; vertical-align: middle;">
+                <td style="padding: 32px 40px 28px 40px;">
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                     <tr>
                       <td style="vertical-align: middle;">
@@ -39,7 +39,6 @@
                   </table>
                 </td>
               </tr>
-              <!-- Gold line -->
               <tr>
                 <td style="padding: 0 40px;">
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -51,19 +50,28 @@
           </td>
         </tr>
 
-        <!-- Content block -->
+        <!-- Content -->
         <tr>
           <td style="background-color: #100e0b; border-left: 1px solid rgba(240,180,41,0.25); border-right: 1px solid rgba(240,180,41,0.25); padding: 36px 40px 28px 40px;">
-            <p style="margin: 0 0 6px 0; font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; letter-spacing: 3px; color: #F0B429; text-transform: uppercase;">Herzlich Willkommen</p>
-            <h1 style="margin: 0 0 24px 0; font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: bold; letter-spacing: 2px; color: #e8d5b0; text-transform: uppercase; line-height: 1.2;">BESTÄTIGE DEINEN<br/>ZUGANG.</h1>
+            <p style="margin: 0 0 6px 0; font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; letter-spacing: 3px; color: #F0B429; text-transform: uppercase;">Account-Änderung</p>
+            <h1 style="margin: 0 0 24px 0; font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: bold; letter-spacing: 2px; color: #e8d5b0; text-transform: uppercase; line-height: 1.2;">NEUE E-MAIL<br/>BESTÄTIGEN.</h1>
             <p style="margin: 0 0 14px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.75; color: #c8b896;">
               Hey {{ .Email }},
             </p>
-            <p style="margin: 0 0 14px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.75; color: #c8b896;">
-              schön, dass du dabei bist. Ein Klick — und du hast vollen Zugang zu deinen Kursen, Materialien und der AI Goldmining Methode.
+            <p style="margin: 0 0 20px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.75; color: #c8b896;">
+              du hast eine neue E-Mail-Adresse für deinen AI Goldmining Account angegeben. Bitte bestätige sie, damit die Änderung wirksam wird.
             </p>
-            <p style="margin: 0 0 32px 0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color: #a89070;">
-              Der Link ist 24 Stunden gültig.
+            <!-- New email highlight -->
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td style="background-color: rgba(240,180,41,0.07); border: 1px solid rgba(240,180,41,0.2); padding: 14px 20px; margin-bottom: 28px;">
+                  <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #a89070; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">Neue Adresse</p>
+                  <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; color: #F0B429; font-weight: bold;">{{ .NewEmail }}</p>
+                </td>
+              </tr>
+            </table>
+            <p style="margin: 20px 0 32px 0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color: #a89070;">
+              Der Link ist für <strong style="color: #c4a55a;">24 Stunden</strong> gültig.
             </p>
           </td>
         </tr>
@@ -74,7 +82,7 @@
             <table role="presentation" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="background-color: #F0B429;">
-                  <a href="{{ .ConfirmationURL }}" target="_blank" style="display: inline-block; padding: 15px 40px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: #0a0806; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;">E-Mail bestätigen →</a>
+                  <a href="{{ .ConfirmationURL }}" target="_blank" style="display: inline-block; padding: 15px 40px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: #0a0806; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;">E-Mail-Adresse bestätigen →</a>
                 </td>
               </tr>
             </table>
@@ -84,17 +92,16 @@
           </td>
         </tr>
 
-        <!-- Quote from Bela -->
+        <!-- Safety notice -->
         <tr>
           <td style="background-color: #0d0b08; border-left: 1px solid rgba(240,180,41,0.25); border-right: 1px solid rgba(240,180,41,0.25); border-top: 1px solid rgba(240,180,41,0.1); padding: 24px 40px;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
               <tr>
-                <td width="3" style="background-color: #F0B429;">&nbsp;</td>
+                <td width="3" style="background-color: rgba(240,180,41,0.4);">&nbsp;</td>
                 <td style="padding-left: 16px;">
-                  <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.7; color: #a89070; font-style: italic;">
-                    "Das erste digitale Produkt ist der härteste Schritt. Danach wird es leichter — versprochen."
+                  <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.7; color: #a89070;">
+                    Falls du diese Änderung nicht angefordert hast, ignoriere diese E-Mail. Deine aktuelle E-Mail-Adresse bleibt unverändert.
                   </p>
-                  <p style="margin: 8px 0 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #6b5c45; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">— Bela Goldmann</p>
                 </td>
               </tr>
             </table>

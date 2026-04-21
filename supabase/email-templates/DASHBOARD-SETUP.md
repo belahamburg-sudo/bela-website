@@ -1,101 +1,100 @@
 # Supabase Email Templates — Dashboard Setup Guide
 
-Source of truth: HTML files in this directory.
-Templates must be manually pasted into the Supabase Dashboard (no CLI deployment available).
+6 branded templates, all consistent design: obsidian background, gold header, Bela photo, Arial inline CSS only.
+Paste each into: **Supabase Dashboard → Authentication → Email Templates**
 
 ---
 
-## Step 1: Paste Signup Confirmation Template
+## Template 1: Confirm signup
 
-1. Open **Supabase Dashboard** → Select your project
-2. Navigate to **Authentication** → **Email Templates**
-3. Select **"Confirm signup"** from the template list
-4. In the **"Subject"** field, enter:
-   ```
-   Willkommen bei AI Goldmining — Bestätige deinen Zugang
-   ```
-5. In the **"Message body (HTML)"** field, paste the entire contents of:
-   `supabase/email-templates/signup-confirmation.html`
-   (paste everything — the HTML comment at the top will be ignored by email clients)
-6. Click **Save**
+1. Select **"Confirm signup"**
+2. **Subject:** `Willkommen bei AI Goldmining — Bestätige deinen Zugang`
+3. Paste full contents of `signup-confirmation.html`
+4. **Save**
 
 ---
 
-## Step 2: Paste Password Reset Template
+## Template 2: Invite user
 
-1. In **Authentication** → **Email Templates**
-2. Select **"Reset password"** from the template list
-3. In the **"Subject"** field, enter:
-   ```
-   Dein AI Goldmining Passwort zurücksetzen
-   ```
-4. In the **"Message body (HTML)"** field, paste the entire contents of:
-   `supabase/email-templates/password-reset.html`
-5. Click **Save**
+1. Select **"Invite user"**
+2. **Subject:** `Du wurdest zu AI Goldmining eingeladen`
+3. Paste full contents of `invite-user.html`
+4. **Save**
 
 ---
 
-## Step 3: Verify SMTP Configuration (Resend)
+## Template 3: Magic link
 
-Resend SMTP should already be configured. To verify:
-
-1. In **Supabase Dashboard** → **Authentication** → **SMTP Settings**
-2. Confirm the following values are set:
-   - **Host:** `smtp.resend.com`
-   - **Port:** `465` (or `587` for TLS)
-   - **Username:** `resend`
-   - **Password:** Your Resend API key (starts with `re_`)
-   - **Sender name:** `Bela Goldmann`
-   - **Sender email:** `Bela@goldmvnn.com`
-3. If any values are missing, retrieve the Resend API key from the Resend Dashboard and enter them here.
+1. Select **"Magic link"**
+2. **Subject:** `Dein AI Goldmining Login-Link`
+3. Paste full contents of `magic-link.html`
+4. **Save**
 
 ---
 
-## Step 4: Test the Signup Confirmation Email
+## Template 4: Change email address
 
-1. Open the live app and navigate to `/signup` (or `/auth/signup`)
-2. Enter a real email address you have access to
-3. Submit the signup form
-4. Check your inbox for an email from `Bela Goldmann <Bela@goldmvnn.com>`
-5. Verify:
-   - Sender shows as `Bela Goldmann <Bela@goldmvnn.com>` ✓
-   - Subject shows as `Willkommen bei AI Goldmining — Bestätige deinen Zugang` ✓
-   - Email renders with dark obsidian background and gold "AI GOLDMINING" header ✓
-   - "E-Mail bestätigen" button is present and gold ✓
-   - Clicking the button completes account activation ✓
+1. Select **"Change email address"**
+2. **Subject:** `Neue E-Mail-Adresse bestätigen — AI Goldmining`
+3. Paste full contents of `change-email.html`
+4. **Save**
 
 ---
 
-## Step 5: Test the Password Reset Email
+## Template 5: Reset password
 
-1. Open the live app and navigate to `/login` (or `/auth/login`)
-2. Click "Passwort vergessen" / forgot password link
-3. Enter the email used in Step 4
-4. Check your inbox for an email from `Bela Goldmann <Bela@goldmvnn.com>`
-5. Verify:
-   - Sender shows as `Bela Goldmann <Bela@goldmvnn.com>` ✓
-   - Subject shows as `Dein AI Goldmining Passwort zurücksetzen` ✓
-   - Email renders with dark obsidian background and gold "AI GOLDMINING" header ✓
-   - "Neues Passwort setzen" button is present and gold ✓
-   - "Falls du das nicht warst, ignoriere diese E-Mail" is visible ✓
-   - Clicking the button opens the password reset page ✓
+1. Select **"Reset password"**
+2. **Subject:** `Dein AI Goldmining Passwort zurücksetzen`
+3. Paste full contents of `password-reset.html`
+4. **Save**
+
+---
+
+## Template 6: Reauthentication
+
+1. Select **"Reauthentication"**
+2. **Subject:** `Sicherheitscode — AI Goldmining`
+3. Paste full contents of `reauthentication.html`
+4. **Save**
+
+---
+
+## SMTP Configuration (Resend)
+
+**Authentication → Settings → SMTP:**
+
+| Field | Value |
+|---|---|
+| Host | `smtp.resend.com` |
+| Port | `465` |
+| Username | `resend` |
+| Password | Your Resend API key (`re_...`) |
+| Sender name | `Bela Goldmann` |
+| Sender email | `Bela@goldmvnn.com` |
+
+**Important:** `goldmvnn.com` must be verified at [resend.com/domains](https://resend.com/domains) — add the DNS records they provide.
+
+---
+
+## Template Variables Reference
+
+| Template | Variables used |
+|---|---|
+| Confirm signup | `{{ .ConfirmationURL }}`, `{{ .Email }}` |
+| Invite user | `{{ .ConfirmationURL }}`, `{{ .Email }}` |
+| Magic link | `{{ .MagicLink }}`, `{{ .Email }}` |
+| Change email | `{{ .ConfirmationURL }}`, `{{ .Email }}`, `{{ .NewEmail }}` |
+| Reset password | `{{ .ConfirmationURL }}`, `{{ .Email }}` |
+| Reauthentication | `{{ .Token }}`, `{{ .Email }}` |
 
 ---
 
 ## Troubleshooting
 
-**Emails not arriving:**
-- Check Supabase Dashboard → Authentication → SMTP Settings — confirm all fields are filled
-- Check Resend Dashboard for send logs and delivery errors
-- Confirm Resend API key has `Full Access` or `Sending Access` permissions
-- Confirm `Bela@goldmvnn.com` domain is verified in Resend (DNS records added)
+**"550 domain not verified"** → Verify `goldmvnn.com` at resend.com/domains, add DNS records, wait for propagation (5–30 min), then re-test.
 
-**Email renders as plain text:**
-- Ensure the HTML was pasted into the "Message body (HTML)" field, not the plain text field
-- The Supabase template editor may have separate HTML/text tabs
+**Sender shows "no-reply@supabase.io"** → SMTP not configured. See section above.
 
-**Sender shows as "no-reply@supabase.io":**
-- SMTP is not configured — see Step 3 above
+**Template renders as plain text** → Paste into the HTML tab, not plain text tab.
 
-**Template variables `{{ .ConfirmationURL }}` not replaced:**
-- This is normal when viewing the raw HTML. Supabase replaces these at send time.
+**Bela photo not showing** → Ensure `https://goldmvnn.com/assets/bela-character.jpeg` is publicly accessible.

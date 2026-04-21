@@ -1,7 +1,7 @@
 <!--
-  SUPABASE EMAIL TEMPLATE: Signup Confirmation
-  Template: "Confirm signup"
-  Subject:  Willkommen bei AI Goldmining — Bestätige deinen Zugang
+  SUPABASE EMAIL TEMPLATE: Invite User
+  Template: "Invite user"
+  Subject:  Du wurdest zu AI Goldmining eingeladen
   Variables: {{ .ConfirmationURL }}, {{ .Email }}
 -->
 <!DOCTYPE html>
@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Bestätige deinen Zugang — AI Goldmining</title>
+  <title>Einladung — AI Goldmining</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #0a0806; font-family: Arial, Helvetica, sans-serif;">
 
@@ -20,12 +20,12 @@
 
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 560px;">
 
-        <!-- Bela photo header -->
+        <!-- Header -->
         <tr>
-          <td style="background-color: #100e0b; border: 1px solid rgba(240,180,41,0.25); border-bottom: none; border-top: 3px solid #F0B429; padding: 0; overflow: hidden;">
+          <td style="background-color: #100e0b; border: 1px solid rgba(240,180,41,0.25); border-bottom: none; border-top: 3px solid #F0B429; padding: 0;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
-                <td style="padding: 32px 40px 28px 40px; vertical-align: middle;">
+                <td style="padding: 32px 40px 28px 40px;">
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                     <tr>
                       <td style="vertical-align: middle;">
@@ -39,7 +39,6 @@
                   </table>
                 </td>
               </tr>
-              <!-- Gold line -->
               <tr>
                 <td style="padding: 0 40px;">
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -51,19 +50,19 @@
           </td>
         </tr>
 
-        <!-- Content block -->
+        <!-- Content -->
         <tr>
           <td style="background-color: #100e0b; border-left: 1px solid rgba(240,180,41,0.25); border-right: 1px solid rgba(240,180,41,0.25); padding: 36px 40px 28px 40px;">
-            <p style="margin: 0 0 6px 0; font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; letter-spacing: 3px; color: #F0B429; text-transform: uppercase;">Herzlich Willkommen</p>
-            <h1 style="margin: 0 0 24px 0; font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: bold; letter-spacing: 2px; color: #e8d5b0; text-transform: uppercase; line-height: 1.2;">BESTÄTIGE DEINEN<br/>ZUGANG.</h1>
+            <p style="margin: 0 0 6px 0; font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; letter-spacing: 3px; color: #F0B429; text-transform: uppercase;">Persönliche Einladung</p>
+            <h1 style="margin: 0 0 24px 0; font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: bold; letter-spacing: 2px; color: #e8d5b0; text-transform: uppercase; line-height: 1.2;">DU WURDEST<br/>EINGELADEN.</h1>
             <p style="margin: 0 0 14px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.75; color: #c8b896;">
               Hey {{ .Email }},
             </p>
             <p style="margin: 0 0 14px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.75; color: #c8b896;">
-              schön, dass du dabei bist. Ein Klick — und du hast vollen Zugang zu deinen Kursen, Materialien und der AI Goldmining Methode.
+              du wurdest persönlich zu AI Goldmining eingeladen. Erstelle deinen Account in wenigen Sekunden und starte direkt mit deinen Kursen.
             </p>
             <p style="margin: 0 0 32px 0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color: #a89070;">
-              Der Link ist 24 Stunden gültig.
+              Der Einladungslink ist für <strong style="color: #c4a55a;">72 Stunden</strong> gültig.
             </p>
           </td>
         </tr>
@@ -74,7 +73,7 @@
             <table role="presentation" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="background-color: #F0B429;">
-                  <a href="{{ .ConfirmationURL }}" target="_blank" style="display: inline-block; padding: 15px 40px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: #0a0806; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;">E-Mail bestätigen →</a>
+                  <a href="{{ .ConfirmationURL }}" target="_blank" style="display: inline-block; padding: 15px 40px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: #0a0806; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;">Account erstellen →</a>
                 </td>
               </tr>
             </table>
@@ -84,7 +83,7 @@
           </td>
         </tr>
 
-        <!-- Quote from Bela -->
+        <!-- Quote -->
         <tr>
           <td style="background-color: #0d0b08; border-left: 1px solid rgba(240,180,41,0.25); border-right: 1px solid rgba(240,180,41,0.25); border-top: 1px solid rgba(240,180,41,0.1); padding: 24px 40px;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
