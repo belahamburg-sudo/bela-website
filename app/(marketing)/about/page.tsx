@@ -15,13 +15,15 @@ export default function AboutPage() {
     <>
       <section className="bg-gold-radial py-16 sm:py-20">
         <div className="container-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <Image
-            src="/assets/generated/hero-ai-gold.svg"
-            alt="Abstraktes AI-Goldmining Gründer-Visual mit nicht-identifizierbarer Creator-Silhouette"
-            width={1600}
-            height={1000}
-            className="rounded-[1.6rem] border border-gold-500/20 shadow-gold"
-          />
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.6rem] border border-gold-500/20 shadow-gold">
+            <Image
+              src="/assets/bela-character.jpeg"
+              alt="Bela Goldmann — KI-Unternehmerin und AI Goldmining Coach"
+              fill
+              className="object-cover object-top"
+              priority
+            />
+          </div>
           <div>
             <p className="eyebrow">Bela Goldmann</p>
             <h1 className="mt-5 font-heading text-5xl font-black leading-tight text-cream sm:text-6xl">
