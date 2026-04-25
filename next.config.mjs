@@ -12,6 +12,21 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["framer-motion", "lucide-react"],
   },
+  webpack: (config, { nextRuntime, webpack }) => {
+    // Fix: next/dist/compiled/cookie includes ncc-compiled code that references
+    // __dirname when __nccwpck_require__ is defined. Vercel's Edge Runtime defines
+    // __nccwpck_require__ globally, which triggers the __dirname access and throws
+    // ReferenceError since __dirname is not available in Edge Runtime.
+    // Explicitly define __dirname as "/" for edge builds to prevent this.
+    if (nextRuntime === "edge") {
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          __dirname: JSON.stringify("/"),
+        })
+      );
+    }
+    return config;
+  },
   async headers() {
     return [
       {
