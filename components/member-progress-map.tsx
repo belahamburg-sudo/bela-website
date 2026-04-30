@@ -134,67 +134,77 @@ export function MemberProgressMap({
       </div>
 
       <div className={`grid gap-6 ${compact ? "xl:grid-cols-[1.4fr_320px]" : "xl:grid-cols-[1.55fr_320px]"}`}>
-        <div className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#16110b] px-4 py-8 sm:px-6">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(240,180,41,0.18),transparent_22%),radial-gradient(circle_at_80%_10%,rgba(240,180,41,0.12),transparent_18%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent)]" />
-          <div className="pointer-events-none absolute left-[9%] right-[9%] top-1/2 hidden h-[3px] -translate-y-1/2 bg-gradient-to-r from-gold-300/20 via-gold-300/55 to-gold-300/15 md:block" />
-          <div className="relative grid gap-4 md:grid-cols-7 md:gap-3">
-            {MILESTONES.map((milestone, index) => {
-              const isComplete = points >= milestone.threshold;
-              const isCurrent = index === currentIndex;
-              const Icon = milestone.icon;
+        {/* Horizontal scroll container for the map */}
+        <div className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#16110b]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(240,180,41,0.18),transparent_22%),radial-gradient(circle_at_80%_10%,rgba(240,180,41,0.12),transparent_18%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent)] z-0" />
+          
+          <div className="relative z-10 flex w-full overflow-x-auto overflow-y-hidden pb-6 pt-6 px-4 sm:px-6 hide-scrollbar snap-x snap-mandatory">
+            <div className="relative flex w-max min-w-full items-stretch gap-4 md:gap-6 lg:gap-8">
+              {/* Horizontal connecting line (Desktop only) */}
+              <div className="pointer-events-none absolute left-0 right-0 top-1/2 hidden h-[3px] -translate-y-1/2 bg-gradient-to-r from-gold-300/20 via-gold-300/55 to-gold-300/15 md:block" />
+              
+              {MILESTONES.map((milestone, index) => {
+                const isComplete = points >= milestone.threshold;
+                const isCurrent = index === currentIndex;
+                const Icon = milestone.icon;
 
-              return (
-                <div
-                  key={milestone.key}
-                  className={`relative flex flex-col ${index % 2 === 0 ? "md:pt-0 md:pb-20" : "md:pt-20 md:pb-0"}`}
-                >
+                return (
                   <div
-                    className={`relative rounded-[24px] border px-3 py-4 transition-all ${
-                      isCurrent
-                        ? "border-gold-300/45 bg-gold-300/[0.09] shadow-[0_18px_40px_rgba(240,180,41,0.16)]"
-                        : isComplete
-                        ? "border-gold-300/20 bg-gold-300/[0.04]"
-                        : "border-white/[0.08] bg-white/[0.02]"
-                    }`}
+                    key={milestone.key}
+                    className={`relative flex-none w-[140px] md:w-[155px] snap-center flex flex-col ${index % 2 === 0 ? "md:justify-start md:pb-24" : "md:justify-end md:pt-24"}`}
                   >
-                    <div className="mb-4 flex items-center justify-between">
-                      <div
-                        className={`flex h-11 w-11 items-center justify-center rounded-[16px] border ${
-                          isComplete
-                            ? "border-gold-300/30 bg-gold-300/15 text-gold-300"
-                            : "border-white/10 bg-white/[0.03] text-white/35"
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <span className="text-[10px] uppercase tracking-[0.18em] text-cream/28">
-                        {milestone.threshold} XP
-                      </span>
-                    </div>
-                    <p className="font-heading text-base text-cream">{milestone.title}</p>
-                    <p className="mt-1 text-xs leading-relaxed text-cream/38">
-                      {milestone.description}
-                    </p>
-                  </div>
-
-                  <div className="relative z-10 mx-auto mt-3 hidden h-6 w-6 items-center justify-center rounded-full border border-gold-300/35 bg-[#120d08] md:flex">
                     <div
-                      className={`h-2.5 w-2.5 rounded-full ${
-                        isComplete ? "bg-gold-300 shadow-[0_0_14px_rgba(240,180,41,0.85)]" : "bg-white/20"
+                      className={`relative rounded-[24px] border px-4 py-5 transition-all ${
+                        isCurrent
+                          ? "border-gold-300/45 bg-gold-300/[0.09] shadow-[0_18px_40px_rgba(240,180,41,0.16)]"
+                          : isComplete
+                          ? "border-gold-300/20 bg-gold-300/[0.04]"
+                          : "border-white/[0.08] bg-white/[0.02]"
                       }`}
-                    />
-                  </div>
-
-                  {isCurrent && (
-                    <div className="relative z-20 mx-auto mt-3 md:absolute md:left-1/2 md:top-1/2 md:mt-0 md:-translate-x-1/2 md:-translate-y-1/2">
-                      <div className="rounded-full border border-gold-300/35 bg-[#120d08] p-1.5 shadow-[0_0_30px_rgba(240,180,41,0.22)]">
-                        <MemberAvatar avatarId={currentAvatar.id} points={points} size="sm" />
+                    >
+                      <div className="mb-4 flex items-center justify-between">
+                        <div
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border ${
+                            isComplete
+                              ? "border-gold-300/30 bg-gold-300/15 text-gold-300"
+                              : "border-white/10 bg-white/[0.03] text-white/35"
+                          }`}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <span className="text-[9px] uppercase tracking-[0.15em] text-cream/30">
+                          {milestone.threshold} XP
+                        </span>
                       </div>
+                      <p className="font-heading text-base lg:text-lg text-cream leading-tight mb-2">
+                        {milestone.title}
+                      </p>
+                      <p className="text-[11px] leading-relaxed text-cream/40">
+                        {milestone.description}
+                      </p>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+
+                    {/* Waypoint Dot */}
+                    <div className="relative z-10 mx-auto mt-4 hidden h-6 w-6 items-center justify-center rounded-full border border-gold-300/35 bg-[#120d08] md:flex">
+                      <div
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          isComplete ? "bg-gold-300 shadow-[0_0_14px_rgba(240,180,41,0.85)]" : "bg-white/20"
+                        }`}
+                      />
+                    </div>
+
+                    {/* Current Avatar Marker */}
+                    {isCurrent && (
+                      <div className="relative z-20 mx-auto mt-4 md:absolute md:left-1/2 md:top-1/2 md:mt-0 md:-translate-x-1/2 md:-translate-y-1/2">
+                        <div className="rounded-full border-2 border-gold-300/50 bg-[#120d08] p-1 shadow-[0_0_40px_rgba(240,180,41,0.4)] transition-transform hover:scale-110 cursor-pointer">
+                          <MemberAvatar avatarId={currentAvatar.id} points={points} size="md" hidePoints={true} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
