@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import { DEFAULT_AVATAR_ID } from "@/lib/avatar-system";
 
 function badRequest(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
@@ -28,6 +28,9 @@ export async function POST(request: NextRequest) {
     email,
     password,
     email_confirm: true,
+    user_metadata: {
+      avatar_id: DEFAULT_AVATAR_ID,
+    },
   });
 
   if (error) {
@@ -55,6 +58,25 @@ export async function POST(request: NextRequest) {
 
   if (profileError) {
     return badRequest("Account wurde erstellt, aber das Profil konnte nicht angelegt werden.", 500);
+  }
+
+  const { error: memberStateError } = await admin
+    .from("member_state")
+    .upsert(
+      {
+        user_id: data.user.id,
+        selected_avatar: DEFAULT_AVATAR_ID,
+        points: 0,
+        level: 1,
+        purchased_courses: 0,
+        completed_lessons: 0,
+        completed_courses: 0,
+      },
+      { onConflict: "user_id" }
+    );
+
+  if (memberStateError && memberStateError.code !== "42P01") {
+    return badRequest("Account wurde erstellt, aber der Member-State konnte nicht angelegt werden.", 500);
   }
 
   return NextResponse.json({ ok: true, mode: "login" });

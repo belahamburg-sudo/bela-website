@@ -1,11 +1,14 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, BookOpen, CheckCircle2, Clock, Lock, Pickaxe, TrendingUp } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, Clock, Gift, Lock, Pickaxe, TrendingUp } from "lucide-react";
 import { AuthGate } from "@/components/auth-gate";
 import { Button } from "@/components/button";
+import { MemberAvatar } from "@/components/member-avatar";
+import { getMemberLevel, getNextReward } from "@/lib/avatar-system";
 import { getCourse, courses as allStaticCourses } from "@/lib/content";
 import type { Course } from "@/lib/content";
 import { hasSupabasePublicEnv } from "@/lib/env";
+import { syncMemberState } from "@/lib/member-state";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { formatEuro } from "@/lib/utils";
 
@@ -17,10 +20,13 @@ type CourseWithProgress = Course & {
 };
 
 async function fetchDashboardData(): Promise<{
-  user: { name: string | null; email: string } | null;
+  user: { name: string | null; email: string; avatarId: string | null } | null;
   purchasedCourses: CourseWithProgress[];
   availableCourses: Course[];
   totalLessonsCompleted: number;
+  completedCourses: number;
+  points: number;
+  rewardCount: number;
   redirectToOnboarding: boolean;
 }> {
   const empty = {
@@ -28,6 +34,9 @@ async function fetchDashboardData(): Promise<{
     purchasedCourses: [],
     availableCourses: allStaticCourses,
     totalLessonsCompleted: 0,
+    completedCourses: 0,
+    points: 0,
+    rewardCount: 0,
     redirectToOnboarding: false,
   };
 
@@ -90,19 +99,36 @@ async function fetchDashboardData(): Promise<{
       return { ...course, progress, completedLessons: completed, totalLessons: lessonIds.length, status };
     });
 
+  const completedCourses = purchasedCourses.filter((course) => course.status === "Abgeschlossen").length;
+
   const availableCourses = allActiveDbSlugs
     .filter((slug: string) => !purchasedSlugs.has(slug))
     .map((slug: string) => getCourse(slug))
     .filter((c): c is Course => c !== undefined);
 
+  const memberState = await syncMemberState({
+    supabase,
+    userId: user.id,
+    onboardingComplete: Boolean(profileResult.data?.onboarding_complete),
+    purchasedCourses: purchasedSlugs.size,
+    completedLessons: completedLessonIds.size,
+    completedCourses,
+    fallbackAvatarId:
+      typeof user.user_metadata?.avatar_id === "string" ? user.user_metadata.avatar_id : null,
+  });
+
   return {
     user: {
       name: profileResult.data?.full_name ?? null,
       email: user.email ?? "",
+      avatarId: memberState.selectedAvatarId,
     },
     purchasedCourses,
     availableCourses,
     totalLessonsCompleted: completedLessonIds.size,
+    completedCourses,
+    points: memberState.points,
+    rewardCount: memberState.rewardCount,
     redirectToOnboarding: false,
   };
 }
@@ -126,7 +152,7 @@ function ProgressRing({ progress, size = 56 }: { progress: number; size?: number
 }
 
 export default async function DashboardPage() {
-  const { user, purchasedCourses, availableCourses, totalLessonsCompleted, redirectToOnboarding } =
+  const { user, purchasedCourses, availableCourses, totalLessonsCompleted, completedCourses, points, rewardCount, redirectToOnboarding } =
     await fetchDashboardData();
 
   if (redirectToOnboarding) redirect("/dashboard/onboarding");
@@ -138,9 +164,10 @@ export default async function DashboardPage() {
         )
       : 0;
 
-  const completedCount = purchasedCourses.filter((c) => c.status === "Abgeschlossen").length;
   const inProgressCourses = purchasedCourses.filter((c) => c.status === "In Bearbeitung");
   const displayName = user?.name ?? user?.email?.split("@")[0] ?? "Gold Miner";
+  const memberLevel = getMemberLevel(points);
+  const nextReward = getNextReward(points);
 
   return (
     <AuthGate>
@@ -148,18 +175,48 @@ export default async function DashboardPage() {
         <div className="mx-auto max-w-7xl px-6">
 
           {/* Header */}
-          <div className="mb-12">
-            <p className="eyebrow mb-3">Willkommen zurück</p>
-            <h1
-              className="font-heading tracking-gta leading-none text-cream"
-              style={{ fontSize: "clamp(2rem,4vw,3.5rem)" }}
-            >
-              HEY, {displayName.toUpperCase()}.{" "}
-              <span className="gold-text">WEITER GRABEN.</span>
-            </h1>
-            <p className="mt-4 text-cream/40 text-base max-w-lg">
-              Deine Lernzentrale — alle Kurse, dein Fortschritt, alles auf einen Blick.
-            </p>
+          <div className="mb-12 grid gap-6 xl:grid-cols-[1.2fr_360px] xl:items-end">
+            <div>
+              <p className="eyebrow mb-3">Willkommen zurück</p>
+              <h1
+                className="font-heading tracking-gta leading-none text-cream"
+                style={{ fontSize: "clamp(2rem,4vw,3.5rem)" }}
+              >
+                HEY, {displayName.toUpperCase()}.{" "}
+                <span className="gold-text">WEITER GRABEN.</span>
+              </h1>
+              <p className="mt-4 max-w-lg text-base text-cream/40">
+                Deine Lernzentrale — alle Kurse, dein Fortschritt, alles auf einen Blick.
+              </p>
+            </div>
+
+            <div className="rounded-[28px] border border-gold-300/14 bg-[radial-gradient(circle_at_top,rgba(240,180,41,0.18),transparent_55%),rgba(255,255,255,0.02)] p-5">
+              <div className="flex items-center gap-4">
+                <MemberAvatar avatarId={user?.avatarId} points={points} size="md" />
+                <div className="flex-1">
+                  <p className="text-[11px] uppercase tracking-[0.14em] text-gold-300/70">
+                    Member Status
+                  </p>
+                  <p className="mt-1 font-heading text-2xl text-cream">
+                    Level {memberLevel.current.level} · {memberLevel.current.title}
+                  </p>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-300"
+                      style={{ width: `${memberLevel.progress}%` }}
+                    />
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-[11px] uppercase tracking-[0.12em] text-cream/30">
+                    <span>{points} Punkte</span>
+                    <span>
+                      {memberLevel.next
+                        ? `${memberLevel.next.minPoints - points} bis Level ${memberLevel.next.level}`
+                        : "Max Level"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Stats row */}
@@ -185,7 +242,7 @@ export default async function DashboardPage() {
               },
               {
                 icon: Pickaxe,
-                value: completedCount,
+                value: completedCourses,
                 label: "Kurse",
                 sub: "fertig gestellt",
               },
@@ -321,6 +378,33 @@ export default async function DashboardPage() {
             <div className="space-y-6">
 
               {/* Quick actions */}
+              <div className="panel-surface rounded-sm border border-gold-300/10 p-5">
+                <p className="eyebrow mb-4">Avatar & Rewards</p>
+                <div className="rounded-2xl border border-gold-300/16 bg-gold-300/[0.05] p-4">
+                  <div className="flex items-center gap-2 text-gold-300">
+                    <Gift className="h-4 w-4" />
+                    <p className="text-[11px] uppercase tracking-[0.14em]">Nächster Reward</p>
+                  </div>
+                  <p className="mt-2 font-heading text-lg text-cream">
+                    {nextReward ? nextReward.title : "Alles freigeschaltet"}
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-cream/40">
+                    {nextReward
+                      ? `${nextReward.points - points} Punkte bis ${nextReward.title}.`
+                      : "Du hast aktuell alle Reward-Stufen dieser Version erreicht."}
+                  </p>
+                  <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-gold-300/65">
+                    {rewardCount} Rewards gespeichert
+                  </p>
+                  <Link
+                    href="/dashboard/profil"
+                    className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-gold-300/75 hover:text-gold-300"
+                  >
+                    Avatar ändern <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
+
               <div className="panel-surface rounded-sm border border-gold-300/10 p-5">
                 <p className="eyebrow mb-4">Schnellzugriff</p>
                 <div className="space-y-2">

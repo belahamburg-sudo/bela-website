@@ -9,6 +9,7 @@ export async function updateProfile(
 ): Promise<{ ok: boolean; error?: string }> {
   const name = (formData.get("name") as string | null)?.trim() ?? "";
   const goal = (formData.get("goal") as string | null)?.trim() ?? "";
+  const selectedAvatar = (formData.get("selectedAvatar") as string | null)?.trim() ?? "";
 
   if (!hasSupabasePublicEnv()) return { ok: false, error: "no env" };
 
@@ -27,6 +28,24 @@ export async function updateProfile(
 
   if (error) return { ok: false, error: error.message };
 
+  if (selectedAvatar) {
+    const { error: avatarError } = await supabase
+      .from("member_state")
+      .upsert(
+        {
+          user_id: user.id,
+          selected_avatar: selectedAvatar,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      );
+
+    if (avatarError && avatarError.code !== "42P01") {
+      return { ok: false, error: avatarError.message };
+    }
+  }
+
   revalidatePath("/dashboard/profil");
+  revalidatePath("/dashboard");
   return { ok: true };
 }
