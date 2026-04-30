@@ -199,7 +199,7 @@ export default function OnboardingPage() {
                 
                 <div className="max-w-md mx-auto mb-10 p-6 rounded-2xl border border-white/10 bg-white/[0.02]">
                   <p className="text-cream/50 text-sm uppercase tracking-[0.1em] mb-2">Deine Mission</p>
-                  <p className="text-cream text-lg italic">"{goal}"</p>
+                  <p className="text-cream text-lg italic">&quot;{goal}&quot;</p>
                 </div>
                 
                 <p className="text-cream/40 text-lg mb-10 max-w-lg mx-auto leading-relaxed">
