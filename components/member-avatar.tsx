@@ -17,7 +17,7 @@ const sizeClasses = {
 
 export function MemberAvatar({ avatarId, points = 0, size = "md", hidePoints = false }: Props) {
   const avatar = getAvatarById(avatarId);
-  const avatarUrl = `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar.id}&backgroundColor=transparent`;
+  const avatarUrl = `https://api.dicebear.com/9.x/adventurer/svg?seed=${avatar.id}&backgroundColor=transparent&scale=110`;
 
   return (
     <div className="relative inline-flex flex-col items-center gap-2">
@@ -28,7 +28,7 @@ export function MemberAvatar({ avatarId, points = 0, size = "md", hidePoints = f
           src={avatarUrl} 
           alt={avatar.name} 
           fill 
-          className="object-cover p-1.5"
+          className="object-contain p-1"
           unoptimized
         />
         <div className="absolute inset-[2px] rounded-[22px] border border-white/15" />

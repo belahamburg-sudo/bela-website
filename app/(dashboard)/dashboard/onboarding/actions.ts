@@ -7,6 +7,7 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 export async function completeOnboarding(formData: FormData): Promise<void> {
   const name = (formData.get("name") as string | null)?.trim() ?? "";
   const goal = (formData.get("goal") as string | null)?.trim() ?? "";
+  const avatarId = (formData.get("avatarId") as string | null)?.trim() ?? null;
 
   if (!name) return;
 
@@ -26,10 +27,18 @@ export async function completeOnboarding(formData: FormData): Promise<void> {
     redirect("/login");
   }
 
+  // Update profile
   await supabase
     .from("profiles")
     .update({ full_name: name, goal: goal || null, onboarding_complete: true })
     .eq("id", user.id);
+
+  // Update user metadata with selected avatar if provided
+  if (avatarId) {
+    await supabase.auth.updateUser({
+      data: { avatar_id: avatarId },
+    });
+  }
 
   redirect("/dashboard");
 }
