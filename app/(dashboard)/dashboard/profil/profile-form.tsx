@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Gift, Lock } from "lucide-react";
 import { MemberAvatar } from "@/components/member-avatar";
+import { MemberProgressMap } from "@/components/member-progress-map";
 import {
   DEFAULT_AVATAR_ID,
   FREE_COURSE_REWARD_POINTS,
@@ -190,13 +191,22 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-5">
+        <MemberProgressMap
+          points={points}
+          selectedAvatarId={selectedAvatarId}
+          completedLessons={completedLessons}
+          purchasedCourses={purchasedCourses}
+          completedCourses={completedCourses}
+          rewardCount={rewardCount}
+        />
+
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="eyebrow mb-2">Avatar Auswahl</p>
-            <h2 className="font-heading text-3xl text-cream">20 Charaktere zum Freischalten.</h2>
+            <p className="eyebrow mb-2">Avatar Vault</p>
+            <h2 className="font-heading text-3xl text-cream">Wähle deinen Runner.</h2>
           </div>
           <p className="max-w-xs text-right text-sm text-cream/35">
-            Mehr Fortschritt, mehr Punkte, mehr Charaktere. Gesperrte Avatare werden automatisch mit deinem Status freigeschaltet.
+            Jeder Avatar ist ein neuer Skin für deinen Fortschritt auf der Map. Gesperrte Runner gehen erst auf, wenn du ihre Station erreichst.
           </p>
         </div>
 

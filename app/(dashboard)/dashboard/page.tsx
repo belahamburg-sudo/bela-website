@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, CheckCircle2, Clock, Gift, Lock, Pickaxe, TrendingUp } from "lucide-react";
 import { AuthGate } from "@/components/auth-gate";
 import { Button } from "@/components/button";
-import { MemberAvatar } from "@/components/member-avatar";
+import { MemberProgressMap } from "@/components/member-progress-map";
 import { getMemberLevel, getNextReward } from "@/lib/avatar-system";
 import { getCourse, courses as allStaticCourses } from "@/lib/content";
 import type { Course } from "@/lib/content";
@@ -175,7 +175,7 @@ export default async function DashboardPage() {
         <div className="mx-auto max-w-7xl px-6">
 
           {/* Header */}
-          <div className="mb-12 grid gap-6 xl:grid-cols-[1.2fr_360px] xl:items-end">
+          <div className="mb-8">
             <div>
               <p className="eyebrow mb-3">Willkommen zurück</p>
               <h1
@@ -189,34 +189,18 @@ export default async function DashboardPage() {
                 Deine Lernzentrale — alle Kurse, dein Fortschritt, alles auf einen Blick.
               </p>
             </div>
+          </div>
 
-            <div className="rounded-[28px] border border-gold-300/14 bg-[radial-gradient(circle_at_top,rgba(240,180,41,0.18),transparent_55%),rgba(255,255,255,0.02)] p-5">
-              <div className="flex items-center gap-4">
-                <MemberAvatar avatarId={user?.avatarId} points={points} size="md" />
-                <div className="flex-1">
-                  <p className="text-[11px] uppercase tracking-[0.14em] text-gold-300/70">
-                    Member Status
-                  </p>
-                  <p className="mt-1 font-heading text-2xl text-cream">
-                    Level {memberLevel.current.level} · {memberLevel.current.title}
-                  </p>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.06]">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-300"
-                      style={{ width: `${memberLevel.progress}%` }}
-                    />
-                  </div>
-                  <div className="mt-2 flex items-center justify-between text-[11px] uppercase tracking-[0.12em] text-cream/30">
-                    <span>{points} Punkte</span>
-                    <span>
-                      {memberLevel.next
-                        ? `${memberLevel.next.minPoints - points} bis Level ${memberLevel.next.level}`
-                        : "Max Level"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="mb-12">
+            <MemberProgressMap
+              points={points}
+              selectedAvatarId={user?.avatarId}
+              completedLessons={totalLessonsCompleted}
+              purchasedCourses={purchasedCourses.length}
+              completedCourses={completedCourses}
+              rewardCount={rewardCount}
+              compact
+            />
           </div>
 
           {/* Stats row */}
