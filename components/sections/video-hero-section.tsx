@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { Volume2, VolumeX, Play, Pause } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { telegramUrl } from "@/lib/env";
 
 export function VideoHeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -31,47 +33,123 @@ export function VideoHeroSection() {
   }
 
   return (
-    <section className="relative py-20 sm:py-28 bg-obsidian overflow-hidden">
+    <section
+      className="relative flex flex-col items-center justify-center overflow-hidden bg-obsidian px-6"
+      style={{ minHeight: "calc(100svh - 68px)", paddingTop: "clamp(1rem, 2vw, 1.75rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
+    >
+      {/* Subtle gold radial glow */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(240,180,41,0.07) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 55% at 50% 35%, rgba(240,180,41,0.07) 0%, transparent 70%)",
         }}
       />
 
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div className="relative w-full mx-auto max-w-4xl flex flex-col items-center gap-3 text-center">
+
+        {/* ── Live Event Banner ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="flex items-center gap-2.5 rounded-sm border border-gold-300/30 bg-gold-300/8 px-4 py-2"
+        >
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold-300 opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-gold-300" />
+          </span>
+          <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gold-300">
+            Live Event · 23. Mai · 19 Uhr
+          </span>
+        </motion.div>
+
+        {/* ── Headline ── */}
+        <motion.h1
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="font-heading font-extrabold uppercase tracking-gta leading-[0.95] text-cream"
+          style={{ fontSize: "clamp(2.2rem, 5vw, 4.6rem)" }}
+        >
+          Ich zeige dir, wie du mit AI digitale Produkte baust{" "}
+          <span className="gold-text">und automatisiert verkaufst.</span>
+        </motion.h1>
+
+        {/* ── Subtext ── */}
+        <motion.p
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="text-sm sm:text-base text-cream/50 max-w-2xl leading-relaxed"
+        >
+          Alte Online-Modelle fressen Kapital, Zeit oder Nerven. Digitale Produkte sind schlanker:
+          mit AI baust du Templates, Guides oder Mini-Kurse in Stunden und verkaufst sie automatisiert
+          mit fast reiner Marge.
+        </motion.p>
+
+        {/* ── CTA + Social Proof ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.48, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="flex flex-col items-center gap-2"
+        >
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <Link
+              href="/webinar"
+              className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-300 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(240,180,41,0.45)]"
+            >
+              Webinar sichern · Limited Spots →
+            </Link>
+            <Link
+              href={telegramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-sm border border-gold-300/35 px-7 py-3 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/70 hover:bg-gold-300/5 hover:text-cream"
+            >
+              Free Telegram Community
+            </Link>
+          </div>
+
+          {/* Social proof */}
+          <div className="flex items-center gap-2.5">
+            {/* Avatar stack */}
+            <div className="flex -space-x-2">
+              {["B", "M", "A", "K", "L"].map((initial, i) => (
+                <span
+                  key={i}
+                  className="flex h-6 w-6 items-center justify-center rounded-full border border-obsidian text-[0.5rem] font-bold text-obsidian"
+                  style={{
+                    background: `linear-gradient(135deg, #FFD76A, #C98B00)`,
+                    opacity: 0.85 + i * 0.03,
+                    zIndex: 5 - i,
+                  }}
+                >
+                  {initial}
+                </span>
+              ))}
+            </div>
+            <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-cream/35">
+              Join +10.000 anderen
+            </span>
+          </div>
+        </motion.div>
+
+        {/* ── Video ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="mb-10 text-center"
+          transition={{ duration: 0.65, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="w-full max-w-2xl"
         >
-          <p className="eyebrow mb-4 justify-center">AI Goldmining Training</p>
-          <h1
-            className="font-heading tracking-gta leading-none text-cream"
-            style={{ fontSize: "clamp(2.2rem,5vw,5rem)" }}
-          >
-            DEIN WISSEN.{" "}
-            <span className="gold-text">AUTOMATISIERT VERMARKTET.</span>
-          </h1>
-        </motion.div>
+          <div className="relative w-full overflow-hidden rounded-sm border border-gold-300/20 bg-obsidian" style={{ aspectRatio: "16/9" }}>
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
+            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
+            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="mx-auto max-w-4xl"
-        >
-          <div className="relative aspect-video rounded-sm overflow-hidden bg-obsidian border border-gold-300/20 group">
-            {/* GTA corner accents */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
-
-            {/* Video */}
             <video
               ref={videoRef}
               src="/assets/bela-intro-cropped.mp4"
@@ -82,43 +160,36 @@ export function VideoHeroSection() {
               onEnded={() => setPlaying(false)}
             />
 
-            {/* Dark overlay — fades out once playing */}
             <div
               className="absolute inset-0 bg-obsidian/40 transition-opacity duration-500 pointer-events-none"
               style={{ opacity: playing ? 0 : 1 }}
               aria-hidden
             />
 
-            {/* Gold glow */}
             {!playing && (
               <div
                 className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, rgba(240,180,41,0.10) 0%, transparent 65%)",
-                }}
+                style={{ background: "radial-gradient(ellipse at center, rgba(240,180,41,0.10) 0%, transparent 65%)" }}
                 aria-hidden
               />
             )}
 
-            {/* Center play button — shown before first play */}
             {!started && (
               <button
                 type="button"
                 onClick={handlePlayPause}
                 aria-label="Video abspielen"
-                className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-20"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20"
               >
-                <span className="flex h-20 w-20 items-center justify-center rounded-sm border border-gold-300/50 bg-gold-300/10 backdrop-blur-sm transition-all hover:bg-gold-300/20 hover:border-gold-300/80 hover:scale-105">
-                  <Play className="h-9 w-9 text-gold-300 translate-x-0.5" fill="currentColor" />
+                <span className="flex h-16 w-16 items-center justify-center rounded-sm border border-gold-300/50 bg-gold-300/10 backdrop-blur-sm transition-all hover:bg-gold-300/20 hover:border-gold-300/80 hover:scale-105">
+                  <Play className="h-7 w-7 text-gold-300 translate-x-0.5" fill="currentColor" />
                 </span>
                 <span className="gta-label text-gold-300/60">Jetzt ansehen · 30 Sek</span>
               </button>
             )}
 
-            {/* Controls — bottom bar, visible on hover or when playing */}
             <div
-              className="absolute bottom-0 inset-x-0 z-20 flex items-center justify-between px-4 py-3 transition-opacity duration-300"
+              className="absolute bottom-0 inset-x-0 z-20 flex items-center justify-between px-4 py-2.5 transition-opacity duration-300"
               style={{
                 background: "linear-gradient(to top, rgba(10,8,6,0.85) 0%, transparent 100%)",
                 opacity: started ? 1 : 0,
@@ -129,27 +200,50 @@ export function VideoHeroSection() {
                 type="button"
                 onClick={handlePlayPause}
                 aria-label={playing ? "Pause" : "Abspielen"}
-                className="flex h-8 w-8 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 hover:bg-gold-300/20 transition-colors"
+                className="flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 hover:bg-gold-300/20 transition-colors"
               >
                 {playing
-                  ? <Pause className="h-3.5 w-3.5" fill="currentColor" />
-                  : <Play className="h-3.5 w-3.5 translate-x-px" fill="currentColor" />
+                  ? <Pause className="h-3 w-3" fill="currentColor" />
+                  : <Play className="h-3 w-3 translate-x-px" fill="currentColor" />
                 }
               </button>
               <button
                 type="button"
                 onClick={handleMute}
                 aria-label={muted ? "Ton einschalten" : "Ton ausschalten"}
-                className="flex h-8 w-8 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 hover:bg-gold-300/20 transition-colors"
+                className="flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 hover:bg-gold-300/20 transition-colors"
               >
                 {muted
-                  ? <VolumeX className="h-3.5 w-3.5" />
-                  : <Volume2 className="h-3.5 w-3.5" />
+                  ? <VolumeX className="h-3 w-3" />
+                  : <Volume2 className="h-3 w-3" />
                 }
               </button>
             </div>
           </div>
         </motion.div>
+
+        {/* ── Trust Icons ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.62, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
+        >
+          {[
+            "Geld verdienen mit AI",
+            "Remote von überall",
+            "Keine Vorerfahrung nötig",
+            "Kein Gesicht zeigen",
+          ].map((text) => (
+            <span key={text} className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/30">
+              <svg className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 16 16" aria-hidden>
+                <path d="M3 8l3.5 3.5L13 4.5" stroke="rgba(240,180,41,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {text}
+            </span>
+          ))}
+        </motion.div>
+
       </div>
     </section>
   );

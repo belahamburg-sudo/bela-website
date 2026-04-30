@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { animate, onScroll, stagger, svg } from "animejs";
+import { animate, onScroll, stagger } from "animejs";
 
 const STEPS = [
   {
@@ -30,10 +30,15 @@ const STEPS = [
   },
 ];
 
+// Desktop: top offset (px) per step — step 1 at base, step 4 at peak
+const ELEVATIONS = [216, 144, 72, 0];
+const CONTAINER_H = 420;
+const BAD_PATH = [292, 326, 356, 382];
+
 export function MethodSection() {
-  const stepsRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<SVGPathElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
+  const trailRef = useRef<HTMLDivElement>(null);
+  const mobileListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const cleanups: Array<() => void> = [];
@@ -44,17 +49,31 @@ export function MethodSection() {
       cleanups.push(() => { anim.revert(); obs.revert(); });
     }
 
-    if (lineRef.current) {
-      const drawable = svg.createDrawable(lineRef.current);
-      const lineAnim = animate(drawable, { draw: ["0 0", "0 1"], duration: 1400, ease: "outExpo", autoplay: false });
-      const lineObs = onScroll({ target: lineRef.current, enter: "bottom-=15% top", onEnter: () => lineAnim.play() });
-      cleanups.push(() => { lineAnim.revert(); lineObs.revert(); });
+    if (trailRef.current) {
+      const cards = trailRef.current.querySelectorAll<HTMLElement>(".trail-card");
+      const anim = animate(cards, {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        delay: stagger(200),
+        duration: 700,
+        ease: "outExpo",
+        autoplay: false,
+      });
+      const obs = onScroll({ target: trailRef.current, enter: "bottom-=10% top", onEnter: () => anim.play() });
+      cleanups.push(() => { anim.revert(); obs.revert(); });
     }
 
-    if (stepsRef.current) {
-      const rows = stepsRef.current.querySelectorAll<HTMLElement>(".step-row");
-      const anim = animate(rows, { opacity: [0, 1], translateY: [40, 0], delay: stagger(150), duration: 800, ease: "outExpo", autoplay: false });
-      const obs = onScroll({ target: stepsRef.current, enter: "bottom-=10% top", onEnter: () => anim.play() });
+    if (mobileListRef.current) {
+      const rows = mobileListRef.current.querySelectorAll<HTMLElement>(".mobile-step");
+      const anim = animate(rows, {
+        opacity: [0, 1],
+        translateX: [-30, 0],
+        delay: stagger(150),
+        duration: 700,
+        ease: "outExpo",
+        autoplay: false,
+      });
+      const obs = onScroll({ target: mobileListRef.current, enter: "bottom-=10% top", onEnter: () => anim.play() });
       cleanups.push(() => { anim.revert(); obs.revert(); });
     }
 
@@ -68,49 +87,134 @@ export function MethodSection() {
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6">
-        <div ref={headingRef} className="mb-8" style={{ opacity: 0 }}>
+        <div ref={headingRef} className="mb-16" style={{ opacity: 0 }}>
           <p className="eyebrow mb-6">Die Methode</p>
           <h2 className="font-heading tracking-gta leading-none text-cream max-w-3xl" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
             VON DER IDEE ZUR{" "}
             <span className="gold-text">DIGITALEN GOLDMINE.</span>
           </h2>
           <p className="mt-5 text-cream/40 max-w-lg text-lg">
-            Vier Schritte. Ein System. Einmal aufgebaut, dauerhaft aktiv.
+            Vier Stufen. Ein System. Einmal aufgebaut, dauerhaft aktiv.
           </p>
         </div>
 
-        <svg className="w-full overflow-visible mb-4" height="1" aria-hidden>
-          <path
-            ref={lineRef}
-            d="M0,0.5 L2000,0.5"
-            stroke="rgba(240,180,41,0.25)"
-            strokeWidth="1"
-            fill="none"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
+        {/* ── Desktop: ascending Wanderweg ── */}
+        <div
+          ref={trailRef}
+          className="hidden lg:block relative"
+          style={{ height: `${CONTAINER_H}px` }}
+        >
+          {/* Trail SVG — diagonal dashed line from base to peak */}
+          <svg
+            className="absolute inset-0 w-full pointer-events-none"
+            style={{ height: `${CONTAINER_H}px`, overflow: "visible" }}
+            viewBox={`0 0 100 ${CONTAINER_H}`}
+            preserveAspectRatio="none"
+            aria-hidden
+          >
+            {/* Main trail line */}
+            <path
+              d={`M 11,${ELEVATIONS[0] + 80} L 37,${ELEVATIONS[1] + 80} L 63,${ELEVATIONS[2] + 80} L 89,${ELEVATIONS[3] + 80}`}
+              stroke="rgba(240,180,41,0.22)"
+              strokeWidth="0.35"
+              strokeDasharray="3 3"
+              fill="none"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={`M 11,${BAD_PATH[0]} L 37,${BAD_PATH[1]} L 63,${BAD_PATH[2]} L 89,${BAD_PATH[3]}`}
+              stroke="rgba(255,120,120,0.22)"
+              strokeWidth="0.35"
+              strokeDasharray="2.5 3"
+              fill="none"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
 
-        <div ref={stepsRef} className="space-y-0">
-          {STEPS.map((step) => (
+          {/* Step cards */}
+          {STEPS.map((step, i) => (
             <div
               key={step.num}
-              className="step-row grid grid-cols-[5rem_1fr] lg:grid-cols-[8rem_1fr] gap-8 lg:gap-16 py-12 border-t border-gold-300/10 items-start"
-              style={{ opacity: 0 }}
+              className="trail-card absolute border border-gold-300/15 rounded-sm bg-obsidian p-5 hover:border-gold-300/30 transition-colors duration-300"
+              style={{
+                width: "22%",
+                left: `${i * 26}%`,
+                top: `${ELEVATIONS[i]}px`,
+                opacity: 0,
+              }}
             >
-              <span className="font-heading tracking-gta text-5xl lg:text-7xl text-gold-300/25 leading-none select-none pt-1">
+              {/* Waypoint dot */}
+              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rounded-full border border-gold-300/40 bg-obsidian" />
+
+              {i === STEPS.length - 1 && (
+                <span className="absolute -top-3.5 right-3 gta-label text-gold-300/70 bg-obsidian px-1.5">
+                  PEAK
+                </span>
+              )}
+
+              <span className="block font-heading tracking-gta text-4xl text-gold-300/20 leading-none mb-3 select-none">
                 {step.num}
               </span>
-              <div className="grid lg:grid-cols-[1fr_auto] gap-6 items-start">
-                <div>
-                  <h3 className="font-heading tracking-gta text-3xl lg:text-4xl text-cream mb-3">{step.title}</h3>
-                  <p className="text-cream/50 leading-relaxed max-w-xl">{step.copy}</p>
-                </div>
-                <span className="gta-label whitespace-nowrap pt-2 hidden lg:block">
-                  {step.detail}
+              <h3 className="font-heading tracking-gta text-xl text-cream mb-2 leading-tight">
+                {step.title}
+              </h3>
+              <p className="text-cream/45 text-sm leading-relaxed mb-3">{step.copy}</p>
+              <p className="gta-label text-gold-300/35">{step.detail}</p>
+            </div>
+          ))}
+
+          {/* Altitude labels */}
+          {STEPS.map((step, i) => (
+            <span
+              key={`alt-${step.num}`}
+              className="absolute gta-label text-cream/12 select-none"
+              style={{
+                left: `${i * 26}%`,
+                top: `${ELEVATIONS[i] + 185}px`,
+              }}
+            >
+              {i === 0 ? "START" : i === STEPS.length - 1 ? "GIPFEL" : `STUFE ${i + 1}`}
+            </span>
+          ))}
+
+          <div className="absolute right-0 bottom-0 w-[24%] rounded-sm border border-red-400/10 bg-red-500/[0.03] p-4">
+            <p className="gta-label text-red-200/50 mb-2">Ohne Methode</p>
+            <p className="text-sm leading-relaxed text-cream/35">
+              Weiter wie bisher: Zeit gegen Geld, Chaos, falsche Modelle und AI zieht an dir vorbei.
+            </p>
+          </div>
+        </div>
+
+        {/* ── Mobile: vertical stack with connector line ── */}
+        <div ref={mobileListRef} className="lg:hidden">
+          {STEPS.map((step, i) => (
+            <div
+              key={step.num}
+              className="mobile-step flex gap-5 items-start py-10 border-t border-gold-300/10"
+              style={{ opacity: 0 }}
+            >
+              <div className="flex flex-col items-center shrink-0">
+                <span className="flex h-10 w-10 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/5 font-heading tracking-gta text-sm text-gold-300/60">
+                  {step.num}
                 </span>
+                {i < STEPS.length - 1 && (
+                  <div className="w-px flex-1 min-h-[48px] mt-2 bg-gradient-to-b from-gold-300/20 to-transparent" />
+                )}
+              </div>
+              <div className="pt-1.5">
+                <h3 className="font-heading tracking-gta text-2xl text-cream mb-2">{step.title}</h3>
+                <p className="text-cream/50 leading-relaxed mb-3">{step.copy}</p>
+                <p className="gta-label text-gold-300/40">{step.detail}</p>
               </div>
             </div>
           ))}
+
+          <div className="rounded-sm border border-red-400/10 bg-red-500/[0.03] p-5">
+            <p className="gta-label text-red-200/50 mb-2">Der falsche Pfad</p>
+            <p className="text-cream/40 leading-relaxed">
+              Wenn du weitermachst wie bisher, verlierst du Zeit, Fokus und Markt. Ohne die richtige Methode und AI bleibt nur mehr Reibung.
+            </p>
+          </div>
         </div>
       </div>
     </section>

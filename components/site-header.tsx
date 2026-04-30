@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { navItems } from "@/lib/content";
 import { cn } from "@/lib/utils";
+import { telegramUrl } from "@/lib/env";
 import { Button } from "./button";
 
 export function SiteHeader() {
@@ -34,15 +36,20 @@ export function SiteHeader() {
     >
       <div className="container-shell flex min-h-[68px] items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="focus-ring group -ml-1 flex items-center gap-3 rounded-sm px-1 py-1">
-          <GtaLogoMark />
-          <span className="flex flex-col leading-none">
-            <span className="font-heading tracking-gta text-[1.15rem] text-cream">
-              Bela Goldmann
-            </span>
-            <span className="gta-label mt-0.5">
-              AI Goldmining
-            </span>
+        <Link href="/" className="focus-ring group -ml-1 flex items-stretch rounded-sm px-1 py-0">
+          <span className="relative flex items-center rounded-sm border border-gold-300/10 bg-[#151008] px-3 py-2">
+            <Image
+              src="/assets/logo-ai-goldmining-tight.png"
+              alt="AI Goldmining"
+              width={340}
+              height={64}
+              className="w-auto relative z-10"
+              style={{
+                height: "28px",
+                filter: "brightness(1.08) contrast(1.08)",
+              }}
+              priority
+            />
           </span>
         </Link>
 
@@ -62,6 +69,14 @@ export function SiteHeader() {
 
         {/* Desktop CTA */}
         <div className="hidden items-center gap-3 lg:flex">
+          <Link
+            href={telegramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="focus-ring rounded-sm px-4 py-2 text-sm font-semibold uppercase tracking-[0.1em] text-cream/45 transition-colors hover:text-cream"
+          >
+            Telegram
+          </Link>
           <Link
             href="/login"
             className="focus-ring rounded-sm px-4 py-2 text-sm font-semibold uppercase tracking-[0.1em] text-cream/45 transition-colors hover:text-cream"
@@ -96,7 +111,7 @@ export function SiteHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="focus-ring group flex items-center justify-between rounded-sm border border-transparent px-5 py-4 font-heading tracking-gta text-2xl text-cream transition-colors hover:border-gold-300/20 hover:bg-gold-300/[0.04]"
+                className="focus-ring group flex items-center justify-between rounded-sm border border-transparent px-5 py-4 font-heading font-extrabold uppercase tracking-gta text-2xl text-cream transition-colors hover:border-gold-300/20 hover:bg-gold-300/[0.04]"
                 onClick={() => setOpen(false)}
                 style={{ animationDelay: `${i * 40}ms` }}
               >
@@ -107,6 +122,16 @@ export function SiteHeader() {
               </Link>
             ))}
             <div className="mt-6 grid gap-3">
+              <Button
+                href={telegramUrl}
+                variant="outline"
+                className="w-full"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+              >
+                Free Telegram
+              </Button>
               <Button
                 href="/login"
                 variant="secondary"
@@ -123,27 +148,5 @@ export function SiteHeader() {
         </div>
       ) : null}
     </header>
-  );
-}
-
-function GtaLogoMark() {
-  return (
-    <span className="relative flex h-9 w-9 items-center justify-center shrink-0">
-      <span className="absolute inset-0 rounded-sm bg-gradient-to-br from-gold-200 via-gold-400 to-gold-600 opacity-90" />
-      <span className="absolute inset-[1.5px] rounded-sm bg-obsidian" />
-      <svg
-        viewBox="0 0 24 24"
-        className="relative h-5 w-5 text-gold-300"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        aria-hidden
-      >
-        <path d="M4 20 L12 4 L20 20 Z" />
-        <path d="M8 14 L16 14" opacity="0.6" />
-      </svg>
-    </span>
   );
 }

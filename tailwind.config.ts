@@ -32,14 +32,14 @@ const config: Config = {
         hairline: "rgba(240, 180, 41, 0.15)"
       },
       fontFamily: {
-        heading: ["var(--font-heading)", "Bebas Neue", "Anton", "Impact", "sans-serif"],
+        heading: ["var(--font-heading)", "Barlow Condensed", "Arial Narrow", "sans-serif"],
         body: ["var(--font-body)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
       },
       fontSize: {
-        "display-xl": ["clamp(3.5rem, 8vw, 9rem)", { lineHeight: "0.95", letterSpacing: "0.02em", fontWeight: "400" }],
-        "display-lg": ["clamp(2.8rem, 6vw, 6.5rem)", { lineHeight: "0.97", letterSpacing: "0.02em", fontWeight: "400" }],
-        "display-md": ["clamp(2rem, 4vw, 4rem)", { lineHeight: "1.0", letterSpacing: "0.02em", fontWeight: "400" }]
+        "display-xl": ["clamp(3.5rem, 8vw, 9rem)", { lineHeight: "0.93", letterSpacing: "0.04em", fontWeight: "800" }],
+        "display-lg": ["clamp(2.8rem, 6vw, 6.5rem)", { lineHeight: "0.95", letterSpacing: "0.04em", fontWeight: "800" }],
+        "display-md": ["clamp(2rem, 4vw, 4rem)", { lineHeight: "0.97", letterSpacing: "0.03em", fontWeight: "800" }]
       },
       boxShadow: {
         gold: "0 0 0 1px rgba(240,180,41,0.25), 0 20px 60px -20px rgba(192,140,0,0.6)",

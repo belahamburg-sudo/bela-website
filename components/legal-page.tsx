@@ -6,6 +6,16 @@ type LegalSection = {
   items?: string[];
 };
 
+function sectionId(heading: string) {
+  return heading
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
 export function LegalPage({
   eyebrow = "Rechtliches",
   title,
@@ -27,7 +37,7 @@ export function LegalPage({
         <p className="mt-6 text-lg leading-9 text-muted">{intro}</p>
         <div className="mt-10 grid gap-5">
           {sections.map((section) => (
-            <article key={section.heading} className="panel-surface rounded-[1.35rem] p-6">
+            <article id={sectionId(section.heading)} key={section.heading} className="panel-surface rounded-[1.35rem] p-6">
               <h2 className="font-heading text-2xl font-black text-cream">{section.heading}</h2>
               {section.copy ? (
                 <p className="mt-4 leading-8 text-muted">{section.copy}</p>

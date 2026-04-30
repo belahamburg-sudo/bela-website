@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, Inter } from "next/font/google";
+import { Barlow_Condensed, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthHashHandler } from "@/components/auth-hash-handler";
 
-const heading = Bebas_Neue({
+const heading = Barlow_Condensed({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-heading",
-  weight: "400",
+  weight: ["600", "700", "800", "900"],
 });
 
 const body = Inter({

@@ -2,11 +2,17 @@
 
 import { useEffect, useRef } from "react";
 import { animate, onScroll, stagger } from "animejs";
+import { Button } from "@/components/button";
+import { telegramUrl } from "@/lib/env";
 
 const PROBLEMS = [
   { num: "01", name: "Dropshipping", why: "Kapitalintensiv — Testing-Budget, Logistik, Retouren, lange Margen-Kette." },
   { num: "02", name: "Agenturen", why: "Zeit gegen Geld — dauerhaft neue Kunden nötig, schwer skalierbar." },
   { num: "03", name: "SaaS", why: "Technik-lastig — Monate Entwicklungszeit, Support, Startkapital." },
+  { num: "04", name: "Affiliate Marketing", why: "Plattform-abhängig — Provisionen sinken, du baust auf fremdem Grund." },
+  { num: "05", name: "1:1 Coaching", why: "Zeit-Deckel bleibt — mehr Kunden bedeutet mehr Stunden, kein Ausweg." },
+  { num: "06", name: "Amazon FBA", why: "Lagerkosten, steigende Gebühren, Listing-Krieg gegen tausende Konkurrenten." },
+  { num: "07", name: "YouTube / Content", why: "Jahre bis zur Monetarisierung — Algorithmus-Risiko, kein stabiles Einkommen." },
 ];
 
 export function ProblemSection() {
@@ -58,11 +64,11 @@ export function ProblemSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-20 items-start mb-24">
           <div ref={headingRef} style={{ opacity: 0 }}>
-            <p className="eyebrow mb-6">Die Haltung</p>
+            <p className="eyebrow mb-6">Die Realität</p>
             <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2.5rem,5vw,5.5rem)" }}>
-              NICHT JEDES{" "}
-              <span className="gold-text">ONLINE-MODELL</span>{" "}
-              IST CLEVER FÜR DEN START.
+              WER JETZT NICHT HANDELT,{" "}
+              <span className="gold-text">VERLIERT.</span>{" "}
+              AI KICKT DICH RAUS.
             </h2>
           </div>
 
@@ -102,11 +108,18 @@ export function ProblemSection() {
 
           <div className="relative grid lg:grid-cols-[auto_1fr] gap-8 items-center">
             <span className="eyebrow">Die Lösung</span>
-            <p className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.6rem,3.5vw,3.2rem)" }}>
-              DIGITALE PRODUKTE — EINMAL BAUEN,{" "}
-              <span className="gold-text">DAUERHAFT VERKAUFEN.</span>{" "}
-              FAST REINE MARGE. MIT AI IN TAGEN.
-            </p>
+            <div>
+              <p className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.6rem,3.5vw,3.2rem)" }}>
+                DIGITALE PRODUKTE — EINMAL BAUEN,{" "}
+                <span className="gold-text">DAUERHAFT VERKAUFEN.</span>{" "}
+                FAST REINE MARGE. MIT AI IN TAGEN.
+              </p>
+              <div className="mt-6">
+                <Button href={telegramUrl} variant="outline" target="_blank" rel="noopener noreferrer">
+                  Free Telegram Gruppe
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

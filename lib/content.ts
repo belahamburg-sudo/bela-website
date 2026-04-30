@@ -454,7 +454,7 @@ export const navItems = [
   { href: "/kurse", label: "Kurse" },
   { href: "/webinar", label: "Webinar" },
   { href: "/community", label: "Community" },
-  { href: "/about", label: "Bela" }
+  { href: "/about", label: "Über mich" }
 ];
 
 export const faqItems = [

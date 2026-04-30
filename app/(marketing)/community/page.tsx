@@ -56,7 +56,7 @@ export default function CommunityPage() {
             </p>
             <Button href={telegramUrl}>
               <MessageCircle aria-hidden className="h-4 w-4" />
-              Telegram beitreten
+              Free Telegram Gruppe
             </Button>
           </motion.div>
 

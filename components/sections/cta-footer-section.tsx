@@ -7,15 +7,18 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
 import { navItems } from "@/lib/content";
+import { telegramUrl } from "@/lib/env";
 
 const LEGAL = [
   { href: "/impressum", label: "Impressum" },
   { href: "/datenschutz", label: "Datenschutz" },
   { href: "/agb", label: "AGB" },
+  { href: "/agb#widerrufsrecht-fuer-digitale-inhalte", label: "Widerrufsrecht" },
   { href: "/income-disclaimer", label: "Income Disclaimer" },
 ];
 
 const SOCIALS = [
+  { href: telegramUrl, label: "Telegram" },
   { href: "https://instagram.com", label: "Instagram" },
   { href: "https://tiktok.com", label: "TikTok" },
   { href: "https://youtube.com", label: "YouTube" },
@@ -65,10 +68,14 @@ export function CtaFooterSection() {
               <Button href="/kurse" variant="outline" size="lg">
                 Kurse entdecken
               </Button>
+              <Button href={telegramUrl} variant="outline" size="lg" target="_blank" rel="noopener noreferrer">
+                Telegram beitreten
+              </Button>
             </div>
           </motion.div>
 
           <motion.div
+            id="newsletter"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

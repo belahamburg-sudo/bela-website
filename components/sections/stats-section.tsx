@@ -6,7 +6,8 @@ import { animate, onScroll } from "animejs";
 const STATS = [
   { value: 2400, suffix: "+", label: "Kursteilnehmer" },
   { value: 97, suffix: "%", label: "Empfehlen es weiter" },
-  { value: 3, suffix: "K€", label: "Realistisches Monatsziel" },
+  { value: 5, suffix: "K€", label: "Monatsziel nach 3 Monaten" },
+  { value: 10000, suffix: "+", label: "Community Mitglieder" },
 ];
 
 export function StatsSection() {
@@ -47,17 +48,25 @@ export function StatsSection() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/assets/heist-action.jpeg')",
-            filter: "brightness(0.18) saturate(0.7)",
+            backgroundImage: "url('/assets/bela-jet.jpg')",
+            filter: "brightness(0.15) saturate(0.3)",
           }}
           aria-hidden
         />
         <div className="absolute inset-0 bg-gradient-to-r from-obsidian via-obsidian/80 to-obsidian" aria-hidden />
 
         <div className="relative mx-auto max-w-7xl px-6 py-16">
-          <div className="grid grid-cols-3 divide-x divide-gold-300/10">
+          <div className="grid grid-cols-2 lg:grid-cols-4">
             {STATS.map((stat, i) => (
-              <div key={stat.label} className="text-center px-6 py-6">
+              <div
+                key={stat.label}
+                className={[
+                  "text-center px-6 py-6",
+                  (i === 0 || i === 2) ? "border-r border-gold-300/10" : "",
+                  (i === 0 || i === 1) ? "border-b border-gold-300/10 lg:border-b-0" : "",
+                  i < STATS.length - 1 ? "lg:border-r lg:border-gold-300/10" : "",
+                ].filter(Boolean).join(" ")}
+              >
                 <p className="font-heading tracking-gta text-cream mb-1" style={{ fontSize: "clamp(2.8rem,5vw,5.5rem)" }}>
                   <span ref={(el) => { countersRef.current[i] = el; }}>
                     0{stat.suffix}
