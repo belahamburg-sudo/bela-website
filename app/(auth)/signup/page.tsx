@@ -1,79 +1,117 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense } from "react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { AuthForm } from "@/components/auth-form";
+
+const REASONS = [
+  "Direkter Zugang zu Kursen, Dashboard und Profil",
+  "Ein sauberer Startpunkt für deine digitale Produktreise",
+  "Sofortiger Einstieg ohne E-Mail-Bestätigungschaos",
+];
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left — brand panel */}
-      <div className="relative hidden lg:flex flex-col justify-between p-16 bg-obsidian overflow-hidden">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold-300/[0.08] blur-[120px]" />
-          <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full bg-gold-500/[0.04] blur-[100px]" />
-        </div>
-
-        <div className="relative z-10">
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-9 w-9 items-center justify-center">
-              <span className="absolute inset-0 rounded-sm bg-gradient-to-br from-gold-200 via-gold-400 to-gold-600" />
-              <span className="absolute inset-[1.5px] rounded-sm bg-obsidian" />
-              <svg viewBox="0 0 24 24" className="relative h-5 w-5 text-gold-300" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" strokeLinejoin="miter" aria-hidden>
-                <path d="M4 20 L12 4 L20 20 Z" />
-                <path d="M8 14 L16 14" opacity="0.6" />
-              </svg>
-            </span>
-            <div>
-              <p className="font-heading tracking-gta text-lg text-cream">Bela Goldmann</p>
-              <p className="gta-label">AI Goldmining</p>
-            </div>
+    <div className="min-h-screen bg-obsidian">
+      <div className="relative min-h-screen overflow-hidden">
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(240,180,41,0.08),transparent_32%),linear-gradient(180deg,#120e08_0%,#0a0806_100%)]" />
+          <div className="absolute left-0 top-0 h-full w-full opacity-[0.08]">
+            <Image
+              src="/assets/mine-bg.jpg"
+              alt=""
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+            />
           </div>
+          <div className="absolute inset-0 bg-obsidian/86" />
         </div>
 
-        <div className="relative z-10">
-          <p className="eyebrow mb-6">Jetzt starten</p>
-          <h2 className="font-heading tracking-gta leading-none text-cream mb-6" style={{ fontSize: "clamp(2rem,4vw,4.5rem)" }}>
-            STARTE DEINE{" "}
-            <span className="gold-text">DIGITALE GOLDMINE.</span>
-          </h2>
-          <p className="text-cream/40 text-lg leading-relaxed max-w-md">
-            Erstelle deinen Account und erhalte Zugang zu den Kursen, Tools und der Community.
-          </p>
-        </div>
+        <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl items-center px-6 py-10 lg:px-10">
+          <div className="grid w-full gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <section className="max-w-2xl">
+              <Image
+                src="/assets/logo-ai-goldmining-tight.png"
+                alt="AI Goldmining"
+                width={280}
+                height={56}
+                className="h-auto w-[220px] sm:w-[250px]"
+                priority
+              />
 
-        <div className="relative z-10">
-          <p className="gta-label opacity-50">
-            © {new Date().getFullYear()} Bela Goldmann · AI Goldmining
-          </p>
-        </div>
-      </div>
+              <p className="eyebrow mt-10 mb-5">Create Account</p>
+              <h1
+                className="max-w-xl font-heading tracking-gta leading-[0.92] text-cream"
+                style={{ fontSize: "clamp(2.9rem,5.4vw,5.8rem)" }}
+              >
+                STARTE DEIN{" "}
+                <span className="gold-text">SYSTEM.</span>
+              </h1>
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-cream/52 sm:text-lg">
+                Erstelle deinen Account und geh direkt in Kurse, Profil und Dashboard.
+              </p>
 
-      {/* Right — form panel */}
-      <div className="flex flex-col items-center justify-center px-6 py-16 lg:px-16 bg-obsidian">
-        <div className="w-full max-w-sm">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <span className="relative flex h-8 w-8 items-center justify-center">
-              <span className="absolute inset-0 rounded-sm bg-gradient-to-br from-gold-200 to-gold-600" />
-              <span className="absolute inset-[1.5px] rounded-sm bg-obsidian" />
-              <svg viewBox="0 0 24 24" className="relative h-4 w-4 text-gold-300" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" strokeLinejoin="miter" aria-hidden>
-                <path d="M4 20 L12 4 L20 20 Z" />
-                <path d="M8 14 L16 14" opacity="0.6" />
-              </svg>
-            </span>
-            <p className="font-heading tracking-gta text-base text-cream">Bela Goldmann</p>
+              <div className="mt-8 grid max-w-xl gap-3">
+                {REASONS.map((reason) => (
+                  <div
+                    key={reason}
+                    className="flex items-start gap-3 rounded-sm border border-gold-300/10 bg-white/[0.03] px-4 py-3 backdrop-blur-sm"
+                  >
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold-300/75" aria-hidden />
+                    <p className="text-sm leading-relaxed text-cream/68">{reason}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="w-full lg:flex lg:justify-end">
+              <div className="w-full max-w-md rounded-sm border border-gold-300/14 bg-[#120e08]/88 p-6 shadow-[0_24px_100px_rgba(0,0,0,0.4)] backdrop-blur-xl sm:p-8">
+                <div className="mb-6 flex items-center justify-between gap-4">
+                  <span className="inline-flex rounded-sm border border-gold-300/18 bg-gold-300/[0.06] px-3 py-2 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-gold-300">
+                    Signup
+                  </span>
+                  <Link
+                    href="/webinar"
+                    className="inline-flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/38 transition-colors hover:text-gold-300"
+                  >
+                    Gratis Webinar
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                  </Link>
+                </div>
+
+                <h2
+                  className="font-heading tracking-gta leading-none text-cream"
+                  style={{ fontSize: "clamp(2rem,4vw,3rem)" }}
+                >
+                  ACCOUNT
+                  <br />
+                  <span className="gold-text">ERSTELLEN.</span>
+                </h2>
+
+                <p className="mt-4 text-sm leading-relaxed text-cream/48 sm:text-base">
+                  Schon registriert?{" "}
+                  <Link
+                    href="/login"
+                    className="font-semibold text-gold-300 transition-colors hover:text-gold-200"
+                  >
+                    Einloggen
+                  </Link>
+                  .
+                </p>
+
+                <div className="mt-8">
+                  <Suspense fallback={<div className="h-48 rounded-sm bg-cream/[0.03] animate-pulse" />}>
+                    <AuthForm mode="signup" />
+                  </Suspense>
+                </div>
+
+                <p className="mt-8 text-center text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-cream/24">
+                  Bela Goldmann · AI Goldmining
+                </p>
+              </div>
+            </section>
           </div>
-
-          <h1 className="font-heading tracking-gta leading-none text-cream mb-2" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>ACCOUNT ERSTELLEN</h1>
-          <p className="text-cream/40 mb-8">
-            Schon registriert?{" "}
-            <Link href="/login" className="text-gold-300 hover:text-gold-200 transition-colors font-semibold">
-              Einloggen
-            </Link>
-          </p>
-
-          <Suspense fallback={<div className="h-48 rounded-sm bg-cream/[0.03] animate-pulse" />}>
-            <AuthForm mode="signup" />
-          </Suspense>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Loader2, LogIn, Mail } from "lucide-react";
+import { CheckCircle2, Loader2, LogIn, Mail, UserPlus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
@@ -13,6 +13,29 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/dashboard";
+
+  function friendlyErrorMessage(error: unknown) {
+    if (!(error instanceof Error)) {
+      return mode === "login" ? "Login fehlgeschlagen." : "Registrierung fehlgeschlagen.";
+    }
+
+    const raw = error.message || "";
+    const lower = raw.toLowerCase();
+
+    if (lower.includes("invalid login credentials")) {
+      return "E-Mail oder Passwort sind nicht korrekt.";
+    }
+
+    if (lower.includes("already registered")) {
+      return "Diese E-Mail ist bereits registriert. Log dich stattdessen ein.";
+    }
+
+    if (lower.includes("error sending confirmation email")) {
+      return "Die Bestätigungs-Mail konnte nicht versendet werden. Die Registrierung läuft jetzt ohne E-Mail-Bestätigung über unseren Server-Fallback.";
+    }
+
+    return raw;
+  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,25 +64,30 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         if (error) throw error;
         router.push(redirect);
       } else {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback?next=${redirect}`,
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
           },
+          body: JSON.stringify({ email, password }),
         });
+
+        const payload = (await response.json().catch(() => null)) as { error?: string; mode?: string } | null;
+        if (!response.ok) {
+          throw new Error(payload?.error || "Registrierung fehlgeschlagen.");
+        }
+
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        if (data.user && data.session) {
-          // Email confirmation disabled in Supabase — direct login
+        if (payload?.mode === "login") {
           router.push(redirect);
         } else {
-          // Email confirmation required
           setStatus("confirm_email");
         }
       }
     } catch (error) {
       setStatus("error");
-      setMessage(error instanceof Error ? error.message : "Login fehlgeschlagen.");
+      setMessage(friendlyErrorMessage(error));
     }
   }
 
@@ -120,8 +148,10 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       <Button type="submit" disabled={status === "loading"}>
         {status === "loading" ? (
           <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
-        ) : (
+        ) : mode === "login" ? (
           <LogIn aria-hidden className="h-4 w-4" />
+        ) : (
+          <UserPlus aria-hidden className="h-4 w-4" />
         )}
         {mode === "login" ? "Einloggen" : "Account erstellen"}
       </Button>
