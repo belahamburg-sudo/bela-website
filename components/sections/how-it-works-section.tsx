@@ -41,20 +41,20 @@ export function HowItWorksSection() {
   }, []);
 
   return (
-    <section className="relative py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold-300/[0.03] blur-[140px]" />
 
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <div ref={headingRef} style={{ opacity: 0 }}>
           <p className="eyebrow mb-6">Wie es funktioniert</p>
-          <h2 className="font-heading tracking-gta leading-none text-cream mb-12" style={{ fontSize: "clamp(2.2rem,5vw,5rem)" }}>
+          <h2 className="font-heading tracking-gta leading-none text-cream mb-8 lg:mb-12" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
             WIE <span className="gold-text">AI GOLDMINING</span><br />FUNKTIONIERT
           </h2>
         </div>
 
         <div ref={contentRef} style={{ opacity: 0 }}>
           {/* Animated search bar */}
-          <div className="mx-auto max-w-lg mb-12 rounded-sm border border-gold-300/20 bg-white/[0.03] backdrop-blur-sm overflow-hidden">
+          <div className="mx-auto max-w-lg mb-8 lg:mb-12 rounded-sm border border-gold-300/20 bg-white/[0.03] backdrop-blur-sm overflow-hidden">
             <div className="flex items-center gap-3 px-4 py-3.5">
               <Search className="h-4 w-4 text-cream/30 shrink-0" />
               <span
@@ -72,17 +72,17 @@ export function HowItWorksSection() {
             </div>
           </div>
 
-          <p className="text-cream/50 text-lg leading-relaxed max-w-2xl mx-auto mb-5">
+          <p className="text-cream/50 text-base lg:text-lg leading-relaxed max-w-2xl mx-auto mb-5">
             Jeden Tag suchen Millionen Menschen nach Lösungen für ihre Probleme. Wie sie ihren Hund erziehen,
             ihren Golfschwung verbessern, eine Sprache lernen oder ein Business starten.
           </p>
-          <p className="text-cream/50 text-lg leading-relaxed max-w-2xl mx-auto mb-5">
+          <p className="text-cream/50 text-base lg:text-lg leading-relaxed max-w-2xl mx-auto mb-5">
             Bei <span className="text-gold-300 font-semibold">AI Goldmining</span> lernst du, wie du mit KI in Stunden
             statt Wochen digitale Produkte erstellst, die genau diese Probleme lösen — und sie automatisiert verkaufst.
             Jeder Verkauf ist fast 100% Marge.
           </p>
 
-          <p className="font-heading tracking-gta text-2xl lg:text-3xl text-cream mt-10 mb-10">
+          <p className="font-heading tracking-gta text-xl lg:text-3xl text-cream mt-8 lg:mt-10 mb-10 px-2 sm:px-0">
             DU BAUST EIN SYSTEM,{" "}
             <span className="gold-text">DAS AUCH WENN DU SCHLÄFST ARBEITET.</span>
           </p>

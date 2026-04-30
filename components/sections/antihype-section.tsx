@@ -54,7 +54,7 @@ export function AntihypeSection() {
   }, []);
 
   return (
-    <section className="relative py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
       {/* Heist image as atmospheric backdrop */}
       <div
         className="pointer-events-none absolute inset-0"

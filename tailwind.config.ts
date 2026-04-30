@@ -37,9 +37,9 @@ const config: Config = {
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
       },
       fontSize: {
-        "display-xl": ["clamp(3.5rem, 8vw, 9rem)", { lineHeight: "0.93", letterSpacing: "0.04em", fontWeight: "800" }],
-        "display-lg": ["clamp(2.8rem, 6vw, 6.5rem)", { lineHeight: "0.95", letterSpacing: "0.04em", fontWeight: "800" }],
-        "display-md": ["clamp(2rem, 4vw, 4rem)", { lineHeight: "0.97", letterSpacing: "0.03em", fontWeight: "800" }]
+        "display-xl": ["clamp(2.5rem, 8vw, 9rem)", { lineHeight: "0.93", letterSpacing: "0.04em", fontWeight: "800" }],
+        "display-lg": ["clamp(2rem, 6vw, 6.5rem)", { lineHeight: "0.95", letterSpacing: "0.04em", fontWeight: "800" }],
+        "display-md": ["clamp(1.75rem, 4vw, 4rem)", { lineHeight: "0.97", letterSpacing: "0.03em", fontWeight: "800" }]
       },
       boxShadow: {
         gold: "0 0 0 1px rgba(240,180,41,0.25), 0 20px 60px -20px rgba(192,140,0,0.6)",

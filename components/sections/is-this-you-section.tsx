@@ -44,25 +44,25 @@ export function IsThisYouSection() {
   }, []);
 
   return (
-    <section className="relative py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-gold-300/[0.025] to-transparent" />
 
       <div className="relative mx-auto max-w-3xl px-6">
-        <div ref={headingRef} className="text-center mb-16" style={{ opacity: 0 }}>
+        <div ref={headingRef} className="text-center mb-10 lg:mb-16" style={{ opacity: 0 }}>
           <p className="eyebrow mb-6">Sei ehrlich mit dir</p>
-          <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(3rem,7vw,7rem)" }}>
+          <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2rem, 10vw, 7rem)" }}>
             BIST DAS{" "}
             <span className="gold-text">DU?</span>
           </h2>
         </div>
 
-        <ul ref={listRef} className="space-y-6 mb-16">
+        <ul ref={listRef} className="space-y-5 lg:space-y-6 mb-12 lg:mb-16">
           {POINTS.map((point, i) => (
-            <li key={i} className="flex items-start gap-4" style={{ opacity: 0 }}>
+            <li key={i} className="flex items-start gap-3 lg:gap-4" style={{ opacity: 0 }}>
               <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-gold-300/10 border border-gold-300/30">
                 <Zap className="h-3 w-3 text-gold-300" fill="currentColor" />
               </span>
-              <p className="text-cream/65 leading-relaxed text-lg">
+              <p className="text-cream/65 leading-relaxed text-base lg:text-lg">
                 <span className="text-cream font-semibold">{point.bold}</span>
                 {point.rest}
               </p>
@@ -70,7 +70,7 @@ export function IsThisYouSection() {
           ))}
         </ul>
 
-        <div ref={ctaRef} className="text-center border-t border-gold-300/10 pt-16" style={{ opacity: 0 }}>
+        <div ref={ctaRef} className="text-center border-t border-gold-300/10 pt-10 lg:pt-16" style={{ opacity: 0 }}>
           <p className="font-heading tracking-gta text-2xl text-cream mb-3">
             WENN DAS DU BIST —
           </p>

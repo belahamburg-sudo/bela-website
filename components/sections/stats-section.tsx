@@ -55,24 +55,24 @@ export function StatsSection() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-obsidian via-obsidian/80 to-obsidian" aria-hidden />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-16">
+        <div className="relative mx-auto max-w-7xl px-6 py-12 lg:py-16">
           <div className="grid grid-cols-2 lg:grid-cols-4">
             {STATS.map((stat, i) => (
               <div
                 key={stat.label}
                 className={[
-                  "text-center px-6 py-6",
+                  "text-center px-4 lg:px-6 py-6 lg:py-6",
                   (i === 0 || i === 2) ? "border-r border-gold-300/10" : "",
                   (i === 0 || i === 1) ? "border-b border-gold-300/10 lg:border-b-0" : "",
                   i < STATS.length - 1 ? "lg:border-r lg:border-gold-300/10" : "",
                 ].filter(Boolean).join(" ")}
               >
-                <p className="font-heading tracking-gta text-cream mb-1" style={{ fontSize: "clamp(2.8rem,5vw,5.5rem)" }}>
+                <p className="font-heading tracking-gta text-cream mb-1" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
                   <span ref={(el) => { countersRef.current[i] = el; }}>
                     0{stat.suffix}
                   </span>
                 </p>
-                <p className="gta-label">{stat.label}</p>
+                <p className="gta-label text-[0.55rem] lg:text-[0.62rem]">{stat.label}</p>
               </div>
             ))}
           </div>

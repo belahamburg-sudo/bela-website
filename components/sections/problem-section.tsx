@@ -46,7 +46,7 @@ export function ProblemSection() {
   }, []);
 
   return (
-    <section className="relative py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
       {/* Muted gold-bars image as texture on the right */}
       <div
         className="pointer-events-none absolute right-0 top-0 bottom-0 w-1/2"
@@ -62,27 +62,27 @@ export function ProblemSection() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-obsidian via-obsidian/70 to-transparent" aria-hidden />
 
       <div className="relative mx-auto max-w-7xl px-6">
-        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-20 items-start mb-24">
+        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-20 items-start mb-16 lg:mb-24">
           <div ref={headingRef} style={{ opacity: 0 }}>
             <p className="eyebrow mb-6">Die Realität</p>
-            <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2.5rem,5vw,5.5rem)" }}>
+            <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
               WER JETZT NICHT HANDELT,{" "}
               <span className="gold-text">VERLIERT.</span>{" "}
               AI KICKT DICH RAUS.
             </h2>
           </div>
 
-          <ul ref={listRef} className="space-y-8 pt-2">
+          <ul ref={listRef} className="space-y-6 lg:space-y-8 pt-2">
             {PROBLEMS.map((p) => (
-              <li key={p.num} className="flex gap-6 items-start" style={{ opacity: 0 }}>
-                <span className="font-heading tracking-gta text-4xl text-gold-300/30 leading-none select-none shrink-0 w-10 text-right">
+              <li key={p.num} className="flex gap-4 lg:gap-6 items-start" style={{ opacity: 0 }}>
+                <span className="font-heading tracking-gta text-3xl lg:text-4xl text-gold-300/30 leading-none select-none shrink-0 w-8 lg:w-10 text-right">
                   {p.num}
                 </span>
                 <div>
-                  <h3 className="font-heading tracking-gta text-2xl text-cream/40 mb-1 line-through decoration-gold-300/20 decoration-2">
+                  <h3 className="font-heading tracking-gta text-xl lg:text-2xl text-cream/40 mb-1 lg:mb-1 line-through decoration-gold-300/20 decoration-2">
                     {p.name}
                   </h3>
-                  <p className="text-cream/35 leading-relaxed text-sm">{p.why}</p>
+                  <p className="text-cream/35 leading-relaxed text-xs lg:text-sm">{p.why}</p>
                 </div>
               </li>
             ))}
@@ -92,7 +92,7 @@ export function ProblemSection() {
         {/* Solution strip — full-width like a wanted poster */}
         <div
           ref={solutionRef}
-          className="relative overflow-hidden rounded-sm border border-gold-300/20 p-8 lg:p-12"
+          className="relative overflow-hidden rounded-sm border border-gold-300/20 p-6 lg:p-12"
           style={{ opacity: 0 }}
         >
           <div
@@ -106,10 +106,10 @@ export function ProblemSection() {
           <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold-300/60" aria-hidden />
           <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-gold-300/60" aria-hidden />
 
-          <div className="relative grid lg:grid-cols-[auto_1fr] gap-8 items-center">
-            <span className="eyebrow">Die Lösung</span>
+          <div className="relative grid lg:grid-cols-[auto_1fr] gap-6 lg:gap-8 items-center">
+            <span className="eyebrow shrink-0">Die Lösung</span>
             <div>
-              <p className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.6rem,3.5vw,3.2rem)" }}>
+              <p className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.4rem, 6vw, 3.2rem)" }}>
                 DIGITALE PRODUKTE — EINMAL BAUEN,{" "}
                 <span className="gold-text">DAUERHAFT VERKAUFEN.</span>{" "}
                 FAST REINE MARGE. MIT AI IN TAGEN.

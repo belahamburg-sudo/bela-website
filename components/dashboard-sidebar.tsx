@@ -107,8 +107,49 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
   );
 }
 
+function MobileBottomNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-gold-300/10 bg-graphite/95 px-2 pb-[safe-area-inset-bottom] pt-2 backdrop-blur-md lg:hidden">
+      {NAV_LINKS.map((link) => {
+        const Icon = link.icon;
+        const isActive = link.exact ? pathname === link.href : pathname.startsWith(link.href);
+
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`flex flex-col items-center gap-1.5 px-3 py-1.5 transition-colors ${
+              isActive ? "text-gold-300" : "text-cream/40"
+            }`}
+          >
+            <div className={`relative flex h-8 w-12 items-center justify-center rounded-full transition-colors ${
+              isActive ? "bg-gold-300/10" : "bg-transparent"
+            }`}>
+              <Icon className="h-5 w-5" />
+            </div>
+            <span className="text-[0.65rem] font-bold uppercase tracking-widest">{link.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 export function DashboardSidebar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const router = useRouter();
+
+  async function handleLogout() {
+    if (hasSupabasePublicEnv()) {
+      const supabase = getSupabaseBrowserClient();
+      if (supabase) await supabase.auth.signOut();
+    }
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("ai-goldmining-demo-user");
+    }
+    router.push("/login");
+  }
 
   return (
     <>
@@ -130,50 +171,24 @@ export function DashboardSidebar() {
             AI Goldmining
           </span>
         </Link>
+        
         <button
-          onClick={() => setMobileOpen(true)}
-          className="rounded-sm p-2 text-cream/45 transition-colors hover:bg-cream/[0.06] hover:text-cream/80"
-          aria-label="Navigation öffnen"
+          onClick={handleLogout}
+          className="rounded-sm p-2 text-cream/35 transition-colors hover:bg-cream/[0.06] hover:text-cream/65"
+          aria-label="Abmelden"
         >
-          <Menu className="h-5 w-5" />
+          <LogOut className="h-4 w-4" />
         </button>
       </div>
 
       {/* Mobile top bar spacer */}
       <div className="h-14 lg:hidden" aria-hidden />
 
-      {/* Mobile drawer */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              className="fixed inset-0 z-40 bg-black/70"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.aside
-              className="fixed inset-y-0 left-0 z-50 w-60 border-r border-gold-300/10 bg-graphite"
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            >
-              <div className="absolute right-3 top-3">
-                <button
-                  onClick={() => setMobileOpen(false)}
-                  className="rounded-sm p-2 text-cream/35 transition-colors hover:bg-cream/[0.06] hover:text-cream/65"
-                  aria-label="Navigation schließen"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <SidebarContent onNavClick={() => setMobileOpen(false)} />
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
+
+      {/* Spacing for bottom nav on mobile */}
+      <div className="h-20 lg:hidden" aria-hidden />
     </>
   );
 }

@@ -81,19 +81,19 @@ export function MethodSection() {
   }, []);
 
   return (
-    <section className="relative py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-16 lg:py-40 bg-obsidian overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full bg-gold-300/[0.04] blur-[160px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6">
-        <div ref={headingRef} className="mb-16" style={{ opacity: 0 }}>
+        <div ref={headingRef} className="mb-12 lg:mb-16" style={{ opacity: 0 }}>
           <p className="eyebrow mb-6">Die Methode</p>
-          <h2 className="font-heading tracking-gta leading-none text-cream max-w-3xl" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
+          <h2 className="font-heading tracking-gta leading-none text-cream max-w-3xl" style={{ fontSize: "clamp(1.75rem, 8vw, 5.5rem)" }}>
             VON DER IDEE ZUR{" "}
             <span className="gold-text">DIGITALEN GOLDMINE.</span>
           </h2>
-          <p className="mt-5 text-cream/40 max-w-lg text-lg">
+          <p className="mt-5 text-cream/40 max-w-lg text-base lg:text-lg leading-relaxed">
             Vier Stufen. Ein System. Einmal aufgebaut, dauerhaft aktiv.
           </p>
         </div>

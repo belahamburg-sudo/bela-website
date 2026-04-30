@@ -8,7 +8,7 @@ import { featuredCourses } from "@/lib/content";
 
 export function ProductsSection() {
   return (
-    <section className="relative py-40 bg-obsidian overflow-hidden scratch-border">
+    <section className="relative py-16 lg:py-40 bg-obsidian overflow-hidden scratch-border">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/[0.05] blur-[120px]" />
       </div>
@@ -19,17 +19,17 @@ export function ProductsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="mb-16"
+          className="mb-10 lg:mb-16"
         >
           <p className="eyebrow mb-6">Starter-Katalog</p>
           <h2
             className="font-heading tracking-gta leading-none text-cream max-w-3xl"
-            style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}
+            style={{ fontSize: "clamp(1.75rem, 8vw, 5.5rem)" }}
           >
             MINI-KURSE MIT EINEM{" "}
             <span className="gold-text">KLAREN ERGEBNIS.</span>
           </h2>
-          <p className="mt-5 max-w-2xl text-base leading-[1.75] text-cream/45 sm:text-lg">
+          <p className="mt-5 max-w-2xl text-base lg:text-lg leading-[1.75] text-cream/45 sm:text-lg">
             Jeder Kurs ist klein genug für schnelle Umsetzung und konkret genug, damit du weißt, was du bekommst.
           </p>
         </motion.div>

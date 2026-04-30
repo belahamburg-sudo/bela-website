@@ -36,24 +36,24 @@ export function CommunitySection() {
   }, []);
 
   return (
-    <section className="relative py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-16 lg:py-40 bg-obsidian overflow-hidden">
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-gold-300/[0.05] blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-6">
-        <div ref={headingRef} className="mb-16 text-center" style={{ opacity: 0 }}>
+        <div ref={headingRef} className="mb-10 lg:mb-16 text-center" style={{ opacity: 0 }}>
           <p className="eyebrow mb-6">Community</p>
-          <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2.2rem,5vw,5rem)" }}>
+          <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
             MEINE COMMUNITY CASHED BEIM<br />
             <span className="gold-text">KI-GOLDRAUSCH</span> SCHON AB.
           </h2>
-          <p className="mt-5 text-cream/40 text-lg max-w-md mx-auto">
+          <p className="mt-5 text-cream/40 text-base lg:text-lg max-w-md mx-auto leading-relaxed">
             Echte Screenshots. Echte Zahlen. Von ersten Kunden bis zum gekündigten 9-to-5.
           </p>
         </div>
 
         <div className="relative overflow-hidden">
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-obsidian to-transparent z-10" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-obsidian to-transparent z-10" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 lg:w-24 bg-gradient-to-r from-obsidian to-transparent z-10" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 lg:w-24 bg-gradient-to-l from-obsidian to-transparent z-10" />
 
           <div className="space-y-4">
             {LANES.map((lane, laneIndex) => (
@@ -68,7 +68,7 @@ export function CommunitySection() {
                 {[...lane, ...lane].map((win, i) => (
                   <div
                     key={`${laneIndex}-${i}`}
-                    className={`flex-none w-64 rounded-sm border p-5 ${
+                    className={`flex-none w-56 lg:w-64 rounded-sm border p-4 lg:p-5 ${
                       win.highlight
                         ? "border-gold-300/40 bg-gold-300/5"
                         : "border-gold-300/15 bg-obsidian/80"

@@ -71,7 +71,7 @@ export function VideoHeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="font-heading font-extrabold uppercase tracking-gta leading-[0.95] text-cream"
-          style={{ fontSize: "clamp(2.2rem, 5vw, 4.6rem)" }}
+          style={{ fontSize: "clamp(1.85rem, 8vw, 4.6rem)" }}
         >
           Ich zeige dir, wie du mit AI digitale Produkte baust{" "}
           <span className="gold-text">und automatisiert verkaufst.</span>
@@ -82,7 +82,7 @@ export function VideoHeroSection() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-sm sm:text-base text-cream/50 max-w-2xl leading-relaxed"
+          className="text-sm sm:text-base text-cream/50 max-w-2xl leading-relaxed px-2 sm:px-0"
         >
           Alte Online-Modelle fressen Kapital, Zeit oder Nerven. Digitale Produkte sind schlanker:
           mit AI baust du Templates, Guides oder Mini-Kurse in Stunden und verkaufst sie automatisiert

@@ -43,7 +43,7 @@ export function CtaFooterSection() {
           <div className="absolute inset-0 bg-gradient-to-r from-obsidian/40 to-obsidian/70" />
         </div>
 
-        <div className="relative mx-auto max-w-7xl px-6 py-40 text-center">
+        <div className="relative mx-auto max-w-7xl px-6 py-20 lg:py-40 text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
