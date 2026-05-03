@@ -35,7 +35,7 @@ export function VideoHeroSection() {
   return (
     <section
       className="relative flex flex-col items-center justify-center overflow-hidden bg-obsidian px-6"
-      style={{ minHeight: "calc(100svh - 92px)", paddingTop: "clamp(5.5rem, 8vw, 7.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
+      style={{ minHeight: "calc(100svh - 92px)", paddingTop: "clamp(6rem, 8vw, 7.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
     >
       {/* Subtle gold radial glow */}
       <div

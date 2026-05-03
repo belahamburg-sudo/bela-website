@@ -30,7 +30,7 @@ export function LegalPage({
   cta?: { label: string; href: string };
 }) {
   return (
-    <section className="py-16 sm:py-20">
+    <section className="pt-24 pb-16 sm:pt-28 sm:pb-20">
       <div className="container-shell mx-auto max-w-4xl">
         <p className="eyebrow">{eyebrow}</p>
         <h1 className="mt-5 font-heading text-5xl font-black text-cream">{title}</h1>

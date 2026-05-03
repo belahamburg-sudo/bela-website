@@ -3,7 +3,7 @@ import { Button } from "@/components/button";
 
 export default function CheckoutCancelPage() {
   return (
-    <section className="py-20">
+    <section className="pt-24 pb-20 sm:pt-28">
       <div className="container-shell mx-auto max-w-3xl text-center">
         <XCircle aria-hidden className="mx-auto h-14 w-14 text-gold-700" />
         <h1 className="mt-6 font-heading text-5xl font-black text-cream">
