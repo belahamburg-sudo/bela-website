@@ -192,6 +192,21 @@ function Terrain() {
     []
   );
 
+  // Animated falling gold particles
+  const fallingGold = useMemo(() => {
+    const particles = [];
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: -15 + Math.random() * 35,
+        z: -6 + Math.random() * 12,
+        speed: 0.5 + Math.random() * 1.5,
+        scale: 0.08 + Math.random() * 0.2,
+        delay: Math.random() * Math.PI * 2,
+      });
+    }
+    return particles;
+  }, []);
+
   return (
     <group>
       {/* Floor - Dark stone mine floor */}
@@ -228,27 +243,27 @@ function Terrain() {
         />
       </mesh>
 
-      {/* Ceiling - mine ceiling with texture */}
-      <mesh position={[2.5, 3.8, 0.7]} receiveShadow castShadow>
-        <boxGeometry args={[30, 1, 15]} />
-        <meshStandardMaterial
-          color="#0d0804"
-          emissive="#3d2500"
-          emissiveIntensity={0.2}
-          roughness={0.85}
+      {/* Animated falling gold - particle system */}
+      {fallingGold.map((particle, i) => (
+        <FallingGoldParticle 
+          key={`gold-${i}`}
+          x={particle.x}
+          z={particle.z}
+          scale={particle.scale}
+          speed={particle.speed}
+          delay={particle.delay}
         />
-      </mesh>
+      ))}
 
-      {/* Gold ore veins on walls */}
-      {[...Array(5)].map((_, i) => (
-        <mesh key={`wall-ore-left-${i}`} position={[-14.5, 0.5 + i * 1.2, -5 + i * 2]} castShadow>
-          <boxGeometry args={[0.5, 0.8, 0.6]} />
+      {/* Dramatic cave formations on walls */}
+      {[...Array(6)].map((_, i) => (
+        <mesh key={`cave-${i}`} position={[-14 + i * 5, 1.5 + Math.sin(i) * 0.8, -4 + (i % 2) * 8]} castShadow>
+          <coneGeometry args={[0.8, 2, 8]} />
           <meshStandardMaterial
-            color="#D4AF37"
-            emissive="#F0B429"
-            emissiveIntensity={0.35}
-            metalness={0.8}
-            roughness={0.3}
+            color="#0a0604"
+            emissive="#2a1f00"
+            emissiveIntensity={0.1}
+            roughness={0.9}
           />
         </mesh>
       ))}
@@ -292,6 +307,46 @@ function Terrain() {
           opacity={0.12}
           emissive="#F0B429"
           emissiveIntensity={0.08}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function FallingGoldParticle({
+  x,
+  z,
+  scale,
+  speed,
+  delay,
+}: {
+  x: number;
+  z: number;
+  scale: number;
+  speed: number;
+  delay: number;
+}) {
+  const ref = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (ref.current) {
+      const time = state.clock.getElapsedTime();
+      ref.current.position.y = 6 - ((time * speed + delay) % 8);
+      ref.current.rotation.x = time * 1.5;
+      ref.current.rotation.z = time * 2;
+    }
+  });
+
+  return (
+    <group ref={ref} position={[x, 0, z]}>
+      <mesh scale={scale}>
+        <octahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial
+          color="#FFD76A"
+          emissive="#F0B429"
+          emissiveIntensity={1.2}
+          metalness={0.9}
+          roughness={0.1}
         />
       </mesh>
     </group>
