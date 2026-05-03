@@ -32,7 +32,7 @@ const config: Config = {
         hairline: "rgba(240, 180, 41, 0.15)"
       },
       fontFamily: {
-        heading: ["var(--font-heading)", "Barlow Condensed", "Arial Narrow", "sans-serif"],
+        heading: ["Chalet Comprime Cologne Seventy", "var(--font-heading)", "Barlow Condensed", "Arial Narrow", "sans-serif"],
         body: ["var(--font-body)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
       },

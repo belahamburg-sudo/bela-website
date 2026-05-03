@@ -5,45 +5,31 @@ import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { navItems } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import { telegramUrl } from "@/lib/env";
-import { Button } from "./button";
+import { navItems } from "@/lib/content";
+import { Button } from "@/components/button";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
-  const [headerHeight, setHeaderHeight] = useState(92);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Measure actual header height for precise drawer positioning
-  useEffect(() => {
-    if (!headerRef.current) return;
-    const update = () => setHeaderHeight(headerRef.current?.offsetHeight ?? 92);
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(headerRef.current);
-    return () => ro.disconnect();
-  }, []);
-
-  // iOS-safe scroll lock
+  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (open) {
-      const scrollY = window.scrollY;
-      document.body.style.cssText = `position: fixed; top: -${scrollY}px; left: 0; right: 0; overflow-y: scroll;`;
+      document.body.style.overflow = "hidden";
     } else {
-      const top = parseInt(document.body.style.top || "0", 10);
-      document.body.style.cssText = "";
-      if (top) window.scrollTo(0, -top);
+      document.body.style.overflow = "";
     }
-    return () => { document.body.style.cssText = ""; };
   }, [open]);
 
   return (
@@ -61,21 +47,18 @@ export function SiteHeader() {
           <div className="rounded-[1.25rem] border border-gold-300/10 bg-[#0f0c09]/90 px-4 py-3 shadow-[0_18px_50px_rgba(0,0,0,0.22)] backdrop-blur-2xl lg:px-5 lg:py-4">
             <div className="flex items-center justify-between gap-4">
               {/* Logo */}
-              <Link href="/" className="focus-ring group flex items-center rounded-full px-1 py-0" onClick={() => setOpen(false)}>
-                <span className="relative flex items-center rounded-full border border-gold-300/10 bg-[#151008] px-3.5 py-2">
-                  <Image
-                    src="/assets/logo-ai-goldmining-tight.png"
-                    alt="AI Goldmining"
-                    width={340}
-                    height={64}
-                    className="w-auto relative z-10"
-                    style={{
-                      height: "28px",
-                      filter: "brightness(1.08) contrast(1.08)",
-                    }}
-                    priority
-                  />
-                </span>
+              <Link href="/" className="focus-ring group flex items-center px-1 py-0 transition-opacity hover:opacity-90" onClick={() => setOpen(false)}>
+                <Image
+                  src="/assets/logo-ai-goldmining-tight.png"
+                  alt="AI Goldmining"
+                  width={340}
+                  height={64}
+                  className="w-auto relative z-10"
+                  style={{
+                    height: "28px",
+                  }}
+                  priority
+                />
               </Link>
 
               {/* Desktop nav */}
@@ -100,118 +83,88 @@ export function SiteHeader() {
                   href={telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="focus-ring rounded-full border border-gold-300/12 bg-white/[0.02] px-4 py-2 text-sm font-semibold uppercase tracking-[0.1em] text-cream/55 transition-colors hover:border-gold-300/25 hover:text-cream"
+                  className="focus-ring flex items-center gap-2 rounded-full border border-gold-300/15 bg-white/[0.02] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-cream/60 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
                 >
-                  Telegram
+                  <span className="h-1.5 w-1.5 rounded-full bg-gold-300 shadow-[0_0_8px_rgba(240,180,41,0.5)]" />
+                  Free Telegram
                 </Link>
-                <Link
-                  href="/login"
-                  className="focus-ring rounded-full border border-gold-300/12 bg-white/[0.02] px-4 py-2 text-sm font-semibold uppercase tracking-[0.1em] text-cream/55 transition-colors hover:border-gold-300/25 hover:text-cream"
-                >
-                  Login
-                </Link>
-                <Button href="/webinar" size="sm">
-                  Gratis Webinar
+                <Button href="/webinar" size="sm" className="rounded-full px-5">
+                  Webinar
                 </Button>
               </div>
 
-              {/* Mobile hamburger */}
+              {/* Mobile menu toggle */}
               <button
                 type="button"
-                aria-label={open ? "Menü schließen" : "Menü öffnen"}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-gold-300/10 bg-white/[0.02] text-cream/60 transition-colors hover:bg-white/[0.05] hover:text-cream lg:hidden"
+                onClick={() => setOpen(!open)}
                 aria-expanded={open}
-                aria-controls="mobile-nav"
-                className={cn(
-                  "focus-ring inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border transition-all duration-200 lg:hidden",
-                  open
-                    ? "border-gold-300/60 bg-gold-300/15 text-gold-300"
-                    : "border-gold-300/25 bg-panel/80 text-cream backdrop-blur-md"
-                )}
-                onClick={() => setOpen((c) => !c)}
+                aria-label={open ? "Menü schließen" : "Menü öffnen"}
               >
-                <motion.div
-                  animate={{ rotate: open ? 90 : 0 }}
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                >
-                  {open ? <X aria-hidden size={18} /> : <Menu aria-hidden size={18} />}
-                </motion.div>
+                {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Mobile drawer — outside header so z-index is in root context */}
+      {/* Mobile menu overlay */}
       <AnimatePresence>
         {open && (
           <motion.div
-            id="mobile-nav"
-            key="mobile-drawer"
-            initial={{ opacity: 0, y: -12 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="fixed inset-x-0 bottom-0 z-[48] overflow-y-auto border-t border-gold-300/10 bg-obsidian/98 backdrop-blur-2xl lg:hidden"
-            style={{ top: headerHeight }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "circOut" }}
+            className="fixed inset-0 z-[40] flex flex-col bg-obsidian/98 backdrop-blur-2xl lg:hidden"
           >
-            <nav
-              className="container-shell flex flex-col gap-1 py-6"
-              style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
-              aria-label="Mobile Navigation"
-            >
-              {navItems.map((item, i) => (
+            <div className="flex flex-1 flex-col justify-center px-8">
+              <nav className="flex flex-col gap-6">
+                {navItems.map((item, i) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.05 }}
+                  >
+                    <Link
+                      href={item.href}
+                      className="font-heading text-4xl tracking-gta text-cream transition-colors hover:text-gold-300"
+                      onClick={() => setOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+
+              <div className="mt-16 flex flex-col gap-4">
                 <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, delay: i * 0.045, ease: "easeOut" }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
                 >
                   <Link
-                    href={item.href}
-                    className="focus-ring group flex items-center justify-between rounded-sm border border-transparent px-5 py-4 font-heading font-extrabold uppercase tracking-gta text-2xl text-cream transition-all hover:border-gold-300/20 hover:bg-gold-300/[0.04] active:bg-gold-300/[0.08]"
+                    href={telegramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-3 rounded-sm border border-gold-300/20 bg-white/[0.02] py-4 text-xs font-bold uppercase tracking-[0.2em] text-cream/80"
                     onClick={() => setOpen(false)}
                   >
-                    <span>{item.label}</span>
-                    <motion.span
-                      className="text-gold-300 text-base"
-                      initial={{ opacity: 0, x: -4 }}
-                      whileHover={{ opacity: 1, x: 0 }}
-                    >
-                      →
-                    </motion.span>
+                    Free Telegram Community
                   </Link>
                 </motion.div>
-              ))}
-
-              <motion.div
-                className="mt-6 grid gap-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: navItems.length * 0.045 + 0.05 }}
-              >
-                <Button
-                  href={telegramUrl}
-                  variant="outline"
-                  className="w-full"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setOpen(false)}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
                 >
-                  Free Telegram
-                </Button>
-                <Button
-                  href="/login"
-                  variant="secondary"
-                  className="w-full"
-                  onClick={() => setOpen(false)}
-                >
-                  Login
-                </Button>
-                <Button href="/webinar" className="w-full" onClick={() => setOpen(false)}>
-                  Gratis Webinar sichern
-                </Button>
-              </motion.div>
-            </nav>
+                  <Button href="/webinar" size="lg" className="w-full" onClick={() => setOpen(false)}>
+                    Gratis Webinar sichern
+                  </Button>
+                </motion.div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
