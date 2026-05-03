@@ -372,6 +372,37 @@ select {
   .tracking-gta {
     letter-spacing: 0.06em;
   }
+
+  /* GTA Mission styling */
+  .mission-badge {
+    @apply relative inline-flex items-center gap-2 rounded-sm border-2 border-gold-300/60 bg-black/60 backdrop-blur px-3 py-1.5;
+    box-shadow: 0 0 15px rgba(240,180,41,0.3), inset 0 0 15px rgba(240,180,41,0.1);
+  }
+
+  .mission-text {
+    @apply text-[0.65rem] font-mono font-bold uppercase tracking-[0.25em] text-gold-300;
+  }
+
+  /* Gold border accent for section boxes */
+  .goldmine-border {
+    @apply border-2 border-gold-300/40 bg-gradient-to-r from-gold-300/5 to-gold-300/0;
+  }
+
+  /* GTA loading effect */
+  @keyframes gta-loading {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  .gta-loading {
+    animation: gta-loading 1.5s ease-in-out infinite;
+  }
+
+  /* Gold text glow */
+  .gold-glow {
+    @apply text-gold-300;
+    text-shadow: 0 0 20px rgba(240,180,41,0.4);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

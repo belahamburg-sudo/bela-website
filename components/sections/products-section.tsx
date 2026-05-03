@@ -21,7 +21,7 @@ export function ProductsSection() {
           transition={{ duration: 0.6 }}
           className="mb-10 lg:mb-16"
         >
-          <p className="eyebrow mb-6">Starter-Katalog</p>
+          <p className="eyebrow mb-6">🎯 MISSION 6</p>
           <h2
             className="font-heading tracking-gta leading-none text-cream max-w-3xl"
             style={{ fontSize: "clamp(1.75rem, 8vw, 5.5rem)" }}
@@ -57,7 +57,7 @@ export function ProductsSection() {
           className="mt-10 text-center"
         >
           <Button href="/kurse" variant="outline" size="lg">
-            Alle Kurse entdecken
+            🎯 MISSION: Alle Kurse entdecken
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Button>
         </motion.div>

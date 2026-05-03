@@ -47,21 +47,30 @@ export function VideoHeroSection() {
         }}
       />
 
+      {/* Gold corner accents */}
+      <div className="pointer-events-none absolute top-10 left-8 w-16 h-16 border-2 border-gold-300/20 rounded-sm" aria-hidden />
+      <div className="pointer-events-none absolute top-10 right-8 w-16 h-16 border-2 border-gold-300/20 rounded-sm" aria-hidden />
+      <div className="pointer-events-none absolute bottom-20 left-12 w-12 h-12 border-2 border-gold-300/15 rounded-sm" aria-hidden />
+      <div className="pointer-events-none absolute bottom-20 right-12 w-12 h-12 border-2 border-gold-300/15 rounded-sm" aria-hidden />
+
       <div className="relative w-full mx-auto max-w-4xl flex flex-col items-center gap-3 text-center">
 
-        {/* ── Live Event Banner ── */}
+        {/* ── GTA Mission Badge ── */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="flex items-center gap-2.5 rounded-sm border border-gold-300/30 bg-gold-300/8 px-4 py-2"
+          className="relative flex items-center gap-2.5 rounded-sm border-2 border-gold-300/60 bg-black/60 backdrop-blur px-4 py-2"
+          style={{
+            boxShadow: "0 0 20px rgba(240,180,41,0.3), inset 0 0 20px rgba(240,180,41,0.1)"
+          }}
         >
-          <span className="relative flex h-2 w-2 shrink-0">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold-300 opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-gold-300" />
+          <span className="text-[0.65rem] font-mono font-bold uppercase tracking-[0.25em] text-gold-300">
+            [MISSION AKTIV]
           </span>
-          <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gold-300">
-            Live Event · 23. Mai · 19 Uhr
+          <span className="w-1 h-1 rounded-full bg-gold-300 animate-pulse" />
+          <span className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-gold-300/80">
+            23. Mai · 19 Uhr
           </span>
         </motion.div>
 
@@ -99,9 +108,10 @@ export function VideoHeroSection() {
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="/webinar"
-              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(240,180,41,0.45)]"
+              className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(240,180,41,0.45)] relative overflow-hidden"
             >
-              Gratis Webinar ansehen →
+              <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative">🎯 MISSION: Webinar starten</span> →
             </Link>
             <Link
               href={telegramUrl}
@@ -109,7 +119,7 @@ export function VideoHeroSection() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-gold-300/35 px-7 py-3 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/70 hover:bg-gold-300/5 hover:text-cream"
             >
-              Free Telegram Community
+              👥 MISSION: Community beitreten
             </Link>
           </div>
 

@@ -42,7 +42,7 @@ export function CommunitySection() {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div ref={headingRef} className="mb-10 lg:mb-16 text-center" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">Community</p>
+          <p className="eyebrow mb-6">🎯 MISSION 4</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
             MEINE COMMUNITY BAUT<br />
             <span className="gold-text">ECHTE DIGITALE PRODUKTE</span> AUF.

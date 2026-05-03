@@ -15,7 +15,7 @@ export function FaqSection() {
     >
       <div className="mx-auto max-w-3xl px-6">
         <div className="text-center mb-14">
-          <p className="eyebrow mb-6 justify-center">Fragen & Antworten</p>
+          <p className="eyebrow mb-6 justify-center">🎯 MISSION 10</p>
           <h2
             className="font-heading tracking-gta leading-none text-cream"
             style={{ fontSize: "clamp(2.5rem,5vw,5rem)" }}

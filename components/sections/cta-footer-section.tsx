@@ -53,23 +53,23 @@ export function CtaFooterSection() {
             <p className="eyebrow mb-6 justify-center">Letzte Chance</p>
             <h2
               className="mx-auto max-w-4xl font-heading tracking-gta leading-none text-cream"
-              style={{ fontSize: "clamp(2.8rem,6vw,6.5rem)" }}
+              style={{ fontSize: "clamp(2.8rem,6vw,6.5rem)", textShadow: "0 0 30px rgba(240,180,41,0.3)" }}
             >
-              HÖR AUF ZU WARTEN.
+              🏆 FINAL MISSION 🏆
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-cream/50">
-              Gratis-Webinar, Community oder Newsletter — such dir den Einstieg aus, der gerade passt.
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gold-300/70">
+              ⏱️ Deine letzte Chance. Wähle deinen Einstiegspunkt jetzt.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/webinar" size="lg">
-                Gratis Webinar ansehen
+                🎯 MISSION: Webinar starten
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Button>
               <Button href={telegramUrl} variant="outline" size="lg" target="_blank" rel="noopener noreferrer">
-                Free Telegram Community
+                👥 MISSION: Community beitreten
               </Button>
               <Button href="#newsletter" variant="outline" size="lg">
-                Newsletter sichern
+                📧 MISSION: Newsletter sichern
               </Button>
             </div>
           </motion.div>

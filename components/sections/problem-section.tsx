@@ -64,7 +64,7 @@ export function ProblemSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-20 items-start mb-16 lg:mb-24">
           <div ref={headingRef} style={{ opacity: 0 }}>
-            <p className="eyebrow mb-6">Die Realität</p>
+            <p className="eyebrow mb-6">🎯 MISSION 3</p>
             <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
               WER JETZT NICHT HANDELT,{" "}
               <span className="gold-text">VERLIERT.</span>{" "}
@@ -75,7 +75,7 @@ export function ProblemSection() {
           <ul ref={listRef} className="space-y-6 lg:space-y-8 pt-2">
             {PROBLEMS.map((p) => (
               <li key={p.num} className="flex gap-4 lg:gap-6 items-start" style={{ opacity: 0 }}>
-                <span className="font-heading tracking-gta text-3xl lg:text-4xl text-gold-300/30 leading-none select-none shrink-0 w-8 lg:w-10 text-right">
+                <span className="font-heading tracking-gta text-3xl lg:text-4xl text-gold-300/60 leading-none select-none shrink-0 w-8 lg:w-10 text-right" style={{ textShadow: "0 0 10px rgba(240,180,41,0.3)" }}>
                   {p.num}
                 </span>
                 <div>

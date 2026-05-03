@@ -46,7 +46,7 @@ export function HowItWorksSection() {
 
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <div ref={headingRef} style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">Wie es funktioniert</p>
+          <p className="eyebrow mb-6">🎯 MISSION 2</p>
           <h2 className="font-heading tracking-gta leading-none text-cream mb-8 lg:mb-12" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
             WIE <span className="gold-text">AI GOLDMINING</span><br />FUNKTIONIERT
           </h2>
@@ -66,7 +66,7 @@ export function HowItWorksSection() {
               <span className="inline-block w-[2px] h-4 bg-gold-300/70 animate-pulse shrink-0" />
             </div>
             <div className="px-4 py-2 border-t border-gold-300/10 bg-gold-300/[0.04]">
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-gold-300/50 text-left">
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-gold-300/50 text-center">
                 Millionen Menschen suchen täglich nach Lösungen
               </p>
             </div>
@@ -92,13 +92,13 @@ export function HowItWorksSection() {
               href="/webinar"
               className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(240,180,41,0.5)]"
             >
-              Jetzt starten →
+              🎯 MISSION: Webinar starten →
             </Link>
             <Link
               href="/kurse"
               className="inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
             >
-              Kurse ansehen
+              📚 MISSION: Kurse erkunden
             </Link>
           </div>
         </div>

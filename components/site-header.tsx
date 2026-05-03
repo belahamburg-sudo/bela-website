@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ import { Button } from "@/components/button";
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -23,7 +24,11 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("auth_token") !== null;
+    setIsLoggedIn(loggedIn);
+  }, []);
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -39,71 +44,100 @@ export function SiteHeader() {
         className={cn(
           "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
           scrolled
-            ? "border-b border-gold-300/10 bg-obsidian/96 backdrop-blur-2xl"
-            : "border-b border-gold-300/[0.06] bg-obsidian/82 backdrop-blur-xl"
+            ? "border-b border-gold-300/8 bg-obsidian/95 backdrop-blur-md"
+            : "border-b border-transparent bg-obsidian/60 backdrop-blur-sm"
         )}
       >
-        <div className="container-shell py-3 lg:py-4">
-          <div className="rounded-[1.25rem] border border-gold-300/10 bg-[#0f0c09]/90 px-4 py-3 shadow-[0_18px_50px_rgba(0,0,0,0.22)] backdrop-blur-2xl lg:px-5 lg:py-4">
-            <div className="flex items-center justify-between gap-4">
-              {/* Logo */}
-              <Link href="/" className="focus-ring group flex items-center px-1 py-0 transition-opacity hover:opacity-90" onClick={() => setOpen(false)}>
-                <Image
-                  src="/assets/logo-ai-goldmining-tight.png"
-                  alt="AI Goldmining"
-                  width={340}
-                  height={64}
-                  className="w-auto relative z-10"
-                  style={{
-                    height: "28px",
-                  }}
-                  priority
-                />
-              </Link>
+        <div className="container-shell">
+          <div className="flex items-center justify-between gap-4 px-4 py-4 lg:px-6 lg:py-4">
+            {/* Logo */}
+            <Link href="/" className="focus-ring group flex items-center shrink-0 transition-opacity hover:opacity-90" onClick={() => setOpen(false)}>
+              <Image
+                src="/assets/logo-ai-goldmining-tight.png"
+                alt="AI Goldmining"
+                width={340}
+                height={64}
+                className="w-auto"
+                style={{
+                  height: "28px",
+                }}
+                priority
+              />
+            </Link>
 
-              {/* Desktop nav */}
-              <nav
-                aria-label="Hauptnavigation"
-                className="hidden items-center gap-1 rounded-full border border-gold-300/10 bg-white/[0.03] px-2 py-1 lg:flex"
-              >
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="focus-ring group relative rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.1em] text-cream/55 transition-colors hover:text-cream hover:bg-gold-300/[0.06]"
-                  >
-                    <span className="relative z-10">{item.label}</span>
-                  </Link>
-                ))}
-              </nav>
-
-              {/* Desktop CTA */}
-              <div className="hidden items-center gap-2 lg:flex">
+            {/* Desktop nav */}
+            <nav
+              aria-label="Hauptnavigation"
+              className="hidden items-center gap-6 lg:flex"
+            >
+              {navItems.map((item) => (
                 <Link
-                  href={telegramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="focus-ring flex items-center gap-2 rounded-full border border-gold-300/15 bg-white/[0.02] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-cream/60 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
+                  key={item.href}
+                  href={item.href}
+                  className="focus-ring text-sm font-semibold uppercase tracking-[0.08em] text-cream/60 transition-colors hover:text-cream"
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-gold-300 shadow-[0_0_8px_rgba(240,180,41,0.5)]" />
-                  Free Telegram
+                  {item.label}
                 </Link>
-                <Button href="/webinar" size="sm" className="rounded-full px-5">
-                  Webinar
-                </Button>
-              </div>
+              ))}
+            </nav>
 
-              {/* Mobile menu toggle */}
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-gold-300/10 bg-white/[0.02] text-cream/60 transition-colors hover:bg-white/[0.05] hover:text-cream lg:hidden"
-                onClick={() => setOpen(!open)}
-                aria-expanded={open}
-                aria-label={open ? "Menü schließen" : "Menü öffnen"}
+            {/* Desktop CTA */}
+            <div className="hidden items-center gap-3 lg:flex">
+              <Link
+                href={telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring text-xs font-bold uppercase tracking-[0.12em] text-cream/50 transition-colors hover:text-cream"
               >
-                {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </button>
+                Community
+              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="focus-ring text-xs font-bold uppercase tracking-[0.12em] text-cream/50 transition-colors hover:text-cream"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem("auth_token");
+                      setIsLoggedIn(false);
+                    }}
+                    className="focus-ring flex items-center gap-1.5 rounded-full border border-gold-300/30 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-cream/60 transition-all hover:border-gold-300/60 hover:text-cream hover:bg-gold-300/5"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    href="/login"
+                    size="sm"
+                    variant="outline"
+                    className="flex items-center gap-1.5 rounded-full px-4"
+                  >
+                    <LogIn className="h-3.5 w-3.5" />
+                    Login
+                  </Button>
+                  <Button href="/webinar" size="sm" className="rounded-full px-5">
+                    Webinar
+                  </Button>
+                </>
+              )}
             </div>
+
+            {/* Mobile menu toggle */}
+            <button
+              type="button"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-300/15 bg-white/[0.03] text-cream/60 transition-colors hover:border-gold-300/30 hover:bg-white/[0.06] hover:text-cream lg:hidden"
+              onClick={() => setOpen(!open)}
+              aria-expanded={open}
+              aria-label={open ? "Menü schließen" : "Menü öffnen"}
+            >
+              {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
           </div>
         </div>
       </header>
@@ -116,20 +150,21 @@ export function SiteHeader() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: "circOut" }}
-            className="fixed inset-0 z-[40] flex flex-col bg-obsidian/98 backdrop-blur-2xl lg:hidden"
+            className="fixed inset-0 z-[40] flex flex-col bg-obsidian/99 backdrop-blur-md lg:hidden"
+            style={{ top: "72px" }}
           >
-            <div className="flex flex-1 flex-col justify-center px-8">
-              <nav className="flex flex-col gap-6">
+            <div className="flex flex-1 flex-col justify-start px-6 pt-6">
+              <nav className="flex flex-col gap-4 border-b border-gold-300/10 pb-6">
                 {navItems.map((item, i) => (
                   <motion.div
                     key={item.href}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.05 }}
+                    transition={{ delay: 0.05 + i * 0.06 }}
                   >
                     <Link
                       href={item.href}
-                      className="font-heading text-4xl tracking-gta text-cream transition-colors hover:text-gold-300"
+                      className="text-lg font-semibold uppercase tracking-[0.08em] text-cream transition-colors hover:text-gold-300"
                       onClick={() => setOpen(false)}
                     >
                       {item.label}
@@ -138,31 +173,73 @@ export function SiteHeader() {
                 ))}
               </nav>
 
-              <div className="mt-16 flex flex-col gap-4">
+              <div className="mt-8 flex flex-col gap-3">
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.3 }}
                 >
                   <Link
                     href={telegramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3 rounded-sm border border-gold-300/20 bg-white/[0.02] py-4 text-xs font-bold uppercase tracking-[0.2em] text-cream/80"
+                    className="block rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
                     onClick={() => setOpen(false)}
                   >
-                    Free Telegram Community
+                    Community
                   </Link>
                 </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <Button href="/webinar" size="lg" className="w-full" onClick={() => setOpen(false)}>
-                    Gratis Webinar sichern
-                  </Button>
-                </motion.div>
+                {isLoggedIn ? (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <Link
+                        href="/dashboard"
+                        className="block rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
+                        onClick={() => setOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                    </motion.div>
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      onClick={() => {
+                        localStorage.removeItem("auth_token");
+                        setIsLoggedIn(false);
+                        setOpen(false);
+                      }}
+                      className="rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
+                    >
+                      Logout
+                    </motion.button>
+                  </>
+                ) : (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <Button href="/login" size="lg" variant="outline" className="w-full rounded-full" onClick={() => setOpen(false)}>
+                        Login
+                      </Button>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <Button href="/webinar" size="lg" className="w-full rounded-full" onClick={() => setOpen(false)}>
+                        Gratis Webinar
+                      </Button>
+                    </motion.div>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
