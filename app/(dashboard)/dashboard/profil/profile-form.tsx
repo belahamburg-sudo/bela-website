@@ -87,14 +87,14 @@ export function ProfileForm({
       <input type="hidden" name="selectedAvatar" value={selectedAvatarId} readOnly />
       
       {/* ─── SECTION 1: Identity Hero ─── */}
-      <section className="relative">
+      <section className="relative overflow-x-hidden">
         <div className="absolute -inset-x-6 -top-12 h-64 bg-gradient-to-b from-gold-300/[0.03] to-transparent pointer-events-none" />
-        
-        <div className="relative flex flex-col md:flex-row items-center gap-10">
+
+        <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-10">
           {/* Large Character Display */}
           <div className="relative shrink-0">
-            <div className="absolute -inset-8 border border-gold-300/10 rounded-full animate-[spin_40s_linear_infinite]" />
-            <div className="absolute -inset-4 border border-gold-300/20 rounded-full animate-[spin_20s_linear_infinite_reverse]" />
+            <div className="absolute -inset-4 md:-inset-8 border border-gold-300/10 rounded-full animate-[spin_40s_linear_infinite]" />
+            <div className="absolute -inset-2 md:-inset-4 border border-gold-300/20 rounded-full animate-[spin_20s_linear_infinite_reverse]" />
             <div className="rounded-full bg-gold-300/5 p-5 ring-1 ring-gold-300/30 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(240,180,41,0.1)]">
               <MemberAvatar avatarId={selectedAvatarId} points={points} size="xl" hidePoints={true} />
               

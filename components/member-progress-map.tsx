@@ -186,7 +186,7 @@ export function MemberProgressMap({
       <div className={`grid gap-8 ${compact ? "xl:grid-cols-[1fr_340px]" : "xl:grid-cols-[1.2fr_340px]"}`}>
         
         {/* THE GAME MAP */}
-        <div className="relative isolate h-[560px] border border-gold-300/10 bg-black/20 overflow-hidden">
+        <div className="relative isolate h-[340px] sm:h-[440px] xl:h-[560px] border border-gold-300/10 bg-black/20 overflow-hidden">
           <GameRoadmap currentPoints={points} avatarId={selectedAvatarId ?? "miner-01"} />
         </div>
 
