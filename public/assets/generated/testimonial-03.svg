@@ -1,0 +1,31 @@
+<svg width="1200" height="1500" viewBox="0 0 1200 1500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="1500" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17120E"/>
+      <stop offset="1" stop-color="#0A0806"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="120" y1="120" x2="1080" y2="1380" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7D06B"/>
+      <stop offset="1" stop-color="#9A6600"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1500" rx="72" fill="url(#bg)"/>
+  <rect x="64" y="64" width="1072" height="1372" rx="52" stroke="url(#gold)" stroke-opacity="0.28" stroke-width="2"/>
+  <rect x="96" y="96" width="1008" height="112" rx="28" fill="#FFFFFF" fill-opacity="0.03"/>
+  <text x="138" y="166" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700">Placeholder Case Study</text>
+  <rect x="96" y="248" width="1008" height="940" rx="36" fill="#FFFFFF" fill-opacity="0.025"/>
+  <text x="140" y="344" fill="#F0B429" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">This is a fake file</text>
+  <text x="140" y="402" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="700">Community proof layout</text>
+  <text x="140" y="468" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="26">Designed to look like a screenshot card.</text>
+  <text x="140" y="508" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="26">Not a real testimonial, not a real claim.</text>
+  <rect x="140" y="592" width="920" height="2" fill="#F0B429" fill-opacity="0.15"/>
+  <text x="140" y="672" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="24">Metrics</text>
+  <text x="140" y="746" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="92" font-weight="700">+0</text>
+  <text x="292" y="746" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="26">placeholder growth</text>
+  <text x="140" y="826" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700">Demo</text>
+  <text x="310" y="826" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="26">screenshot text</text>
+  <rect x="140" y="900" width="920" height="168" rx="28" fill="#F0B429" fill-opacity="0.08" stroke="#F0B429" stroke-opacity="0.18"/>
+  <text x="176" y="972" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">Ready for replacement later</text>
+  <text x="176" y="1018" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="24">Swappable with real testimonials if available.</text>
+  <text x="96" y="1410" fill="#8F8260" font-family="Arial, Helvetica, sans-serif" font-size="18">fake-assets / testimonial-03</text>
+</svg>

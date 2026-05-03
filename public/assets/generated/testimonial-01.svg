@@ -1,0 +1,31 @@
+<svg width="1200" height="1500" viewBox="0 0 1200 1500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="1500" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#15110D"/>
+      <stop offset="1" stop-color="#090705"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="220" y1="180" x2="980" y2="1320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8D77A"/>
+      <stop offset="1" stop-color="#A06B00"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1500" rx="72" fill="url(#bg)"/>
+  <rect x="56" y="56" width="1088" height="1388" rx="56" stroke="url(#gold)" stroke-opacity="0.35" stroke-width="2"/>
+  <rect x="96" y="96" width="1008" height="170" rx="28" fill="#FFFFFF" fill-opacity="0.03"/>
+  <circle cx="170" cy="181" r="42" fill="url(#gold)"/>
+  <text x="238" y="170" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">Fake Testimonial</text>
+  <text x="238" y="212" fill="#D5C9A4" font-family="Arial, Helvetica, sans-serif" font-size="22">@placeholder_creator · 100% demo content</text>
+  <rect x="96" y="316" width="1008" height="860" rx="36" fill="#FFFFFF" fill-opacity="0.025" stroke="#F0B429" stroke-opacity="0.15"/>
+  <text x="148" y="418" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="700">"Von 0 auf Klarheit in 7 Tagen."</text>
+  <text x="148" y="492" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="28">Dieses Bild ist bewusst als Fake-Datei angelegt.</text>
+  <text x="148" y="534" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="28">Es simuliert ein Testimonial-Screenshot für Layout und Flow.</text>
+  <text x="148" y="576" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="28">Keine reale Person, kein reales Ergebnis, nur Platzhalter.</text>
+  <rect x="148" y="668" width="904" height="2" fill="#F0B429" fill-opacity="0.18"/>
+  <text x="148" y="738" fill="#F0B429" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">Resultat</text>
+  <text x="148" y="790" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="62" font-weight="700">+3.000€</text>
+  <text x="148" y="844" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="26">Demo-Metrik für das visuelle Konzept</text>
+  <rect x="148" y="920" width="904" height="162" rx="28" fill="#F0B429" fill-opacity="0.08" stroke="#F0B429" stroke-opacity="0.2"/>
+  <text x="188" y="985" fill="#F5EDD6" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">Platzhalter-Hinweis</text>
+  <text x="188" y="1030" fill="#D8CBA8" font-family="Arial, Helvetica, sans-serif" font-size="24">Für spätere echte Screenshots austauschbar.</text>
+  <text x="96" y="1410" fill="#8F8260" font-family="Arial, Helvetica, sans-serif" font-size="18">bela-website / generated / fake testimonial file</text>
+</svg>

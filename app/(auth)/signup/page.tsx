@@ -5,9 +5,9 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { AuthForm } from "@/components/auth-form";
 
 const REASONS = [
-  "Direkter Zugang zu Kursen, Dashboard und Profil",
-  "Ein sauberer Startpunkt für deine digitale Produktreise",
-  "Sofortiger Einstieg ohne E-Mail-Bestätigungschaos",
+  "Direkter Einstieg in dein AI-Onboarding",
+  "Dein Profil, Ziel und Status werden sauber erfasst",
+  "Danach geht es direkt ins Dashboard und in die Kurse",
 ];
 
 export default function SignupPage() {
@@ -46,10 +46,10 @@ export default function SignupPage() {
                 style={{ fontSize: "clamp(2.9rem,5.4vw,5.8rem)" }}
               >
                 STARTE DEIN{" "}
-                <span className="gold-text">SYSTEM.</span>
+                <span className="gold-text">ONBOARDING.</span>
               </h1>
               <p className="mt-6 max-w-xl text-base leading-relaxed text-cream/52 sm:text-lg">
-                Erstelle deinen Account und geh direkt in Kurse, Profil und Dashboard.
+                Erstelle deinen Account und geh direkt in deinen AI-Fragen-Flow, der dir Profil, Ziel und Einstieg sauber strukturiert.
               </p>
 
               <div className="mt-8 grid max-w-xl gap-3">

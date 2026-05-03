@@ -58,18 +58,18 @@ export function CtaFooterSection() {
               HÖR AUF ZU WARTEN.
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-cream/50">
-              Gratis-Webinar, Telegram oder Newsletter — such dir einen Einstieg aus.
+              Gratis-Webinar, Community oder Newsletter — such dir den Einstieg aus, der gerade passt.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/webinar" size="lg">
                 Gratis Webinar ansehen
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Button>
-              <Button href="/kurse" variant="outline" size="lg">
-                Kurse entdecken
-              </Button>
               <Button href={telegramUrl} variant="outline" size="lg" target="_blank" rel="noopener noreferrer">
-                Telegram beitreten
+                Free Telegram Community
+              </Button>
+              <Button href="#newsletter" variant="outline" size="lg">
+                Newsletter sichern
               </Button>
             </div>
           </motion.div>

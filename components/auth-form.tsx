@@ -12,7 +12,8 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [message, setMessage] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard";
+  const defaultRedirect = mode === "signup" ? "/dashboard/onboarding" : "/dashboard";
+  const redirect = searchParams.get("redirect") || defaultRedirect;
 
   function friendlyErrorMessage(error: unknown) {
     if (!(error instanceof Error)) {
@@ -100,7 +101,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         <div>
           <p className="font-heading text-xl text-white mb-2">Check deine Inbox</p>
           <p className="text-white/50 leading-relaxed text-sm">
-            Wir haben dir einen Bestätigungslink geschickt. Klick den Link und du bist direkt im Dashboard.
+            Wir haben dir einen Bestätigungslink geschickt. Klick den Link und du landest direkt im Onboarding.
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-white/30">

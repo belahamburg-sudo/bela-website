@@ -35,7 +35,7 @@ export function VideoHeroSection() {
   return (
     <section
       className="relative flex flex-col items-center justify-center overflow-hidden bg-obsidian px-6"
-      style={{ minHeight: "calc(100svh - 68px)", paddingTop: "clamp(1rem, 2vw, 1.75rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
+      style={{ minHeight: "calc(100svh - 92px)", paddingTop: "clamp(5.5rem, 8vw, 7.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
     >
       {/* Subtle gold radial glow */}
       <div
@@ -99,19 +99,23 @@ export function VideoHeroSection() {
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="/webinar"
-              className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-300 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(240,180,41,0.45)]"
+              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(240,180,41,0.45)]"
             >
-              Webinar sichern · Limited Spots →
+              Gratis Webinar ansehen →
             </Link>
             <Link
               href={telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-sm border border-gold-300/35 px-7 py-3 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/70 hover:bg-gold-300/5 hover:text-cream"
+              className="inline-flex items-center gap-2 rounded-full border border-gold-300/35 px-7 py-3 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/70 hover:bg-gold-300/5 hover:text-cream"
             >
               Free Telegram Community
             </Link>
           </div>
+
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-cream/25">
+            Kostenlos · ohne Bullshit · live am 23. Mai
+          </p>
 
           {/* Social proof */}
           <div className="flex items-center gap-2.5">

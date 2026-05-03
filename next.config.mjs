@@ -9,9 +9,10 @@ const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
-  experimental: {
+  // Disabled due to causing 500 Internal Server Errors with framer-motion in some Next 15 setups
+  /* experimental: {
     optimizePackageImports: ["framer-motion", "lucide-react"],
-  },
+  }, */
   webpack: (config, { nextRuntime, webpack }) => {
     // Fix: next/dist/compiled/cookie includes ncc-compiled code that references
     // __dirname when __nccwpck_require__ is defined. Vercel's Edge Runtime defines

@@ -75,6 +75,54 @@ export default function CommunityPage() {
         </div>
       </section>
 
+      {/* Member area — clear paid split */}
+      <section className="py-32 bg-obsidian border-t border-white/[0.04]">
+        <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[0.95fr_1.05fr] items-start">
+          <div>
+            <p className="eyebrow mb-6">Member Space</p>
+            <h2 className="font-heading text-4xl lg:text-5xl leading-[1.05] text-white">
+              Für Käufer: private Umsetzung statt nur Input.
+            </h2>
+            <p className="mt-5 text-white/40 max-w-xl leading-relaxed">
+              Der kostenfreie Einstieg ist die Telegram-Community. Wer tiefer geht, landet im geschützten Bereich mit Kursen, Fortschritt, Avatar-Level und Rewards.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              {
+                title: "Kurse & Player",
+                copy: "Alle gebuchten Mini-Kurse liegen im Dashboard und öffnen direkt im Player.",
+              },
+              {
+                title: "Avatar & Level",
+                copy: "Dein Profil steigt mit Punkten, Freischaltungen und dem nächsten Reward mit.",
+              },
+              {
+                title: "Fortschritt & Rewards",
+                copy: "Abgeschlossene Lektionen, Kursstatus und Belohnungen sind sofort sichtbar.",
+              },
+              {
+                title: "Login / Einstieg",
+                copy: "Wenn du schon Mitglied bist, geht es direkt in den geschützten Bereich.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-5">
+                <h3 className="font-heading text-xl text-cream">{item.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-white/45">{item.copy}</p>
+              </div>
+            ))}
+            <div className="sm:col-span-2 flex flex-col gap-3 sm:flex-row pt-2">
+              <Button href="/login?redirect=/dashboard" variant="secondary">
+                Einloggen
+              </Button>
+              <Button href="/dashboard">
+                Zum Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Newsletter — no panel-surface */}
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[1fr_1fr] items-start">

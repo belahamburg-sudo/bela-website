@@ -5,6 +5,7 @@ create table if not exists public.profiles (
   email text not null,
   full_name text,
   goal text,
+  business_snapshot jsonb not null default '{}'::jsonb,
   onboarding_complete boolean not null default false,
   created_at timestamptz not null default now()
 );

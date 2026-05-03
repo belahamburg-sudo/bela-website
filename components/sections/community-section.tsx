@@ -2,24 +2,25 @@
 
 import { useEffect, useRef } from "react";
 import { animate, onScroll } from "animejs";
+import Image from "next/image";
 import { Button } from "@/components/button";
 import { telegramUrl } from "@/lib/env";
 
-const WINS = [
-  { initials: "ZS", name: "Zada", handle: "@somerov", earnings: "$120K", detail: "Revenue seit Juni · $20K bestes Monat", location: "US", highlight: true },
-  { initials: "AG", name: "Armando G.", handle: "@scalewithmando", earnings: "$111K", detail: "100K Sales in 45 Tagen", location: "US", highlight: true },
-  { initials: "MG", name: "Maurice", handle: "@mauricesalb", earnings: "$32,046", detail: "4 Joined · 1 Created", location: "Vietnam" },
-  { initials: "LS", name: "Lars", handle: "@larsmeidell", earnings: "$7,335", detail: "3 Joined · 1 Created", location: "Marokko" },
-  { initials: "LB", name: "Lambro", handle: "@lambro", earnings: "$8,179", detail: "Earnings", location: "US" },
-  { initials: "NM", name: "Nafi", handle: "@nafiosmani", earnings: "$16,445", detail: "39 Joined · 17 Created", location: "US" },
-  { initials: "SF", name: "Sean", handle: "@seanferres", earnings: "$10,181", detail: "5 Joined · 1 Created", location: "AU" },
-  { initials: "RJ", name: "Close", handle: "@roelmojico", earnings: "$4,367", detail: "1 Joined · 5 Created", location: "UK" },
+const COMMUNITY_CARDS = [
+  { src: "/assets/generated/testimonial-01.svg", label: "Fake", title: "Demo Testimonial 01", meta: "Placeholder screenshot" },
+  { src: "/assets/generated/testimonial-02.svg", label: "Fake", title: "Demo Testimonial 02", meta: "Placeholder screenshot" },
+  { src: "/assets/generated/testimonial-03.svg", label: "Fake", title: "Demo Testimonial 03", meta: "Placeholder screenshot" },
+  { src: "/assets/generated/testimonial-01.svg", label: "Fake", title: "Demo Testimonial 04", meta: "Placeholder screenshot" },
+  { src: "/assets/generated/testimonial-02.svg", label: "Fake", title: "Demo Testimonial 05", meta: "Placeholder screenshot" },
+  { src: "/assets/generated/testimonial-03.svg", label: "Fake", title: "Demo Testimonial 06", meta: "Placeholder screenshot" },
+  { src: "/assets/generated/testimonial-01.svg", label: "Fake", title: "Demo Testimonial 07", meta: "Placeholder screenshot" },
+  { src: "/assets/generated/testimonial-02.svg", label: "Fake", title: "Demo Testimonial 08", meta: "Placeholder screenshot" },
 ];
 
 const LANES = [
-  WINS,
-  [...WINS].reverse(),
-  [...WINS.slice(2), ...WINS.slice(0, 2)],
+  COMMUNITY_CARDS,
+  [...COMMUNITY_CARDS].reverse(),
+  [...COMMUNITY_CARDS.slice(2), ...COMMUNITY_CARDS.slice(0, 2)],
 ];
 
 export function CommunitySection() {
@@ -43,11 +44,11 @@ export function CommunitySection() {
         <div ref={headingRef} className="mb-10 lg:mb-16 text-center" style={{ opacity: 0 }}>
           <p className="eyebrow mb-6">Community</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
-            MEINE COMMUNITY CASHED BEIM<br />
-            <span className="gold-text">KI-GOLDRAUSCH</span> SCHON AB.
+            MEINE COMMUNITY BAUT<br />
+            <span className="gold-text">ECHTE DIGITALE PRODUKTE</span> AUF.
           </h2>
-          <p className="mt-5 text-cream/40 text-base lg:text-lg max-w-md mx-auto leading-relaxed">
-            Echte Screenshots. Echte Zahlen. Von ersten Kunden bis zum gekündigten 9-to-5.
+            <p className="mt-5 text-cream/40 text-base lg:text-lg max-w-md mx-auto leading-relaxed">
+            Von ersten Launches bis zum Exit aus dem 9-to-5. Diese Carousel-Karten sind bewusst als Fake-Dateien angelegt und später austauschbar.
           </p>
         </div>
 
@@ -65,36 +66,33 @@ export function CommunitySection() {
                   animationDirection: laneIndex === 1 ? "reverse" : "normal",
                 }}
               >
-                {[...lane, ...lane].map((win, i) => (
+                {[...lane, ...lane].map((card, i) => (
                   <div
                     key={`${laneIndex}-${i}`}
-                    className={`flex-none w-56 lg:w-64 rounded-sm border p-4 lg:p-5 ${
-                      win.highlight
-                        ? "border-gold-300/40 bg-gold-300/5"
-                        : "border-gold-300/15 bg-obsidian/80"
-                    }`}
+                    className="group flex-none w-72 lg:w-80 overflow-hidden rounded-sm border border-gold-300/15 bg-obsidian/80"
                   >
-                    <div className="flex items-center gap-1.5 mb-4">
-                      <span className="text-[0.55rem] font-bold uppercase tracking-[0.2em] text-gold-300/50">Monetise</span>
-                      <span className="ml-auto text-[0.6rem] text-cream/20">{win.location}</span>
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-4">
-                      <span
-                        className="flex h-9 w-9 items-center justify-center rounded-full text-[0.65rem] font-bold text-obsidian shrink-0"
-                        style={{ background: "linear-gradient(135deg, #FFD76A, #C98B00)" }}
-                      >
-                        {win.initials}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-cream leading-none truncate">{win.name}</p>
-                        <p className="text-[0.65rem] text-cream/30 mt-0.5">{win.handle}</p>
+                    <div className="relative aspect-[4/5] overflow-hidden">
+                      <Image
+                        src={card.src}
+                        alt={card.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 1024px) 18rem, 20rem"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/15 to-transparent" />
+                      <div className="absolute left-0 right-0 bottom-0 p-4 lg:p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="rounded-full border border-gold-300/30 bg-obsidian/70 px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-[0.18em] text-gold-300">
+                            {card.label}
+                          </span>
+                        </div>
+                        <p className="font-heading tracking-gta text-xl text-cream leading-tight">
+                          {card.title}
+                        </p>
+                        <p className="mt-1 text-[0.68rem] uppercase tracking-[0.18em] text-cream/45">
+                          {card.meta}
+                        </p>
                       </div>
-                    </div>
-
-                    <div className="border-t border-gold-300/10 pt-4">
-                      <p className="font-heading tracking-gta text-2xl text-gold-300">{win.earnings}</p>
-                      <p className="text-[0.65rem] text-cream/30 mt-1">{win.detail}</p>
                     </div>
                   </div>
                 ))}

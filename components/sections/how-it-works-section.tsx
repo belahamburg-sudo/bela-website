@@ -9,8 +9,8 @@ const SEARCHES = [
   "Wie trainiere ich meinen Hund",
   "Wie verbessere ich meinen Golfschwung",
   "Wie lerne ich Spanisch in 3 Monaten",
-  "Wie nehme ich 10kg ab ohne Diät",
   "Wie starte ich ein Online Business",
+  "Wie baue ich ein digitales Produkt mit AI",
 ];
 
 export function HowItWorksSection() {
@@ -54,7 +54,7 @@ export function HowItWorksSection() {
 
         <div ref={contentRef} style={{ opacity: 0 }}>
           {/* Animated search bar */}
-          <div className="mx-auto max-w-lg mb-8 lg:mb-12 rounded-sm border border-gold-300/20 bg-white/[0.03] backdrop-blur-sm overflow-hidden">
+          <div className="mx-auto max-w-lg mb-8 lg:mb-12 rounded-full border border-gold-300/20 bg-white/[0.03] backdrop-blur-sm overflow-hidden shadow-[0_0_0_1px_rgba(240,180,41,0.03)]">
             <div className="flex items-center gap-3 px-4 py-3.5">
               <Search className="h-4 w-4 text-cream/30 shrink-0" />
               <span
@@ -90,13 +90,13 @@ export function HowItWorksSection() {
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/webinar"
-              className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(240,180,41,0.5)]"
+              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(240,180,41,0.5)]"
             >
               Jetzt starten →
             </Link>
             <Link
               href="/kurse"
-              className="inline-flex items-center gap-2 rounded-sm border border-gold-300/40 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
+              className="inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
             >
               Kurse ansehen
             </Link>

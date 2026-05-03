@@ -1,10 +1,16 @@
-import { Lock, CheckCircle2, PlayCircle, Star } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Lock, PlayCircle, Star, Shield, Database, LayoutDashboard, ChevronRight } from "lucide-react";
+import { CourseCard3D } from "@/components/course-card-3d";
 import { AuthGate } from "@/components/auth-gate";
 import { Button } from "@/components/button";
 import { CheckoutButton } from "@/components/checkout-button";
+import { SpatialBackground } from "@/components/spatial-background";
 import type { DbCourse } from "@/lib/db-types";
 import { hasSupabasePublicEnv } from "@/lib/env";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { courses as staticCourses } from "@/lib/content";
 import { formatEuro } from "@/lib/utils";
 
@@ -24,81 +30,111 @@ const LEVEL_ORDER: Record<string, number> = {
 };
 
 const LEVEL_COLORS: Record<string, string> = {
-  Start: "border-emerald-500/30 text-emerald-400 bg-emerald-500/[0.08]",
-  Aufbau: "border-sky-500/30 text-sky-400 bg-sky-500/[0.08]",
-  System: "border-violet-500/30 text-violet-400 bg-violet-500/[0.08]",
-  Bundle: "border-gold-300/30 text-gold-300 bg-gold-300/[0.08]",
+  Start: "border-emerald-500/20 text-emerald-400 bg-emerald-500/[0.04]",
+  Aufbau: "border-sky-500/20 text-sky-400 bg-sky-500/[0.04]",
+  System: "border-violet-500/20 text-violet-400 bg-violet-500/[0.04]",
+  Bundle: "border-gold-300/30 text-gold-300 bg-gold-300/[0.06]",
 };
 
-async function fetchCoursesWithAccess(): Promise<CourseWithAccess[]> {
-  if (!hasSupabasePublicEnv()) {
-    return staticCourses.map((c) => ({
-      id: c.slug,
-      slug: c.slug,
-      title: c.title,
-      tagline: c.tagline,
-      description: c.description,
-      price_cents: c.priceCents,
-      image_url: c.image,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      isPurchased: false,
-      progress: 0,
-      completedLessons: 0,
-      totalLessons: c.modules.flatMap((m) => m.lessons).length,
-    }));
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+export default function DashboardCoursesPage() {
+  const [hasMounted, setHasMounted] = useState(false);
+  const [courses, setCourses] = useState<CourseWithAccess[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        if (!hasSupabasePublicEnv()) {
+          const mock = staticCourses.map((c) => ({
+            id: c.slug,
+            slug: c.slug,
+            title: c.title,
+            tagline: c.tagline,
+            description: c.description,
+            price_cents: c.priceCents,
+            image_url: c.image,
+            is_active: true,
+            created_at: new Date().toISOString(),
+            isPurchased: false,
+            progress: 0,
+            completedLessons: 0,
+            totalLessons: c.modules.flatMap((m) => m.lessons).length,
+          }));
+          setCourses(mock);
+          return;
+        }
+
+        const supabase = getSupabaseBrowserClient();
+        if (!supabase) {
+          return;
+        }
+        const { data: { user } } = await supabase.auth.getUser();
+
+        const [coursesResult, purchasesResult, progressResult] = await Promise.all([
+          supabase
+            .from("courses")
+            .select("id, slug, title, tagline, description, price_cents, image_url, is_active, created_at")
+            .eq("is_active", true)
+            .order("created_at", { ascending: true }),
+          user
+            ? supabase.from("purchases").select("course_slug").eq("user_id", user.id).eq("status", "paid")
+            : Promise.resolve({ data: [] }),
+          user
+            ? supabase.from("lesson_progress").select("lesson_id").eq("user_id", user.id)
+            : Promise.resolve({ data: [] }),
+        ]);
+
+        const dbCourses = (coursesResult.data ?? []) as (Omit<DbCourse, "modules"> & { created_at: string })[];
+        const purchasedSlugs = new Set((purchasesResult.data ?? []).map((p) => p.course_slug));
+        const completedIds = new Set((progressResult.data ?? []).map((p) => p.lesson_id));
+
+        const mapped = dbCourses.map((course) => {
+          const staticCourse = staticCourses.find((c) => c.slug === course.slug);
+          const lessonIds = staticCourse?.modules.flatMap((m) => m.lessons.map((l) => l.id)) ?? [];
+          const completed = lessonIds.filter((id) => completedIds.has(id)).length;
+          const progress = lessonIds.length > 0 ? Math.round((completed / lessonIds.length) * 100) : 0;
+          return {
+            ...course,
+            isPurchased: purchasedSlugs.has(course.slug),
+            progress,
+            completedLessons: completed,
+            totalLessons: lessonIds.length,
+          };
+        });
+        setCourses(mapped);
+      } catch (err) {
+        console.error("Courses load error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted || loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="h-10 w-10 border-2 border-gold-300/20 border-t-gold-300 rounded-full animate-spin mx-auto" />
+          <p className="tac-label animate-pulse">Programme werden geladen...</p>
+        </div>
+      </div>
+    );
   }
-
-  const supabase = await getSupabaseServerClient();
-  if (!supabase) return [];
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [coursesResult, purchasesResult, progressResult] = await Promise.all([
-    supabase
-      .from("courses")
-      .select("id, slug, title, tagline, description, price_cents, image_url, is_active, created_at")
-      .eq("is_active", true)
-      .order("created_at", { ascending: true }),
-    user
-      ? supabase
-          .from("purchases")
-          .select("course_slug")
-          .eq("user_id", user.id)
-          .eq("status", "paid")
-      : Promise.resolve({ data: [] }),
-    user
-      ? supabase.from("lesson_progress").select("lesson_id").eq("user_id", user.id)
-      : Promise.resolve({ data: [] }),
-  ]);
-
-  const dbCourses = (coursesResult.data ?? []) as (Omit<DbCourse, "modules"> & { created_at: string })[];
-  const purchasedSlugs = new Set(
-    (purchasesResult.data ?? []).map((p: { course_slug: string }) => p.course_slug)
-  );
-  const completedIds = new Set(
-    (progressResult.data ?? []).map((p: { lesson_id: string }) => p.lesson_id)
-  );
-
-  return dbCourses.map((course) => {
-    const staticCourse = staticCourses.find((c) => c.slug === course.slug);
-    const lessonIds = staticCourse?.modules.flatMap((m) => m.lessons.map((l) => l.id)) ?? [];
-    const completed = lessonIds.filter((id) => completedIds.has(id)).length;
-    const progress = lessonIds.length > 0 ? Math.round((completed / lessonIds.length) * 100) : 0;
-    return {
-      ...course,
-      isPurchased: purchasedSlugs.has(course.slug),
-      progress,
-      completedLessons: completed,
-      totalLessons: lessonIds.length,
-    };
-  });
-}
-
-export default async function DashboardCoursesPage() {
-  const courses = await fetchCoursesWithAccess();
 
   const purchased = courses.filter((c) => c.isPurchased);
   const available = courses.filter((c) => !c.isPurchased);
@@ -111,137 +147,83 @@ export default async function DashboardCoursesPage() {
 
   return (
     <AuthGate>
-      <section className="py-12 sm:py-16">
-        <div className="container-shell">
-          <div className="mb-10">
-            <p className="eyebrow mb-3">Kursbibliothek</p>
-            <h1 className="font-heading tracking-gta text-4xl text-cream lg:text-5xl leading-none">
-              DEINE KURSE.
-            </h1>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-cream/40">
-              Gekaufte Kurse direkt starten. Weitere Kurse freischalten — Schritt für Schritt die komplette Goldmining-Methode.
-            </p>
-          </div>
-
-          {/* Purchased courses */}
-          {purchased.length > 0 && (
-            <div className="mb-12">
-              <div className="flex items-center gap-3 mb-5">
-                <CheckCircle2 className="h-4 w-4 text-gold-300" />
-                <p className="eyebrow">Freigeschaltet ({purchased.length})</p>
+      <section className="py-12 sm:py-20 relative overflow-hidden bg-obsidian min-h-screen">
+        <SpatialBackground />
+        
+        <div className="container-shell relative z-10">
+          <motion.div initial="hidden" animate="visible" variants={containerVariants}>
+            
+            <motion.div variants={itemVariants} className="mb-16">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-px w-8 bg-gold-300/30" />
+                <span className="tac-label text-gold-300/60 uppercase tracking-widest text-[9px]">Lern-Inhalte</span>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {purchased.map((course) => {
-                  const staticCourse = staticCourses.find((c) => c.slug === course.slug);
-                  const level = staticCourse?.level ?? "Start";
-                  const levelColor = LEVEL_COLORS[level] ?? LEVEL_COLORS.Start;
-                  return (
-                    <article
-                      key={course.slug}
-                      className="panel-surface rounded-sm border border-gold-300/15 p-6 flex flex-col gap-4"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <span className={`inline-block text-[0.65rem] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-sm border mb-2 ${levelColor}`}>
-                            {level}
-                          </span>
-                          <h2 className="font-heading tracking-gta text-lg text-cream leading-tight">
-                            {course.title}
-                          </h2>
-                          <p className="text-xs text-cream/40 mt-1">{course.tagline}</p>
-                        </div>
-                        <PlayCircle className="h-5 w-5 text-gold-300/50 flex-shrink-0 mt-1" />
-                      </div>
+              <h1 className="font-heading tracking-gta leading-tight text-cream text-4xl md:text-6xl uppercase">
+                MEINE <span className="text-gold-300">KURSE.</span>
+              </h1>
+              <p className="mt-4 text-cream/40 text-[10px] font-mono uppercase tracking-[0.2em] max-w-lg leading-relaxed">
+                Verwalte deine Programme und schalte neue Experten-Module frei.
+              </p>
+            </motion.div>
 
-                      {/* Progress */}
-                      <div>
-                        <div className="flex items-center justify-between text-xs text-cream/35 mb-1.5">
-                          <span>{course.completedLessons} / {course.totalLessons} Lektionen</span>
-                          <span>{course.progress}%</span>
-                        </div>
-                        <div className="h-[3px] w-full bg-cream/[0.06] rounded-sm overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-gold-500 to-gold-300 transition-all duration-700"
-                            style={{ width: `${course.progress}%` }}
-                          />
-                        </div>
-                      </div>
+            {/* Purchased courses */}
+            {purchased.length > 0 && (
+              <motion.div variants={itemVariants} className="mb-16">
+                <div className="flex items-center gap-3 mb-8">
+                  <Shield className="h-4 w-4 text-gold-300/60" />
+                  <p className="tac-label uppercase tracking-widest">Freigeschaltete Programme ({purchased.length})</p>
+                </div>
+                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  {purchased.map((course) => {
+                    const staticCourse = staticCourses.find((c) => c.slug === course.slug);
+                    const level = staticCourse?.level ?? "Start";
+                    const levelColor = LEVEL_COLORS[level] ?? LEVEL_COLORS.Start;
+                    return (
+                      <CourseCard3D 
+                        key={course.slug} 
+                        course={{...course, level}} 
+                        isPurchased={true} 
+                        levelColor={levelColor}
+                      />
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
 
-                      <Button
-                        href={`/dashboard/kurse/${course.slug}`}
-                        variant="secondary"
-                        className="w-full text-center justify-center"
-                      >
-                        {course.progress > 0 ? "Weitermachen" : "Kurs starten"}
-                      </Button>
-                    </article>
-                  );
-                })}
+            {/* Available courses */}
+            {sortedAvailable.length > 0 && (
+              <motion.div variants={itemVariants}>
+                <div className="flex items-center gap-3 mb-8">
+                  <Lock className="h-4 w-4 text-white/20" />
+                  <p className="tac-label opacity-40 uppercase tracking-widest">Verfügbare Programme ({sortedAvailable.length})</p>
+                </div>
+                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  {sortedAvailable.map((course) => {
+                    const staticCourse = staticCourses.find((c) => c.slug === course.slug);
+                    const level = staticCourse?.level ?? "Start";
+                    const levelColor = LEVEL_COLORS[level] ?? LEVEL_COLORS.Start;
+                    const isBundle = level === "Bundle";
+                    return (
+                      <CourseCard3D 
+                        key={course.slug} 
+                        course={{...course, level}} 
+                        isPurchased={false} 
+                        levelColor={levelColor}
+                        isBundle={isBundle}
+                      />
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            {courses.length === 0 && (
+              <div className="tac-panel tac-corners p-20 text-center border-white/5">
+                <p className="tac-label opacity-30 uppercase tracking-widest">Keine Programme gefunden</p>
               </div>
-            </div>
-          )}
-
-          {/* Available courses */}
-          {sortedAvailable.length > 0 && (
-            <div>
-              <div className="flex items-center gap-3 mb-5">
-                <Lock className="h-4 w-4 text-cream/30" />
-                <p className="eyebrow">Freischaltbar ({sortedAvailable.length})</p>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {sortedAvailable.map((course) => {
-                  const staticCourse = staticCourses.find((c) => c.slug === course.slug);
-                  const level = staticCourse?.level ?? "Start";
-                  const levelColor = LEVEL_COLORS[level] ?? LEVEL_COLORS.Start;
-                  const isBundle = level === "Bundle";
-                  return (
-                    <article
-                      key={course.slug}
-                      className={`panel-surface rounded-sm border p-6 flex flex-col gap-4 relative ${
-                        isBundle
-                          ? "border-gold-300/25 bg-gradient-to-br from-gold-300/[0.04] to-transparent"
-                          : "border-white/[0.07]"
-                      }`}
-                    >
-                      {isBundle && (
-                        <div className="absolute top-4 right-4 flex items-center gap-1 text-[0.6rem] font-bold uppercase tracking-[0.12em] text-gold-300">
-                          <Star className="h-3 w-3 fill-gold-300" />
-                          Empfohlen
-                        </div>
-                      )}
-                      <div className="flex items-start gap-3">
-                        <div className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-sm border border-white/[0.07] bg-white/[0.02]">
-                          <Lock className="h-3.5 w-3.5 text-white/20" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className={`inline-block text-[0.65rem] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-sm border mb-2 ${levelColor}`}>
-                            {level}
-                          </span>
-                          <h2 className="font-heading tracking-gta text-lg text-cream/70 leading-tight">
-                            {course.title}
-                          </h2>
-                          <p className="text-xs text-cream/30 mt-1">{course.tagline}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="font-heading tracking-gta text-lg text-gold-300/80">
-                          {formatEuro(course.price_cents)}
-                        </span>
-                        <CheckoutButton courseSlug={course.slug} label="Freischalten" />
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {courses.length === 0 && (
-            <div className="rounded-sm border border-gold-300/10 bg-cream/[0.02] p-12 text-center">
-              <p className="text-cream/30 text-sm">Keine Kurse verfügbar.</p>
-            </div>
-          )}
+            )}
+          </motion.div>
         </div>
       </section>
     </AuthGate>

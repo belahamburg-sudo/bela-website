@@ -43,7 +43,7 @@ export function Button({
   rel
 }: ButtonProps) {
   const classes = cn(
-    "focus-ring relative inline-flex items-center justify-center gap-2 rounded-sm font-bold uppercase tracking-[0.12em] transition-all duration-300 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50",
+    "focus-ring relative inline-flex items-center justify-center gap-2 rounded-full font-bold uppercase tracking-[0.12em] transition-all duration-300 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50",
     variants[variant],
     sizes[size],
     className

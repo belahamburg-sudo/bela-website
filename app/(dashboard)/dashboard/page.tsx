@@ -1,460 +1,371 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, BookOpen, CheckCircle2, Clock, Gift, Lock, Pickaxe, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
+import { 
+  BookOpen, 
+  CheckCircle2, 
+  ChevronRight, 
+  Gift, 
+  Lock, 
+  Play, 
+  ShieldCheck, 
+  Target, 
+  TrendingUp,
+  Activity,
+  ArrowRight,
+  Pickaxe
+} from "lucide-react";
 import { AuthGate } from "@/components/auth-gate";
 import { Button } from "@/components/button";
-import { MemberProgressMap } from "@/components/member-progress-map";
+import { MemberAvatar } from "@/components/member-avatar";
 import { getMemberLevel, getNextReward } from "@/lib/avatar-system";
-import { getCourse, courses as allStaticCourses } from "@/lib/content";
-import type { Course } from "@/lib/content";
-import { hasSupabasePublicEnv } from "@/lib/env";
-import { syncMemberState } from "@/lib/member-state";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { formatEuro } from "@/lib/utils";
+import type { DbCourse } from "@/lib/db-types";
+import { GoldCrystal } from "@/components/gold-crystal";
+import { SpatialBackground } from "@/components/spatial-background";
 
-type CourseWithProgress = Course & {
-  progress: number;
-  completedLessons: number;
-  totalLessons: number;
-  status: "Neu" | "In Bearbeitung" | "Abgeschlossen";
-};
-
-async function fetchDashboardData(): Promise<{
-  user: { name: string | null; email: string; avatarId: string | null } | null;
-  purchasedCourses: CourseWithProgress[];
-  availableCourses: Course[];
+// Types for the dashboard data
+type DashboardData = {
+  user: {
+    name: string | null;
+    email: string | null;
+    avatarId: string | null;
+  };
+  purchasedCourses: Array<DbCourse & { 
+    progress: number; 
+    completedLessons: number; 
+    totalLessons: number;
+    status: string;
+  }>;
+  availableCourses: DbCourse[];
   totalLessonsCompleted: number;
   completedCourses: number;
   points: number;
   rewardCount: number;
-  redirectToOnboarding: boolean;
-}> {
-  const empty = {
-    user: null,
-    purchasedCourses: [],
-    availableCourses: allStaticCourses,
-    totalLessonsCompleted: 0,
-    completedCourses: 0,
-    points: 0,
-    rewardCount: 0,
-    redirectToOnboarding: false,
-  };
+};
 
-  if (!hasSupabasePublicEnv()) return empty;
+export default function DashboardPage() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [sessionId] = useState(() => Math.random().toString(36).substring(2, 10).toUpperCase());
 
-  const supabase = await getSupabaseServerClient();
-  if (!supabase) return empty;
+  useEffect(() => {
+    async function loadDashboardData() {
+      try {
+        const response = await fetch("/api/dashboard");
+        if (response.ok) {
+          const result = await response.json();
+          setData(result);
+        }
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDashboardData();
+  }, []);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return empty;
-
-  const [profileResult, purchasesResult, progressResult, coursesResult] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select("full_name, onboarding_complete")
-        .eq("id", user.id)
-        .single(),
-      supabase
-        .from("purchases")
-        .select("course_slug")
-        .eq("user_id", user.id)
-        .eq("status", "paid"),
-      supabase
-        .from("lesson_progress")
-        .select("lesson_id")
-        .eq("user_id", user.id),
-      supabase
-        .from("courses")
-        .select("slug")
-        .eq("is_active", true),
-    ]);
-
-  if (!profileResult.data?.onboarding_complete) {
-    return { ...empty, redirectToOnboarding: true };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-obsidian flex flex-col items-center justify-center p-6 text-center">
+        <div className="space-y-6">
+          <div className="relative mb-6 mx-auto w-16 h-16">
+            <div className="absolute inset-0 border-2 border-gold-300/10 rounded-full" />
+            <div className="absolute inset-0 border-2 border-t-gold-300 rounded-full animate-spin" />
+            <Pickaxe className="absolute inset-0 m-auto h-6 w-6 text-gold-300 animate-pulse" />
+          </div>
+          <p className="tac-label text-gold-300 animate-pulse uppercase tracking-[0.2em]">Deine Welt wird geladen...</p>
+        </div>
+      </div>
+    );
   }
 
-  const purchasedSlugs = new Set(
-    (purchasesResult.data ?? []).map((p: { course_slug: string }) => p.course_slug)
-  );
-  const completedLessonIds = new Set(
-    (progressResult.data ?? []).map((p: { lesson_id: string }) => p.lesson_id)
-  );
-  const allActiveDbSlugs = (coursesResult.data ?? []).map(
-    (c: { slug: string }) => c.slug
-  );
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-obsidian flex items-center justify-center p-6 text-center">
+        <div className="tac-panel tac-corners p-8 border-gold-300/20 bg-gold-300/[0.02] max-w-md">
+          <p className="tac-label text-gold-300 mb-2">HINWEIS</p>
+          <p className="text-cream/60 text-sm font-mono uppercase">Daten konnten nicht synchronisiert werden. Bitte versuche es erneut.</p>
+        </div>
+      </div>
+    );
+  }
 
-  const purchasedCourses: CourseWithProgress[] = Array.from(purchasedSlugs)
-    .map((slug) => getCourse(slug))
-    .filter((c): c is Course => c !== undefined)
-    .map((course) => {
-      const lessonIds = course.modules.flatMap((m) => m.lessons.map((l) => l.id));
-      const completed = lessonIds.filter((id) => completedLessonIds.has(id)).length;
-      const progress =
-        lessonIds.length > 0 ? Math.round((completed / lessonIds.length) * 100) : 0;
-      const status: CourseWithProgress["status"] =
-        progress === 100 ? "Abgeschlossen" : progress > 0 ? "In Bearbeitung" : "Neu";
-      return { ...course, progress, completedLessons: completed, totalLessons: lessonIds.length, status };
-    });
-
-  const completedCourses = purchasedCourses.filter((course) => course.status === "Abgeschlossen").length;
-
-  const availableCourses = allActiveDbSlugs
-    .filter((slug: string) => !purchasedSlugs.has(slug))
-    .map((slug: string) => getCourse(slug))
-    .filter((c): c is Course => c !== undefined);
-
-  const memberState = await syncMemberState({
-    supabase,
-    userId: user.id,
-    onboardingComplete: Boolean(profileResult.data?.onboarding_complete),
-    purchasedCourses: purchasedSlugs.size,
-    completedLessons: completedLessonIds.size,
-    completedCourses,
-    fallbackAvatarId:
-      typeof user.user_metadata?.avatar_id === "string" ? user.user_metadata.avatar_id : null,
-  });
-
-  return {
-    user: {
-      name: profileResult.data?.full_name ?? null,
-      email: user.email ?? "",
-      avatarId: memberState.selectedAvatarId,
-    },
-    purchasedCourses,
-    availableCourses,
-    totalLessonsCompleted: completedLessonIds.size,
-    completedCourses,
-    points: memberState.points,
-    rewardCount: memberState.rewardCount,
-    redirectToOnboarding: false,
-  };
-}
-
-function ProgressRing({ progress, size = 56 }: { progress: number; size?: number }) {
-  const radius = (size - 8) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (progress / 100) * circumference;
-  return (
-    <svg width={size} height={size} className="-rotate-90">
-      <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(240,180,41,0.12)" strokeWidth={4} />
-      <circle
-        cx={size / 2} cy={size / 2} r={radius} fill="none"
-        stroke="#F0B429" strokeWidth={4}
-        strokeDasharray={circumference} strokeDashoffset={offset}
-        strokeLinecap="round"
-        style={{ transition: "stroke-dashoffset 1s ease" }}
-      />
-    </svg>
-  );
-}
-
-export default async function DashboardPage() {
-  const { user, purchasedCourses, availableCourses, totalLessonsCompleted, completedCourses, points, rewardCount, redirectToOnboarding } =
-    await fetchDashboardData();
-
-  if (redirectToOnboarding) redirect("/dashboard/onboarding");
-
-  const avgProgress =
-    purchasedCourses.length > 0
-      ? Math.round(
-          purchasedCourses.reduce((sum, c) => sum + c.progress, 0) / purchasedCourses.length
-        )
-      : 0;
+  const { user, purchasedCourses, availableCourses, totalLessonsCompleted, completedCourses, points, rewardCount } = data;
 
   const inProgressCourses = purchasedCourses.filter((c) => c.status === "In Bearbeitung");
+  const latestCourse = inProgressCourses[0] || purchasedCourses[0];
   const displayName = user?.name ?? user?.email?.split("@")[0] ?? "Gold Miner";
   const memberLevel = getMemberLevel(points);
   const nextReward = getNextReward(points);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <AuthGate>
-      <section className="py-12 sm:py-16 bg-obsidian min-h-screen">
-        <div className="mx-auto max-w-7xl px-6">
+      <section className="py-12 sm:py-16 bg-obsidian min-h-screen relative overflow-hidden">
+        <SpatialBackground />
+        
+        <div className="mx-auto max-w-7xl px-6 relative z-10">
+          
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="space-y-10"
+          >
+            {/* ─── HEADER ─── */}
+            <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div className="space-y-4 flex-1">
+                <div className="flex items-center gap-3">
+                  <span className="tac-label text-gold-300/60 uppercase tracking-[0.2em]">Mitglieds-Status: Premium</span>
+                  <div className="h-px w-12 bg-gold-300/10" />
+                </div>
+                
+                <h1 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2.5rem,5vw,4rem)" }}>
+                  WILLKOMMEN, {displayName.toUpperCase()}.
+                </h1>
+                <p className="max-w-xl text-gold-300/40 font-mono text-[10px] uppercase tracking-[0.3em]">
+                  DEIN WEG ZUR DIGITALEN MEISTERSCHAFT
+                </p>
+              </div>
 
-          {/* Header */}
-          <div className="mb-8">
-            <div>
-              <p className="eyebrow mb-3">Willkommen zurück</p>
-              <h1
-                className="font-heading tracking-gta leading-none text-cream"
-                style={{ fontSize: "clamp(2rem,4vw,3.5rem)" }}
-              >
-                HEY, {displayName.toUpperCase()}.{" "}
-                <span className="gold-text">WEITER GRABEN.</span>
-              </h1>
-              <p className="mt-4 max-w-lg text-base text-cream/40">
-                Deine Lernzentrale — alle Kurse, dein Fortschritt, alles auf einen Blick.
-              </p>
-            </div>
-          </div>
-
-          <div className="mb-12">
-            <MemberProgressMap
-              points={points}
-              selectedAvatarId={user?.avatarId}
-              completedLessons={totalLessonsCompleted}
-              purchasedCourses={purchasedCourses.length}
-              completedCourses={completedCourses}
-              rewardCount={rewardCount}
-              compact
-            />
-          </div>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            {[
-              {
-                icon: BookOpen,
-                value: purchasedCourses.length,
-                label: "Kurse",
-                sub: "freigeschaltet",
-              },
-              {
-                icon: CheckCircle2,
-                value: totalLessonsCompleted,
-                label: "Lektionen",
-                sub: "abgeschlossen",
-              },
-              {
-                icon: TrendingUp,
-                value: `${avgProgress}%`,
-                label: "Fortschritt",
-                sub: "Ø über alle Kurse",
-              },
-              {
-                icon: Pickaxe,
-                value: completedCourses,
-                label: "Kurse",
-                sub: "fertig gestellt",
-              },
-            ].map((stat) => (
-              <div
-                key={stat.label + stat.sub}
-                className="panel-surface rounded-sm border border-gold-300/10 px-5 py-5 flex items-center gap-4"
-              >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-sm border border-gold-300/20 bg-gold-300/[0.06]">
-                  <stat.icon className="h-4.5 w-4.5 text-gold-300" style={{ width: 18, height: 18 }} />
+              {/* Quick Level Widget */}
+              <Link href="/dashboard/profil" className="flex items-center gap-4 p-4 border border-gold-300/10 bg-gold-300/[0.02] hover:bg-gold-300/[0.05] transition-all group tac-corners">
+                <div className="relative">
+                  <ProgressRing progress={memberLevel.progress} size={48} stroke={2} />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <MemberAvatar avatarId={user.avatarId} size="sm" hidePoints />
+                  </div>
                 </div>
                 <div>
-                  <p className="font-heading tracking-gta text-2xl text-cream leading-none">
-                    {stat.value}
-                  </p>
-                  <p className="text-xs text-cream/35 mt-0.5 leading-tight">
-                    {stat.label} <span className="block">{stat.sub}</span>
-                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gold-300/60">Level {memberLevel.current.level}</p>
+                  <p className="font-heading text-lg text-cream tracking-tight group-hover:text-gold-300 transition-colors">{memberLevel.current.title}</p>
                 </div>
-              </div>
-            ))}
-          </div>
+                <ChevronRight className="h-4 w-4 text-white/10 group-hover:text-gold-300 group-hover:translate-x-0.5 transition-all" />
+              </Link>
+            </motion.div>
 
-          <div className="grid gap-8 lg:grid-cols-3">
-            {/* Main column — courses */}
-            <div className="lg:col-span-2 space-y-8">
-
-              {/* Continue learning */}
-              {inProgressCourses.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <p className="eyebrow flex items-center gap-2">
-                      <Clock className="h-3.5 w-3.5" />
-                      Weitermachen
-                    </p>
-                  </div>
-                  <div className="space-y-3">
-                    {inProgressCourses.map((course) => (
-                      <Link
-                        key={course.slug}
-                        href={`/dashboard/kurse/${course.slug}`}
-                        className="panel-surface rounded-sm border border-gold-300/10 p-5 flex items-center gap-5 hover:border-gold-300/25 transition-colors group"
-                      >
-                        <ProgressRing progress={course.progress} size={52} />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-heading tracking-gta text-base text-cream truncate">
-                            {course.title}
-                          </p>
-                          <p className="text-xs text-cream/35 mt-0.5">
-                            {course.completedLessons} / {course.totalLessons} Lektionen ·{" "}
-                            {course.progress}% abgeschlossen
-                          </p>
-                          <div className="mt-2 h-[2px] w-full bg-cream/[0.06] rounded-sm overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-gold-500 to-gold-300"
-                              style={{ width: `${course.progress}%` }}
-                            />
-                          </div>
-                        </div>
-                        <ArrowRight className="h-4 w-4 text-gold-300/40 group-hover:text-gold-300 transition-colors flex-shrink-0" />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* All purchased courses */}
-              <div>
-                <div className="flex items-center justify-between mb-5">
-                  <p className="eyebrow">Deine Kurse</p>
-                  <Link
-                    href="/dashboard/kurse"
-                    className="text-xs text-gold-300/60 hover:text-gold-300 transition-colors font-bold uppercase tracking-[0.1em]"
+            {/* ─── MAIN CONTENT ─── */}
+            <div className="grid gap-8 lg:grid-cols-3">
+              
+              {/* Left Column: Action Hub */}
+              <div className="lg:col-span-2 space-y-8">
+                
+                {/* Resume Section - Now with 3D Visuals */}
+                {latestCourse && (
+                  <motion.div 
+                    variants={itemVariants} 
+                    className="relative group perspective-1000"
                   >
-                    Alle ansehen →
-                  </Link>
-                </div>
-
-                {purchasedCourses.length === 0 ? (
-                  <div className="rounded-sm border border-gold-300/10 bg-cream/[0.02] p-10 text-center">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-sm border border-gold-300/20 bg-gold-300/[0.06] mx-auto mb-5">
-                      <Lock className="h-6 w-6 text-gold-300/40" />
-                    </div>
-                    <p className="font-heading tracking-gta text-lg text-cream mb-2">
-                      Noch keine Kurse
-                    </p>
-                    <p className="text-cream/35 text-sm mb-6">
-                      Starte mit dem AI Goldmining Starter — dem schnellsten Weg zum ersten digitalen Produkt.
-                    </p>
-                    <Button href="/dashboard/kurse">Kurse entdecken</Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {purchasedCourses.map((course) => (
-                      <Link
-                        key={course.slug}
-                        href={`/dashboard/kurse/${course.slug}`}
-                        className="panel-surface rounded-sm border border-gold-300/10 p-5 flex items-center gap-4 hover:border-gold-300/25 transition-colors group"
-                      >
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-sm border border-gold-300/20 bg-gold-300/[0.06] text-xs font-heading tracking-gta text-gold-300">
-                          {course.progress === 100 ? (
-                            <CheckCircle2 className="h-4 w-4" />
-                          ) : (
-                            <span>{course.progress}%</span>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-heading tracking-gta text-base text-cream truncate">
-                            {course.title}
-                          </p>
-                          <p className="text-xs text-cream/35 mt-0.5">{course.tagline}</p>
-                        </div>
-                        <span
-                          className={`text-xs font-bold uppercase tracking-[0.08em] px-2.5 py-1 rounded-sm border flex-shrink-0 ${
-                            course.status === "Abgeschlossen"
-                              ? "border-gold-300/30 text-gold-300 bg-gold-300/[0.08]"
-                              : course.status === "In Bearbeitung"
-                              ? "border-cream/20 text-cream/50 bg-cream/[0.04]"
-                              : "border-cream/10 text-cream/25 bg-cream/[0.02]"
-                          }`}
-                        >
-                          {course.status}
-                        </span>
-                        <ArrowRight className="h-4 w-4 text-gold-300/40 group-hover:text-gold-300 transition-colors flex-shrink-0" />
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Right column — available courses + quick links */}
-            <div className="space-y-6">
-
-              {/* Quick actions */}
-              <div className="panel-surface rounded-sm border border-gold-300/10 p-5">
-                <p className="eyebrow mb-4">Avatar & Rewards</p>
-                <div className="rounded-2xl border border-gold-300/16 bg-gold-300/[0.05] p-4">
-                  <div className="flex items-center gap-2 text-gold-300">
-                    <Gift className="h-4 w-4" />
-                    <p className="text-[11px] uppercase tracking-[0.14em]">Nächster Reward</p>
-                  </div>
-                  <p className="mt-2 font-heading text-lg text-cream">
-                    {nextReward ? nextReward.title : "Alles freigeschaltet"}
-                  </p>
-                  <p className="mt-1 text-sm leading-relaxed text-cream/40">
-                    {nextReward
-                      ? `${nextReward.points - points} Punkte bis ${nextReward.title}.`
-                      : "Du hast aktuell alle Reward-Stufen dieser Version erreicht."}
-                  </p>
-                  <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-gold-300/65">
-                    {rewardCount} Rewards gespeichert
-                  </p>
-                  <Link
-                    href="/dashboard/profil"
-                    className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-gold-300/75 hover:text-gold-300"
-                  >
-                    Avatar ändern <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </div>
-
-              <div className="panel-surface rounded-sm border border-gold-300/10 p-5">
-                <p className="eyebrow mb-4">Schnellzugriff</p>
-                <div className="space-y-2">
-                  {[
-                    { href: "/dashboard/kurse", label: "Kursbibliothek", icon: BookOpen },
-                    { href: "/dashboard/profil", label: "Mein Profil", icon: CheckCircle2 },
-                    { href: "/kurse", label: "Alle Kurse", icon: ArrowRight },
-                  ].map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-cream/50 hover:bg-cream/[0.04] hover:text-cream/80 transition-colors"
-                    >
-                      <item.icon className="h-4 w-4 text-gold-300/40 flex-shrink-0" />
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Available courses to buy */}
-              {availableCourses.length > 0 && (
-                <div className="panel-surface rounded-sm border border-gold-300/10 p-5">
-                  <p className="eyebrow mb-4">Noch freizuschalten</p>
-                  <div className="space-y-3">
-                    {availableCourses.slice(0, 3).map((course) => (
-                      <div
-                        key={course.slug}
-                        className="flex items-start gap-3 border-b border-gold-300/[0.07] pb-3 last:border-0 last:pb-0"
-                      >
-                        <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-sm border border-white/[0.07] bg-white/[0.02]">
-                          <Lock className="h-3 w-3 text-white/25" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-cream/60 truncate">{course.title}</p>
-                          <p className="text-xs text-cream/25 mt-0.5">{formatEuro(course.priceCents)}</p>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-gold-300/20 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition duration-700 blur-xl" />
+                    
+                    <div className="relative bg-ink/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 md:p-10 overflow-hidden flex flex-col md:flex-row items-center gap-10">
+                      {/* 3D Asset Side */}
+                      <div className="relative shrink-0 w-32 h-32 md:w-48 md:h-48 group-hover:scale-110 transition-transform duration-700">
+                        <div className="absolute inset-0 bg-gold-300/10 rounded-full blur-3xl" />
+                        <GoldCrystal className="w-full h-full relative z-10" />
+                        
+                        <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
+                          <span className="font-heading text-3xl text-gold-300">{latestCourse.progress}%</span>
+                          <span className="text-[8px] font-mono text-gold-300/40 uppercase tracking-[0.2em]">Progress</span>
                         </div>
                       </div>
+                      
+                      <div className="flex-1 space-y-6 text-center md:text-left z-10">
+                        <div>
+                          <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                            <div className="h-px w-8 bg-gold-300/30" />
+                            <span className="tac-label text-gold-300/60 uppercase tracking-widest text-[9px]">Kurs Fortsetzen</span>
+                          </div>
+                          <h3 className="font-heading text-3xl md:text-5xl tracking-tight text-cream group-hover:text-gold-300 transition-colors">
+                            {latestCourse.title}
+                          </h3>
+                          <p className="text-cream/40 text-[10px] font-mono mt-2 uppercase tracking-[0.3em]">
+                             Sektor: {latestCourse.tagline || "Mining Operations"}
+                          </p>
+                        </div>
+                        
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                          <Button href={`/dashboard/kurse/${latestCourse.slug}`} className="w-full sm:w-auto h-12 px-10 bg-gold-300 text-ink hover:bg-white transition-all uppercase tracking-widest text-[10px] font-bold">
+                            <Play className="h-4 w-4 fill-current" />
+                            Operation Starten
+                          </Button>
+                          <div className="text-[9px] font-mono text-white/20 uppercase tracking-widest">
+                            {latestCourse.completedLessons} von {latestCourse.totalLessons} Inhalten abgeschlossen
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Active Grid */}
+                <motion.div variants={itemVariants} className="space-y-6">
+                  <div className="flex items-center justify-between">
+                      <h3 className="font-heading text-2xl tracking-tight uppercase">Deine Programme</h3>
+                  </div>
+
+                  {purchasedCourses.length === 0 ? (
+                    <div className="tac-panel tac-corners p-12 text-center border-white/5 bg-white/[0.01]">
+                      <Lock className="h-10 w-10 text-white/10 mx-auto mb-6" />
+                      <p className="font-heading text-xl text-cream mb-2 uppercase">Keine Kurse gefunden</p>
+                      <Button href="/dashboard/kurse" variant="outline">Store besuchen</Button>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {purchasedCourses.map((course) => (
+                        <Link
+                          key={course.slug}
+                          href={`/dashboard/kurse/${course.slug}`}
+                          className="tac-panel tac-corners p-5 border-white/5 bg-white/[0.02] hover:border-gold-300/30 transition-all group flex flex-col justify-between min-h-[140px]"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 border ${
+                              course.status === "Abgeschlossen" ? "border-gold-300/40 text-gold-300 bg-gold-300/5" : "border-white/10 text-white/40"
+                            }`}>
+                              {course.status}
+                            </span>
+                            <div className="h-8 w-8 rounded-full border border-white/5 flex items-center justify-center group-hover:border-gold-300/40 group-hover:bg-gold-300/[0.08] transition-all">
+                              <ArrowRight className="h-3 w-3 text-white/20 group-hover:text-gold-300 translate-x-[-2px] group-hover:translate-x-0 transition-all" />
+                            </div>
+                          </div>
+                          <div>
+                            <p className="font-heading text-xl text-cream mb-1 group-hover:text-gold-300 transition-colors">{course.title}</p>
+                            <div className="mt-3 h-1 w-full bg-white/5 overflow-hidden">
+                              <div className="h-full bg-gold-300/20 group-hover:bg-gold-300/40 transition-all duration-700" style={{ width: `${course.progress}%` }} />
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              </div>
+
+              {/* Right Column: Intel Sidebar */}
+              <div className="space-y-8">
+                
+                {/* Quick Stats Panel */}
+                <motion.div variants={itemVariants} className="tac-panel tac-corners p-6 border-white/5 bg-ink/40">
+                  <p className="tac-label mb-6 text-white/20 uppercase tracking-[0.2em]">Leistungs-Index</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 border border-white/5 bg-white/[0.01] tac-corners">
+                      <p className="text-[9px] font-bold text-white/20 uppercase mb-1">XP</p>
+                      <p className="font-heading text-2xl text-cream">{points}</p>
+                    </div>
+                    <div className="p-4 border border-white/5 bg-white/[0.01] tac-corners">
+                      <p className="text-[9px] font-bold text-white/20 uppercase mb-1">Lektionen</p>
+                      <p className="font-heading text-2xl text-cream">{totalLessonsCompleted}</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Milestone Panel */}
+                <motion.div variants={itemVariants} className="tac-panel tac-corners p-6 border-gold-300/10 bg-gold-300/[0.02]">
+                  <div className="flex items-center gap-2 text-gold-300/60 mb-6">
+                    <Gift className="h-4 w-4" />
+                    <span className="tac-label uppercase tracking-widest">Nächster Meilenstein</span>
+                  </div>
+                  <div className="space-y-4">
+                    <p className="font-heading text-xl text-cream tracking-tight">
+                      {nextReward ? nextReward.title : "ALLE ZIELE ERREICHT"}
+                    </p>
+                    <div className="h-1.5 w-full bg-white/5 overflow-hidden">
+                      <div className="h-full bg-gold-300 transition-all duration-1000" style={{ width: `${memberLevel.progress}%` }} />
+                    </div>
+                    <p className="text-[10px] text-cream/30 font-mono uppercase">
+                      {nextReward
+                        ? `Noch ${nextReward.points - points} XP bis zum Unlock`
+                        : "Sektor vollständig erschlossen"}
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Recommendations */}
+                <motion.div variants={itemVariants} className="space-y-4">
+                  <div className="flex items-center justify-between px-2">
+                    <span className="tac-label text-white/20 uppercase tracking-widest text-[9px]">Empfehlungen</span>
+                    <TrendingUp className="h-3 w-3 text-white/10" />
+                  </div>
+                  <div className="space-y-3">
+                    {availableCourses.slice(0, 2).map((course) => (
+                      <Link
+                        key={course.slug}
+                        href="/dashboard/kurse"
+                        className="block p-4 border border-white/5 bg-white/[0.01] hover:border-gold-300/20 hover:bg-gold-300/[0.02] transition-all group tac-corners"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="mt-1 h-8 w-8 shrink-0 flex items-center justify-center border border-white/10 bg-white/[0.02]">
+                            <Lock className="h-3.5 w-3.5 text-white/20 group-hover:text-gold-300/40 transition-colors" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-cream/60 truncate group-hover:text-cream transition-colors">{course.title}</p>
+                            <p className="text-[9px] font-mono text-gold-300/40 mt-1 uppercase">{formatEuro(course.price_cents)}</p>
+                          </div>
+                        </div>
+                      </Link>
                     ))}
                   </div>
-                  <Link
-                    href="/dashboard/kurse"
-                    className="mt-4 flex items-center justify-center gap-2 rounded-sm border border-gold-300/20 bg-gold-300/[0.05] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-gold-300 hover:bg-gold-300/[0.10] transition-colors"
-                  >
-                    Alle Kurse ansehen <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              )}
+                </motion.div>
 
-              {/* Motivation block */}
-              <div className="rounded-sm border border-gold-300/15 bg-gradient-to-br from-gold-300/[0.05] to-transparent p-5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-gold-300/25 bg-gold-300/10 mb-4">
-                  <Pickaxe className="h-4 w-4 text-gold-300" />
-                </div>
-                <p className="font-heading tracking-gta text-base text-cream mb-2">
-                  GOLDMINING METHODE
-                </p>
-                <p className="text-xs text-cream/40 leading-relaxed">
-                  Konsistenz schlägt Intensität. 30 Minuten täglich über 90 Tage bringen dich weiter als ein Marathon-Wochenende.
-                </p>
+                {/* Advice Card */}
+                <motion.div variants={itemVariants} className="p-6 border border-gold-300/10 bg-gradient-to-br from-gold-300/[0.03] to-transparent tac-corners">
+                  <Activity className="h-4 w-4 text-gold-300/40 mb-4" />
+                  <p className="font-heading text-lg text-cream mb-2 uppercase tracking-tight">Kern-Methode</p>
+                  <p className="text-[10px] text-cream/30 leading-relaxed font-mono uppercase">
+                    Konsistenz schlägt Intensität: 30 Min täglich ist wertvoller als ein Marathon-Wochenende.
+                  </p>
+                </motion.div>
+
               </div>
             </div>
-          </div>
-
+          </motion.div>
         </div>
       </section>
     </AuthGate>
+  );
+}
+
+function ProgressRing({ progress, size, stroke = 3 }: { progress: number; size: number; stroke?: number }) {
+  const radius = (size - stroke * 2) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (progress / 100) * circumference;
+
+  return (
+    <svg width={size} height={size} className="rotate-[-90deg]">
+      <circle
+        stroke="currentColor"
+        strokeWidth={stroke}
+        fill="transparent"
+        r={radius}
+        cx={size / 2}
+        cy={size / 2}
+        className="text-white/[0.05]"
+      />
+      <circle
+        stroke="currentColor"
+        strokeWidth={stroke}
+        strokeDasharray={circumference}
+        style={{ strokeDashoffset: offset }}
+        strokeLinecap="butt"
+        fill="transparent"
+        r={radius}
+        cx={size / 2}
+        cy={size / 2}
+        className="text-gold-300 transition-all duration-1000 ease-out"
+      />
+    </svg>
   );
 }

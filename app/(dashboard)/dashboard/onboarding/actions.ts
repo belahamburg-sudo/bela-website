@@ -8,6 +8,10 @@ export async function completeOnboarding(formData: FormData): Promise<void> {
   const name = (formData.get("name") as string | null)?.trim() ?? "";
   const goal = (formData.get("goal") as string | null)?.trim() ?? "";
   const avatarId = (formData.get("avatarId") as string | null)?.trim() ?? null;
+  const instagramFollowers = (formData.get("instagramFollowers") as string | null)?.trim() ?? "";
+  const tiktokFollowers = (formData.get("tiktokFollowers") as string | null)?.trim() ?? "";
+  const monthlySales = (formData.get("monthlySales") as string | null)?.trim() ?? "";
+  const businessStage = (formData.get("businessStage") as string | null)?.trim() ?? "";
 
   if (!name) return;
 
@@ -30,7 +34,17 @@ export async function completeOnboarding(formData: FormData): Promise<void> {
   // Update profile
   await supabase
     .from("profiles")
-    .update({ full_name: name, goal: goal || null, onboarding_complete: true })
+    .update({
+      full_name: name,
+      goal: goal || null,
+      business_snapshot: {
+        instagramFollowers,
+        tiktokFollowers,
+        monthlySales,
+        businessStage,
+      },
+      onboarding_complete: true,
+    })
     .eq("id", user.id);
 
   // Update user metadata with selected avatar if provided

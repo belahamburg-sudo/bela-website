@@ -6,6 +6,7 @@ import { useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { Button } from "./button";
+import { cn } from "@/lib/utils";
 
 type CheckoutResult = {
   url?: string;
@@ -15,10 +16,12 @@ type CheckoutResult = {
 
 export function CheckoutButton({
   courseSlug,
-  label = "Kurs kaufen"
+  label = "Kurs kaufen",
+  className,
 }: {
   courseSlug: string;
   label?: string;
+  className?: string;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +82,7 @@ export function CheckoutButton({
 
   return (
     <div className="space-y-3">
-      <Button onClick={startCheckout} disabled={loading} className="w-full sm:w-auto">
+      <Button onClick={startCheckout} disabled={loading} className={cn("w-full sm:w-auto", className)}>
         {loading ? (
           <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
         ) : (

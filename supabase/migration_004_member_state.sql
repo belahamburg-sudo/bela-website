@@ -27,6 +27,9 @@ create policy "Member state is readable by owner" on public.member_state
 create policy "Member state is insertable by owner" on public.member_state
   for insert with check (auth.uid() = user_id);
 
+alter table public.profiles
+  add column if not exists business_snapshot jsonb not null default '{}'::jsonb;
+
 create policy "Member state is editable by owner" on public.member_state
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
