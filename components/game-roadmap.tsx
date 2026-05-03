@@ -194,6 +194,7 @@ function Terrain() {
 
   return (
     <group>
+      {/* Floor - Dark stone mine floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2.5, -0.1, 0.7]} receiveShadow>
         <planeGeometry args={[30, 15, 32, 16]} />
         <meshStandardMaterial
@@ -204,8 +205,69 @@ function Terrain() {
           metalness={0.08}
         />
       </mesh>
-      <gridHelper args={[30, 30, "#d79b25", "#34240d"]} position={[2.5, -0.055, 0.7]} />
 
+      {/* Left mine wall */}
+      <mesh position={[-15, 1, 0.7]} receiveShadow castShadow>
+        <boxGeometry args={[1, 8, 15]} />
+        <meshStandardMaterial
+          color="#0f0a06"
+          emissive="#1a1200"
+          emissiveIntensity={0.15}
+          roughness={0.92}
+        />
+      </mesh>
+
+      {/* Right mine wall */}
+      <mesh position={[20, 1, 0.7]} receiveShadow castShadow>
+        <boxGeometry args={[1, 8, 15]} />
+        <meshStandardMaterial
+          color="#0f0a06"
+          emissive="#1a1200"
+          emissiveIntensity={0.15}
+          roughness={0.92}
+        />
+      </mesh>
+
+      {/* Ceiling - mine ceiling with texture */}
+      <mesh position={[2.5, 3.8, 0.7]} receiveShadow castShadow>
+        <boxGeometry args={[30, 1, 15]} />
+        <meshStandardMaterial
+          color="#0d0804"
+          emissive="#3d2500"
+          emissiveIntensity={0.2}
+          roughness={0.85}
+        />
+      </mesh>
+
+      {/* Gold ore veins on walls */}
+      {[...Array(5)].map((_, i) => (
+        <mesh key={`wall-ore-left-${i}`} position={[-14.5, 0.5 + i * 1.2, -5 + i * 2]} castShadow>
+          <boxGeometry args={[0.5, 0.8, 0.6]} />
+          <meshStandardMaterial
+            color="#D4AF37"
+            emissive="#F0B429"
+            emissiveIntensity={0.35}
+            metalness={0.8}
+            roughness={0.3}
+          />
+        </mesh>
+      ))}
+
+      {/* Support pillars - goldmine architecture */}
+      {[...Array(5)].map((_, i) => (
+        <mesh key={`pillar-${i}`} position={[-10 + i * 6, 1, -3 + (i % 2) * 6]} castShadow receiveShadow>
+          <cylinderGeometry args={[0.35, 0.45, 3.5, 8]} />
+          <meshStandardMaterial
+            color="#1a1410"
+            emissive="#2a1f00"
+            emissiveIntensity={0.15}
+            roughness={0.8}
+            metalness={0.4}
+          />
+        </mesh>
+      ))}
+
+      {/* Gold deposits scattered on ground */}
       {decor.map(([x, z, scale], index) => (
         <Float key={`${x}-${z}`} speed={1.2 + index * 0.08} floatIntensity={0.25} rotationIntensity={0.35}>
           <mesh position={[x, terrainHeight(x, z) + scale * 0.42, z]} scale={scale} castShadow>
@@ -220,6 +282,18 @@ function Terrain() {
           </mesh>
         </Float>
       ))}
+
+      {/* Ambient goldmine atmosphere glow */}
+      <mesh position={[2.5, 1.5, 0.7]}>
+        <sphereGeometry args={[20, 16, 16]} />
+        <meshStandardMaterial
+          color="#000000"
+          transparent
+          opacity={0.12}
+          emissive="#F0B429"
+          emissiveIntensity={0.08}
+        />
+      </mesh>
     </group>
   );
 }

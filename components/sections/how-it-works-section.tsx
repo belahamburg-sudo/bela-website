@@ -54,7 +54,7 @@ export function HowItWorksSection() {
 
         <div ref={contentRef} style={{ opacity: 0 }}>
           {/* Animated search bar */}
-          <div className="mx-auto max-w-lg mb-8 lg:mb-12 rounded-full border border-gold-300/20 bg-white/[0.03] backdrop-blur-sm overflow-hidden shadow-[0_0_0_1px_rgba(240,180,41,0.03)]">
+          <div className="mx-auto max-w-lg mb-8 lg:mb-12 rounded-sm border border-gold-300/20 bg-white/[0.03] backdrop-blur-sm overflow-hidden shadow-[0_0_0_1px_rgba(240,180,41,0.03)]">
             <div className="flex items-center gap-3 px-4 py-3.5">
               <Search className="h-4 w-4 text-cream/30 shrink-0" />
               <span
@@ -64,11 +64,6 @@ export function HowItWorksSection() {
                 {SEARCHES[currentSearch]}
               </span>
               <span className="inline-block w-[2px] h-4 bg-gold-300/70 animate-pulse shrink-0" />
-            </div>
-            <div className="px-4 py-2 border-t border-gold-300/10 bg-gold-300/[0.04]">
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-gold-300/50 text-center">
-                Millionen Menschen suchen täglich nach Lösungen
-              </p>
             </div>
           </div>
 
