@@ -97,12 +97,17 @@ export function CtaFooterSection() {
         <div className="mx-auto max-w-7xl px-6 py-16">
           <div className="grid gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>
-              <div className="flex items-center gap-3 mb-5">
-                <GtaLogoMark />
-                <div>
-                  <p className="font-heading tracking-gta text-xl text-cream">Bela Goldmann</p>
-                  <p className="gta-label">AI Goldmining</p>
-                </div>
+              <div className="mb-5">
+                <Link href="/">
+                  <Image
+                    src="/assets/logo-ai-goldmining-tight.png"
+                    alt="AI Goldmining"
+                    width={340}
+                    height={64}
+                    className="h-auto w-[160px]"
+                  />
+                </Link>
+                <p className="mt-3 font-heading tracking-gta text-sm text-cream/50 uppercase">Bela Goldmann</p>
               </div>
               <p className="max-w-sm text-sm leading-7 text-cream/40">
                 Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen. Kein Guru-Playbook. Eine Methode mit realistischem Zielrahmen.
@@ -128,27 +133,6 @@ export function CtaFooterSection() {
   );
 }
 
-function GtaLogoMark() {
-  return (
-    <span className="relative flex h-10 w-10 items-center justify-center shrink-0">
-      <span className="absolute inset-0 rounded-sm bg-gradient-to-br from-gold-200 to-gold-600" />
-      <span className="absolute inset-[1.5px] rounded-sm bg-obsidian" />
-      <svg
-        viewBox="0 0 24 24"
-        className="relative h-5 w-5 text-gold-300"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        aria-hidden
-      >
-        <path d="M4 20 L12 4 L20 20 Z" />
-        <path d="M8 14 L16 14" opacity="0.6" />
-      </svg>
-    </span>
-  );
-}
 
 function FooterColumn({
   title,
