@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { Button } from "./button";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "confirm_email">("idle");
@@ -67,9 +66,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       } else {
         const response = await fetch("/api/auth/signup", {
           method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
+          headers: { "content-type": "application/json" },
           body: JSON.stringify({ email, password }),
         });
 
@@ -95,17 +92,17 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   if (status === "confirm_email") {
     return (
       <div className="grid gap-5">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold-300/30 bg-gold-500/10">
-          <Mail aria-hidden className="h-6 w-6 text-gold-300" />
+        <div className="flex h-12 w-12 items-center justify-center border border-gold-300/30 bg-gold-300/10">
+          <Mail aria-hidden className="h-5 w-5 text-gold-300" />
         </div>
         <div>
-          <p className="font-heading text-xl text-white mb-2">Check deine Inbox</p>
-          <p className="text-white/50 leading-relaxed text-sm">
+          <p className="font-heading text-xl uppercase tracking-gta text-cream mb-2">Check deine Inbox</p>
+          <p className="text-cream/50 leading-relaxed text-sm font-mono">
             Wir haben dir einen Bestätigungslink geschickt. Klick den Link und du landest direkt im Onboarding.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-white/30">
-          <CheckCircle2 aria-hidden className="h-3.5 w-3.5 text-gold-300/60" />
+        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cream/25">
+          <CheckCircle2 aria-hidden className="h-3 w-3 text-gold-300/60" />
           Kein Spam — nur diese eine E-Mail
         </div>
       </div>
@@ -113,9 +110,9 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-5">
+    <form onSubmit={onSubmit} className="grid gap-4">
       <div>
-        <label htmlFor="email" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-gold-300">
+        <label htmlFor="email" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-gold-300/70">
           E-Mail
         </label>
         <input
@@ -124,12 +121,12 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           type="email"
           required
           autoComplete="email"
-          className="focus-ring min-h-12 w-full rounded-xl border border-gold-500/15 bg-obsidian/80 px-4 text-white placeholder:text-white/25 transition-colors focus:border-gold-300/60"
+          className="focus-ring min-h-12 w-full border border-gold-300/15 bg-black/40 px-4 text-cream placeholder:text-cream/20 transition-colors focus:border-gold-300/50 focus:bg-black/60 outline-none"
           placeholder="du@mail.com"
         />
       </div>
       <div>
-        <label htmlFor="password" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-gold-300">
+        <label htmlFor="password" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-gold-300/70">
           Passwort
         </label>
         <input
@@ -139,14 +136,22 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           required
           minLength={6}
           autoComplete={mode === "login" ? "current-password" : "new-password"}
-          className="focus-ring min-h-12 w-full rounded-xl border border-gold-500/15 bg-obsidian/80 px-4 text-white placeholder:text-white/25 transition-colors focus:border-gold-300/60"
+          className="focus-ring min-h-12 w-full border border-gold-300/15 bg-black/40 px-4 text-cream placeholder:text-cream/20 transition-colors focus:border-gold-300/50 focus:bg-black/60 outline-none"
           placeholder="Mindestens 6 Zeichen"
         />
       </div>
+
       {status === "error" && message ? (
-        <p className="text-sm font-semibold text-red-300">{message}</p>
+        <div className="border border-red-400/20 bg-red-400/5 px-4 py-3">
+          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-red-300">{message}</p>
+        </div>
       ) : null}
-      <Button type="submit" disabled={status === "loading"}>
+
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="btn-shimmer relative mt-2 flex w-full items-center justify-center gap-2.5 bg-gradient-to-b from-gold-200 to-gold-400 px-6 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian shadow-[0_8px_30px_-8px_rgba(160,107,0,0.7)] transition-all hover:from-gold-100 hover:to-gold-300 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+      >
         {status === "loading" ? (
           <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
         ) : mode === "login" ? (
@@ -155,7 +160,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           <UserPlus aria-hidden className="h-4 w-4" />
         )}
         {mode === "login" ? "Einloggen" : "Account erstellen"}
-      </Button>
+      </button>
     </form>
   );
 }
