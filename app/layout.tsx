@@ -35,22 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de" className={`dark scroll-smooth ${heading.variable} ${body.variable}`}>
+    <html lang="de" className={`dark scroll-smooth ${hanken.variable}`}>
       <body className="bg-obsidian font-body text-cream antialiased">
         <a
           href="#main"
           className="focus-ring fixed left-4 top-4 z-[100] -translate-y-20 rounded-sm bg-gold-300 px-4 py-3 text-sm font-bold text-obsidian transition focus:translate-y-0"
-        >
-          Zum Inhalt springen
-        </a>
-        <PickaxeCursor />
-        <AuthHashHandler />
-        {children}
-      </body>
-    </html>
-  );
-}
-late-y-0"
         >
           Zum Inhalt springen
         </a>
