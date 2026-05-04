@@ -81,7 +81,7 @@ export default function AboutPage() {
     <>
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-obsidian py-24 lg:py-32">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(240,180,41,0.08),transparent_55%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(200,146,42,0.08),transparent_55%)]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold-300/35 to-transparent" />
 
         <div className="relative mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">

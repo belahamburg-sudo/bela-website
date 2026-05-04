@@ -100,13 +100,13 @@ export default function OnboardingPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="relative overflow-hidden rounded-[2rem] border border-gold-300/14 bg-[#120e08]/90 p-6 shadow-[0_24px_100px_rgba(0,0,0,0.42)] backdrop-blur-xl sm:p-8 lg:p-10">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(240,180,41,0.08),transparent_40%)]" aria-hidden />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(200,146,42,0.08),transparent_40%)]" aria-hidden />
 
             <div className="relative z-10">
               {step === 1 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(200,146,42,0.15)]">
                       <User className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -136,7 +136,7 @@ export default function OnboardingPage() {
               {step === 2 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(200,146,42,0.15)]">
                       <Target className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
                         }}
                         className={`rounded-2xl border p-5 text-left transition-all ${
                           goal === item
-                            ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_20px_rgba(240,180,41,0.1)]"
+                            ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_20px_rgba(200,146,42,0.1)]"
                             : "border-white/10 bg-white/[0.03] hover:border-gold-300/30 hover:bg-white/[0.05]"
                         }`}
                       >
@@ -178,7 +178,7 @@ export default function OnboardingPage() {
               {step === 3 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(200,146,42,0.15)]">
                       <Sparkles className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export default function OnboardingPage() {
                         }}
                         className={`rounded-2xl border p-5 text-left transition-all ${
                           stage === item
-                            ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_20px_rgba(240,180,41,0.1)]"
+                            ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_20px_rgba(200,146,42,0.1)]"
                             : "border-white/10 bg-white/[0.03] hover:border-gold-300/30 hover:bg-white/[0.05]"
                         }`}
                       >
@@ -220,7 +220,7 @@ export default function OnboardingPage() {
               {step === 4 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(200,146,42,0.15)]">
                       <Zap className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -290,7 +290,7 @@ export default function OnboardingPage() {
               {step === 5 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(200,146,42,0.15)]">
                       <Zap className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -309,7 +309,7 @@ export default function OnboardingPage() {
                           onClick={() => setAvatarId(starterClass.id)}
                           className={`relative flex flex-col items-center rounded-3xl border p-6 text-center transition-all ${
                             isSelected
-                              ? "z-10 scale-[1.02] border-gold-300 bg-gold-gradient/[0.08] shadow-[0_20px_50px_rgba(240,180,41,0.2)]"
+                              ? "z-10 scale-[1.02] border-gold-300 bg-gold-gradient/[0.08] shadow-[0_20px_50px_rgba(200,146,42,0.2)]"
                               : "border-white/10 bg-white/[0.02] hover:border-gold-300/30 hover:bg-white/[0.04]"
                           }`}
                         >

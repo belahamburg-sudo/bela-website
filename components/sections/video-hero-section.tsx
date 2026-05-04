@@ -43,7 +43,7 @@ export function VideoHeroSection() {
         aria-hidden
         style={{
           background:
-            "radial-gradient(ellipse 70% 55% at 50% 35%, rgba(212,175,55,0.07) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 55% at 50% 35%, rgba(200,146,42,0.07) 0%, transparent 70%)",
         }}
       />
 
@@ -56,7 +56,7 @@ export function VideoHeroSection() {
           transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="relative flex items-center gap-2.5 rounded-full border-2 border-gold-300/60 bg-black/60 backdrop-blur px-4 py-2"
           style={{
-            boxShadow: "0 0 20px rgba(212,175,55,0.3), inset 0 0 20px rgba(212,175,55,0.1)"
+            boxShadow: "0 0 20px rgba(200,146,42,0.3), inset 0 0 20px rgba(200,146,42,0.1)"
           }}
         >
           <span className="text-[0.65rem] font-mono font-bold uppercase tracking-[0.25em] text-gold-300">
@@ -118,7 +118,7 @@ export function VideoHeroSection() {
             {!playing && (
               <div
                 className="absolute inset-0 pointer-events-none"
-                style={{ background: "radial-gradient(ellipse at center, rgba(212,175,55,0.15) 0%, transparent 65%)" }}
+                style={{ background: "radial-gradient(ellipse at center, rgba(200,146,42,0.15) 0%, transparent 65%)" }}
                 aria-hidden
               />
             )}
@@ -207,7 +207,7 @@ export function VideoHeroSection() {
           <div className="flex flex-col items-center gap-3 sm:flex-row mb-1">
             <Link
               href="/webinar"
-              className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-700 via-gold-100 to-gold-700 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:from-gold-600 hover:via-gold-50 hover:to-gold-600 hover:shadow-[0_0_50px_rgba(212,175,55,0.45)] relative overflow-hidden"
+              className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-700 via-gold-100 to-gold-700 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:from-gold-600 hover:via-gold-50 hover:to-gold-600 hover:shadow-[0_0_50px_rgba(200,146,42,0.45)] relative overflow-hidden"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <span className="relative">Webinar starten</span> →

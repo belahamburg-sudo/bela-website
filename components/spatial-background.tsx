@@ -78,7 +78,7 @@ function FloatingOreMesh({ particle }: { particle: any }) {
     <mesh ref={ref} scale={particle.scale}>
       <octahedronGeometry args={[1, 1]} />
       <meshStandardMaterial
-        color="#D4AF37"
+        color="#C8922A"
         emissive="#F0B429"
         emissiveIntensity={0.5}
         metalness={0.85}

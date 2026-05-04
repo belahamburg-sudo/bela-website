@@ -24,7 +24,7 @@ export function MemberAvatar({ avatarId, points = 0, size = "md", hidePoints = f
   return (
     <div className="relative inline-flex flex-col items-center gap-2">
       <div
-        className={`relative flex items-center justify-center overflow-hidden rounded-[24px] border border-gold-300/20 bg-gradient-to-br ${avatar.accent} ${sizeClasses[size]} shadow-[0_18px_50px_rgba(240,180,41,0.18)]`}
+        className={`relative flex items-center justify-center overflow-hidden rounded-[24px] border border-gold-300/20 bg-gradient-to-br ${avatar.accent} ${sizeClasses[size]} shadow-[0_18px_50px_rgba(200,146,42,0.18)]`}
       >
         <Image 
           src={avatarUrl} 

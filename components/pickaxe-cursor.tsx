@@ -32,7 +32,7 @@ export function PickaxeCursor() {
         userSelect: "none",
         opacity: 1,
         transition: "transform 0.1s ease-out",
-        filter: "drop-shadow(0 0 5px rgba(212,175,55,0.4))",
+        filter: "drop-shadow(0 0 5px rgba(200,146,42,0.4))",
       }}
     >
       ⛏️

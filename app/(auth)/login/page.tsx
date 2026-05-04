@@ -17,12 +17,12 @@ export default function LoginPage() {
 
         {/* Background */}
         <div className="pointer-events-none absolute inset-0" aria-hidden>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(240,180,41,0.13),transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(200,146,42,0.13),transparent_55%)]" />
           <div className="absolute left-0 top-0 h-full w-full opacity-[0.06]">
             <Image src="/assets/mine-bg.jpg" alt="" fill className="object-cover object-center" sizes="100vw" />
           </div>
           <div className="absolute inset-0 bg-obsidian/88" />
-          <div className="absolute inset-0 opacity-[0.035] [background-image:linear-gradient(rgba(240,180,41,1)_1px,transparent_1px),linear-gradient(90deg,rgba(240,180,41,1)_1px,transparent_1px)] [background-size:60px_60px]" />
+          <div className="absolute inset-0 opacity-[0.035] [background-image:linear-gradient(rgba(200,146,42,1)_1px,transparent_1px),linear-gradient(90deg,rgba(200,146,42,1)_1px,transparent_1px)] [background-size:60px_60px]" />
         </div>
 
         {/* Top nav bar */}

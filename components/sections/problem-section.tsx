@@ -75,7 +75,7 @@ export function ProblemSection() {
           <ul ref={listRef} className="space-y-6 lg:space-y-8 pt-2">
             {PROBLEMS.map((p) => (
               <li key={p.num} className="flex gap-4 lg:gap-6 items-start" style={{ opacity: 0 }}>
-                <span className="font-heading tracking-gta text-3xl lg:text-4xl text-gold-300/60 leading-none select-none shrink-0 w-8 lg:w-10 text-right" style={{ textShadow: "0 0 10px rgba(212,175,55,0.3)" }}>
+                <span className="font-heading tracking-gta text-3xl lg:text-4xl text-gold-300/60 leading-none select-none shrink-0 w-8 lg:w-10 text-right" style={{ textShadow: "0 0 10px rgba(200,146,42,0.3)" }}>
                   {p.num}
                 </span>
                 <div>
@@ -98,7 +98,7 @@ export function ProblemSection() {
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(135deg, rgba(212,175,55,0.06), transparent 60%)",
+              background: "linear-gradient(135deg, rgba(200,146,42,0.06), transparent 60%)",
             }}
             aria-hidden
           />

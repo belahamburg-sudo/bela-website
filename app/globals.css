@@ -12,8 +12,8 @@
   color-scheme: dark;
   --background: #0a0806;
   --foreground: #fdfbf7;
-  --gold: #D4AF37;
-  --gold-deep: #8B6508;
+  --gold: #C8922A;
+  --gold-deep: #7D5812;
 }
 
 * {
@@ -87,13 +87,13 @@ select {
 }
 
 /* Force hide system cursor when pickaxe is active */
-.hide-system-cursor, 
+.hide-system-cursor,
 .hide-system-cursor * {
   cursor: none !important;
 }
 
 ::selection {
-  background: rgba(212, 175, 55, 0.38);
+  background: rgba(200, 146, 42, 0.38);
   color: #fffaf0;
 }
 
@@ -105,11 +105,11 @@ select {
   background: #0a0806;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(160, 107, 0, 0.35);
+  background: rgba(140, 90, 20, 0.35);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(240, 180, 41, 0.45);
+  background: rgba(200, 146, 42, 0.45);
 }
 
 @layer components {
@@ -127,15 +127,15 @@ select {
 
   .panel-surface {
     @apply relative rounded-[0.35rem] border border-gold-300/15 bg-gradient-to-b from-panel/90 to-graphite/80;
-    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.04), 0 20px 60px -30px rgba(0,0,0,0.9), 0 0 0 1px rgba(212,175,55,0.08);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.04), 0 20px 60px -30px rgba(0,0,0,0.9), 0 0 0 1px rgba(200,146,42,0.08);
   }
 
   .panel-surface-glow {
     @apply panel-surface;
     box-shadow:
       inset 0 1px 0 0 rgba(255,255,255,0.05),
-      0 0 0 1px rgba(212,175,55,0.15),
-      0 30px 80px -30px rgba(160,107,0,0.4);
+      0 0 0 1px rgba(200,146,42,0.15),
+      0 30px 80px -30px rgba(140,90,20,0.4);
   }
 
   .focus-ring {
@@ -147,41 +147,41 @@ select {
     @apply inline-flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-gold-200;
     @apply px-3 py-1.5 sm:px-4 rounded-full border border-gold-300/30 bg-gold-400/10 backdrop-blur-md;
     @apply w-fit whitespace-nowrap;
-    box-shadow: 0 0 15px rgba(212,175,55,0.1), inset 0 0 10px rgba(212,175,55,0.05);
+    box-shadow: 0 0 15px rgba(200,146,42,0.1), inset 0 0 10px rgba(200,146,42,0.05);
   }
 
   .bg-gold-gradient {
     background: linear-gradient(
-      180deg, 
-      #FDE68A 0%, 
-      #D4AF37 35%, 
-      #A67C00 65%, 
-      #78350F 100%
+      180deg,
+      #F5D778 0%,
+      #C8922A 35%,
+      #9B6A14 65%,
+      #6B400E 100%
     );
   }
 
   .gold-text {
     background: linear-gradient(
-      180deg, 
-      #FDE68A 0%, 
-      #D4AF37 35%, 
-      #A67C00 65%, 
-      #78350F 100%
+      180deg,
+      #F5D778 0%,
+      #C8922A 35%,
+      #9B6A14 65%,
+      #6B400E 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 2px 15px rgba(212,175,55,0.3));
+    filter: drop-shadow(0 2px 15px rgba(200,146,42,0.3));
   }
 
   .gold-text-shine {
     background: linear-gradient(
       110deg,
-      #D4AF37 20%,
+      #C8922A 20%,
       #FDF3D0 35%,
-      #FBE7A1 50%,
-      #B8860B 65%,
-      #D4AF37 80%
+      #F5D778 50%,
+      #A07015 65%,
+      #C8922A 80%
     );
     background-size: 200% 100%;
     -webkit-background-clip: text;
@@ -205,9 +205,9 @@ select {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(160,107,0,0.4) 25%,
-      rgba(212,175,55,0.65) 50%,
-      rgba(160,107,0,0.4) 75%,
+      rgba(140,90,20,0.4) 25%,
+      rgba(200,146,42,0.65) 50%,
+      rgba(140,90,20,0.4) 75%,
       transparent 100%
     );
   }
@@ -249,7 +249,7 @@ select {
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(212,175,55,0.5), transparent 40%, transparent 60%, rgba(160,107,0,0.4));
+    background: linear-gradient(135deg, rgba(200,146,42,0.5), transparent 40%, transparent 60%, rgba(140,90,20,0.4));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -304,7 +304,7 @@ select {
 
   /* Scratched texture border */
   .scratch-border {
-    border-top: 1px solid rgba(212,175,55,0.2);
+    border-top: 1px solid rgba(200,146,42,0.2);
     position: relative;
   }
   .scratch-border::before {
@@ -314,32 +314,32 @@ select {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6) 30%, rgba(255,230,100,0.9) 50%, rgba(212,175,55,0.6) 70%, transparent);
+    background: linear-gradient(90deg, transparent, rgba(200,146,42,0.6) 30%, rgba(240,200,80,0.9) 50%, rgba(200,146,42,0.6) 70%, transparent);
   }
 
   /* Gold video frame as seen on SS */
   .video-frame-gold {
     @apply relative overflow-hidden rounded-[4px] border-[3px];
-    border-image: linear-gradient(to bottom, #FDE68A, #D4AF37, #78350F) 1;
-    box-shadow: 0 0 30px rgba(212,175,55,0.25), inset 0 0 20px rgba(0,0,0,0.5);
+    border-image: linear-gradient(to bottom, #F5D778, #C8922A, #6B400E) 1;
+    box-shadow: 0 0 30px rgba(200,146,42,0.25), inset 0 0 20px rgba(0,0,0,0.5);
   }
 
   .play-btn-gold {
     @apply flex items-center justify-center rounded-[8px] border border-gold-300/50 shadow-lg transition-all;
-    background: linear-gradient(135deg, #FDE68A 0%, #D4AF37 50%, #78350F 100%);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px rgba(212,175,55,0.3);
+    background: linear-gradient(135deg, #F5D778 0%, #C8922A 50%, #6B400E 100%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px rgba(200,146,42,0.3);
   }
 
   .play-btn-gold:hover {
     @apply scale-105;
     filter: brightness(1.1);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(212,175,55,0.5);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(200,146,42,0.5);
   }
 
   /* Tactical UI Utilities */
   .tac-panel {
     @apply relative border border-gold-300/10 bg-obsidian/80 backdrop-blur-sm;
-    box-shadow: 0 0 0 1px rgba(212,175,55,0.03), 0 20px 40px -20px rgba(0,0,0,0.8);
+    box-shadow: 0 0 0 1px rgba(200,146,42,0.03), 0 20px 40px -20px rgba(0,0,0,0.8);
   }
 
   .tac-corners {
@@ -352,7 +352,7 @@ select {
     position: absolute;
     width: 8px;
     height: 8px;
-    border: 1.5px solid rgba(212,175,55,0.5);
+    border: 1.5px solid rgba(200,146,42,0.5);
     pointer-events: none;
     z-index: 5;
     transition: all 0.3s ease;
@@ -388,7 +388,7 @@ select {
     background: linear-gradient(
       to bottom,
       transparent 0%,
-      rgba(212,175,55,0.03) 50%,
+      rgba(200,146,42,0.03) 50%,
       transparent 100%
     );
     background-size: 100% 4px;
@@ -414,7 +414,7 @@ select {
 
 @layer utilities {
   .text-stroke-gold {
-    -webkit-text-stroke: 1.5px rgba(160, 107, 0, 0.6);
+    -webkit-text-stroke: 1.5px rgba(140, 90, 20, 0.6);
     color: transparent;
   }
 
@@ -426,7 +426,7 @@ select {
   /* GTA Mission styling */
   .mission-badge {
     @apply relative inline-flex items-center gap-2 rounded-full border-2 border-gold-300/60 bg-black/60 backdrop-blur px-3 py-1.5;
-    box-shadow: 0 0 15px rgba(212,175,55,0.3), inset 0 0 15px rgba(212,175,55,0.1);
+    box-shadow: 0 0 15px rgba(200,146,42,0.3), inset 0 0 15px rgba(200,146,42,0.1);
   }
 
   .mission-text {
@@ -451,7 +451,7 @@ select {
   /* Gold text glow */
   .gold-glow {
     @apply text-gold-300;
-    text-shadow: 0 0 20px rgba(212,175,55,0.4);
+    text-shadow: 0 0 20px rgba(200,146,42,0.4);
   }
 }
 

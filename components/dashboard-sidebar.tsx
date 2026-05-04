@@ -53,14 +53,14 @@ function NavLink({
       onClick={onClick}
       className={`group relative flex items-center gap-3 px-4 py-4 text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 ${
         isActive
-          ? "text-gold-300 bg-gold-300/[0.04] shadow-[inset_0_0_20px_rgba(240,180,41,0.05)]"
+          ? "text-gold-300 bg-gold-300/[0.04] shadow-[inset_0_0_20px_rgba(200,146,42,0.05)]"
           : "text-cream/30 hover:text-cream/80 hover:bg-white/[0.02]"
       }`}
     >
       {isActive && (
         <motion.div 
           layoutId="activeNav"
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-gold-300 shadow-[0_0_10px_rgba(240,180,41,0.5)]" 
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-gold-300 shadow-[0_0_10px_rgba(200,146,42,0.5)]" 
         />
       )}
       
