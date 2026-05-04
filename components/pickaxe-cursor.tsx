@@ -33,13 +33,13 @@ export function PickaxeCursor() {
         top: pos.y,
         pointerEvents: "none",
         zIndex: 99999,
-        transform: "translate(-4px, -20px) rotate(-20deg)",
-        fontSize: "20px",
+        transform: "translate(-8px, -38px) rotate(-20deg)",
+        fontSize: "40px",
         lineHeight: 1,
         userSelect: "none",
         opacity: active ? 1 : 0,
         transition: "opacity 0.08s",
-        filter: "drop-shadow(0 0 4px rgba(240,180,41,0.6))",
+        filter: "brightness(0) drop-shadow(0 0 3px rgba(255,255,255,0.3))",
       }}
     >
       ⛏
