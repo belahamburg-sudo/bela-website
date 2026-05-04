@@ -145,7 +145,7 @@ export default function AboutPage() {
                   rel={cta.external ? "noopener noreferrer" : undefined}
                   className={
                     cta.primary
-                      ? "btn-shimmer inline-flex items-center justify-center gap-2 rounded-full bg-gold-300 px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
+                      ? "btn-shimmer inline-flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
                       : "inline-flex items-center justify-center gap-2 rounded-full border border-gold-300/35 px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/70 hover:bg-gold-300/5 hover:text-cream"
                   }
                 >
@@ -291,7 +291,7 @@ export default function AboutPage() {
                 rel={cta.external ? "noopener noreferrer" : undefined}
                 className={
                   cta.primary
-                    ? "btn-shimmer inline-flex items-center justify-center gap-2 rounded-full bg-gold-300 px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
+                    ? "btn-shimmer inline-flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
                     : "inline-flex items-center justify-center gap-2 rounded-full border border-gold-300/35 px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/70 hover:bg-gold-300/5 hover:text-cream"
                 }
               >

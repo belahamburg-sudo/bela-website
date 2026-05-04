@@ -150,7 +150,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="btn-shimmer relative mt-2 flex w-full items-center justify-center gap-2.5 bg-gradient-to-b from-gold-200 to-gold-400 px-6 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian shadow-[0_8px_30px_-8px_rgba(125,88,18,0.7)] transition-all hover:from-gold-100 hover:to-gold-300 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+        className="btn-shimmer relative mt-2 flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-6 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian shadow-[0_8px_30px_-8px_rgba(232,192,64,0.5)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
       >
         {status === "loading" ? (
           <Loader2 aria-hidden className="h-4 w-4 animate-spin" />

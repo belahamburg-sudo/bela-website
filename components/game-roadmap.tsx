@@ -432,7 +432,7 @@ function MilestoneNode({
           onClick={onSelect}
           className={`pointer-events-auto min-w-[154px] border px-3 py-2 text-left backdrop-blur-xl transition-all ${
             isActive
-              ? "border-gold-300 bg-gold-300 text-obsidian shadow-[0_0_28px_rgba(232,192,64,0.35)]"
+              ? "border-gold-300 bg-gold-gradient text-obsidian shadow-[0_0_28px_rgba(232,192,64,0.35)]"
               : "border-gold-300/35 bg-black/85 text-cream shadow-[0_14px_30px_rgba(0,0,0,0.55)] hover:border-gold-300/70 hover:bg-gold-300/10"
           }`}
         >

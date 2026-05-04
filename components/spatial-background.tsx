@@ -46,7 +46,7 @@ function EpicGoldField() {
           color="#000000"
           transparent
           opacity={0.2}
-          emissive="#F0B429"
+          emissive="#E8C040"
           emissiveIntensity={0.4}
           wireframe={false}
         />
@@ -79,7 +79,7 @@ function FloatingOreMesh({ particle }: { particle: any }) {
       <octahedronGeometry args={[1, 1]} />
       <meshStandardMaterial
         color="#E8C040"
-        emissive="#F0B429"
+        emissive="#E8C040"
         emissiveIntensity={0.5}
         metalness={0.85}
         roughness={0.15}
@@ -151,9 +151,9 @@ export function SpatialBackground() {
         <color attach="background" args={["#050403"]} />
         <fog attach="fog" args={["#050403", 50, 200]} />
         
-        <ambientLight intensity={0.3} color="#F0B429" />
+        <ambientLight intensity={0.3} color="#E8C040" />
         <pointLight position={[60, 60, 60]} intensity={1.2} color="#FFE99D" />
-        <pointLight position={[-60, -60, -60]} intensity={0.8} color="#F0B429" />
+        <pointLight position={[-60, -60, -60]} intensity={0.8} color="#E8C040" />
         
         <EpicGoldField />
         <DashboardParticles />
