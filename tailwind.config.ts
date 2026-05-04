@@ -15,21 +15,21 @@ const config: Config = {
         panel: "#1a1510",
         ink: "#221c14",
         gold: {
-          50: "#FFF6D8",
-          100: "#FFE99D",
-          200: "#FFD76A",
-          300: "#F0B429",
-          400: "#C98B00",
-          500: "#A06B00",
-          600: "#7A4F00",
-          700: "#5C3A00",
-          800: "#3D2500",
-          900: "#1F1200"
+          50: "#FFFBF0",
+          100: "#FDF3D0",
+          200: "#FBE7A1",
+          300: "#D4AF37",
+          400: "#B8860B",
+          500: "#996515",
+          600: "#7D5210",
+          700: "#61400D",
+          800: "#452D09",
+          900: "#291B05"
         },
-        cream: "#F5EDD6",
-        bone: "#E0D3B0",
-        muted: "#7A6B50",
-        hairline: "rgba(240, 180, 41, 0.15)"
+        cream: "#FDFBF7",
+        bone: "#E9E3D3",
+        muted: "#8E8271",
+        hairline: "rgba(212, 175, 55, 0.15)"
       },
       fontFamily: {
         heading: ["var(--font-hanken)", "sans-serif"],

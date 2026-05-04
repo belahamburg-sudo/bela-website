@@ -54,7 +54,7 @@ export function HowItWorksSection() {
 
         <div ref={contentRef} style={{ opacity: 0 }}>
           {/* Animated search bar */}
-          <div className="mx-auto max-w-lg mb-8 lg:mb-12 rounded-sm border border-gold-300/20 bg-white/[0.03] backdrop-blur-sm overflow-hidden shadow-[0_0_0_1px_rgba(240,180,41,0.03)]">
+          <div className="mx-auto max-w-lg mb-8 lg:mb-12 rounded-sm border border-gold-300/20 bg-white/[0.03] backdrop-blur-sm overflow-hidden shadow-[0_0_0_1px_rgba(212,175,55,0.03)]">
             <div className="flex items-center gap-3 px-4 py-3.5">
               <Search className="h-4 w-4 text-cream/30 shrink-0" />
               <span
@@ -91,7 +91,7 @@ export function HowItWorksSection() {
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/webinar"
-              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(240,180,41,0.5)]"
+              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(212,175,55,0.5)]"
             >
               Webinar starten →
             </Link>

@@ -44,8 +44,8 @@ export function CommunitySection() {
         <div ref={headingRef} className="mb-10 lg:mb-16 text-center" style={{ opacity: 0 }}>
           <p className="eyebrow mb-6">🎯 Community</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
-            Meine Community baut<br />
-            <span className="gold-text">echte digitale Produkte</span> auf.
+            Meine Community cashed beim<br />
+            <span className="gold-text">KI-Goldrausch</span> schon ab!
           </h2>
           <p className="mt-5 text-cream/40 text-base lg:text-lg max-w-md mx-auto leading-relaxed">
             Von ersten Launches bis zum Exit aus dem 9-to-5. Echte Screenshots aus unserer Community.

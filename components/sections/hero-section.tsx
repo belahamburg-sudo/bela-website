@@ -172,7 +172,7 @@ export function HeroSection() {
             >
               <Link
                 href="/webinar"
-                className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(240,180,41,0.5)]"
+                className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(212,175,55,0.5)]"
               >
                 Gratis Webinar →
               </Link>
