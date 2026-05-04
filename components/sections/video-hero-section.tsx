@@ -222,7 +222,7 @@ export function VideoHeroSection() {
               href={telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
+              className="btn-shimmer inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
             >
               Free Telegram Community
             </a>

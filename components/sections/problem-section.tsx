@@ -12,6 +12,7 @@ const PROBLEMS = [
   { num: "05", name: "1:1 Coaching", why: "Zeit-Deckel bleibt: mehr Kunden bedeutet mehr Stunden, kein Ausweg." },
   { num: "06", name: "Amazon FBA", why: "Lagerkosten, steigende Gebühren, Listing-Krieg gegen tausende Konkurrenten." },
   { num: "07", name: "YouTube / Content", why: "Jahre bis zur Monetarisierung: Algorithmus-Risiko, kein stabiles Einkommen." },
+  { num: "08", name: "SMMA", why: "Dauerschleife: ständige Kundenakquise, hohe Erwartungen, schwer skalierbare Dienstleistung." },
 ];
 
 export function ProblemSection() {

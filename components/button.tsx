@@ -18,10 +18,10 @@ const variants = {
   primary:
     "btn-shimmer bg-gradient-to-b from-gold-200 to-gold-400 text-obsidian hover:from-gold-100 hover:to-gold-300 shadow-[0_8px_30px_-8px_rgba(160,107,0,0.7)] border border-gold-300/60",
   secondary:
-    "border border-gold-300/25 bg-panel/60 text-cream hover:border-gold-300/60 hover:bg-gold-300/[0.06] backdrop-blur-md",
+    "btn-shimmer border border-gold-300/25 bg-panel/60 text-cream hover:border-gold-300/60 hover:bg-gold-300/[0.06] backdrop-blur-md",
   outline:
-    "border border-gold-300/35 bg-transparent text-cream hover:border-gold-300 hover:bg-gold-300/[0.05]",
-  ghost: "text-cream hover:bg-cream/[0.04]"
+    "btn-shimmer border border-gold-300/35 bg-transparent text-cream hover:border-gold-300 hover:bg-gold-300/[0.05]",
+  ghost: "btn-shimmer text-cream hover:bg-cream/[0.04]"
 };
 
 const sizes = {
