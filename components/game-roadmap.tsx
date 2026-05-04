@@ -61,7 +61,7 @@ const ROADMAP_MILESTONES: RoadmapMilestone[] = [
     title: "Course Gate",
     subtitle: "Kurs freigeschaltet",
     points: 280,
-    color: "#F0B429",
+    color: "#E8C040",
   },
   {
     id: "forge",
@@ -70,7 +70,7 @@ const ROADMAP_MILESTONES: RoadmapMilestone[] = [
     title: "Avatar Forge",
     subtitle: "Neue Charaktere",
     points: 520,
-    color: "#EAB308",
+    color: "#D4A520",
   },
   {
     id: "reward",
@@ -123,8 +123,8 @@ function terrainHeight(x: number, z: number) {
 function avatarColors(accent: string) {
   const matches = accent.match(/#[0-9a-fA-F]{6}/g) ?? [];
   return {
-    primary: matches[0] ?? "#F0B429",
-    secondary: matches[1] ?? "#7A4F00",
+    primary: matches[0] ?? "#E8C040",
+    secondary: matches[1] ?? "#7D5812",
   };
 }
 
@@ -149,8 +149,8 @@ function RoadSurface() {
       <mesh>
         <tubeGeometry args={[curve, 96, 0.08, 10, false]} />
         <meshStandardMaterial
-          color="#F0B429"
-          emissive="#F0B429"
+          color="#E8C040"
+          emissive="#E8C040"
           emissiveIntensity={1.25}
           roughness={0.24}
           metalness={0.4}
@@ -168,7 +168,7 @@ function RoadSurface() {
         return (
           <mesh key={`${point.x}-${point.z}`} position={[point.x, point.y - 0.02, point.z]} receiveShadow>
             <boxGeometry args={[0.52, 0.055, 0.52]} />
-            <meshStandardMaterial color="#F0B429" emissive="#7A4F00" transparent opacity={0.72} />
+            <meshStandardMaterial color="#E8C040" emissive="#7D5812" transparent opacity={0.72} />
           </mesh>
         );
       })}
@@ -288,8 +288,8 @@ function Terrain() {
           <mesh position={[x, terrainHeight(x, z) + scale * 0.42, z]} scale={scale} castShadow>
             <octahedronGeometry args={[1, 0]} />
             <meshStandardMaterial
-              color={index % 3 === 0 ? "#FFD76A" : "#765426"}
-              emissive={index % 3 === 0 ? "#F0B429" : "#2a1806"}
+              color={index % 3 === 0 ? "#FAE890" : "#765426"}
+              emissive={index % 3 === 0 ? "#E8C040" : "#2a1806"}
               emissiveIntensity={index % 3 === 0 ? 1.1 : 0.28}
               roughness={0.38}
               metalness={0.65}
@@ -305,7 +305,7 @@ function Terrain() {
           color="#000000"
           transparent
           opacity={0.12}
-          emissive="#F0B429"
+          emissive="#E8C040"
           emissiveIntensity={0.08}
         />
       </mesh>
@@ -342,8 +342,8 @@ function FallingGoldParticle({
       <mesh scale={scale}>
         <octahedronGeometry args={[1, 0]} />
         <meshStandardMaterial
-          color="#FFD76A"
-          emissive="#F0B429"
+          color="#FAE890"
+          emissive="#E8C040"
           emissiveIntensity={1.2}
           metalness={0.9}
           roughness={0.1}
@@ -399,7 +399,7 @@ function MilestoneNode({
 
       <mesh position={[0, 0.48, 0]} castShadow>
         <cylinderGeometry args={[0.08, 0.08, 0.9, 16]} />
-        <meshStandardMaterial color={isComplete || isActive ? "#F0B429" : "#6f501d"} emissive="#3D2500" emissiveIntensity={0.35} />
+        <meshStandardMaterial color={isComplete || isActive ? "#E8C040" : "#6f501d"} emissive="#3D2500" emissiveIntensity={0.35} />
       </mesh>
 
       <Float speed={2.6} floatIntensity={isActive ? 0.9 : 0.38} rotationIntensity={1.2}>
@@ -636,7 +636,7 @@ function AvatarWalker({
 
       <mesh position={[0, 1.46, 0]} castShadow>
         <cylinderGeometry args={[0.42, 0.32, 0.18, 28]} />
-        <meshStandardMaterial color="#F0B429" emissive="#3D2500" emissiveIntensity={0.55} roughness={0.32} metalness={0.75} />
+        <meshStandardMaterial color="#E8C040" emissive="#3D2500" emissiveIntensity={0.55} roughness={0.32} metalness={0.75} />
       </mesh>
 
       <mesh position={[0.42, 0.83, 0.02]} rotation={[0, 0, -0.35]} castShadow>
@@ -651,7 +651,7 @@ function AvatarWalker({
       <pointLight color={colors.primary} intensity={4.2} distance={7} />
       <mesh position={[0, -0.12, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <ringGeometry args={[0.5, 0.72, 36]} />
-        <meshBasicMaterial color="#F0B429" transparent opacity={0.42} />
+        <meshBasicMaterial color="#E8C040" transparent opacity={0.42} />
       </mesh>
     </group>
   );
@@ -689,7 +689,7 @@ function RoadmapScene({
       <ambientLight intensity={1.15} />
       <hemisphereLight args={["#fff0b8", "#120805", 1.05]} />
       <directionalLight position={[5, 13, 8]} intensity={3} castShadow />
-      <pointLight position={[-8, 6, 5]} color="#F0B429" intensity={6.5} distance={16} />
+      <pointLight position={[-8, 6, 5]} color="#E8C040" intensity={6.5} distance={16} />
       <pointLight position={[8, 5, -4]} color="#38BDF8" intensity={2.6} distance={10} />
       <Environment preset="city" />
       <Stars radius={80} depth={34} count={1000} factor={2.6} saturation={0} fade speed={0.35} />

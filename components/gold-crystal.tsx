@@ -5,7 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { MeshDistortMaterial, Float, PerspectiveCamera, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 
-function Crystal({ color = "#F0B429" }: { color?: string }) {
+function Crystal({ color = "#E8C040" }: { color?: string }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.PointLight>(null);
   
@@ -20,7 +20,7 @@ function Crystal({ color = "#F0B429" }: { color?: string }) {
     }
   });
 
-  const isGold = color === "#F0B429";
+  const isGold = color === "#E8C040";
 
   return (
     <Float speed={2} rotationIntensity={1} floatIntensity={2}>
@@ -53,7 +53,7 @@ export function GoldCrystal({ className, color }: { className?: string; color?: 
         {/* Cinematic Lighting */}
         <ambientLight intensity={0.2} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} color="#ffffff" castShadow />
-        <pointLight position={[-10, -10, -10]} intensity={1} color="#F0B429" />
+        <pointLight position={[-10, -10, -10]} intensity={1} color="#E8C040" />
         
         {/* This makes it look gold/metallic */}
         <Environment preset="city" />

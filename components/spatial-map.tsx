@@ -49,7 +49,7 @@ function Topography() {
       </bufferGeometry>
       <pointsMaterial
         size={0.015}
-        color="#F0B429"
+        color="#E8C040"
         transparent
         opacity={0.3}
         sizeAttenuation={true}

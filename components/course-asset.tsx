@@ -5,7 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { MeshDistortMaterial, Float, Environment } from "@react-three/drei";
 import * as THREE from "three";
 
-function Orb({ color = "#F0B429", speed = 1, distort = 0.4 }: { color?: string; speed?: number; distort?: number }) {
+function Orb({ color = "#E8C040", speed = 1, distort = 0.4 }: { color?: string; speed?: number; distort?: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const coreRef = useRef<THREE.Mesh>(null);
   

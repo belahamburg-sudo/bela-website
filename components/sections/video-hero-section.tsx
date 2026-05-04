@@ -236,7 +236,7 @@ export function VideoHeroSection() {
                   key={i}
                   className="flex h-6 w-6 items-center justify-center rounded-full border border-obsidian text-[0.5rem] font-bold text-obsidian"
                   style={{
-                    background: `linear-gradient(135deg, #FFD76A, #C98B00)`,
+                    background: `linear-gradient(135deg, #FFFCE8, #7D5812)`,
                     opacity: 0.85 + i * 0.03,
                     zIndex: 5 - i,
                   }}

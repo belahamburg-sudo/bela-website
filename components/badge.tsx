@@ -11,7 +11,7 @@ export function Badge({
   children,
   className,
   variant = "default",
-  dotColor = "#F0B429"
+  dotColor = "#E8C040"
 }: BadgeProps) {
   const base =
     "inline-flex items-center gap-2 rounded-sm px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.2em]";

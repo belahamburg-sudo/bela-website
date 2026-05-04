@@ -42,8 +42,8 @@ const config: Config = {
         "display-md": ["clamp(1.75rem, 4vw, 4rem)", { lineHeight: "0.97", letterSpacing: "0.03em", fontWeight: "800" }]
       },
       boxShadow: {
-        gold: "0 0 0 1px rgba(232,192,64,0.25), 0 20px 60px -20px rgba(168,122,16,0.6)",
-        "gold-sm": "0 0 0 1px rgba(232,192,64,0.18), 0 10px 30px -10px rgba(168,122,16,0.4)",
+        gold: "0 0 0 1px rgba(232,192,64,0.25), 0 20px 60px -20px rgba(125,88,18,0.6)",
+        "gold-sm": "0 0 0 1px rgba(232,192,64,0.18), 0 10px 30px -10px rgba(125,88,18,0.4)",
         soft: "0 24px 80px rgba(0, 0, 0, 0.75)",
         ring: "inset 0 1px 0 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(232,192,64,0.18)"
       },

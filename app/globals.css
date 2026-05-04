@@ -153,16 +153,11 @@ select {
   .bg-gold-gradient {
     background: linear-gradient(
       180deg,
-      #5A3E0A 0%,
-      #A87A10 12%,
-      #E8C040 28%,
-      #F5D040 38%,
-      #FFFCE8 48%,
-      #FAE890 52%,
-      #F5D040 62%,
-      #E8C040 72%,
-      #A87A10 88%,
-      #5A3E0A 100%
+      #7D5812 0%,
+      #FAE890 25%,
+      #FFFCE8 50%,
+      #FAE890 75%,
+      #7D5812 100%
     );
   }
 
@@ -170,32 +165,25 @@ select {
     background: linear-gradient(
       165deg,
       #7D5812 0%,
-      #D4A520 18%,
-      #F5D040 34%,
-      #FFFCE8 48%,
-      #FAE890 52%,
-      #F5D040 66%,
-      #D4A520 82%,
+      #D4A520 20%,
+      #FFFCE8 50%,
+      #D4A520 80%,
       #7D5812 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 0 20px rgba(232,192,64,0.55));
+    filter: drop-shadow(0 0 20px rgba(232,192,64,0.45));
   }
 
   .gold-text-shine {
     background: linear-gradient(
       110deg,
       #7D5812 0%,
-      #E8C040 18%,
-      #F5D040 30%,
-      #FFFCE8 42%,
-      #FAE890 50%,
-      #F5D040 58%,
-      #E8C040 70%,
-      #7D5812 88%,
-      #E8C040 100%
+      #E8C040 25%,
+      #FFFCE8 50%,
+      #E8C040 75%,
+      #7D5812 100%
     );
     background-size: 200% 100%;
     -webkit-background-clip: text;
@@ -219,9 +207,9 @@ select {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(168,122,16,0.4) 25%,
+      rgba(125,88,18,0.4) 25%,
       rgba(232,192,64,0.65) 50%,
-      rgba(168,122,16,0.4) 75%,
+      rgba(125,88,18,0.4) 75%,
       transparent 100%
     );
   }
@@ -334,13 +322,13 @@ select {
   /* Gold video frame as seen on SS */
   .video-frame-gold {
     @apply relative overflow-hidden rounded-[4px] border-[3px];
-    border-image: linear-gradient(to bottom, #FAE890, #E8C040, #5A3E0A) 1;
+    border-image: linear-gradient(to bottom, #7D5812, #FFFCE8, #7D5812) 1;
     box-shadow: 0 0 30px rgba(232,192,64,0.25), inset 0 0 20px rgba(0,0,0,0.5);
   }
 
   .play-btn-gold {
     @apply flex items-center justify-center rounded-[8px] border border-gold-300/50 shadow-lg transition-all;
-    background: linear-gradient(135deg, #FAE890 0%, #E8C040 50%, #5A3E0A 100%);
+    background: linear-gradient(135deg, #7D5812 0%, #FFFCE8 50%, #7D5812 100%);
     box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px rgba(232,192,64,0.3);
   }
 
@@ -428,7 +416,7 @@ select {
 
 @layer utilities {
   .text-stroke-gold {
-    -webkit-text-stroke: 1.5px rgba(168, 122, 16, 0.6);
+    -webkit-text-stroke: 1.5px rgba(125, 88, 18, 0.6);
     color: transparent;
   }
 

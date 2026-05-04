@@ -125,7 +125,7 @@ export function ProfileForm({
               </div>
               <div className="h-3 w-full rounded-none bg-white/5 border border-white/5 overflow-hidden p-0.5">
                 <div
-                  className="h-full bg-gradient-to-r from-gold-600 via-gold-300 to-gold-200 shadow-[0_0_20px_rgba(232,192,64,0.4)] transition-all duration-1000"
+                  className="h-full bg-gradient-to-r from-gold-600 via-gold-50 to-gold-600 shadow-[0_0_20px_rgba(232,192,64,0.4)] transition-all duration-1000"
                   style={{ width: `${memberLevel.progress}%` }}
                 />
               </div>

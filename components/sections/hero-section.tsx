@@ -86,7 +86,7 @@ export function HeroSection() {
                 left: s.left,
                 top: s.top,
                 transform: `scale(${s.scale ?? 1})`,
-                background: "radial-gradient(circle, #fff8dc 0%, #ffd866 40%, transparent 70%)",
+                background: "radial-gradient(circle, #FFFCE8 0%, #E8C040 40%, transparent 70%)",
                 filter: "blur(0.3px)",
                 opacity: 0,
                 animation: `twinkle 2.4s ease-in-out ${s.delay} infinite`,
@@ -104,7 +104,7 @@ export function HeroSection() {
               style={{
                 left,
                 top: `${88 + i * 1.5}%`,
-                background: "#ffe089",
+                background: "#FAE890",
                 boxShadow: "0 0 5px rgba(255,210,100,0.9)",
                 opacity: 0,
                 animation: `drift 7s linear ${(i * 1.2).toFixed(1)}s infinite`,
@@ -215,7 +215,7 @@ export function HeroSection() {
                 }}
               />
               {/* Gold border-left accent */}
-              <div className="absolute left-0 top-0 w-[3px] h-full bg-gradient-to-b from-gold-300 via-gold-400 to-transparent" />
+              <div className="absolute left-0 top-0 w-[3px] h-full bg-gradient-to-b from-gold-600 via-gold-50 to-transparent" />
             </div>
           </motion.div>
         </div>

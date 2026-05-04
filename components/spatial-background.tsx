@@ -152,7 +152,7 @@ export function SpatialBackground() {
         <fog attach="fog" args={["#050403", 50, 200]} />
         
         <ambientLight intensity={0.3} color="#E8C040" />
-        <pointLight position={[60, 60, 60]} intensity={1.2} color="#FFE99D" />
+        <pointLight position={[60, 60, 60]} intensity={1.2} color="#FAE890" />
         <pointLight position={[-60, -60, -60]} intensity={0.8} color="#E8C040" />
         
         <EpicGoldField />
