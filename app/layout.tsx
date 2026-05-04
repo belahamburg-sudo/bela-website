@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthHashHandler } from "@/components/auth-hash-handler";
+import { PickaxeCursor } from "@/components/pickaxe-cursor";
 
 const heading = Barlow_Condensed({
   subsets: ["latin"],
@@ -50,6 +51,7 @@ export default function RootLayout({
         >
           Zum Inhalt springen
         </a>
+        <PickaxeCursor />
         <AuthHashHandler />
         {children}
       </body>
