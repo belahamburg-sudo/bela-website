@@ -131,7 +131,7 @@ export function ProfileForm({
               </div>
               <p className="text-[10px] text-cream/20 font-mono text-center md:text-left uppercase">
                 {memberLevel.next
-                  ? `Noch ${memberLevel.next.minPoints: points} XP bis zum Aufstieg in den nächsten Sektor`
+                  ? `Noch ${memberLevel.next.minPoints - points} XP bis zum Aufstieg in den nächsten Sektor`
                   : "Maximale Autoritätsstufe im System erreicht"}
               </p>
             </div>

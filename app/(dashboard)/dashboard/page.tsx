@@ -287,7 +287,7 @@ export default function DashboardPage() {
                     </div>
                     <p className="text-[10px] text-cream/30 font-mono uppercase">
                       {nextReward
-                        ? `Noch ${nextReward.points: points} XP bis zum Unlock`
+                        ? `Noch ${nextReward.points - points} XP bis zum Unlock`
                         : "Sektor vollständig erschlossen"}
                     </p>
                   </div>
