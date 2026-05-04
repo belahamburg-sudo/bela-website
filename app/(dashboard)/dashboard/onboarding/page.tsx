@@ -88,7 +88,7 @@ export default function OnboardingPage() {
           </div>
 
           <div className="mb-6 text-center">
-            <p className="eyebrow mb-4">AI Onboarding</p>
+            <p className="eyebrow mb-4 mx-auto">AI Onboarding</p>
             <h1 className="font-heading text-4xl leading-[0.95] text-cream sm:text-5xl lg:text-[4.5rem]">
               Erst die Fragen.
               <span className="gold-text block">Dann das Dashboard.</span>

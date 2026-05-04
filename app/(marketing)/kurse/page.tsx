@@ -69,7 +69,7 @@ export default function CoursesPage() {
           transition={{ duration: 0.6 }}
           className="mb-16"
         >
-          <p className="eyebrow mb-6">Kurs-Shop</p>
+          <p className="eyebrow mb-6 mx-auto">Kurs-Shop</p>
           <h1 className="font-heading tracking-gta leading-none text-cream max-w-2xl" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
             DIGITALE PRODUKTE{" "}
             <span className="gold-text">LERNEN, BAUEN UND VERKAUFEN.</span>

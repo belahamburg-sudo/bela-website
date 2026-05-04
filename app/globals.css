@@ -143,10 +143,10 @@ select {
   }
 
   /* GTA-style eyebrow: heavy caps, notched left border */
-  /* Redesigned eyebrow: Pill-shaped badge */
   .eyebrow {
     @apply inline-flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-gold-200;
-    @apply px-4 py-1.5 rounded-full border border-gold-300/30 bg-gold-400/10 backdrop-blur-md;
+    @apply px-3 py-1.5 sm:px-4 rounded-full border border-gold-300/30 bg-gold-400/10 backdrop-blur-md;
+    @apply w-fit whitespace-nowrap;
     box-shadow: 0 0 15px rgba(212,175,55,0.1), inset 0 0 10px rgba(212,175,55,0.05);
   }
 

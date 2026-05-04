@@ -63,7 +63,7 @@ export function ProblemSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-20 items-start mb-16 lg:mb-24">
           <div ref={headingRef} style={{ opacity: 0 }}>
-            <p className="eyebrow mb-6">🎯 Der Ausgangspunkt</p>
+            <p className="eyebrow mb-6 mx-auto">🎯 Der Ausgangspunkt</p>
             <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
               Wer jetzt nicht handelt,{" "}
               <span className="gold-text">verliert.</span>{" "}

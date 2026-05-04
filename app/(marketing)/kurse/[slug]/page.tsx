@@ -69,7 +69,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p className="eyebrow mb-6">Ergebnis</p>
+            <p className="eyebrow mb-6 mx-auto">Ergebnis</p>
             <h2 className="font-heading text-4xl text-white leading-[1.05]">
               Was du nach dem Kurs gebaut hast.
             </h2>

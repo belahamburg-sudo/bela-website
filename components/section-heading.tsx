@@ -27,7 +27,7 @@ export function SectionHeading({
       )}
     >
       {eyebrow ? (
-        <p className={cn("eyebrow mb-6", align === "center" && "justify-center")}>
+        <p className={cn("eyebrow mb-6", align === "center" && "mx-auto")}>
           {eyebrow}
         </p>
       ) : null}

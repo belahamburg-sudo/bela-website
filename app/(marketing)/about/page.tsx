@@ -104,7 +104,7 @@ export default function AboutPage() {
 
           <div className="space-y-8">
             <div>
-              <p className="eyebrow mb-5">Über mich</p>
+              <p className="eyebrow mb-5 mx-auto">Über mich</p>
               <h1 className="font-heading tracking-gta text-5xl leading-none text-cream sm:text-6xl lg:text-[5.5rem]">
                 Bela Goldmann.
                 <span className="gold-text block">Ich zeige, wie du mit AI digitale Produkte baust.</span>
@@ -161,7 +161,7 @@ export default function AboutPage() {
       <section className="border-t border-gold-300/10 bg-obsidian py-24 lg:py-32">
         <div className="mx-auto max-w-3xl px-6">
           <div className="mb-16 lg:mb-20">
-            <p className="eyebrow mb-5">Die Geschichte</p>
+            <p className="eyebrow mb-5 mx-auto">Die Geschichte</p>
             <h2 className="font-heading tracking-gta text-4xl leading-none text-cream sm:text-5xl lg:text-6xl">
               Kein Masterplan.
               <span className="gold-text block">Nur der Wille, es anders zu machen.</span>
@@ -219,7 +219,7 @@ export default function AboutPage() {
       <section className="border-t border-gold-300/10 bg-obsidian py-24 lg:py-28">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div>
-            <p className="eyebrow mb-5">Wofür ich stehe</p>
+            <p className="eyebrow mb-5 mx-auto">Wofür ich stehe</p>
             <h2 className="font-heading tracking-gta text-4xl leading-none text-cream sm:text-5xl">
               Kein Guru-Flex.
               <span className="gold-text block">Ein klares System.</span>
@@ -242,7 +242,7 @@ export default function AboutPage() {
       <section className="border-t border-gold-300/10 bg-obsidian py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-8 text-center">
-            <p className="eyebrow mb-6">Ortsunabhängig</p>
+            <p className="eyebrow mb-6 mx-auto">Ortsunabhängig</p>
             <h2 className="font-heading tracking-gta text-4xl leading-none text-cream sm:text-5xl">
               Freiheit ist der Nebeneffekt.
               <span className="gold-text block">Nicht die Verpackung.</span>
@@ -273,7 +273,7 @@ export default function AboutPage() {
       {/* ── Final CTA ── */}
       <section className="border-t border-gold-300/10 bg-obsidian py-24 lg:py-28">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="eyebrow mb-6">Bereit?</p>
+          <p className="eyebrow mb-6 mx-auto">Bereit?</p>
           <h2 className="font-heading tracking-gta text-4xl leading-none text-cream sm:text-5xl lg:text-[4.5rem]">
             Starte mit dem
             <span className="gold-text block">Gratis Webinar.</span>

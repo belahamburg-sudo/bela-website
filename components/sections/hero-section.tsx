@@ -139,7 +139,7 @@ export function HeroSection() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              className="eyebrow mb-5"
+              className="eyebrow mb-5 mx-auto"
             >
               AI Goldmining
             </motion.p>

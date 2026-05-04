@@ -90,7 +90,7 @@ export function MethodSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         {/* Heading */}
         <div ref={headingRef} className="mb-16 lg:mb-20" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">🎯 Die Methode</p>
+          <p className="eyebrow mb-6 mx-auto">🎯 Die Methode</p>
           <h2 className="font-heading tracking-gta leading-tight text-cream max-w-3xl" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
             Von der Idee zur{" "}
             <span className="gold-text">digitalen Goldmine</span>

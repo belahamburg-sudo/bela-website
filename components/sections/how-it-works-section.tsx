@@ -46,7 +46,7 @@ export function HowItWorksSection() {
 
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <div ref={headingRef} style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">🎯 Das System</p>
+          <p className="eyebrow mb-6 mx-auto">🎯 Das System</p>
           <h2 className="font-heading tracking-gta leading-none text-cream mb-8 lg:mb-12" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
             Wie <span className="gold-text">AI Goldmining</span><br />funktioniert
           </h2>

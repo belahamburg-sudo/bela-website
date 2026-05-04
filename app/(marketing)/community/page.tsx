@@ -46,7 +46,7 @@ export default function CommunityPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <p className="eyebrow mb-6">Telegram Community</p>
+            <p className="eyebrow mb-6 mx-auto">Telegram Community</p>
             <h1 className="font-heading text-5xl lg:text-6xl leading-[1.05] text-white mb-6">
               Starte nicht allein. Baue mit anderen{" "}
               <em className="gold-text not-italic">digitale Produkte mit AI.</em>
@@ -79,7 +79,7 @@ export default function CommunityPage() {
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[0.95fr_1.05fr] items-start">
           <div>
-            <p className="eyebrow mb-6">Member Space</p>
+            <p className="eyebrow mb-6 mx-auto">Member Space</p>
             <h2 className="font-heading text-4xl lg:text-5xl leading-[1.05] text-white">
               Für Käufer: private Umsetzung statt nur Input.
             </h2>
@@ -127,7 +127,7 @@ export default function CommunityPage() {
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[1fr_1fr] items-start">
           <div>
-            <p className="eyebrow mb-6">Newsletter</p>
+            <p className="eyebrow mb-6 mx-auto">Newsletter</p>
             <h2 className="font-heading text-4xl lg:text-5xl leading-[1.05] text-white">
               Oder per{" "}
               <em className="gold-text not-italic">E-Mail bleiben.</em>
@@ -146,7 +146,7 @@ export default function CommunityPage() {
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <p className="eyebrow mb-6">Nächster Schritt</p>
+            <p className="eyebrow mb-6 mx-auto">Nächster Schritt</p>
             <h2 className="font-heading text-4xl lg:text-5xl leading-[1.05] text-white max-w-2xl">
               Community ist Einstieg.{" "}
               <em className="gold-text not-italic">Kurse sind Umsetzung.</em>

@@ -70,7 +70,7 @@ export function AntihypeSection() {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div ref={headingRef} className="mb-16" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">🎯 Kein Bullshit</p>
+          <p className="eyebrow mb-6 mx-auto">🎯 Kein Bullshit</p>
           <h2 className="font-heading tracking-gta leading-none text-cream max-w-2xl" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
             Was du hier{" "}
             <span className="gold-text">nicht</span> bekommst.

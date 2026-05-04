@@ -50,7 +50,7 @@ export function CtaFooterSection() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <p className="eyebrow mb-6 justify-center">Letzte Chance</p>
+            <p className="eyebrow mb-6 mx-auto">Letzte Chance</p>
             <h2
               className="mx-auto max-w-4xl font-heading tracking-gta leading-none text-cream"
               style={{ fontSize: "clamp(2.8rem,6vw,6.5rem)", textShadow: "0 0 30px rgba(212,175,55,0.3)" }}

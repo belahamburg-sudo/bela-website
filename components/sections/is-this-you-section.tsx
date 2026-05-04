@@ -49,7 +49,7 @@ export function IsThisYouSection() {
 
       <div className="relative mx-auto max-w-3xl px-6">
         <div ref={headingRef} className="text-center mb-10 lg:mb-16" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">🎯 Bist das du?</p>
+          <p className="eyebrow mb-6 mx-auto">🎯 Bist das du?</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2rem, 10vw, 7rem)" }}>
             Bist das{" "}
             <span className="gold-text">du?</span>

@@ -19,7 +19,7 @@ export function PaywallScreen({ course }: PaywallScreenProps) {
           <Lock className="h-7 w-7 text-gold-300" />
         </div>
 
-        <p className="eyebrow mb-4 justify-center">Kurs freischalten</p>
+        <p className="eyebrow mb-4 mx-auto">Kurs freischalten</p>
 
         <h1 className="mb-3 font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.8rem,3.5vw,3rem)" }}>
           {course.title}

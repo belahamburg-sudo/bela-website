@@ -50,7 +50,7 @@ export default function WebinarPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <p className="eyebrow mb-6 justify-center">Kostenloses Training</p>
+            <p className="eyebrow mb-6 mx-auto">Kostenloses Training</p>
             <h1
               className="font-heading font-extrabold uppercase tracking-gta leading-none text-cream mb-5"
               style={{ fontSize: "clamp(2.4rem, 5.5vw, 5.5rem)" }}
@@ -121,7 +121,7 @@ export default function WebinarPage() {
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid lg:grid-cols-[1fr_1.5fr] gap-16 items-start">
             <div>
-              <p className="eyebrow mb-5">Was du lernst</p>
+              <p className="eyebrow mb-5 mx-auto">Was du lernst</p>
               <h2
                 className="font-heading font-extrabold uppercase tracking-gta leading-none text-cream"
                 style={{ fontSize: "clamp(1.8rem, 3.5vw, 3.5rem)" }}
@@ -156,7 +156,7 @@ export default function WebinarPage() {
       <section id="anmeldung" className="py-28 bg-obsidian scratch-border">
         <div className="mx-auto max-w-5xl px-6 grid gap-16 lg:grid-cols-[1fr_1.1fr] items-start">
           <div>
-            <p className="eyebrow mb-5">Anmeldung</p>
+            <p className="eyebrow mb-5 mx-auto">Anmeldung</p>
             <h2
               className="font-heading font-extrabold uppercase tracking-gta leading-none text-cream"
               style={{ fontSize: "clamp(1.8rem, 3.5vw, 3.5rem)" }}

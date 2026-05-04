@@ -21,7 +21,7 @@ export function ProductsSection() {
           transition={{ duration: 0.6 }}
           className="mb-10 lg:mb-16"
         >
-          <p className="eyebrow mb-6">🎯 Kurse & Produkte</p>
+          <p className="eyebrow mb-6 mx-auto">🎯 Kurse & Produkte</p>
           <h2
             className="font-heading tracking-gta leading-none text-cream max-w-3xl"
             style={{ fontSize: "clamp(1.75rem, 8vw, 5.5rem)" }}
