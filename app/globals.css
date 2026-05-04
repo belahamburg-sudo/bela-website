@@ -81,9 +81,15 @@ select {
 
 /* Hide native cursor on interactive elements — JS pickaxe component takes over (mouse only) */
 @media (pointer: fine) {
-  a, button, [role="button"], select, input[type="submit"], input[type="button"] {
-    cursor: none;
+  a, button, [role="button"], select, input[type="submit"], input[type="button"], .interactive {
+    cursor: none !important;
   }
+}
+
+/* Force hide system cursor when pickaxe is active */
+.hide-system-cursor, 
+.hide-system-cursor * {
+  cursor: none !important;
 }
 
 ::selection {

@@ -24,6 +24,14 @@ export function PickaxeCursor() {
     };
   }, []);
 
+  useEffect(() => {
+    if (active) {
+      document.documentElement.classList.add("hide-system-cursor");
+    } else {
+      document.documentElement.classList.remove("hide-system-cursor");
+    }
+  }, [active]);
+
   return (
     <div
       aria-hidden
@@ -33,13 +41,13 @@ export function PickaxeCursor() {
         top: pos.y,
         pointerEvents: "none",
         zIndex: 99999,
-        transform: "translate(-10px, -45px) rotate(-20deg)",
-        fontSize: "50px",
+        transform: "translate(-50%, -50%) rotate(-20deg)",
+        fontSize: "44px",
         lineHeight: 1,
         userSelect: "none",
         opacity: active ? 1 : 0,
-        transition: "opacity 0.08s",
-        filter: "drop-shadow(0 0 4px rgba(255,255,255,0.4))",
+        transition: "opacity 0.12s, transform 0.1s ease-out",
+        filter: "drop-shadow(0 0 5px rgba(212,175,55,0.4))",
       }}
     >
       ⛏️
