@@ -330,7 +330,7 @@ export function ProfileForm({
             <button
               type="submit"
               disabled={pending}
-              className="w-full relative flex items-center justify-center gap-3 bg-gold-gradient px-6 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(232,192,64,0.25)] active:scale-98 disabled:opacity-50"
+              className="w-full relative flex items-center justify-center gap-3 bg-gold-gradient px-6 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(232,192,64,0.25)] active:scale-98 disabled:opacity-50"
             >
               {pending ? (
                 <div className="h-4 w-4 border-2 border-obsidian/30 border-t-obsidian rounded-full animate-spin" />

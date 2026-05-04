@@ -91,7 +91,7 @@ export function HowItWorksSection() {
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/webinar"
-              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(232,192,64,0.5)]"
+              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(232,192,64,0.35)]"
             >
               Webinar starten →
             </Link>

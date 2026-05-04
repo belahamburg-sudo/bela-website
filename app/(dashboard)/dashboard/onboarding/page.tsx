@@ -126,7 +126,7 @@ export default function OnboardingPage() {
                   <button
                     type="submit"
                     disabled={!name.trim()}
-                    className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gold-gradient px-6 py-5 text-lg font-bold uppercase tracking-[0.1em] text-obsidian transition-all hover:bg-gold-200 hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+                    className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gold-gradient px-6 py-5 text-lg font-bold uppercase tracking-[0.1em] text-obsidian transition-all hover:brightness-110 hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
                   >
                     Weiter <ArrowRight className="h-5 w-5" />
                   </button>
@@ -279,7 +279,7 @@ export default function OnboardingPage() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 rounded-2xl bg-gold-gradient px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200"
+                      className="flex-1 rounded-2xl bg-gold-gradient px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110"
                     >
                       Weiter zur Avatar-Wahl <ArrowRight className="ml-2 inline-block h-4 w-4" />
                     </button>
@@ -338,7 +338,7 @@ export default function OnboardingPage() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 rounded-2xl bg-gold-gradient px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200"
+                      className="flex-1 rounded-2xl bg-gold-gradient px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110"
                     >
                       Weiter zur Zusammenfassung <ArrowRight className="ml-2 inline-block h-4 w-4" />
                     </button>
@@ -390,7 +390,7 @@ export default function OnboardingPage() {
                   <button
                     type="submit"
                     disabled={pending}
-                    className="mx-auto flex w-full items-center justify-center gap-3 rounded-2xl bg-gold-gradient px-10 py-5 text-lg font-bold uppercase tracking-[0.1em] text-obsidian transition-all hover:bg-gold-200 hover:scale-[1.02] disabled:opacity-50"
+                    className="mx-auto flex w-full items-center justify-center gap-3 rounded-2xl bg-gold-gradient px-10 py-5 text-lg font-bold uppercase tracking-[0.1em] text-obsidian transition-all hover:brightness-110 hover:scale-[1.02] disabled:opacity-50"
                   >
                     {pending ? "Lade Dashboard..." : "Mission starten"}
                     <Sparkles className="h-5 w-5" />

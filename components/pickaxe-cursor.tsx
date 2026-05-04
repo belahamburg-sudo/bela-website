@@ -1,17 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function PickaxeCursor() {
-  const [pos, setPos] = useState({ x: -200, y: -200 });
+  const elRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
+    const el = elRef.current;
+    if (!el) return;
 
-    document.addEventListener("mousemove", onMove);
+    let rafId = 0;
+    let targetX = -200;
+    let targetY = -200;
+
+    const onMove = (e: MouseEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        el.style.transform = `translate(${targetX}px, ${targetY}px) rotate(-20deg)`;
+      });
+    };
+
+    document.addEventListener("mousemove", onMove, { passive: true });
     document.documentElement.classList.add("hide-system-cursor");
 
     return () => {
+      cancelAnimationFrame(rafId);
       document.removeEventListener("mousemove", onMove);
       document.documentElement.classList.remove("hide-system-cursor");
     };
@@ -19,20 +34,21 @@ export function PickaxeCursor() {
 
   return (
     <div
+      ref={elRef}
       aria-hidden
       style={{
         position: "fixed",
-        left: pos.x,
-        top: pos.y,
+        left: 0,
+        top: 0,
         pointerEvents: "none",
         zIndex: 99999,
-        transform: "translate(-50%, -50%) rotate(-20deg)",
-        fontSize: "44px",
+        transform: "translate(-200px, -200px) rotate(-20deg)",
+        fontSize: "26px",
         lineHeight: 1,
         userSelect: "none",
-        opacity: 1,
-        transition: "transform 0.1s ease-out",
-        filter: "drop-shadow(0 0 5px rgba(232,192,64,0.4))",
+        willChange: "transform",
+        filter:
+          "drop-shadow(0 0 2px rgba(255,255,255,1)) drop-shadow(0 0 6px rgba(255,255,255,0.8)) drop-shadow(0 0 12px rgba(232,192,64,0.6))",
       }}
     >
       ⛏️
