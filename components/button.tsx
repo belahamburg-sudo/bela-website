@@ -16,7 +16,7 @@ type ButtonProps = {
 
 const variants = {
   primary:
-    "btn-shimmer bg-gradient-to-b from-gold-700 via-gold-100 to-gold-700 text-obsidian hover:from-gold-600 hover:via-gold-50 hover:to-gold-600 shadow-[0_10px_50px_-10px_rgba(125,88,18,0.5)] border border-gold-300/60",
+    "btn-shimmer bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 text-obsidian hover:brightness-110 shadow-[0_10px_50px_-10px_rgba(232,192,64,0.6)] border border-gold-300/60",
   secondary:
     "btn-shimmer border border-gold-300/25 bg-panel/60 text-cream hover:border-gold-300/60 hover:bg-gold-300/[0.06] backdrop-blur-md",
   outline:

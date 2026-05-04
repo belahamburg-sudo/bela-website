@@ -153,42 +153,55 @@ select {
   .bg-gold-gradient {
     background: linear-gradient(
       180deg,
-      #FAE890 0%,
-      #E8C040 35%,
-      #A87A10 65%,
+      #5A3E0A 0%,
+      #A87A10 12%,
+      #E8C040 28%,
+      #F5D040 38%,
+      #FFFCE8 48%,
+      #FAE890 52%,
+      #F5D040 62%,
+      #E8C040 72%,
+      #A87A10 88%,
       #5A3E0A 100%
     );
   }
 
   .gold-text {
     background: linear-gradient(
-      180deg,
-      #FFFCE8 0%,
-      #FAE890 15%,
-      #E8C040 45%,
-      #A87A10 75%,
-      #5A3E0A 100%
+      165deg,
+      #7D5812 0%,
+      #D4A520 18%,
+      #F5D040 34%,
+      #FFFCE8 48%,
+      #FAE890 52%,
+      #F5D040 66%,
+      #D4A520 82%,
+      #7D5812 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 2px 15px rgba(232,192,64,0.35));
+    filter: drop-shadow(0 0 20px rgba(232,192,64,0.55));
   }
 
   .gold-text-shine {
     background: linear-gradient(
       110deg,
-      #E8C040 20%,
-      #FFFCE8 35%,
+      #7D5812 0%,
+      #E8C040 18%,
+      #F5D040 30%,
+      #FFFCE8 42%,
       #FAE890 50%,
-      #A87A10 65%,
-      #E8C040 80%
+      #F5D040 58%,
+      #E8C040 70%,
+      #7D5812 88%,
+      #E8C040 100%
     );
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: shimmer 4s ease-in-out infinite;
+    animation: shimmer 3s ease-in-out infinite;
   }
 
   @keyframes shimmer {
