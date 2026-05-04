@@ -95,10 +95,10 @@ export function ProfileForm({
           <div className="relative shrink-0">
             <div className="absolute -inset-4 md:-inset-8 border border-gold-300/10 rounded-full animate-[spin_40s_linear_infinite]" />
             <div className="absolute -inset-2 md:-inset-4 border border-gold-300/20 rounded-full animate-[spin_20s_linear_infinite_reverse]" />
-            <div className="rounded-full bg-gold-300/5 p-5 ring-1 ring-gold-300/30 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(240,180,41,0.1)]">
+            <div className="rounded-full bg-gold-gradient/5 p-5 ring-1 ring-gold-300/30 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(240,180,41,0.1)]">
               <MemberAvatar avatarId={selectedAvatarId} points={points} size="xl" hidePoints={true} />
               
-              <div className="absolute -bottom-2 right-4 h-10 w-10 flex items-center justify-center rounded-full bg-gold-300 text-obsidian shadow-lg border-2 border-obsidian">
+              <div className="absolute -bottom-2 right-4 h-10 w-10 flex items-center justify-center rounded-full bg-gold-gradient text-obsidian shadow-lg border-2 border-obsidian">
                 <Trophy className="h-5 w-5" />
               </div>
             </div>
@@ -107,7 +107,7 @@ export function ProfileForm({
           <div className="flex-1 text-center md:text-left space-y-6">
             <div>
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
-                <span className="px-3 py-1 rounded-sm border border-gold-300/20 bg-gold-300/10 text-[11px] font-bold uppercase tracking-[0.2em] text-gold-300">
+                <span className="px-3 py-1 rounded-sm border border-gold-300/20 bg-gold-gradient/10 text-[11px] font-bold uppercase tracking-[0.2em] text-gold-300">
                   LEVEL {memberLevel.current.level}
                 </span>
                 <div className="h-1.5 w-1.5 rounded-full bg-white/20" />
@@ -206,7 +206,7 @@ export function ProfileForm({
                   }}
                   className={`group relative aspect-square rounded-none border transition-all duration-300 ${
                     selected
-                      ? "border-gold-300 bg-gold-300/10 shadow-[0_0_30px_rgba(240,180,41,0.15)] ring-1 ring-gold-300/20"
+                      ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)] ring-1 ring-gold-300/20"
                       : "border-white/5 bg-white/[0.01] hover:border-white/20"
                   } ${!unlocked ? "grayscale opacity-20 cursor-not-allowed" : "hover:scale-105 active:scale-95"}`}
                   title={unlocked ? avatar.name : `${avatar.unlockPoints} XP benötigt`}
@@ -222,7 +222,7 @@ export function ProfileForm({
                   )}
                   
                   {selected && (
-                    <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-gold-300 shadow-md">
+                    <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-gold-gradient shadow-md">
                       <CheckCircle2 className="h-3 w-3 text-obsidian stroke-[3]" />
                     </div>
                   )}
@@ -330,7 +330,7 @@ export function ProfileForm({
             <button
               type="submit"
               disabled={pending}
-              className="w-full relative flex items-center justify-center gap-3 bg-gold-300 px-6 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(240,180,41,0.25)] active:scale-98 disabled:opacity-50"
+              className="w-full relative flex items-center justify-center gap-3 bg-gold-gradient px-6 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(240,180,41,0.25)] active:scale-98 disabled:opacity-50"
             >
               {pending ? (
                 <div className="h-4 w-4 border-2 border-obsidian/30 border-t-obsidian rounded-full animate-spin" />

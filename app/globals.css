@@ -79,9 +79,9 @@ select {
   font: inherit;
 }
 
-/* Hide native cursor on interactive elements — JS pickaxe component takes over (mouse only) */
+/* Hide native cursor globally — JS pickaxe component takes over (mouse only) */
 @media (pointer: fine) {
-  a, button, [role="button"], select, input[type="submit"], input[type="button"], .interactive {
+  * {
     cursor: none !important;
   }
 }
@@ -148,6 +148,16 @@ select {
     @apply px-3 py-1.5 sm:px-4 rounded-full border border-gold-300/30 bg-gold-400/10 backdrop-blur-md;
     @apply w-fit whitespace-nowrap;
     box-shadow: 0 0 15px rgba(212,175,55,0.1), inset 0 0 10px rgba(212,175,55,0.05);
+  }
+
+  .bg-gold-gradient {
+    background: linear-gradient(
+      180deg, 
+      #FDE68A 0%, 
+      #D4AF37 35%, 
+      #A67C00 65%, 
+      #78350F 100%
+    );
   }
 
   .gold-text {
@@ -305,6 +315,25 @@ select {
     right: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6) 30%, rgba(255,230,100,0.9) 50%, rgba(212,175,55,0.6) 70%, transparent);
+  }
+
+  /* Gold video frame as seen on SS */
+  .video-frame-gold {
+    @apply relative overflow-hidden rounded-[4px] border-[3px];
+    border-image: linear-gradient(to bottom, #FDE68A, #D4AF37, #78350F) 1;
+    box-shadow: 0 0 30px rgba(212,175,55,0.25), inset 0 0 20px rgba(0,0,0,0.5);
+  }
+
+  .play-btn-gold {
+    @apply flex items-center justify-center rounded-[8px] border border-gold-300/50 shadow-lg transition-all;
+    background: linear-gradient(135deg, #FDE68A 0%, #D4AF37 50%, #78350F 100%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px rgba(212,175,55,0.3);
+  }
+
+  .play-btn-gold:hover {
+    @apply scale-105;
+    filter: brightness(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(212,175,55,0.5);
   }
 
   /* Tactical UI Utilities */

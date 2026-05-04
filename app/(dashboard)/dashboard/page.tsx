@@ -86,7 +86,7 @@ export default function DashboardPage() {
   if (!data) {
     return (
       <div className="min-h-screen bg-obsidian flex items-center justify-center p-6 text-center">
-        <div className="tac-panel tac-corners p-8 border-gold-300/20 bg-gold-300/[0.02] max-w-md">
+        <div className="tac-panel tac-corners p-8 border-gold-300/20 bg-gold-gradient/[0.02] max-w-md">
           <p className="tac-label text-gold-300 mb-2">HINWEIS</p>
           <p className="text-cream/60 text-sm font-mono uppercase">Daten konnten nicht synchronisiert werden. Bitte versuche es erneut.</p>
         </div>
@@ -130,7 +130,7 @@ export default function DashboardPage() {
               <div className="space-y-4 flex-1">
                 <div className="flex items-center gap-3">
                   <span className="tac-label text-gold-300/60 uppercase tracking-[0.2em]">Mitglieds-Status: Premium</span>
-                  <div className="h-px w-12 bg-gold-300/10" />
+                  <div className="h-px w-12 bg-gold-gradient/10" />
                 </div>
                 
                 <h1 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2.5rem,5vw,4rem)" }}>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Quick Level Widget */}
-              <Link href="/dashboard/profil" className="flex items-center gap-4 p-4 border border-gold-300/10 bg-gold-300/[0.02] hover:bg-gold-300/[0.05] transition-all group tac-corners">
+              <Link href="/dashboard/profil" className="flex items-center gap-4 p-4 border border-gold-300/10 bg-gold-gradient/[0.02] hover:bg-gold-gradient/[0.05] transition-all group tac-corners">
                 <div className="relative">
                   <ProgressRing progress={memberLevel.progress} size={48} stroke={2} />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -174,7 +174,7 @@ export default function DashboardPage() {
                     <div className="relative bg-ink/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 md:p-10 overflow-hidden flex flex-col md:flex-row items-center gap-10">
                       {/* 3D Asset Side */}
                       <div className="relative shrink-0 w-32 h-32 md:w-48 md:h-48 group-hover:scale-110 transition-transform duration-700">
-                        <div className="absolute inset-0 bg-gold-300/10 rounded-full blur-3xl" />
+                        <div className="absolute inset-0 bg-gold-gradient/10 rounded-full blur-3xl" />
                         <GoldCrystal className="w-full h-full relative z-10" />
                         
                         <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
@@ -186,7 +186,7 @@ export default function DashboardPage() {
                       <div className="flex-1 space-y-6 text-center md:text-left z-10">
                         <div>
                           <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                            <div className="h-px w-8 bg-gold-300/30" />
+                            <div className="h-px w-8 bg-gold-gradient/30" />
                             <span className="tac-label text-gold-300/60 uppercase tracking-widest text-[9px]">Kurs Fortsetzen</span>
                           </div>
                           <h3 className="font-heading text-3xl md:text-5xl tracking-tight text-cream group-hover:text-gold-300 transition-colors">
@@ -198,7 +198,7 @@ export default function DashboardPage() {
                         </div>
                         
                         <div className="flex flex-col sm:flex-row items-center gap-4">
-                          <Button href={`/dashboard/kurse/${latestCourse.slug}`} className="w-full sm:w-auto h-12 px-10 bg-gold-300 text-ink hover:bg-white transition-all uppercase tracking-widest text-[10px] font-bold">
+                          <Button href={`/dashboard/kurse/${latestCourse.slug}`} className="w-full sm:w-auto h-12 px-10 bg-gold-gradient text-ink hover:bg-white transition-all uppercase tracking-widest text-[10px] font-bold">
                             <Play className="h-4 w-4 fill-current" />
                             Operation Starten
                           </Button>
@@ -233,18 +233,18 @@ export default function DashboardPage() {
                         >
                           <div className="flex justify-between items-start mb-4">
                             <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 border ${
-                              course.status === "Abgeschlossen" ? "border-gold-300/40 text-gold-300 bg-gold-300/5" : "border-white/10 text-white/40"
+                              course.status === "Abgeschlossen" ? "border-gold-300/40 text-gold-300 bg-gold-gradient/5" : "border-white/10 text-white/40"
                             }`}>
                               {course.status}
                             </span>
-                            <div className="h-8 w-8 rounded-full border border-white/5 flex items-center justify-center group-hover:border-gold-300/40 group-hover:bg-gold-300/[0.08] transition-all">
+                            <div className="h-8 w-8 rounded-full border border-white/5 flex items-center justify-center group-hover:border-gold-300/40 group-hover:bg-gold-gradient/[0.08] transition-all">
                               <ArrowRight className="h-3 w-3 text-white/20 group-hover:text-gold-300 translate-x-[-2px] group-hover:translate-x-0 transition-all" />
                             </div>
                           </div>
                           <div>
                             <p className="font-heading text-xl text-cream mb-1 group-hover:text-gold-300 transition-colors">{course.title}</p>
                             <div className="mt-3 h-1 w-full bg-white/5 overflow-hidden">
-                              <div className="h-full bg-gold-300/20 group-hover:bg-gold-300/40 transition-all duration-700" style={{ width: `${course.progress}%` }} />
+                              <div className="h-full bg-gold-gradient/20 group-hover:bg-gold-gradient/40 transition-all duration-700" style={{ width: `${course.progress}%` }} />
                             </div>
                           </div>
                         </Link>
@@ -273,7 +273,7 @@ export default function DashboardPage() {
                 </motion.div>
 
                 {/* Milestone Panel */}
-                <motion.div variants={itemVariants} className="tac-panel tac-corners p-6 border-gold-300/10 bg-gold-300/[0.02]">
+                <motion.div variants={itemVariants} className="tac-panel tac-corners p-6 border-gold-300/10 bg-gold-gradient/[0.02]">
                   <div className="flex items-center gap-2 text-gold-300/60 mb-6">
                     <Gift className="h-4 w-4" />
                     <span className="tac-label uppercase tracking-widest">Nächster Meilenstein</span>
@@ -283,7 +283,7 @@ export default function DashboardPage() {
                       {nextReward ? nextReward.title : "ALLE ZIELE ERREICHT"}
                     </p>
                     <div className="h-1.5 w-full bg-white/5 overflow-hidden">
-                      <div className="h-full bg-gold-300 transition-all duration-1000" style={{ width: `${memberLevel.progress}%` }} />
+                      <div className="h-full bg-gold-gradient transition-all duration-1000" style={{ width: `${memberLevel.progress}%` }} />
                     </div>
                     <p className="text-[10px] text-cream/30 font-mono uppercase">
                       {nextReward
@@ -304,7 +304,7 @@ export default function DashboardPage() {
                       <Link
                         key={course.slug}
                         href="/dashboard/kurse"
-                        className="block p-4 border border-white/5 bg-white/[0.01] hover:border-gold-300/20 hover:bg-gold-300/[0.02] transition-all group tac-corners"
+                        className="block p-4 border border-white/5 bg-white/[0.01] hover:border-gold-300/20 hover:bg-gold-gradient/[0.02] transition-all group tac-corners"
                       >
                         <div className="flex items-start gap-4">
                           <div className="mt-1 h-8 w-8 shrink-0 flex items-center justify-center border border-white/10 bg-white/[0.02]">

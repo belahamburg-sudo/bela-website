@@ -59,7 +59,7 @@ export function IsThisYouSection() {
         <ul ref={listRef} className="space-y-5 lg:space-y-6 mb-12 lg:mb-16">
           {POINTS.map((point, i) => (
             <li key={i} className="flex items-start gap-3 lg:gap-4" style={{ opacity: 0 }}>
-              <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-gold-300/10 border border-gold-300/30">
+              <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-gold-gradient/10 border border-gold-300/30">
                 <Zap className="h-3 w-3 text-gold-300" fill="currentColor" />
               </span>
               <p className="text-cream/65 leading-relaxed text-base lg:text-lg">
@@ -80,7 +80,7 @@ export function IsThisYouSection() {
           </p>
           <Link
             href="/webinar"
-            className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-300 px-10 py-4 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(212,175,55,0.45)]"
+            className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-gradient px-10 py-4 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(212,175,55,0.45)]"
           >
             Webinar starten →
           </Link>

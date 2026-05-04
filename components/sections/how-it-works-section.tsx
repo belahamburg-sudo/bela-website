@@ -42,7 +42,7 @@ export function HowItWorksSection() {
 
   return (
     <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold-300/[0.03] blur-[140px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold-gradient/[0.03] blur-[140px]" />
 
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <div ref={headingRef} style={{ opacity: 0 }}>
@@ -63,7 +63,7 @@ export function HowItWorksSection() {
               >
                 {SEARCHES[currentSearch]}
               </span>
-              <span className="inline-block w-[2px] h-4 bg-gold-300/70 animate-pulse shrink-0" />
+              <span className="inline-block w-[2px] h-4 bg-gold-gradient/70 animate-pulse shrink-0" />
             </div>
           </div>
 
@@ -91,13 +91,13 @@ export function HowItWorksSection() {
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/webinar"
-              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(212,175,55,0.5)]"
+              className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(212,175,55,0.5)]"
             >
               Webinar starten →
             </Link>
             <Link
               href="/kurse"
-              className="inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
+              className="inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-gradient/5"
             >
               Kurse ansehen
             </Link>

@@ -35,7 +35,7 @@ function Typewriter({ phrases }: { phrases: string[] }) {
   return (
     <span>
       {displayed}
-      <span className="inline-block w-[3px] h-[0.85em] bg-gold-300 align-middle ml-1 animate-pulse" />
+      <span className="inline-block w-[3px] h-[0.85em] bg-gold-gradient align-middle ml-1 animate-pulse" />
     </span>
   );
 }
@@ -172,13 +172,13 @@ export function HeroSection() {
             >
               <Link
                 href="/webinar"
-                className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(212,175,55,0.5)]"
+                className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(212,175,55,0.5)]"
               >
                 Gratis Webinar →
               </Link>
               <Link
                 href="/kurse"
-                className="inline-flex items-center gap-2 rounded-sm border border-gold-300/40 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
+                className="inline-flex items-center gap-2 rounded-sm border border-gold-300/40 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-gradient/5"
               >
                 Kurse entdecken
               </Link>

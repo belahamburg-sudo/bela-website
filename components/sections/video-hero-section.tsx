@@ -76,8 +76,8 @@ export function VideoHeroSection() {
           className="font-heading font-extrabold leading-[0.95] text-cream"
           style={{ fontSize: "clamp(1.85rem, 8vw, 4.6rem)" }}
         >
-          Ich zeige dir, wie du mit AI digitale Produkte baust{" "}
-          <span className="gold-text">und automatisiert verkaufst.</span>
+          Ich zeige dir, wie du mit <br />
+          <span className="gold-text">AI digitale Produkte <br /> baust und automatisiert <br /> verkaufst.</span>
         </motion.h1>
 
         {/* ── Subtext ── */}
@@ -98,12 +98,7 @@ export function VideoHeroSection() {
           transition={{ duration: 0.65, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="w-full max-w-2xl"
         >
-          <div className="relative w-full overflow-hidden rounded-sm border border-gold-300/20 bg-obsidian" style={{ aspectRatio: "16/9" }}>
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
-            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
-            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold-300/60 z-10 pointer-events-none" aria-hidden />
-
+          <div className="video-frame-gold aspect-video bg-obsidian">
             <video
               ref={videoRef}
               src="/assets/bela-intro-cropped.mp4"
@@ -123,7 +118,7 @@ export function VideoHeroSection() {
             {!playing && (
               <div
                 className="absolute inset-0 pointer-events-none"
-                style={{ background: "radial-gradient(ellipse at center, rgba(212,175,55,0.10) 0%, transparent 65%)" }}
+                style={{ background: "radial-gradient(ellipse at center, rgba(212,175,55,0.15) 0%, transparent 65%)" }}
                 aria-hidden
               />
             )}
@@ -133,12 +128,12 @@ export function VideoHeroSection() {
                 type="button"
                 onClick={handlePlayPause}
                 aria-label="Video abspielen"
-                className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-20"
               >
-                <span className="flex h-16 w-16 items-center justify-center rounded-sm border border-gold-300/50 bg-gold-300/10 backdrop-blur-sm transition-all hover:bg-gold-300/20 hover:border-gold-300/80 hover:scale-105">
-                  <Play className="h-7 w-7 text-gold-300 translate-x-0.5" fill="currentColor" />
+                <span className="play-btn-gold h-20 w-24">
+                  <Play className="h-10 w-10 text-obsidian translate-x-1" fill="currentColor" />
                 </span>
-                <span className="gta-label text-gold-300/60">Jetzt ansehen · 30 Sek</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-100 drop-shadow-md">Jetzt ansehen · 30 Sek</span>
               </button>
             )}
 

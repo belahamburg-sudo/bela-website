@@ -30,7 +30,7 @@ function StepPill({ active, done }: { active?: boolean; done?: boolean }) {
   return (
     <div
       className={`h-1.5 rounded-full transition-all duration-500 ${
-        active || done ? "w-8 bg-gold-300" : "w-4 bg-white/10"
+        active || done ? "w-8 bg-gold-gradient" : "w-4 bg-white/10"
       }`}
     />
   );
@@ -76,7 +76,7 @@ export default function OnboardingPage() {
     <AuthGate>
       <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian px-4 py-16 sm:px-6">
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[900px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-300/[0.03] blur-[160px]"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[900px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-gradient/[0.03] blur-[160px]"
           aria-hidden
         />
 
@@ -106,7 +106,7 @@ export default function OnboardingPage() {
               {step === 1 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-300/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
                       <User className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
                   <button
                     type="submit"
                     disabled={!name.trim()}
-                    className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gold-300 px-6 py-5 text-lg font-bold uppercase tracking-[0.1em] text-obsidian transition-all hover:bg-gold-200 hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+                    className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gold-gradient px-6 py-5 text-lg font-bold uppercase tracking-[0.1em] text-obsidian transition-all hover:bg-gold-200 hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
                   >
                     Weiter <ArrowRight className="h-5 w-5" />
                   </button>
@@ -136,7 +136,7 @@ export default function OnboardingPage() {
               {step === 2 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-300/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
                       <Target className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
                         }}
                         className={`rounded-2xl border p-5 text-left transition-all ${
                           goal === item
-                            ? "border-gold-300 bg-gold-300/10 shadow-[0_0_20px_rgba(240,180,41,0.1)]"
+                            ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_20px_rgba(240,180,41,0.1)]"
                             : "border-white/10 bg-white/[0.03] hover:border-gold-300/30 hover:bg-white/[0.05]"
                         }`}
                       >
@@ -178,7 +178,7 @@ export default function OnboardingPage() {
               {step === 3 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-300/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
                       <Sparkles className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export default function OnboardingPage() {
                         }}
                         className={`rounded-2xl border p-5 text-left transition-all ${
                           stage === item
-                            ? "border-gold-300 bg-gold-300/10 shadow-[0_0_20px_rgba(240,180,41,0.1)]"
+                            ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_20px_rgba(240,180,41,0.1)]"
                             : "border-white/10 bg-white/[0.03] hover:border-gold-300/30 hover:bg-white/[0.05]"
                         }`}
                       >
@@ -220,7 +220,7 @@ export default function OnboardingPage() {
               {step === 4 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-300/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
                       <Zap className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -279,7 +279,7 @@ export default function OnboardingPage() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 rounded-2xl bg-gold-300 px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200"
+                      className="flex-1 rounded-2xl bg-gold-gradient px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200"
                     >
                       Weiter zur Avatar-Wahl <ArrowRight className="ml-2 inline-block h-4 w-4" />
                     </button>
@@ -290,7 +290,7 @@ export default function OnboardingPage() {
               {step === 5 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-300/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-300/20 bg-gold-gradient/10 shadow-[0_0_30px_rgba(240,180,41,0.15)]">
                       <Zap className="h-8 w-8 text-gold-300" />
                     </div>
                   </div>
@@ -309,7 +309,7 @@ export default function OnboardingPage() {
                           onClick={() => setAvatarId(starterClass.id)}
                           className={`relative flex flex-col items-center rounded-3xl border p-6 text-center transition-all ${
                             isSelected
-                              ? "z-10 scale-[1.02] border-gold-300 bg-gold-300/[0.08] shadow-[0_20px_50px_rgba(240,180,41,0.2)]"
+                              ? "z-10 scale-[1.02] border-gold-300 bg-gold-gradient/[0.08] shadow-[0_20px_50px_rgba(240,180,41,0.2)]"
                               : "border-white/10 bg-white/[0.02] hover:border-gold-300/30 hover:bg-white/[0.04]"
                           }`}
                         >
@@ -319,7 +319,7 @@ export default function OnboardingPage() {
                           </h3>
                           <p className="text-xs leading-relaxed text-cream/40">{starterClass.desc}</p>
                           {isSelected ? (
-                            <div className="absolute -right-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full bg-gold-300 text-obsidian shadow-lg">
+                            <div className="absolute -right-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full bg-gold-gradient text-obsidian shadow-lg">
                               ✓
                             </div>
                           ) : null}
@@ -338,7 +338,7 @@ export default function OnboardingPage() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 rounded-2xl bg-gold-300 px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200"
+                      className="flex-1 rounded-2xl bg-gold-gradient px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:bg-gold-200"
                     >
                       Weiter zur Zusammenfassung <ArrowRight className="ml-2 inline-block h-4 w-4" />
                     </button>
@@ -349,7 +349,7 @@ export default function OnboardingPage() {
               {step === 6 && (
                 <div className="animate-in zoom-in-95 duration-700 text-center">
                   <div className="relative mx-auto mb-8 inline-block">
-                    <div className="absolute inset-0 rounded-full bg-gold-300/20 blur-[60px]" />
+                    <div className="absolute inset-0 rounded-full bg-gold-gradient/20 blur-[60px]" />
                     <MemberAvatar avatarId={avatarId} points={0} size="xl" hidePoints />
                   </div>
 
@@ -390,7 +390,7 @@ export default function OnboardingPage() {
                   <button
                     type="submit"
                     disabled={pending}
-                    className="mx-auto flex w-full items-center justify-center gap-3 rounded-2xl bg-gold-300 px-10 py-5 text-lg font-bold uppercase tracking-[0.1em] text-obsidian transition-all hover:bg-gold-200 hover:scale-[1.02] disabled:opacity-50"
+                    className="mx-auto flex w-full items-center justify-center gap-3 rounded-2xl bg-gold-gradient px-10 py-5 text-lg font-bold uppercase tracking-[0.1em] text-obsidian transition-all hover:bg-gold-200 hover:scale-[1.02] disabled:opacity-50"
                   >
                     {pending ? "Lade Dashboard..." : "Mission starten"}
                     <Sparkles className="h-5 w-5" />

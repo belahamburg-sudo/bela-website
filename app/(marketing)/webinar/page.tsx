@@ -80,21 +80,17 @@ export default function WebinarPage() {
             transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mb-8"
           >
-            <div className="relative aspect-video rounded-sm overflow-hidden bg-graphite border border-gold-300/20">
-              <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold-300/50 z-10" aria-hidden />
-              <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold-300/50 z-10" aria-hidden />
-              <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-gold-300/50 z-10" aria-hidden />
-              <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold-300/50 z-10" aria-hidden />
+            <div className="video-frame-gold aspect-video bg-graphite">
               <div
                 className="absolute inset-0"
-                style={{ background: "radial-gradient(ellipse at center, rgba(240,180,41,0.10) 0%, transparent 65%)" }}
+                style={{ background: "radial-gradient(ellipse at center, rgba(240,180,41,0.15) 0%, transparent 65%)" }}
                 aria-hidden
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-sm border border-gold-300/40 bg-gold-300/10 backdrop-blur-sm transition-all hover:bg-gold-300/20 hover:border-gold-300/70 cursor-pointer">
-                  <PlayCircle aria-hidden className="h-10 w-10 text-gold-300" />
+                <div className="play-btn-gold h-20 w-24 cursor-pointer">
+                  <PlayCircle aria-hidden className="h-10 w-10 text-obsidian" />
                 </div>
-                <p className="gta-label text-gold-300/60">On-Demand · Jederzeit verfügbar</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-100 drop-shadow-md">On-Demand · Jederzeit verfügbar</p>
               </div>
             </div>
             <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-cream/25 font-semibold uppercase tracking-[0.12em]">
