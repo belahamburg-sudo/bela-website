@@ -212,7 +212,7 @@ export function VideoHeroSection() {
           <div className="flex flex-col items-center gap-3 sm:flex-row mb-1">
             <Link
               href="/webinar"
-              className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(212,175,55,0.45)] relative overflow-hidden"
+              className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-700 via-gold-100 to-gold-700 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:from-gold-600 hover:via-gold-50 hover:to-gold-600 hover:shadow-[0_0_50px_rgba(212,175,55,0.45)] relative overflow-hidden"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <span className="relative">Webinar starten</span> →
