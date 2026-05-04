@@ -218,7 +218,7 @@ export function MemberProgressMap({
                   initial={{ width: 0 }}
                   animate={{ width: `${memberLevel.progress}%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="h-full bg-gold-300 shadow-[0_0_10px_rgba(200,146,42,0.5)]"
+                  className="h-full bg-gold-300 shadow-[0_0_10px_rgba(232,192,64,0.5)]"
                 />
               </div>
             </div>

@@ -432,7 +432,7 @@ function MilestoneNode({
           onClick={onSelect}
           className={`pointer-events-auto min-w-[154px] border px-3 py-2 text-left backdrop-blur-xl transition-all ${
             isActive
-              ? "border-gold-300 bg-gold-300 text-obsidian shadow-[0_0_28px_rgba(200,146,42,0.35)]"
+              ? "border-gold-300 bg-gold-300 text-obsidian shadow-[0_0_28px_rgba(232,192,64,0.35)]"
               : "border-gold-300/35 bg-black/85 text-cream shadow-[0_14px_30px_rgba(0,0,0,0.55)] hover:border-gold-300/70 hover:bg-gold-300/10"
           }`}
         >
@@ -600,7 +600,7 @@ function AvatarWalker({
     <group ref={groupRef} scale={1.12}>
       <Html position={[0, 2.05, 0]} center distanceFactor={7} occlude={false}>
         <div className="pointer-events-none relative h-16 w-16">
-          <div className={`absolute inset-0 rounded-[20px] border border-gold-300/40 bg-gradient-to-br ${avatar.accent} shadow-[0_16px_36px_rgba(200,146,42,0.28)]`} />
+          <div className={`absolute inset-0 rounded-[20px] border border-gold-300/40 bg-gradient-to-br ${avatar.accent} shadow-[0_16px_36px_rgba(232,192,64,0.28)]`} />
           <div className="absolute inset-1 flex items-center justify-center rounded-[17px] border border-white/15 text-sm font-black text-obsidian">
             {avatar.badge}
           </div>
@@ -815,7 +815,7 @@ export function GameRoadmap({ currentPoints, avatarId }: { currentPoints: number
         </Canvas>
       </Suspense>
 
-      <div className="pointer-events-none absolute inset-0 z-[2] opacity-35 [background-image:linear-gradient(rgba(200,146,42,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(200,146,42,0.06)_1px,transparent_1px)] [background-size:48px_48px]" />
+      <div className="pointer-events-none absolute inset-0 z-[2] opacity-35 [background-image:linear-gradient(rgba(232,192,64,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(232,192,64,0.06)_1px,transparent_1px)] [background-size:48px_48px]" />
 
       <div className="pointer-events-none absolute inset-x-4 top-4 z-10 flex flex-col gap-3 md:inset-x-6 md:flex-row md:items-start md:justify-between">
         <div className="tac-panel tac-corners max-w-[360px] border-gold-300/20 bg-black/70 p-4 backdrop-blur-xl">

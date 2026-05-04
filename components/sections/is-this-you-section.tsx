@@ -80,7 +80,7 @@ export function IsThisYouSection() {
           </p>
           <Link
             href="/webinar"
-            className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-gradient px-10 py-4 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(200,146,42,0.45)]"
+            className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-gradient px-10 py-4 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(232,192,64,0.45)]"
           >
             Webinar starten →
           </Link>

@@ -17,12 +17,12 @@ export default function SignupPage() {
 
         {/* Background */}
         <div className="pointer-events-none absolute inset-0" aria-hidden>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_30%_0%,rgba(200,146,42,0.10),transparent_50%),radial-gradient(ellipse_50%_40%_at_80%_100%,rgba(200,146,42,0.06),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_30%_0%,rgba(232,192,64,0.10),transparent_50%),radial-gradient(ellipse_50%_40%_at_80%_100%,rgba(232,192,64,0.06),transparent_50%)]" />
           <div className="absolute left-0 top-0 h-full w-full opacity-[0.05]">
             <Image src="/assets/mine-bg.jpg" alt="" fill className="object-cover object-center" sizes="100vw" />
           </div>
           <div className="absolute inset-0 bg-obsidian/90" />
-          <div className="absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(200,146,42,1)_1px,transparent_1px),linear-gradient(90deg,rgba(200,146,42,1)_1px,transparent_1px)] [background-size:60px_60px]" />
+          <div className="absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(232,192,64,1)_1px,transparent_1px),linear-gradient(90deg,rgba(232,192,64,1)_1px,transparent_1px)] [background-size:60px_60px]" />
         </div>
 
         {/* Top nav bar */}
@@ -83,7 +83,7 @@ export default function SignupPage() {
               </div>
 
               <div className="mt-8 inline-flex items-center gap-3 border border-gold-300/20 bg-gold-300/5 px-5 py-3">
-                <div className="h-2 w-2 rounded-full bg-gold-300 shadow-[0_0_8px_rgba(200,146,42,0.6)]" />
+                <div className="h-2 w-2 rounded-full bg-gold-300 shadow-[0_0_8px_rgba(232,192,64,0.6)]" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold-300/80">
                   Kostenloser Account · Kein Abo · Kein Risiko
                 </span>

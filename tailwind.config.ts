@@ -15,21 +15,21 @@ const config: Config = {
         panel: "#1a1510",
         ink: "#221c14",
         gold: {
-          50: "#FFFBF0",
-          100: "#F5D778",
-          200: "#EAB435",
-          300: "#C8922A",
-          400: "#B87D1A",
-          500: "#9B6A14",
+          50: "#FFFCE8",
+          100: "#FAE890",
+          200: "#F5D040",
+          300: "#E8C040",
+          400: "#D4A520",
+          500: "#A87A10",
           600: "#7D5812",
-          700: "#6B400E",
-          800: "#451A03",
-          900: "#270E02"
+          700: "#5A3E0A",
+          800: "#3A2205",
+          900: "#1E1002"
         },
         cream: "#FDFBF7",
         bone: "#E9E3D3",
         muted: "#8E8271",
-        hairline: "rgba(212, 175, 55, 0.15)"
+        hairline: "rgba(232, 192, 64, 0.15)"
       },
       fontFamily: {
         heading: ["var(--font-hanken)", "sans-serif"],
@@ -42,14 +42,14 @@ const config: Config = {
         "display-md": ["clamp(1.75rem, 4vw, 4rem)", { lineHeight: "0.97", letterSpacing: "0.03em", fontWeight: "800" }]
       },
       boxShadow: {
-        gold: "0 0 0 1px rgba(200,146,42,0.25), 0 20px 60px -20px rgba(155,106,20,0.6)",
-        "gold-sm": "0 0 0 1px rgba(200,146,42,0.18), 0 10px 30px -10px rgba(155,106,20,0.4)",
+        gold: "0 0 0 1px rgba(232,192,64,0.25), 0 20px 60px -20px rgba(168,122,16,0.6)",
+        "gold-sm": "0 0 0 1px rgba(232,192,64,0.18), 0 10px 30px -10px rgba(168,122,16,0.4)",
         soft: "0 24px 80px rgba(0, 0, 0, 0.75)",
-        ring: "inset 0 1px 0 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(200,146,42,0.18)"
+        ring: "inset 0 1px 0 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(232,192,64,0.18)"
       },
       backgroundImage: {
-        "gold-radial": "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(200,146,42,0.28), transparent 60%)",
-        "gold-sweep": "linear-gradient(120deg, transparent 0%, rgba(200,146,42,0.10) 45%, rgba(230,170,60,0.22) 50%, rgba(200,146,42,0.10) 55%, transparent 100%)",
+        "gold-radial": "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(232,192,64,0.28), transparent 60%)",
+        "gold-sweep": "linear-gradient(120deg, transparent 0%, rgba(232,192,64,0.10) 45%, rgba(255,240,120,0.22) 50%, rgba(232,192,64,0.10) 55%, transparent 100%)",
         "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.94 0 0 0 0 0.71 0 0 0 0 0.16 0 0 0 0.14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
       },
       animation: {

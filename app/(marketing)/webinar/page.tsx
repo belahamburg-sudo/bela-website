@@ -39,7 +39,7 @@ export default function WebinarPage() {
         <div
           className="pointer-events-none absolute inset-0"
           aria-hidden
-          style={{ background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(200,146,42,0.09) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(232,192,64,0.09) 0%, transparent 70%)" }}
         />
         {/* Top divider line */}
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold-300/30 to-transparent" aria-hidden />
@@ -83,7 +83,7 @@ export default function WebinarPage() {
             <div className="video-frame-gold aspect-video bg-graphite">
               <div
                 className="absolute inset-0"
-                style={{ background: "radial-gradient(ellipse at center, rgba(200,146,42,0.15) 0%, transparent 65%)" }}
+                style={{ background: "radial-gradient(ellipse at center, rgba(232,192,64,0.15) 0%, transparent 65%)" }}
                 aria-hidden
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">

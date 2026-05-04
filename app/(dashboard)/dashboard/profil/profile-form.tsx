@@ -95,7 +95,7 @@ export function ProfileForm({
           <div className="relative shrink-0">
             <div className="absolute -inset-4 md:-inset-8 border border-gold-300/10 rounded-full animate-[spin_40s_linear_infinite]" />
             <div className="absolute -inset-2 md:-inset-4 border border-gold-300/20 rounded-full animate-[spin_20s_linear_infinite_reverse]" />
-            <div className="rounded-full bg-gold-gradient/5 p-5 ring-1 ring-gold-300/30 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(200,146,42,0.1)]">
+            <div className="rounded-full bg-gold-gradient/5 p-5 ring-1 ring-gold-300/30 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(232,192,64,0.1)]">
               <MemberAvatar avatarId={selectedAvatarId} points={points} size="xl" hidePoints={true} />
               
               <div className="absolute -bottom-2 right-4 h-10 w-10 flex items-center justify-center rounded-full bg-gold-gradient text-obsidian shadow-lg border-2 border-obsidian">
@@ -125,7 +125,7 @@ export function ProfileForm({
               </div>
               <div className="h-3 w-full rounded-none bg-white/5 border border-white/5 overflow-hidden p-0.5">
                 <div
-                  className="h-full bg-gradient-to-r from-gold-600 via-gold-300 to-gold-200 shadow-[0_0_20px_rgba(200,146,42,0.4)] transition-all duration-1000"
+                  className="h-full bg-gradient-to-r from-gold-600 via-gold-300 to-gold-200 shadow-[0_0_20px_rgba(232,192,64,0.4)] transition-all duration-1000"
                   style={{ width: `${memberLevel.progress}%` }}
                 />
               </div>
@@ -206,7 +206,7 @@ export function ProfileForm({
                   }}
                   className={`group relative aspect-square rounded-none border transition-all duration-300 ${
                     selected
-                      ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_30px_rgba(200,146,42,0.15)] ring-1 ring-gold-300/20"
+                      ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_30px_rgba(232,192,64,0.15)] ring-1 ring-gold-300/20"
                       : "border-white/5 bg-white/[0.01] hover:border-white/20"
                   } ${!unlocked ? "grayscale opacity-20 cursor-not-allowed" : "hover:scale-105 active:scale-95"}`}
                   title={unlocked ? avatar.name : `${avatar.unlockPoints} XP benötigt`}
@@ -330,7 +330,7 @@ export function ProfileForm({
             <button
               type="submit"
               disabled={pending}
-              className="w-full relative flex items-center justify-center gap-3 bg-gold-gradient px-6 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(200,146,42,0.25)] active:scale-98 disabled:opacity-50"
+              className="w-full relative flex items-center justify-center gap-3 bg-gold-gradient px-6 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(232,192,64,0.25)] active:scale-98 disabled:opacity-50"
             >
               {pending ? (
                 <div className="h-4 w-4 border-2 border-obsidian/30 border-t-obsidian rounded-full animate-spin" />

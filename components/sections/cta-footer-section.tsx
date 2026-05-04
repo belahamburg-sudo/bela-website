@@ -53,7 +53,7 @@ export function CtaFooterSection() {
             <p className="eyebrow mb-6 mx-auto">Letzte Chance</p>
             <h2
               className="mx-auto max-w-4xl font-heading tracking-gta leading-none text-cream"
-              style={{ fontSize: "clamp(2.8rem,6vw,6.5rem)", textShadow: "0 0 30px rgba(200,146,42,0.3)" }}
+              style={{ fontSize: "clamp(2.8rem,6vw,6.5rem)", textShadow: "0 0 30px rgba(232,192,64,0.3)" }}
             >
               Hör auf zu warten.
             </h2>

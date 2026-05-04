@@ -30,7 +30,7 @@ export function CourseCard({ course, progress, status }: CourseCardProps) {
         <div
           aria-hidden
           className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{ background: "radial-gradient(ellipse at center, rgba(200,146,42,0.18) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(ellipse at center, rgba(232,192,64,0.18) 0%, transparent 70%)" }}
         />
 
         {/* Level + price */}

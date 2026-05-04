@@ -114,22 +114,22 @@ export function MethodSection() {
             aria-hidden
           >
             {/* Slope fill */}
-            <polygon points="0,510 1200,130 1200,540 0,540" fill="rgba(200,146,42,0.018)" />
+            <polygon points="0,510 1200,130 1200,540 0,540" fill="rgba(232,192,64,0.018)" />
             {/* Slope edge */}
-            <line x1="0" y1="510" x2="1200" y2="130" stroke="rgba(200,146,42,0.07)" strokeWidth="1.5" />
+            <line x1="0" y1="510" x2="1200" y2="130" stroke="rgba(232,192,64,0.07)" strokeWidth="1.5" />
             {/* Trail path connecting card centers */}
             <path
               d="M 150,375 L 450,305 L 750,235 L 1050,165"
-              stroke="rgba(200,146,42,0.3)"
+              stroke="rgba(232,192,64,0.3)"
               strokeWidth="2"
               strokeDasharray="8 5"
               fill="none"
             />
             {/* Trail markers */}
-            <circle cx="150" cy="375" r="5" fill="rgba(200,146,42,0.4)" />
-            <circle cx="450" cy="305" r="5" fill="rgba(200,146,42,0.4)" />
-            <circle cx="750" cy="235" r="5" fill="rgba(200,146,42,0.4)" />
-            <circle cx="1050" cy="165" r="7" fill="rgba(200,146,42,0.7)" />
+            <circle cx="150" cy="375" r="5" fill="rgba(232,192,64,0.4)" />
+            <circle cx="450" cy="305" r="5" fill="rgba(232,192,64,0.4)" />
+            <circle cx="750" cy="235" r="5" fill="rgba(232,192,64,0.4)" />
+            <circle cx="1050" cy="165" r="7" fill="rgba(232,192,64,0.7)" />
           </svg>
 
           {/* Ascending cards */}
@@ -150,7 +150,7 @@ export function MethodSection() {
                 <div
                   className={`method-card relative border-2 rounded-sm bg-gradient-to-br p-6 flex flex-col transition-all duration-300 ${
                     i === STEPS.length - 1
-                      ? "border-gold-300/55 from-gold-300/15 to-transparent shadow-[0_0_40px_rgba(200,146,42,0.12)]"
+                      ? "border-gold-300/55 from-gold-300/15 to-transparent shadow-[0_0_40px_rgba(232,192,64,0.12)]"
                       : "border-gold-300/20 from-gold-300/8 to-transparent hover:border-gold-300/40 hover:from-gold-300/14"
                   }`}
                   style={{ opacity: 0 }}
@@ -209,7 +209,7 @@ export function MethodSection() {
                 bottom: "5rem",
                 width: "2px",
                 backgroundImage:
-                  "repeating-linear-gradient(to bottom, rgba(200,146,42,0.3) 0px, rgba(200,146,42,0.3) 6px, transparent 6px, transparent 12px)",
+                  "repeating-linear-gradient(to bottom, rgba(232,192,64,0.3) 0px, rgba(232,192,64,0.3) 6px, transparent 6px, transparent 12px)",
               }}
             />
 

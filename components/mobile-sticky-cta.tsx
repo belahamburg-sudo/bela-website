@@ -29,7 +29,7 @@ export function MobileStickyCta() {
         >
           <Button 
             href="/webinar" 
-            className="w-full max-w-sm shadow-[0_20px_50px_rgba(155,106,20,0.5)]"
+            className="w-full max-w-sm shadow-[0_20px_50px_rgba(168,122,16,0.5)]"
             size="lg"
           >
             Gratis Webinar sichern
