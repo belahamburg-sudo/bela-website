@@ -251,7 +251,7 @@ export function VideoHeroSection() {
               ))}
             </div>
             <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-cream/35">
-              Join +10.000 anderen
+              Schließe dich 10.000+ Umsetzern an
             </span>
           </div>
         </motion.div>
