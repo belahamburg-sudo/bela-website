@@ -46,9 +46,9 @@ export function HowItWorksSection() {
 
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <div ref={headingRef} style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">🎯 MISSION 2</p>
+          <p className="eyebrow mb-6">🎯 Das System</p>
           <h2 className="font-heading tracking-gta leading-none text-cream mb-8 lg:mb-12" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
-            WIE <span className="gold-text">AI GOLDMINING</span><br />FUNKTIONIERT
+            Wie <span className="gold-text">AI Goldmining</span><br />funktioniert
           </h2>
         </div>
 
@@ -77,9 +77,15 @@ export function HowItWorksSection() {
             Jeder Verkauf ist fast 100% Marge.
           </p>
 
+          <p className="text-cream/50 text-base lg:text-lg leading-relaxed max-w-2xl mx-auto mb-5">
+            Es ist wie mit Äpfeln im Supermarkt: Theoretisch könntest du zum Apfelbaum gehen und selbst pflücken.
+            Trotzdem zahlen Millionen Menschen jeden Tag dafür, dass jemand anderes ihnen den Apfel fertig in die Hand legt.
+            Genau das machst du mit Wissen — einmal aufgebaut, läuft es.
+          </p>
+
           <p className="font-heading tracking-gta text-xl lg:text-3xl text-cream mt-8 lg:mt-10 mb-10 px-2 sm:px-0">
-            DU BAUST EIN SYSTEM,{" "}
-            <span className="gold-text">DAS AUCH WENN DU SCHLÄFST ARBEITET.</span>
+            Du baust ein System,{" "}
+            <span className="gold-text">das auch wenn du schläfst arbeitet.</span>
           </p>
 
           <div className="flex flex-wrap gap-3 justify-center">
@@ -87,13 +93,13 @@ export function HowItWorksSection() {
               href="/webinar"
               className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_40px_rgba(240,180,41,0.5)]"
             >
-              🎯 MISSION: Webinar starten →
+              Webinar starten →
             </Link>
             <Link
               href="/kurse"
               className="inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
             >
-              📚 MISSION: Kurse erkunden
+              Kurse ansehen
             </Link>
           </div>
         </div>

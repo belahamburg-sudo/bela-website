@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 import { animate, onScroll } from "animejs";
 
 const STATS = [
-  { value: 2400, suffix: "+", label: "Kursteilnehmer" },
+  { value: 5690, suffix: "+", label: "Community Mitglieder" },
   { value: 97, suffix: "%", label: "Empfehlen es weiter" },
-  { value: 5, suffix: "K€", label: "Monatsziel nach 3 Monaten" },
-  { value: 10000, suffix: "+", label: "Community Mitglieder" },
+  { value: 3839, suffix: "", label: "Verkaufte Kurse" },
+  { value: 3165, suffix: "€", label: "Ø Ergebnis nach 2 Monaten" },
 ];
 
 export function StatsSection() {

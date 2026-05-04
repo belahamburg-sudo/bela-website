@@ -70,9 +70,9 @@ Paste each into: **Supabase Dashboard → Authentication → Email Templates**
 | Username | `resend` |
 | Password | Your Resend API key (`re_...`) |
 | Sender name | `Bela Goldmann` |
-| Sender email | `Bela@goldmvnn.com` |
+| Sender email | `Bela@aigoldmining.com` |
 
-**Important:** `goldmvnn.com` must be verified at [resend.com/domains](https://resend.com/domains) — add the DNS records they provide.
+**Important:** `aigoldmining.com` must be verified at [resend.com/domains](https://resend.com/domains) — add the DNS records they provide.
 
 ---
 
@@ -91,10 +91,10 @@ Paste each into: **Supabase Dashboard → Authentication → Email Templates**
 
 ## Troubleshooting
 
-**"550 domain not verified"** → Verify `goldmvnn.com` at resend.com/domains, add DNS records, wait for propagation (5–30 min), then re-test.
+**"550 domain not verified"** → Verify `aigoldmining.com` at resend.com/domains, add DNS records, wait for propagation (5–30 min), then re-test.
 
 **Sender shows "no-reply@supabase.io"** → SMTP not configured. See section above.
 
 **Template renders as plain text** → Paste into the HTML tab, not plain text tab.
 
-**Bela photo not showing** → Ensure `https://goldmvnn.com/assets/bela-character.jpeg` is publicly accessible.
+**Bela photo not showing** → Ensure `https://aigoldmining.com/assets/bela-character.jpeg` is publicly accessible.

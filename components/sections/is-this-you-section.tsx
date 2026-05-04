@@ -49,10 +49,10 @@ export function IsThisYouSection() {
 
       <div className="relative mx-auto max-w-3xl px-6">
         <div ref={headingRef} className="text-center mb-10 lg:mb-16" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">🎯 MISSION 8</p>
+          <p className="eyebrow mb-6">🎯 Bist das du?</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2rem, 10vw, 7rem)" }}>
-            BIST DAS{" "}
-            <span className="gold-text">DU?</span>
+            Bist das{" "}
+            <span className="gold-text">du?</span>
           </h2>
         </div>
 
@@ -72,7 +72,7 @@ export function IsThisYouSection() {
 
         <div ref={ctaRef} className="text-center border-t border-gold-300/10 pt-10 lg:pt-16" style={{ opacity: 0 }}>
           <p className="font-heading tracking-gta text-2xl text-cream mb-3">
-            WENN DAS DU BIST —
+            Wenn das du bist —
           </p>
           <p className="text-cream/45 mb-10 text-lg max-w-xl mx-auto leading-relaxed">
             Dann ist AI Goldmining für dich gebaut worden.
@@ -82,7 +82,7 @@ export function IsThisYouSection() {
             href="/webinar"
             className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-300 px-10 py-4 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(240,180,41,0.45)]"
           >
-            🎯 MISSION: Webinar starten →
+            Webinar starten →
           </Link>
           <p className="mt-5 text-[0.7rem] text-cream/20 uppercase tracking-[0.2em]">
             Hör auf zu warten.

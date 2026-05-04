@@ -21,13 +21,13 @@ export function ProductsSection() {
           transition={{ duration: 0.6 }}
           className="mb-10 lg:mb-16"
         >
-          <p className="eyebrow mb-6">🎯 MISSION 6</p>
+          <p className="eyebrow mb-6">🎯 Kurse & Produkte</p>
           <h2
             className="font-heading tracking-gta leading-none text-cream max-w-3xl"
             style={{ fontSize: "clamp(1.75rem, 8vw, 5.5rem)" }}
           >
-            MINI-KURSE MIT EINEM{" "}
-            <span className="gold-text">KLAREN ERGEBNIS.</span>
+            Mini-Kurse mit einem{" "}
+            <span className="gold-text">klaren Ergebnis.</span>
           </h2>
           <p className="mt-5 max-w-2xl text-base lg:text-lg leading-[1.75] text-cream/45 sm:text-lg">
             Jeder Kurs ist klein genug für schnelle Umsetzung und konkret genug, damit du weißt, was du bekommst.
@@ -57,7 +57,7 @@ export function ProductsSection() {
           className="mt-10 text-center"
         >
           <Button href="/kurse" variant="outline" size="lg">
-            🎯 MISSION: Alle Kurse entdecken
+            Alle Kurse entdecken
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Button>
         </motion.div>

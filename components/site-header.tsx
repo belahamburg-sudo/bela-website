@@ -131,7 +131,7 @@ export function SiteHeader() {
             {/* Mobile menu toggle */}
             <button
               type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-300/15 bg-white/[0.03] text-cream/60 transition-colors hover:border-gold-300/30 hover:bg-white/[0.06] hover:text-cream lg:hidden"
+              className="flex h-9 w-9 items-center justify-center text-cream/50 transition-colors hover:text-cream lg:hidden"
               onClick={() => setOpen(!open)}
               aria-expanded={open}
               aria-label={open ? "Menü schließen" : "Menü öffnen"}

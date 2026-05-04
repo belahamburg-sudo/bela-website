@@ -33,10 +33,9 @@ export function Footer() {
                   alt="AI Goldmining"
                   width={340}
                   height={64}
-                  className="h-auto w-[160px]"
+                  className="h-auto w-[200px]"
                 />
               </Link>
-              <p className="mt-3 font-heading tracking-gta text-sm text-cream/50 uppercase">Bela Goldmann</p>
             </div>
             <p className="max-w-sm text-sm leading-7 text-cream/40">
               Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen. Kein Guru-Playbook. Eine Methode mit realistischem Zielrahmen.

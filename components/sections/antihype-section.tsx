@@ -70,10 +70,10 @@ export function AntihypeSection() {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div ref={headingRef} className="mb-16" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6">🎯 MISSION 9</p>
+          <p className="eyebrow mb-6">🎯 Kein Bullshit</p>
           <h2 className="font-heading tracking-gta leading-none text-cream max-w-2xl" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
-            WAS DU HIER{" "}
-            <span className="gold-text">NICHT</span> BEKOMMST.
+            Was du hier{" "}
+            <span className="gold-text">nicht</span> bekommst.
           </h2>
           <p className="mt-4 text-cream/40 text-lg max-w-md">
             Weil es wichtig ist, das klar zu sagen.

@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { Volume2, VolumeX, Play, Pause } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { telegramUrl } from "@/lib/env";
 
 export function VideoHeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -213,15 +212,7 @@ export function VideoHeroSection() {
               className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gold-300 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:bg-gold-200 hover:shadow-[0_0_50px_rgba(240,180,41,0.45)] relative overflow-hidden"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative">🎯 MISSION: Webinar starten</span> →
-            </Link>
-            <Link
-              href={telegramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-gold-300/35 px-7 py-3 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/70 hover:bg-gold-300/5 hover:text-cream"
-            >
-              👥 MISSION: Community beitreten
+              <span className="relative">Webinar starten</span> →
             </Link>
           </div>
 

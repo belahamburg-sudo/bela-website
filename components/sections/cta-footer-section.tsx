@@ -55,21 +55,21 @@ export function CtaFooterSection() {
               className="mx-auto max-w-4xl font-heading tracking-gta leading-none text-cream"
               style={{ fontSize: "clamp(2.8rem,6vw,6.5rem)", textShadow: "0 0 30px rgba(240,180,41,0.3)" }}
             >
-              🏆 FINAL MISSION 🏆
+              Hör auf zu warten.
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gold-300/70">
-              ⏱️ Deine letzte Chance. Wähle deinen Einstiegspunkt jetzt.
+              Digitale Produkte einmal bauen — dauerhaft verkaufen. Fast reine Marge.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/webinar" size="lg">
-                🎯 MISSION: Webinar starten
+                Webinar starten
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Button>
               <Button href={telegramUrl} variant="outline" size="lg" target="_blank" rel="noopener noreferrer">
-                👥 MISSION: Community beitreten
+                Community beitreten
               </Button>
               <Button href="#newsletter" variant="outline" size="lg">
-                📧 MISSION: Newsletter sichern
+                Newsletter sichern
               </Button>
             </div>
           </motion.div>
@@ -104,10 +104,9 @@ export function CtaFooterSection() {
                     alt="AI Goldmining"
                     width={340}
                     height={64}
-                    className="h-auto w-[160px]"
+                    className="h-auto w-[200px]"
                   />
                 </Link>
-                <p className="mt-3 font-heading tracking-gta text-sm text-cream/50 uppercase">Bela Goldmann</p>
               </div>
               <p className="max-w-sm text-sm leading-7 text-cream/40">
                 Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen. Kein Guru-Playbook. Eine Methode mit realistischem Zielrahmen.

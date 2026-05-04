@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import { animate, onScroll, stagger } from "animejs";
 import { Button } from "@/components/button";
-import { telegramUrl } from "@/lib/env";
 
 const PROBLEMS = [
   { num: "01", name: "Dropshipping", why: "Kapitalintensiv — Testing-Budget, Logistik, Retouren, lange Margen-Kette." },
@@ -64,11 +63,11 @@ export function ProblemSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-20 items-start mb-16 lg:mb-24">
           <div ref={headingRef} style={{ opacity: 0 }}>
-            <p className="eyebrow mb-6">🎯 MISSION 3</p>
+            <p className="eyebrow mb-6">🎯 Der Ausgangspunkt</p>
             <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
-              WER JETZT NICHT HANDELT,{" "}
-              <span className="gold-text">VERLIERT.</span>{" "}
-              AI KICKT DICH RAUS.
+              Wer jetzt nicht handelt,{" "}
+              <span className="gold-text">verliert.</span>{" "}
+              AI kickt dich raus.
             </h2>
           </div>
 
@@ -110,13 +109,13 @@ export function ProblemSection() {
             <span className="eyebrow shrink-0">Die Lösung</span>
             <div>
               <p className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.4rem, 6vw, 3.2rem)" }}>
-                DIGITALE PRODUKTE — EINMAL BAUEN,{" "}
-                <span className="gold-text">DAUERHAFT VERKAUFEN.</span>{" "}
-                FAST REINE MARGE. MIT AI IN TAGEN.
+                Digitale Produkte — einmal bauen,{" "}
+                <span className="gold-text">dauerhaft verkaufen.</span>{" "}
+                Fast reine Marge. Mit AI in Tagen.
               </p>
               <div className="mt-6">
-                <Button href={telegramUrl} variant="outline" target="_blank" rel="noopener noreferrer">
-                  Free Telegram Gruppe
+                <Button href="/webinar">
+                  Webinar starten →
                 </Button>
               </div>
             </div>
