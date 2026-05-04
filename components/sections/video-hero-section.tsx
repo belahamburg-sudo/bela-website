@@ -243,7 +243,7 @@ export function VideoHeroSection() {
                   style={{
                     background: `linear-gradient(135deg, #FFD76A, #C98B00)`,
                     opacity: 0.85 + i * 0.03,
-                    zIndex: 5: i,
+                    zIndex: 5 - i,
                   }}
                 >
                   {initial}

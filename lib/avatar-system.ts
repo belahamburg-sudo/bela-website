@@ -80,7 +80,7 @@ export function getMemberLevel(points: number) {
   const progress = next
     ? Math.min(
         100,
-        Math.round(((points: current.minPoints) / (next.minPoints: current.minPoints)) * 100)
+        Math.round(((points - current.minPoints) / (next.minPoints - current.minPoints)) * 100)
       )
     : 100;
 

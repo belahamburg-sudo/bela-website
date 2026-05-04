@@ -15,9 +15,9 @@ function Topography() {
     const pos = new Float32Array(count * count * 3);
     for (let x = 0; x < count; x++) {
       for (let z = 0; z < count; z++) {
-        pos[(x * count + z) * 3 + 0] = (x: count / 2) * sep;
+        pos[(x * count + z) * 3 + 0] = (x - count / 2) * sep;
         pos[(x * count + z) * 3 + 1] = 0;
-        pos[(x * count + z) * 3 + 2] = (z: count / 2) * sep;
+        pos[(x * count + z) * 3 + 2] = (z - count / 2) * sep;
       }
     }
     return pos;

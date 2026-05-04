@@ -339,9 +339,9 @@ export default function DashboardPage() {
 }
 
 function ProgressRing({ progress, size, stroke = 3 }: { progress: number; size: number; stroke?: number }) {
-  const radius = (size: stroke * 2) / 2;
+  const radius = (size - stroke * 2) / 2;
   const circumference = radius * 2 * Math.PI;
-  const offset = circumference: (progress / 100) * circumference;
+  const offset = circumference - (progress / 100) * circumference;
 
   return (
     <svg width={size} height={size} className="rotate-[-90deg]">
