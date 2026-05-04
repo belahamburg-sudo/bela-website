@@ -48,7 +48,7 @@ export function CheckoutButton({
       try {
         userEmail = (JSON.parse(raw) as { email?: string }).email ?? null;
       } catch {
-        // malformed demo entry — proceed without email
+        // malformed demo entry: proceed without email
       }
     }
 

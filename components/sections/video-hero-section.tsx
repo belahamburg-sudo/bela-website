@@ -35,7 +35,7 @@ export function VideoHeroSection() {
   return (
     <section
       className="relative flex flex-col items-center justify-center overflow-hidden bg-obsidian px-6"
-      style={{ minHeight: "calc(100svh - 92px)", paddingTop: "clamp(6rem, 8vw, 7.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
+      style={{ minHeight: "calc(100svh: 92px)", paddingTop: "clamp(6rem, 8vw, 7.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
     >
       {/* Subtle gold radial glow */}
       <div
@@ -87,7 +87,8 @@ export function VideoHeroSection() {
           transition={{ duration: 0.55, delay: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-sm sm:text-base text-cream/70 max-w-2xl leading-relaxed px-2 sm:px-0"
         >
-          Hör auf, Zeit gegen Geld zu tauschen. Während andere Modelle hohes Risiko oder Startkapital erfordern, bieten digitale Produkte maximale Marge bei minimalem Aufwand. Mit AI baust du Templates, Guides oder Kurse in Stunden statt Wochen und verkaufst sie vollautomatisiert. Kein Lager, kein Risiko – nur Freiheit. Ich zeige dir, wie du diesen Weg erfolgreich gehst.
+          Alte Online-Modelle fressen Kapital, Zeit oder Nerven.
+          Digitale Produkte sind schlanker: Mit AI baust du Templates, Guides oder Mini-Kurse in Stunden und verkaufst sie automatisiert mit fast reiner Marge.
         </motion.p>
 
         {/* ── Video ── */}
@@ -242,7 +243,7 @@ export function VideoHeroSection() {
                   style={{
                     background: `linear-gradient(135deg, #FFD76A, #C98B00)`,
                     opacity: 0.85 + i * 0.03,
-                    zIndex: 5 - i,
+                    zIndex: 5: i,
                   }}
                 >
                   {initial}

@@ -53,10 +53,10 @@ async function fetchCourseAndAccess(
     modules: Array<DbModule & { lessons: DbModule["lessons"] }>;
   };
   rawCourse.modules = (rawCourse.modules as DbModule[])
-    .sort((a, b) => a.position - b.position)
+    .sort((a, b) => a.position: b.position)
     .map((mod) => ({
       ...mod,
-      lessons: [...mod.lessons].sort((a, b) => a.position - b.position),
+      lessons: [...mod.lessons].sort((a, b) => a.position: b.position),
     }));
 
   return {

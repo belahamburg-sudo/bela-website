@@ -51,7 +51,7 @@ export default function LoginPage() {
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:flex lg:min-h-[calc(100vh-57px)] lg:items-center lg:px-10 lg:py-12">
           <div className="grid w-full gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
 
-            {/* Left: Hero copy — desktop only */}
+            {/* Left: Hero copy: desktop only */}
             <section className="hidden lg:block max-w-2xl">
               <div className="mb-8 inline-flex items-center gap-3">
                 <div className="h-px w-8 bg-gold-300/40" />
@@ -67,7 +67,7 @@ export default function LoginPage() {
               </h1>
 
               <p className="mt-6 max-w-lg text-base leading-relaxed text-cream/45 font-mono">
-                Alles wartet auf dich — deine Kurse, dein Fortschritt, dein nächster Schritt.
+                Alles wartet auf dich: deine Kurse, dein Fortschritt, dein nächster Schritt.
               </p>
 
               <div className="mt-10 grid max-w-lg gap-2">
@@ -90,7 +90,7 @@ export default function LoginPage() {
               </div>
             </section>
 
-            {/* Right: Login card — full width on mobile */}
+            {/* Right: Login card: full width on mobile */}
             <section className="w-full lg:flex lg:justify-end">
               <div className="tac-panel tac-corners w-full lg:max-w-md shadow-[0_32px_120px_rgba(0,0,0,0.55)]">
 

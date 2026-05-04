@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const PHOTOS = [
   { src: "/assets/bela-golf-2.jpeg", alt: "Bela beim Golf", label: "München" },
-  { src: "/assets/bela-seoul.jpg", alt: "Remote — Seoul", label: "Seoul" },
+  { src: "/assets/bela-seoul.jpg", alt: "Remote: Seoul", label: "Seoul" },
   { src: "/assets/bela-terrace.jpg", alt: "Abend am Wasser", label: "Istanbul" },
   { src: "/assets/bela-golf-1.jpeg", alt: "Bela beim Golf", label: "München" },
 ];

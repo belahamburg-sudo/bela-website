@@ -10,7 +10,7 @@ import { telegramUrl } from "@/lib/env";
 
 const COMMUNITY_ITEMS = [
   "Produktideen und konkrete Beispiele aus der Praxis",
-  "AI-Prompts für digitale Produkte — direkt anwendbar",
+  "AI-Prompts für digitale Produkte: direkt anwendbar",
   "Launch-Updates und neue Kurse als erste",
   "Kurze, direkte Umsetzungsschritte ohne Theorie-Marathon",
 ];
@@ -60,7 +60,7 @@ export default function CommunityPage() {
             </Button>
           </motion.div>
 
-          {/* What you get — no card wrapper */}
+          {/* What you get: no card wrapper */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/25 mb-8">Was dich erwartet</p>
             <ul ref={listRef} className="space-y-6">
@@ -75,7 +75,7 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      {/* Member area — clear paid split */}
+      {/* Member area: clear paid split */}
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[0.95fr_1.05fr] items-start">
           <div>
@@ -123,7 +123,7 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      {/* Newsletter — no panel-surface */}
+      {/* Newsletter: no panel-surface */}
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[1fr_1fr] items-start">
           <div>
@@ -133,7 +133,7 @@ export default function CommunityPage() {
               <em className="gold-text not-italic">E-Mail bleiben.</em>
             </h2>
             <p className="mt-5 text-white/40 max-w-sm leading-relaxed">
-              Kein Spam. Nur Produkt-Updates, neue Kurse und umsetzbare AI-Tipps — direkt in deine Inbox.
+              Kein Spam. Nur Produkt-Updates, neue Kurse und umsetzbare AI-Tipps: direkt in deine Inbox.
             </p>
           </div>
           <div className="pt-4">
@@ -142,7 +142,7 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      {/* CTA bridge — no panel-surface card */}
+      {/* CTA bridge: no panel-surface card */}
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>

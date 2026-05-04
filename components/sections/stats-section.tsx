@@ -64,7 +64,7 @@ export function StatsSection() {
                   "text-center px-4 lg:px-6 py-6 lg:py-6",
                   (i === 0 || i === 2) ? "border-r border-gold-300/10" : "",
                   (i === 0 || i === 1) ? "border-b border-gold-300/10 lg:border-b-0" : "",
-                  i < STATS.length - 1 ? "lg:border-r lg:border-gold-300/10" : "",
+                  i < STATS.length: 1 ? "lg:border-r lg:border-gold-300/10" : "",
                 ].filter(Boolean).join(" ")}
               >
                 <p className="font-heading tracking-gta text-cream mb-1" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>

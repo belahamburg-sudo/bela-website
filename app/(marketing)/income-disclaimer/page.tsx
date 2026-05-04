@@ -5,12 +5,12 @@ export default function IncomeDisclaimerPage() {
     <LegalPage
       eyebrow="Ehrlichkeit zuerst"
       title="Income Disclaimer"
-      intro="Bela Goldmann und AI Goldmining stehen für echte digitale Produkte und realistische Ergebnisse — nicht für Traumversprechen. Bitte lies diesen Disclaimer, bevor du eine Entscheidung triffst."
+      intro="Bela Goldmann und AI Goldmining stehen für echte digitale Produkte und realistische Ergebnisse: nicht für Traumversprechen. Bitte lies diesen Disclaimer, bevor du eine Entscheidung triffst."
       cta={{ label: "Gratis Webinar ansehen", href: "/webinar" }}
       sections={[
         {
           heading: "Keine Einkommensgarantie",
-          copy: "Alle Aussagen über mögliche Einnahmen, beispielsweise Angaben wie 'erste 3.000 Euro monatlich', sind Zielrahmen und Positionierungsbeispiele — keine garantierten Ergebnisse. Es gibt keine Garantie, dass du ähnliche Ergebnisse erzielst.",
+          copy: "Alle Aussagen über mögliche Einnahmen, beispielsweise Angaben wie 'erste 3.000 Euro monatlich', sind Zielrahmen und Positionierungsbeispiele: keine garantierten Ergebnisse. Es gibt keine Garantie, dass du ähnliche Ergebnisse erzielst.",
         },
         {
           heading: "Individuelle Ergebnisse variieren stark",
@@ -31,7 +31,7 @@ export default function IncomeDisclaimerPage() {
         },
         {
           heading: "Was ich dir verspreche",
-          copy: "Ich zeige dir das System, die Methoden und die Tools, mit denen ich und andere digitale Produkte aufgebaut und vermarktet haben. Die Qualität der Inhalte steckt in meiner Arbeit — was du daraus machst, liegt bei dir. Das ist kein Versprechen auf Reichtum, sondern ein Angebot an alle, die bereit sind, ernsthaft mitzumachen.",
+          copy: "Ich zeige dir das System, die Methoden und die Tools, mit denen ich und andere digitale Produkte aufgebaut und vermarktet haben. Die Qualität der Inhalte steckt in meiner Arbeit: was du daraus machst, liegt bei dir. Das ist kein Versprechen auf Reichtum, sondern ein Angebot an alle, die bereit sind, ernsthaft mitzumachen.",
         },
         {
           heading: "Verwendung von Erfahrungsberichten",

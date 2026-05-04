@@ -12,7 +12,7 @@ export function PaywallScreen({ course }: PaywallScreenProps) {
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-6 py-20">
       <div className="w-full max-w-lg text-center">
-        {/* Lock icon — GTA vault style */}
+        {/* Lock icon: GTA vault style */}
         <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-sm border border-gold-300/25 bg-gold-300/[0.06] relative">
           <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-gold-300/50" aria-hidden />
           <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-gold-300/50" aria-hidden />

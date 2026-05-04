@@ -5,13 +5,13 @@ import { animate, onScroll, stagger } from "animejs";
 import { Button } from "@/components/button";
 
 const PROBLEMS = [
-  { num: "01", name: "Dropshipping", why: "Kapitalintensiv — Testing-Budget, Logistik, Retouren, lange Margen-Kette." },
-  { num: "02", name: "Agenturen", why: "Zeit gegen Geld — dauerhaft neue Kunden nötig, schwer skalierbar." },
-  { num: "03", name: "SaaS", why: "Technik-lastig — Monate Entwicklungszeit, Support, Startkapital." },
-  { num: "04", name: "Affiliate Marketing", why: "Plattform-abhängig — Provisionen sinken, du baust auf fremdem Grund." },
-  { num: "05", name: "1:1 Coaching", why: "Zeit-Deckel bleibt — mehr Kunden bedeutet mehr Stunden, kein Ausweg." },
+  { num: "01", name: "Dropshipping", why: "Kapitalintensiv: Testing-Budget, Logistik, Retouren, lange Margen-Kette." },
+  { num: "02", name: "Agenturen", why: "Zeit gegen Geld: dauerhaft neue Kunden nötig, schwer skalierbar." },
+  { num: "03", name: "SaaS", why: "Technik-lastig: Monate Entwicklungszeit, Support, Startkapital." },
+  { num: "04", name: "Affiliate Marketing", why: "Plattform-abhängig: Provisionen sinken, du baust auf fremdem Grund." },
+  { num: "05", name: "1:1 Coaching", why: "Zeit-Deckel bleibt: mehr Kunden bedeutet mehr Stunden, kein Ausweg." },
   { num: "06", name: "Amazon FBA", why: "Lagerkosten, steigende Gebühren, Listing-Krieg gegen tausende Konkurrenten." },
-  { num: "07", name: "YouTube / Content", why: "Jahre bis zur Monetarisierung — Algorithmus-Risiko, kein stabiles Einkommen." },
+  { num: "07", name: "YouTube / Content", why: "Jahre bis zur Monetarisierung: Algorithmus-Risiko, kein stabiles Einkommen." },
 ];
 
 export function ProblemSection() {
@@ -88,7 +88,7 @@ export function ProblemSection() {
           </ul>
         </div>
 
-        {/* Solution strip — full-width like a wanted poster */}
+        {/* Solution strip: full-width like a wanted poster */}
         <div
           ref={solutionRef}
           className="relative overflow-hidden rounded-sm border border-gold-300/20 p-6 lg:p-12"
@@ -109,7 +109,7 @@ export function ProblemSection() {
             <span className="eyebrow shrink-0">Die Lösung</span>
             <div>
               <p className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.4rem, 6vw, 3.2rem)" }}>
-                Digitale Produkte — einmal bauen,{" "}
+                Digitale Produkte: einmal bauen,{" "}
                 <span className="gold-text">dauerhaft verkaufen.</span>{" "}
                 Fast reine Marge. Mit AI in Tagen.
               </p>

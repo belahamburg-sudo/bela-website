@@ -49,7 +49,7 @@ export const courses: Course[] = [
     title: "AI Goldmining Starter",
     tagline: "Dein erstes digitales Produkt mit AI",
     description:
-      "Von der vagen Idee zum klaren Angebot. Kein Theorie-Marathon — du gehst mit einem verkaufsfertigen Produkt raus.",
+      "Von der vagen Idee zum klaren Angebot. Kein Theorie-Marathon: du gehst mit einem verkaufsfertigen Produkt raus.",
     priceCents: 2900,
     image: "/assets/generated/course-starter.svg",
     level: "Start",
@@ -73,7 +73,7 @@ export const courses: Course[] = [
             title: "Warum digitale Produkte der schlankste Einstieg sind",
             duration: "12 Min.",
             summary:
-              "Der Vergleich zu Dropshipping, Agenturen und SaaS — und warum digitale Produkte die höchste Marge pro eingesetzter Stunde haben.",
+              "Der Vergleich zu Dropshipping, Agenturen und SaaS: und warum digitale Produkte die höchste Marge pro eingesetzter Stunde haben.",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
             resources: sharedResources
           },
@@ -110,7 +110,7 @@ export const courses: Course[] = [
     title: "Template Goldmine",
     tagline: "Vorlagen bauen und verkaufen",
     description:
-      "Notion, Canva, Sheets, Framer. Templates, die einen echten Workflow lösen — keine schicken Dateien ohne Zweck.",
+      "Notion, Canva, Sheets, Framer. Templates, die einen echten Workflow lösen: keine schicken Dateien ohne Zweck.",
     priceCents: 3900,
     image: "/assets/generated/course-template.svg",
     level: "Aufbau",
@@ -155,7 +155,7 @@ export const courses: Course[] = [
     title: "Mini-Kurs Maschine",
     tagline: "Kursidee bis Verkaufsseite",
     description:
-      "Ein schlanker Kurs mit einem klaren Ergebnis — nicht 100 Lektionen Content-Friedhof.",
+      "Ein schlanker Kurs mit einem klaren Ergebnis: nicht 100 Lektionen Content-Friedhof.",
     priceCents: 4900,
     image: "/assets/generated/course-minikurs.svg",
     level: "System",
@@ -187,7 +187,7 @@ export const courses: Course[] = [
             title: "Module und Skripte mit AI bauen",
             duration: "27 Min.",
             summary:
-              "AI als Strukturhilfe — nicht als Content-Generator. Der Prompt-Workflow vom Outline bis zur fertigen Lektion.",
+              "AI als Strukturhilfe: nicht als Content-Generator. Der Prompt-Workflow vom Outline bis zur fertigen Lektion.",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
             resources: sharedResources
           }
@@ -206,7 +206,7 @@ export const courses: Course[] = [
     level: "System",
     audience: "Alle, die nicht nur bauen, sondern verkaufen wollen",
     outcome:
-      "Eine Funnel-Map — du weißt, welche Seite welchen Job macht und wo die Metriken hängen.",
+      "Eine Funnel-Map: du weißt, welche Seite welchen Job macht und wo die Metriken hängen.",
     includes: [
       "Funnel-Map",
       "Lead-Formel",
@@ -223,7 +223,7 @@ export const courses: Course[] = [
             title: "Die 5 Seiten im System",
             duration: "20 Min.",
             summary:
-              "Landingpage, Webinar, Store, Kursdetailseite, Dashboard — jede mit einem einzigen klaren Job.",
+              "Landingpage, Webinar, Store, Kursdetailseite, Dashboard: jede mit einem einzigen klaren Job.",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
             resources: sharedResources
           },
@@ -245,7 +245,7 @@ export const courses: Course[] = [
     title: "AI Content Factory",
     tagline: "Content-System mit AI aufbauen",
     description:
-      "Von einer Idee zu 30 Tagen geplanten Content — ohne täglich neu nachdenken zu müssen. Dein AI-getriebenes Content-System.",
+      "Von einer Idee zu 30 Tagen geplanten Content: ohne täglich neu nachdenken zu müssen. Dein AI-getriebenes Content-System.",
     priceCents: 3400,
     image: "/assets/generated/course-starter.svg",
     level: "Aufbau",
@@ -277,7 +277,7 @@ export const courses: Course[] = [
             title: "Themen-Mining mit AI",
             duration: "19 Min.",
             summary:
-              "Wie du aus deinem Wissen 90 Themen in 20 Minuten ableitest — und welche davon wirklich geklickt werden.",
+              "Wie du aus deinem Wissen 90 Themen in 20 Minuten ableitest: und welche davon wirklich geklickt werden.",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
             resources: sharedResources
           }
@@ -305,13 +305,13 @@ export const courses: Course[] = [
     title: "Prompt Engineering Pro",
     tagline: "AI wirklich steuern lernen",
     description:
-      "Nicht die nächste Prompt-Sammlung — sondern das mentale Modell dahinter. Wie du AI-Outputs reproduzierbar gut machst.",
+      "Nicht die nächste Prompt-Sammlung: sondern das mentale Modell dahinter. Wie du AI-Outputs reproduzierbar gut machst.",
     priceCents: 2900,
     image: "/assets/generated/course-minikurs.svg",
     level: "Start",
     audience: "Alle, die mit AI arbeiten und besser werden wollen",
     outcome:
-      "Ein eigenes Prompt-Framework, das auf deine Use Cases passt — übertragbar auf jedes AI-Tool.",
+      "Ein eigenes Prompt-Framework, das auf deine Use Cases passt: übertragbar auf jedes AI-Tool.",
     includes: [
       "Prompt-Struktur Mastersheet",
       "50 bewährte Basis-Prompts",
@@ -337,7 +337,7 @@ export const courses: Course[] = [
             title: "Struktur, Kontext und Constraints",
             duration: "21 Min.",
             summary:
-              "Die drei Hebel jedes starken Prompts — und warum die meisten nur einen benutzen.",
+              "Die drei Hebel jedes starken Prompts: und warum die meisten nur einen benutzen.",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
             resources: sharedResources
           }
@@ -350,13 +350,13 @@ export const courses: Course[] = [
     title: "Digital Product Launch",
     tagline: "Launch-System in 14 Tagen",
     description:
-      "Kein Launch ohne Plan. Die 14-Tage-Launch-Sequenz: Warm-up, Presale, Launch, Follow-up — alles strukturiert mit AI.",
+      "Kein Launch ohne Plan. Die 14-Tage-Launch-Sequenz: Warm-up, Presale, Launch, Follow-up: alles strukturiert mit AI.",
     priceCents: 4400,
     image: "/assets/generated/course-funnel.svg",
     level: "System",
     audience: "Alle, die ein fertiges Produkt endlich launchen wollen",
     outcome:
-      "Eine vollständige Launch-Sequenz in 14 Tagen — mit AI-generierten Texten für jeden Schritt.",
+      "Eine vollständige Launch-Sequenz in 14 Tagen: mit AI-generierten Texten für jeden Schritt.",
     includes: [
       "14-Tage Launch-Kalender",
       "E-Mail-Sequenz (7 Mails)",
@@ -373,7 +373,7 @@ export const courses: Course[] = [
             title: "Die Psychologie eines erfolgreichen Launch",
             duration: "18 Min.",
             summary:
-              "Warum Launches scheitern — und wie du Dringlichkeit aufbaust, ohne unecht zu wirken.",
+              "Warum Launches scheitern: und wie du Dringlichkeit aufbaust, ohne unecht zu wirken.",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
             resources: sharedResources
           },
@@ -397,7 +397,7 @@ export const courses: Course[] = [
             title: "Launch-Tag: Was wirklich passiert",
             duration: "20 Min.",
             summary:
-              "Stunde für Stunde am Launch-Tag — worauf du achtest, was du sendest und wie du auf Einwände reagierst.",
+              "Stunde für Stunde am Launch-Tag: worauf du achtest, was du sendest und wie du auf Einwände reagierst.",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
             resources: sharedResources
           }
@@ -416,7 +416,7 @@ export const courses: Course[] = [
     level: "Bundle",
     audience: "Ernsthafte Starter, die direkt das ganze System sehen wollen",
     outcome:
-      "Die komplette Produktleiter — von Idee bis Verkaufsprozess in einer Umgebung.",
+      "Die komplette Produktleiter: von Idee bis Verkaufsprozess in einer Umgebung.",
     featured: true,
     includes: [
       "Alle vier Mini-Kurse",
@@ -464,7 +464,7 @@ export const faqItems = [
   },
   {
     q: "Ist das wieder so ein Reichtums-Versprechen?",
-    a: "Nein. Das erste realistische Ziel ist 3.000 € monatlich selbstständig — nicht 20K in 30 Tagen. Kein Zertifikat garantiert dir Umsatz. Was du bekommst, ist ein System, das funktioniert, wenn du es durchziehst. Keine Garantie, aber eine ehrliche Roadmap."
+    a: "Nein. Das erste realistische Ziel ist 3.000 € monatlich selbstständig: nicht 20K in 30 Tagen. Kein Zertifikat garantiert dir Umsatz. Was du bekommst, ist ein System, das funktioniert, wenn du es durchziehst. Keine Garantie, aber eine ehrliche Roadmap."
   },
   {
     q: "Wie viel Startkapital brauche ich?",
@@ -472,7 +472,7 @@ export const faqItems = [
   },
   {
     q: "Wie viel Zeit muss ich investieren?",
-    a: "Realistisch 5–10 Stunden pro Woche, um in 8–12 Wochen das erste Produkt fertig im Store zu haben. Mehr Zeit = schneller. Weniger als 3 Stunden pro Woche reicht nicht — das ist keine Nebenbei-5-Minuten-Methode."
+    a: "Realistisch 5 bis 10 Stunden pro Woche, um in 8 bis 12 Wochen das erste Produkt fertig im Store zu haben. Mehr Zeit = schneller. Weniger als 3 Stunden pro Woche reicht nicht: das ist keine Nebenbei-5-Minuten-Methode."
   },
   {
     q: "Brauche ich Reichweite oder Follower?",
@@ -480,7 +480,7 @@ export const faqItems = [
   },
   {
     q: "Was unterscheidet AI Goldmining von anderen AI-Kursen?",
-    a: "Die meisten AI-Kurse sind Tool-Rundgänge. Hier geht es um den Verkaufsprozess. Das Tool ändert sich alle 3 Monate, die Methode bleibt. Du lernst, wie du aus AI-Output verkaufbare Produkte machst — nicht, welches Tool gerade trending ist."
+    a: "Die meisten AI-Kurse sind Tool-Rundgänge. Hier geht es um den Verkaufsprozess. Das Tool ändert sich alle 3 Monate, die Methode bleibt. Du lernst, wie du aus AI-Output verkaufbare Produkte machst: nicht, welches Tool gerade trending ist."
   },
   {
     q: "Kann ich den Kurs mit Ratenzahlung kaufen?",

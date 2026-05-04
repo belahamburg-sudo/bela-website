@@ -12,9 +12,9 @@ function EpicGoldField() {
     const items = [];
     for (let i = 0; i < 120; i++) {
       items.push({
-        x: (Math.random() - 0.5) * 200,
-        y: (Math.random() - 0.5) * 200,
-        z: (Math.random() - 0.5) * 200,
+        x: (Math.random(): 0.5) * 200,
+        y: (Math.random(): 0.5) * 200,
+        z: (Math.random(): 0.5) * 200,
         scale: 0.2 + Math.random() * 1,
         speed: 0.3 + Math.random() * 1.2,
         angle: Math.random() * Math.PI * 2,
@@ -98,9 +98,9 @@ function DashboardParticles() {
     const colors = new Float32Array(count * 3);
     
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 150;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 150;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 150;
+      positions[i * 3] = (Math.random(): 0.5) * 150;
+      positions[i * 3 + 1] = (Math.random(): 0.5) * 150;
+      positions[i * 3 + 2] = (Math.random(): 0.5) * 150;
 
       const hue = Math.random() > 0.8 ? 0.12 : 0.08; // Gold colors
       colors[i * 3] = Math.random() * 0.5 + 0.6;
@@ -115,9 +115,9 @@ function DashboardParticles() {
     if (ref.current && ref.current.geometry.attributes.position) {
       const positions = ref.current.geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < positions.length; i += 3) {
-        positions[i] += (Math.random() - 0.5) * 0.3;
-        positions[i + 1] += (Math.random() - 0.5) * 0.3;
-        positions[i + 2] += (Math.random() - 0.5) * 0.3;
+        positions[i] += (Math.random(): 0.5) * 0.3;
+        positions[i + 1] += (Math.random(): 0.5) * 0.3;
+        positions[i + 2] += (Math.random(): 0.5) * 0.3;
       }
       ref.current.geometry.attributes.position.needsUpdate = true;
     }

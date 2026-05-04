@@ -7,12 +7,12 @@ import Link from "next/link";
 
 const POINTS = [
   { bold: "Du bist müde davon, zuzuschauen,", rest: " wie andere Leute das Leben leben, das du willst." },
-  { bold: "Du weißt, dass du mehr drauf hast", rest: " — aber niemand in deinem Umfeld versteht das." },
-  { bold: "Du hast YouTube und Free Content probiert", rest: " — aber nichts davon hat sich in echte Ergebnisse übersetzt." },
+  { bold: "Du weißt, dass du mehr drauf hast", rest: ": aber niemand in deinem Umfeld versteht das." },
+  { bold: "Du hast YouTube und Free Content probiert", rest: ": aber nichts davon hat sich in echte Ergebnisse übersetzt." },
   { bold: "Du willst ein konkretes System,", rest: " keine zufälligen Tipps von Leuten, die es selbst nicht gemacht haben." },
   { bold: "Du bist bereit, die Arbeit zu machen,", rest: " wenn dir jemand genau zeigt, was zu tun ist." },
-  { bold: "Du willst echte Skills", rest: " die Einkommen generieren — kein Zertifikat, das Staub sammelt." },
-  { bold: "Du willst die 9-to-5 loswerden", rest: " und etwas Eigenes aufbauen." },
+  { bold: "Du willst echte Skills", rest: " die Einkommen generieren: kein Zertifikat, das Staub sammelt." },
+  { bold: "Du willst die 9 to 5 loswerden", rest: " und etwas Eigenes aufbauen." },
 ];
 
 export function IsThisYouSection() {
@@ -72,7 +72,7 @@ export function IsThisYouSection() {
 
         <div ref={ctaRef} className="text-center border-t border-gold-300/10 pt-10 lg:pt-16" style={{ opacity: 0 }}>
           <p className="font-heading tracking-gta text-2xl text-cream mb-3">
-            Wenn das du bist —
+            Wenn das du bist: 
           </p>
           <p className="text-cream/45 mb-10 text-lg max-w-xl mx-auto leading-relaxed">
             Dann ist AI Goldmining für dich gebaut worden.

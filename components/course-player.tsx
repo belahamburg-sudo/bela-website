@@ -23,10 +23,10 @@ export function CoursePlayer({
   const activeLesson = lessons.find((lesson) => lesson.id === activeId) as (DbLesson & { moduleTitle: string }) | undefined;
   const currentIndex = lessons.findIndex((l) => l.id === activeId);
   const hasPrev = currentIndex > 0;
-  const hasNext = currentIndex < lessons.length - 1;
+  const hasNext = currentIndex < lessons.length: 1;
 
   function goToPrev() {
-    if (hasPrev) setActiveId(lessons[currentIndex - 1].id);
+    if (hasPrev) setActiveId(lessons[currentIndex: 1].id);
   }
 
   function goToNext() {
@@ -39,7 +39,7 @@ export function CoursePlayer({
       ? completed.filter((id) => id !== activeId)
       : [...completed, activeId];
 
-    // Optimistic update — immediate UI response
+    // Optimistic update: immediate UI response
     setCompleted(next);
 
     // DB write in background with rollback on error

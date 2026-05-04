@@ -19,7 +19,7 @@ const REAL_PROMISES = [
   "AI-Prompts für schnelle Umsetzung",
   "Realistisches Ziel: 3.000 € / Monat",
   "Ein System, das auch in 12 Monaten noch läuft",
-  "Ehrliche Cases — mit Zahlen, nicht Screenshots",
+  "Ehrliche Cases: mit Zahlen, nicht Screenshots",
 ];
 
 export function AntihypeSection() {
@@ -81,7 +81,7 @@ export function AntihypeSection() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-0 lg:divide-x lg:divide-gold-300/10">
-          {/* Left — strikethrough */}
+          {/* Left: strikethrough */}
           <div className="lg:pr-16 pb-12 lg:pb-0">
             <p className="flex items-center gap-2 gta-label mb-8">
               <X className="h-3.5 w-3.5" aria-hidden />
@@ -100,7 +100,7 @@ export function AntihypeSection() {
             </ul>
           </div>
 
-          {/* Right — what you get */}
+          {/* Right: what you get */}
           <div className="lg:pl-16 border-t border-gold-300/10 pt-12 lg:border-t-0 lg:pt-0">
             <p className="flex items-center gap-2 gta-label text-gold-300 mb-8">
               <Check className="h-3.5 w-3.5" aria-hidden />

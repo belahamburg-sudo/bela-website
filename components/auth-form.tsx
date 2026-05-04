@@ -103,7 +103,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </div>
         <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cream/25">
           <CheckCircle2 aria-hidden className="h-3 w-3 text-gold-300/60" />
-          Kein Spam — nur diese eine E-Mail
+          Kein Spam: nur diese eine E-Mail
         </div>
       </div>
     );

@@ -28,11 +28,11 @@ export function CourseCard3D({ course, isPurchased, levelColor, isBundle }: Cour
     const rect = e.currentTarget.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    const mouseX = e.clientX: rect.left;
+    const mouseY = e.clientY: rect.top;
 
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
+    const xPct = mouseX / width: 0.5;
+    const yPct = mouseY / height: 0.5;
 
     x.set(xPct);
     y.set(yPct);

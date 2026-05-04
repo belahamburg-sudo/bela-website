@@ -72,15 +72,15 @@ export function HowItWorksSection() {
             ihren Golfschwung verbessern, eine Sprache lernen oder ein Business starten.
           </p>
           <p className="text-cream/50 text-base lg:text-lg leading-relaxed max-w-2xl mx-auto mb-5">
-            Bei <span className="text-gold-300 font-semibold">AI Goldmining</span> lernst du, wie du mit KI in Stunden
-            statt Wochen digitale Produkte erstellst, die genau diese Probleme lösen — und sie automatisiert verkaufst.
+            Bei <span className="text-gold-300 font-semibold">AI Goldmining</span> lernst du, wie du mit AI in Stunden
+            statt Wochen digitale Produkte erstellst, die genau diese Probleme lösen: und sie automatisiert verkaufst.
             Jeder Verkauf ist fast 100% Marge.
           </p>
 
           <p className="text-cream/50 text-base lg:text-lg leading-relaxed max-w-2xl mx-auto mb-5">
             Es ist wie mit Äpfeln im Supermarkt: Theoretisch könntest du zum Apfelbaum gehen und selbst pflücken.
             Trotzdem zahlen Millionen Menschen jeden Tag dafür, dass jemand anderes ihnen den Apfel fertig in die Hand legt.
-            Genau das machst du mit Wissen — einmal aufgebaut, läuft es.
+            Genau das machst du mit Wissen: einmal aufgebaut, läuft es.
           </p>
 
           <p className="font-heading tracking-gta text-xl lg:text-3xl text-cream mt-8 lg:mt-10 mb-10 px-2 sm:px-0">

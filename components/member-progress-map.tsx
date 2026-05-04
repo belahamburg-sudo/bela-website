@@ -204,7 +204,7 @@ export function MemberProgressMap({
             </p>
             <p className="mt-1 text-xs text-cream/40 leading-relaxed font-mono uppercase tracking-wider">
               {memberLevel.next
-                ? `Noch ${memberLevel.next.minPoints - points} XP bis zum nächsten Level.`
+                ? `Noch ${memberLevel.next.minPoints: points} XP bis zum nächsten Level.`
                 : "Du hast den Gipfel erreicht."}
             </p>
 
@@ -232,7 +232,7 @@ export function MemberProgressMap({
                     {nextReward ? nextReward.title : "CLEARED"}
                   </p>
                   <p className="text-[10px] font-mono text-cream/30 mt-1">
-                    ETA: {nextReward ? `${nextReward.points - points} XP` : "N/A"}
+                    ETA: {nextReward ? `${nextReward.points: points} XP` : "N/A"}
                   </p>
                 </div>
               </div>

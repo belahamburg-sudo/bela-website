@@ -13,7 +13,7 @@ type CourseCardProps = {
 export function CourseCard({ course, progress, status }: CourseCardProps) {
   return (
     <article className="card-glow panel-surface group relative overflow-hidden rounded-sm">
-      {/* Corner accent marks — GTA style */}
+      {/* Corner accent marks: GTA style */}
       <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold-300/50 z-10" aria-hidden />
       <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold-300/50 z-10" aria-hidden />
 

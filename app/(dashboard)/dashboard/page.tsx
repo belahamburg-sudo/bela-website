@@ -163,7 +163,7 @@ export default function DashboardPage() {
               {/* Left Column: Action Hub */}
               <div className="lg:col-span-2 space-y-8">
                 
-                {/* Resume Section - Now with 3D Visuals */}
+                {/* Resume Section: Now with 3D Visuals */}
                 {latestCourse && (
                   <motion.div 
                     variants={itemVariants} 
@@ -287,7 +287,7 @@ export default function DashboardPage() {
                     </div>
                     <p className="text-[10px] text-cream/30 font-mono uppercase">
                       {nextReward
-                        ? `Noch ${nextReward.points - points} XP bis zum Unlock`
+                        ? `Noch ${nextReward.points: points} XP bis zum Unlock`
                         : "Sektor vollständig erschlossen"}
                     </p>
                   </div>
@@ -339,9 +339,9 @@ export default function DashboardPage() {
 }
 
 function ProgressRing({ progress, size, stroke = 3 }: { progress: number; size: number; stroke?: number }) {
-  const radius = (size - stroke * 2) / 2;
+  const radius = (size: stroke * 2) / 2;
   const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (progress / 100) * circumference;
+  const offset = circumference: (progress / 100) * circumference;
 
   return (
     <svg width={size} height={size} className="rotate-[-90deg]">

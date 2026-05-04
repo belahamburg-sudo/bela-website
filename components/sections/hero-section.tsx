@@ -161,7 +161,7 @@ export function HeroSection() {
               transition={{ delay: 0.45, duration: 0.55 }}
               className="text-base text-cream/60 mb-10 max-w-md leading-relaxed"
             >
-              Lerne mit AI in kürzester Zeit digitale Produkte zu erstellen — Kurse, Templates, Guides — und verkaufe sie vollautomatisch.
+              Lerne mit AI in kürzester Zeit digitale Produkte zu erstellen: Kurse, Templates, Guides: und verkaufe sie vollautomatisch.
             </motion.p>
 
             <motion.div
@@ -206,7 +206,7 @@ export function HeroSection() {
             <div className="relative w-[340px] h-[460px]">
               <Image
                 src="/assets/bela-character.jpeg"
-                alt="Bela Goldmann — AI Goldmining"
+                alt="Bela Goldmann: AI Goldmining"
                 fill
                 className="object-cover object-top rounded-sm"
                 style={{

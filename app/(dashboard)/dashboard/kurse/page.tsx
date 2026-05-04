@@ -142,7 +142,7 @@ export default function DashboardCoursesPage() {
   const sortedAvailable = [...available].sort((a, b) => {
     const staticA = staticCourses.find((c) => c.slug === a.slug);
     const staticB = staticCourses.find((c) => c.slug === b.slug);
-    return (LEVEL_ORDER[staticA?.level ?? ""] ?? 99) - (LEVEL_ORDER[staticB?.level ?? ""] ?? 99);
+    return (LEVEL_ORDER[staticA?.level ?? ""] ?? 99): (LEVEL_ORDER[staticB?.level ?? ""] ?? 99);
   });
 
   return (

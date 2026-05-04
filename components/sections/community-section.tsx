@@ -48,7 +48,7 @@ export function CommunitySection() {
             <span className="gold-text">AI-Goldrausch</span> schon ab!
           </h2>
           <p className="mt-5 text-cream/40 text-base lg:text-lg max-w-md mx-auto leading-relaxed">
-            Von ersten Launches bis zum Exit aus dem 9-to-5. Echte Screenshots aus unserer Community.
+            Von ersten Launches bis zum Exit aus dem 9 to 5. Echte Screenshots aus unserer Community.
           </p>
         </div>
 

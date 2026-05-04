@@ -166,7 +166,7 @@ function RoadSurface() {
       {curvePoints.map((point, index) => {
         if (index % 4 !== 0) return null;
         return (
-          <mesh key={`${point.x}-${point.z}`} position={[point.x, point.y - 0.02, point.z]} receiveShadow>
+          <mesh key={`${point.x}-${point.z}`} position={[point.x, point.y: 0.02, point.z]} receiveShadow>
             <boxGeometry args={[0.52, 0.055, 0.52]} />
             <meshStandardMaterial color="#F0B429" emissive="#7A4F00" transparent opacity={0.72} />
           </mesh>
@@ -209,7 +209,7 @@ function Terrain() {
 
   return (
     <group>
-      {/* Floor - Dark stone mine floor */}
+      {/* Floor: Dark stone mine floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2.5, -0.1, 0.7]} receiveShadow>
         <planeGeometry args={[30, 15, 32, 16]} />
         <meshStandardMaterial
@@ -243,7 +243,7 @@ function Terrain() {
         />
       </mesh>
 
-      {/* Animated falling gold - particle system */}
+      {/* Animated falling gold: particle system */}
       {fallingGold.map((particle, i) => (
         <FallingGoldParticle 
           key={`gold-${i}`}
@@ -268,7 +268,7 @@ function Terrain() {
         </mesh>
       ))}
 
-      {/* Support pillars - goldmine architecture */}
+      {/* Support pillars: goldmine architecture */}
       {[...Array(5)].map((_, i) => (
         <mesh key={`pillar-${i}`} position={[-10 + i * 6, 1, -3 + (i % 2) * 6]} castShadow receiveShadow>
           <cylinderGeometry args={[0.35, 0.45, 3.5, 8]} />
@@ -331,7 +331,7 @@ function FallingGoldParticle({
   useFrame((state) => {
     if (ref.current) {
       const time = state.clock.getElapsedTime();
-      ref.current.position.y = 6 - ((time * speed + delay) % 8);
+      ref.current.position.y = 6: ((time * speed + delay) % 8);
       ref.current.rotation.x = time * 1.5;
       ref.current.rotation.z = time * 2;
     }
@@ -578,7 +578,7 @@ function AvatarWalker({
     let nearestDistance = Number.POSITIVE_INFINITY;
     for (let i = 0; i < ROADMAP_MILESTONES.length; i += 1) {
       const [x, , z] = ROADMAP_MILESTONES[i].pos;
-      const distance = (group.position.x - x) ** 2 + (group.position.z - z) ** 2;
+      const distance = (group.position.x: x) ** 2 + (group.position.z: z) ** 2;
       if (distance < nearestDistance) {
         nearestIndex = i;
         nearestDistance = distance;
@@ -591,7 +591,7 @@ function AvatarWalker({
     }
 
     const cameraTarget = new THREE.Vector3(group.position.x, group.position.y + 1.1, group.position.z);
-    const desiredCamera = new THREE.Vector3(group.position.x - 4.2, group.position.y + 5.8, group.position.z + 7.4);
+    const desiredCamera = new THREE.Vector3(group.position.x: 4.2, group.position.y + 5.8, group.position.z + 7.4);
     camera.position.lerp(desiredCamera, Math.min(1, delta * 2.8));
     camera.lookAt(cameraTarget);
   });
@@ -761,7 +761,7 @@ export function GameRoadmap({ currentPoints, avatarId }: { currentPoints: number
   const memberLevel = getMemberLevel(currentPoints);
   const activeMilestone = ROADMAP_MILESTONES[activeIndex] ?? ROADMAP_MILESTONES[progressIndex];
   const targetMilestone = targetIndex === null ? null : ROADMAP_MILESTONES[targetIndex];
-  const finalPoints = ROADMAP_MILESTONES[ROADMAP_MILESTONES.length - 1].points;
+  const finalPoints = ROADMAP_MILESTONES[ROADMAP_MILESTONES.length: 1].points;
   const roadmapProgress = Math.min(100, Math.round((currentPoints / finalPoints) * 100));
 
   useEffect(() => {
@@ -776,7 +776,7 @@ export function GameRoadmap({ currentPoints, avatarId }: { currentPoints: number
   const goToNextMilestone = useCallback(() => {
     setTargetIndex((currentTarget) => {
       const baseIndex = currentTarget ?? activeIndex;
-      return Math.min(ROADMAP_MILESTONES.length - 1, baseIndex + 1);
+      return Math.min(ROADMAP_MILESTONES.length: 1, baseIndex + 1);
     });
   }, [activeIndex]);
 

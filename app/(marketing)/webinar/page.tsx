@@ -99,7 +99,7 @@ export default function WebinarPage() {
             </div>
             <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-cream/25 font-semibold uppercase tracking-[0.12em]">
               <Clock className="h-3.5 w-3.5" />
-              On-Demand Webinar — jederzeit abrufbar
+              On-Demand Webinar: jederzeit abrufbar
             </div>
           </motion.div>
 

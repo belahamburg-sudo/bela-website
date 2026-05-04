@@ -35,21 +35,21 @@ const timeline = [
   {
     num: "04",
     title: "Social Media Management und E-Commerce",
-    copy: "Dann kamen ganz andere Zahlen. Ich habe Creator gemanaged, Shopify Shops gebaut, auf TikTok Shop und Amazon verkauft. Aber: LUCID-Registrierung, Verpackungsverordnung, Streit mit Manufakturen. Beim Management war ich abhängig von der Person — wenn die wegfiel, war alles weg, weil die Brand nicht mir gehörte.",
+    copy: "Dann kamen ganz andere Zahlen. Ich habe Creator gemanaged, Shopify Shops gebaut, auf TikTok Shop und Amazon verkauft. Aber: LUCID-Registrierung, Verpackungsverordnung, Streit mit Manufakturen. Beim Management war ich abhängig von der Person: wenn die wegfiel, war alles weg, weil die Brand nicht mir gehörte.",
     image: "/assets/bela-golf-1.jpeg",
     imageAlt: "Bela beim Golf",
   },
   {
     num: "05",
-    title: "Der Moment, in dem KI alles geändert hat",
-    copy: "In den letzten Monaten ist so viel passiert, dass alte Modelle einfach kippen. Warum Warenhandel mit Lieferketten, Lager und Rücksendungen, wenn man digitale Produkte verkaufen kann, die unendlich skalieren? Warum Creator managen, wenn KI 80 Prozent davon übernimmt? Mir wurde klar: das ist kein Trend, das ist ein Systemwechsel.",
+    title: "Der Moment, in dem AI alles geändert hat",
+    copy: "In den letzten Monaten ist so viel passiert, dass alte Modelle einfach kippen. Warum Warenhandel mit Lieferketten, Lager und Rücksendungen, wenn man digitale Produkte verkaufen kann, die unendlich skalieren? Warum Creator managen, wenn AI 80 Prozent davon übernimmt? Mir wurde klar: das ist kein Trend, das ist ein Systemwechsel.",
     image: "/assets/bela-jet.jpg",
     imageAlt: "Privatjet",
   },
   {
     num: "06",
     title: "Heute: AI Goldmining",
-    copy: "Ich habe alles andere hingeschmissen und mache nur noch das hier. Digitale Produkte online verkaufen, mit KI gebaut, mit KI vermarktet, ohne Lager, ohne Mitarbeiter, ohne Standortbindung. Entspannt aufgesetzt und es läuft, wenn man weiß, was man tut. Genau das zeige ich der deutschsprachigen Community.",
+    copy: "Ich habe alles andere hingeschmissen und mache nur noch das hier. Digitale Produkte online verkaufen, mit AI gebaut, mit AI vermarktet, ohne Lager, ohne Mitarbeiter, ohne Standortbindung. Entspannt aufgesetzt und es läuft, wenn man weiß, was man tut. Genau das zeige ich der deutschsprachigen Community.",
     image: "/assets/bela-terrace.jpg",
     imageAlt: "Istanbul Terrasse",
   },
@@ -167,7 +167,7 @@ export default function AboutPage() {
               <span className="gold-text block">Nur der Wille, es anders zu machen.</span>
             </h2>
             <p className="mt-5 max-w-xl text-lg leading-8 text-cream/50">
-              Nicht als Motivationsgeschichte — als klare Positionierung.
+              Nicht als Motivationsgeschichte: als klare Positionierung.
             </p>
           </div>
 

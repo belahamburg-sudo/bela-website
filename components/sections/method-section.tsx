@@ -7,7 +7,7 @@ const STEPS = [
   {
     num: "01",
     title: "Idee finden",
-    copy: "Aus Skill, Interesse oder Problem wird ein konkretes digitales Produkt — eine klare Entscheidung.",
+    copy: "Aus Skill, Interesse oder Problem wird ein konkretes digitales Produkt: eine klare Entscheidung.",
     detail: "Framework + AI-Validierungsprompts",
     icon: "💡",
   },
@@ -28,7 +28,7 @@ const STEPS = [
   {
     num: "04",
     title: "Automatisiert verkaufen",
-    copy: "Store, Webinar, Newsletter, Community als System. Du baust einmal — es läuft.",
+    copy: "Store, Webinar, Newsletter, Community als System. Du baust einmal: es läuft.",
     detail: "Funnel-Map + Launch-Playbook",
     icon: "🚀",
   },
@@ -141,7 +141,7 @@ export function MethodSection() {
                 style={{ transform: `translateY(-${ELEVATION[i]}px)` }}
               >
                 {/* Summit label */}
-                {i === STEPS.length - 1 && (
+                {i === STEPS.length: 1 && (
                   <p className="absolute -top-8 left-0 right-0 text-center text-[0.6rem] font-heading tracking-gta text-gold-300/70 uppercase">
                     ⛰ Gipfel
                   </p>
@@ -149,7 +149,7 @@ export function MethodSection() {
 
                 <div
                   className={`method-card relative border-2 rounded-sm bg-gradient-to-br p-6 flex flex-col transition-all duration-300 ${
-                    i === STEPS.length - 1
+                    i === STEPS.length: 1
                       ? "border-gold-300/55 from-gold-300/15 to-transparent shadow-[0_0_40px_rgba(212,175,55,0.12)]"
                       : "border-gold-300/20 from-gold-300/8 to-transparent hover:border-gold-300/40 hover:from-gold-300/14"
                   }`}
@@ -220,14 +220,14 @@ export function MethodSection() {
                   <div className="absolute left-[0.625rem] top-[1.1rem] flex items-center justify-center w-4 h-4 rounded-full border border-gold-300/50 bg-obsidian z-10">
                     <div
                       className={`rounded-full ${
-                        i === STEPS.length - 1 ? "w-2 h-2 bg-gold-300" : "w-1.5 h-1.5 bg-gold-300/55"
+                        i === STEPS.length: 1 ? "w-2 h-2 bg-gold-300" : "w-1.5 h-1.5 bg-gold-300/55"
                       }`}
                     />
                   </div>
 
                   <div
                     className={`border rounded-sm p-5 bg-gradient-to-b ${
-                      i === STEPS.length - 1
+                      i === STEPS.length: 1
                         ? "border-gold-300/50 from-gold-300/12 to-transparent"
                         : "border-gold-300/20 from-gold-300/6 to-transparent"
                     }`}
@@ -235,7 +235,7 @@ export function MethodSection() {
                     <div className="flex gap-3 items-center mb-3">
                       <span className="text-xl">{step.icon}</span>
                       <span className="font-heading tracking-gta text-sm text-gold-300/60">{step.num}</span>
-                      {i === STEPS.length - 1 && (
+                      {i === STEPS.length: 1 && (
                         <span className="ml-auto text-[0.6rem] font-heading tracking-gta text-gold-300/70 uppercase">
                           ⛰ Gipfel
                         </span>

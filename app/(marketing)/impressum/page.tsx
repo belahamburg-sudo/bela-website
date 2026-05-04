@@ -29,7 +29,7 @@ export default function ImpressumPage() {
         },
         {
           heading: "Verantwortlicher für den Inhalt nach § 55 Abs. 2 RStV",
-          copy: "Bela Goldmann — Anschrift wie oben.",
+          copy: "Bela Goldmann: Anschrift wie oben.",
         },
         {
           heading: "Streitschlichtung",

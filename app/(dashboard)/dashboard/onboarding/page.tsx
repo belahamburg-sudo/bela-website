@@ -14,7 +14,7 @@ const STARTER_CLASSES = [
 
 const GOALS = [
   "Ich will mein erstes digitales Produkt verkaufen.",
-  "Ich will den 9-to-5 Job hinter mir lassen.",
+  "Ich will den 9 to 5 Job hinter mir lassen.",
   "Ich will mein bestehendes Business mit AI skalieren.",
   "Ich will AI-Skills lernen und verstehen.",
 ];

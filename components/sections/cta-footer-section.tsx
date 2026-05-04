@@ -28,7 +28,7 @@ const SOCIALS = [
 export function CtaFooterSection() {
   return (
     <footer className="relative">
-      {/* ── Big CTA — cinematic banner style ── */}
+      {/* ── Big CTA: cinematic banner style ── */}
       <div className="relative overflow-hidden">
         {/* AI Goldmining banner image */}
         <div className="absolute inset-0" aria-hidden>
@@ -58,7 +58,7 @@ export function CtaFooterSection() {
               Hör auf zu warten.
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gold-300/70">
-              Digitale Produkte einmal bauen — dauerhaft verkaufen. Fast reine Marge.
+              Digitale Produkte einmal bauen: dauerhaft verkaufen. Fast reine Marge.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/webinar" size="lg">
@@ -123,7 +123,7 @@ export function CtaFooterSection() {
           <div className="mt-8 flex flex-col items-start justify-between gap-3 text-xs text-cream/25 sm:flex-row sm:items-center">
             <p>© {new Date().getFullYear()} Bela Goldmann · AI Goldmining. Alle Rechte vorbehalten.</p>
             <p className="gta-label opacity-50">
-              Gebaut für Umsetzer — nicht für Zuschauer.
+              Gebaut für Umsetzer: nicht für Zuschauer.
             </p>
           </div>
         </div>
