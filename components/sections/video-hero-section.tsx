@@ -72,7 +72,7 @@ export function VideoHeroSection() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="font-heading font-extrabold uppercase tracking-gta leading-[0.95] text-cream"
+          className="font-heading font-extrabold leading-[0.95] text-cream"
           style={{ fontSize: "clamp(1.85rem, 8vw, 4.6rem)" }}
         >
           Ich zeige dir, wie du mit AI digitale Produkte baust{" "}
@@ -84,11 +84,9 @@ export function VideoHeroSection() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-sm sm:text-base text-cream/50 max-w-2xl leading-relaxed px-2 sm:px-0"
+          className="text-sm sm:text-base text-cream/70 max-w-3xl leading-relaxed px-2 sm:px-0"
         >
-          Alte Online-Modelle fressen Kapital, Zeit oder Nerven. Digitale Produkte sind schlanker:
-          mit AI baust du Templates, Guides oder Mini-Kurse in Stunden und verkaufst sie automatisiert
-          mit fast reiner Marge.
+          Es gibt keinen Grund mehr, jeden Morgen irgendwo hinzufahren und seine Zeit gegen Geld zu tauschen. Dropshipping, Agenturen, SaaS, Freelancing, Content Creation, TikTok Shop Automation – alles 100% online möglich. Aber jedes dieser Modelle hat einen Haken: Entweder brauchst du viel Startkapital, viel Vorwissen oder du tauschst trotzdem Zeit gegen Geld. Digitale Produkte sind anders. Du erstellst ein Template, einen Guide, einen Minikurs – einmal. AI hilft dir, das in Stunden statt Wochen zu bauen. Du verkaufst es automatisiert über einen Store. Kein Lager, keine Retouren, keine Mitarbeiter. Und das Beste: Jeder Verkauf ist fast 100 % Marge. Das ist der Weg, den ich gehe – und den ich jedem zeige, der es ernst meint.
         </motion.p>
 
         {/* ── Video ── */}
@@ -181,21 +179,24 @@ export function VideoHeroSection() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.62, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
+          className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
         >
-          {[
-            "Geld verdienen mit AI",
-            "Remote von überall",
-            "Keine Vorerfahrung nötig",
-            "Kein Gesicht zeigen",
-          ].map((text) => (
-            <span key={text} className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/30">
-              <svg className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 16 16" aria-hidden>
-                <path d="M3 8l3.5 3.5L13 4.5" stroke="rgba(240,180,41,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {text}
-            </span>
-          ))}
+          <span className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/40">
+            <Sparkles className="h-3.5 w-3.5 text-gold-300/80" />
+            Geld verdienen mit AI
+          </span>
+          <span className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/40">
+            <Globe className="h-3.5 w-3.5 text-gold-300/80" />
+            Remote von überall
+          </span>
+          <span className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/40">
+            <Zap className="h-3.5 w-3.5 text-gold-300/80" />
+            Keine Vorerfahrung nötig
+          </span>
+          <span className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/40">
+            <EyeOff className="h-3.5 w-3.5 text-gold-300/80" />
+            Kein Gesicht zeigen
+          </span>
         </motion.div>
 
 
@@ -240,6 +241,15 @@ export function VideoHeroSection() {
             </div>
             <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-cream/35">
               Join +10.000 anderen
+            </span>
+          </div>
+        </motion.div>
+
+      </div>
+    </section>
+  );
+}
+   Join +10.000 anderen
             </span>
           </div>
         </motion.div>
