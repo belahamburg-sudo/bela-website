@@ -101,7 +101,7 @@ export function VideoHeroSection() {
           <div className="video-frame-gold aspect-video bg-obsidian">
             <video
               ref={videoRef}
-              src="/assets/bela-intro-cropped.mp4"
+              src="/assets/ai-goldmining.mp4"
               className="absolute inset-0 w-full h-full object-cover"
               playsInline
               muted
@@ -133,7 +133,7 @@ export function VideoHeroSection() {
                 <span className="play-btn-gold h-20 w-24">
                   <Play className="h-10 w-10 text-obsidian translate-x-1" fill="currentColor" />
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-100 drop-shadow-md">Jetzt ansehen · 30 Sek</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-100 drop-shadow-md">Jetzt ansehen · 5 Min</span>
               </button>
             )}
 
