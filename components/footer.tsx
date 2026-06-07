@@ -29,11 +29,11 @@ export function Footer() {
             <div className="mb-5">
               <Link href="/">
                 <Image
-                  src="/assets/logo-ai-goldmining-tight.png"
+                  src="/assets/logo-ai-goldmining-3d.png"
                   alt="AI Goldmining"
-                  width={340}
-                  height={64}
-                  className="h-auto w-[200px]"
+                  width={1200}
+                  height={204}
+                  className="h-auto w-[210px]"
                 />
               </Link>
             </div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -9,14 +9,11 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type");
   const next = searchParams.get("next") ?? "/dashboard";
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase = await getSupabaseServerClient();
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabase) {
     return NextResponse.redirect(`${origin}/dashboard`);
   }
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   if (token_hash && type) {
     const { error } = await supabase.auth.verifyOtp({ token_hash, type: type as "signup" | "recovery" | "email" });

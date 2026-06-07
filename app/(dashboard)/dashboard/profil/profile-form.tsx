@@ -2,15 +2,29 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Gift, Lock, User, Target, Rocket, Award, Mail, Save, CheckCircle2, Trophy, ShieldCheck, Pickaxe } from "lucide-react";
+import { motion, type Variants } from "framer-motion";
+import {
+  Award,
+  CheckCircle2,
+  Gift,
+  Lock,
+  Rocket,
+  Save,
+  ShieldCheck,
+  Sparkles,
+  Trophy,
+  Zap,
+} from "lucide-react";
 import { MemberAvatar } from "@/components/member-avatar";
-import { MemberProgressMap } from "@/components/member-progress-map";
+import { TelegramMembership } from "@/components/profile/telegram-membership";
+import { XpRing } from "@/components/profile/xp-ring";
+import { ProgressTrack } from "@/components/profile/progress-track";
+import { RewardsRail } from "@/components/profile/rewards-rail";
 import {
   DEFAULT_AVATAR_ID,
   MEMBER_AVATARS,
   getAvatarById,
   getMemberLevel,
-  getNextReward,
   getUnlockedAvatarIds,
 } from "@/lib/avatar-system";
 import { updateProfile } from "./actions";
@@ -26,6 +40,16 @@ type Props = {
   purchasedCourses: number;
   completedCourses: number;
   rewardCount: number;
+  telegram?: { active: boolean; currentPeriodEnd: string | null } | null;
+};
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
 };
 
 export function ProfileForm({
@@ -39,6 +63,7 @@ export function ProfileForm({
   purchasedCourses,
   completedCourses,
   rewardCount,
+  telegram = null,
 }: Props) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -49,7 +74,8 @@ export function ProfileForm({
   const unlockedIds = new Set(getUnlockedAvatarIds(points));
   const currentAvatar = getAvatarById(selectedAvatarId);
   const memberLevel = getMemberLevel(points);
-  const nextReward = getNextReward(points);
+  const xpToNext = memberLevel.next ? memberLevel.next.minPoints - points : 0;
+
   const instagramFollowers = initialBusinessSnapshot.instagramFollowers ?? "";
   const tiktokFollowers = initialBusinessSnapshot.tiktokFollowers ?? "";
   const monthlySales = initialBusinessSnapshot.monthlySales ?? "";
@@ -82,116 +108,157 @@ export function ProfileForm({
     }
   }
 
+  const statChips = [
+    { label: "Lektionen", value: completedLessons, icon: Zap },
+    { label: "Rewards", value: rewardCount, icon: Gift },
+    { label: "Level", value: memberLevel.current.level, icon: Trophy },
+  ];
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-16">
+    <form onSubmit={handleSubmit} className="space-y-14">
       <input type="hidden" name="selectedAvatar" value={selectedAvatarId} readOnly />
-      
-      {/* ─── SECTION 1: Identity Hero ─── */}
-      <section className="relative overflow-x-hidden">
-        <div className="absolute -inset-x-6 -top-12 h-64 bg-gradient-to-b from-gold-300/[0.03] to-transparent pointer-events-none" />
 
-        <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-10">
-          {/* Large Character Display */}
-          <div className="relative shrink-0">
-            <div className="absolute -inset-4 md:-inset-8 border border-gold-300/10 rounded-full animate-[spin_40s_linear_infinite]" />
-            <div className="absolute -inset-2 md:-inset-4 border border-gold-300/20 rounded-full animate-[spin_20s_linear_infinite_reverse]" />
-            <div className="rounded-full bg-gold-gradient/5 p-5 ring-1 ring-gold-300/30 backdrop-blur-xl relative z-10 shadow-[0_0_50px_rgba(232,192,64,0.1)]">
-              <MemberAvatar avatarId={selectedAvatarId} points={points} size="xl" hidePoints={true} />
-              
-              <div className="absolute -bottom-2 right-4 h-10 w-10 flex items-center justify-center rounded-full bg-gold-gradient text-obsidian shadow-lg border-2 border-obsidian">
-                <Trophy className="h-5 w-5" />
-              </div>
-            </div>
-          </div>
+      {/* ─── BLOCK 1: IDENTITY HEADER ─── */}
+      <motion.section
+        variants={fadeUp}
+        initial="hidden"
+        animate="show"
+        className="tac-panel tac-corners relative overflow-hidden p-6 sm:p-10"
+      >
+        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gold-300/[0.07] blur-[100px]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold-300/30 to-transparent" />
 
-          <div className="flex-1 text-center md:text-left space-y-6">
+        <div className="relative z-10 flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:gap-12">
+          {/* XP Ring + Avatar */}
+          <XpRing
+            avatarId={selectedAvatarId}
+            points={points}
+            progress={memberLevel.progress}
+            level={memberLevel.current.level}
+          />
+
+          {/* Identity copy */}
+          <div className="flex-1 space-y-5 text-center lg:text-left">
             <div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
-                <span className="px-3 py-1 rounded-sm border border-gold-300/20 bg-gold-gradient/10 text-[11px] font-bold uppercase tracking-[0.2em] text-gold-300">
-                  LEVEL {memberLevel.current.level}
+              <div className="mb-3 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+                <span className="border border-gold-300/30 bg-gold-300/10 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-gold-300">
+                  Level {memberLevel.current.level}
                 </span>
-                <div className="h-1.5 w-1.5 rounded-full bg-white/20" />
-                <span className="text-sm font-bold uppercase tracking-widest text-cream/40">
+                <span className="h-1 w-1 rounded-full bg-white/25" />
+                <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-cream/45">
                   {memberLevel.current.title}
                 </span>
               </div>
-              <h2 className="font-heading text-5xl lg:text-7xl text-cream tracking-tight mb-2 uppercase">{currentAvatar.name}</h2>
+              <h2 className="font-heading text-4xl uppercase tracking-tight text-cream sm:text-5xl lg:text-6xl">
+                {currentAvatar.name}
+              </h2>
             </div>
-            
-            <div className="max-w-md space-y-3 mx-auto md:mx-0">
-              <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.15em] text-cream/30">
-                <span>{points} XP Gesamt</span>
-                <span className="text-gold-300/60">{memberLevel.progress}% Fortschritt</span>
+
+            {/* XP progress bar */}
+            <div className="mx-auto max-w-md space-y-2 lg:mx-0">
+              <div className="flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-cream/35">
+                <span>{points} XP gesamt</span>
+                <span className="text-gold-300/70">{memberLevel.progress}% Fortschritt</span>
               </div>
-              <div className="h-3 w-full rounded-none bg-white/5 border border-white/5 overflow-hidden p-0.5">
-                <div
-                  className="h-full bg-gradient-to-r from-gold-600 via-gold-50 to-gold-600 shadow-[0_0_20px_rgba(232,192,64,0.4)] transition-all duration-1000"
-                  style={{ width: `${memberLevel.progress}%` }}
+              <div className="h-2.5 w-full overflow-hidden border border-white/8 bg-white/[0.04] p-0.5">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-gold-600 via-gold-100 to-gold-50 shadow-[0_0_16px_rgba(232,192,64,0.45)]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${memberLevel.progress}%` }}
+                  transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] as const }}
                 />
               </div>
-              <p className="text-[10px] text-cream/20 font-mono text-center md:text-left uppercase">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-cream/25">
                 {memberLevel.next
-                  ? `Noch ${memberLevel.next.minPoints - points} XP bis zum Aufstieg in den nächsten Sektor`
-                  : "Maximale Autoritätsstufe im System erreicht"}
+                  ? `Noch ${xpToNext} XP bis Level-up`
+                  : "Maximale Stufe erreicht"}
               </p>
             </div>
-          </div>
 
-          {/* Hall of Fame Stats */}
-          <div className="hidden lg:grid grid-cols-1 gap-3 shrink-0 min-w-[200px]">
-            {[
-              { label: "Lektionen", value: completedLessons, icon: Pickaxe },
-              { label: "Rewards", value: rewardCount, icon: Gift },
-              { label: "Level", value: memberLevel.current.level, icon: Trophy },
-            ].map((stat) => (
-              <div key={stat.label} className="flex items-center gap-4 px-5 py-3 border border-white/5 bg-white/[0.01] tac-corners">
-                <stat.icon className="h-4 w-4 text-gold-300/30" />
-                <div>
-                  <p className="text-[9px] font-bold text-white/20 uppercase">{stat.label}</p>
-                  <p className="font-heading text-xl text-cream leading-none">{stat.value}</p>
+            {/* Stat chips */}
+            <div className="flex flex-wrap justify-center gap-3 pt-1 lg:justify-start">
+              {statChips.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="flex items-center gap-3 border border-white/8 bg-white/[0.02] px-4 py-2.5"
+                >
+                  <stat.icon className="h-4 w-4 text-gold-300/40" />
+                  <div className="text-left">
+                    <p className="font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-white/30">
+                      {stat.label}
+                    </p>
+                    <p className="font-heading text-lg leading-none text-cream">{stat.value}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* ─── SECTION 2: The Journey Map (Centerpiece) ─── */}
-      <section className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/5 pb-6">
-          <div className="space-y-1">
-            <p className="tac-label text-gold-300/40 uppercase tracking-widest">Die Roadmap</p>
-            <h3 className="font-heading text-4xl text-cream tracking-tight uppercase">Deine Reise.</h3>
-          </div>
-          <p className="max-w-xs text-xs leading-relaxed text-cream/30 font-mono uppercase">
-            Jede abgeschlossene Lektion und jeder Kurs-Unlock bringt dich näher an den Gipfel.
-          </p>
-        </div>
-        
-        <MemberProgressMap
-          points={points}
-          selectedAvatarId={selectedAvatarId}
-          completedLessons={completedLessons}
-          purchasedCourses={purchasedCourses}
-          completedCourses={completedCourses}
-          rewardCount={rewardCount}
+      {/* ─── VIP TELEGRAM MEMBERSHIP ─── */}
+      <section>
+        <TelegramMembership
+          active={telegram?.active ?? false}
+          currentPeriodEnd={telegram?.currentPeriodEnd ?? null}
         />
       </section>
 
-      {/* ─── SECTION 3: Vault & Data ─── */}
-      <section className="grid gap-12 xl:grid-cols-[1fr_450px]">
-        
-        {/* Character Vault */}
-        <div className="space-y-10">
-          <div className="space-y-2">
+      {/* ─── BLOCK 2: PROGRESS TRACK (centerpiece) ─── */}
+      <section className="space-y-6">
+        <div className="flex flex-col gap-3 border-b border-white/5 pb-5 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-1">
+            <p className="tac-label tracking-widest text-gold-300/50">Deine Reise</p>
+            <h3 className="font-heading text-3xl uppercase tracking-tight text-cream">
+              Roadmap zum <span className="text-gold-300">Gipfel.</span>
+            </h3>
+          </div>
+          <p className="max-w-xs font-mono text-[11px] uppercase leading-relaxed tracking-[0.14em] text-cream/30">
+            Jede Lektion und jeder Kurs-Unlock bringt dich näher an Goldmaster Summit.
+          </p>
+        </div>
+
+        <ProgressTrack points={points} />
+      </section>
+
+      {/* ─── BLOCK 3: REWARDS RAIL ─── */}
+      <section className="space-y-6">
+        <div className="flex flex-col gap-3 border-b border-white/5 pb-5 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3 text-gold-300/60">
+              <Sparkles className="h-4 w-4" />
+              <p className="tac-label tracking-widest">Belohnungen</p>
+            </div>
+            <h3 className="font-heading text-3xl uppercase tracking-tight text-cream">
+              Reward-Stufen.
+            </h3>
+          </div>
+          <p className="max-w-xs font-mono text-[11px] uppercase leading-relaxed tracking-[0.14em] text-cream/30">
+            Sammle XP, um neue Tiers, Avatare und einen Gratis-Kurs freizuschalten.
+          </p>
+        </div>
+
+        <RewardsRail points={points} />
+      </section>
+
+      {/* ─── BLOCK 4: SETTINGS (avatar collection + system profile) ─── */}
+      <section className="grid gap-10 xl:grid-cols-[1fr_460px]">
+        {/* Avatar collection */}
+        <div className="space-y-6">
+          <div className="flex flex-col gap-3 border-b border-white/5 pb-5">
             <div className="flex items-center gap-3 text-gold-300/60">
               <Award className="h-5 w-5" />
-              <p className="tac-label uppercase tracking-widest">Charakter-Safe</p>
+              <p className="tac-label tracking-widest">Charakter-Safe</p>
             </div>
-            <h3 className="font-heading text-3xl text-cream tracking-tight uppercase">Wähle deine Identität.</h3>
+            <h3 className="font-heading text-3xl uppercase tracking-tight text-cream">
+              Wähle deine Identität.
+            </h3>
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cream/30">
+              {unlockedIds.size} / {MEMBER_AVATARS.length} freigeschaltet
+            </p>
           </div>
 
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-4">
+          <div className="grid grid-cols-4 gap-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7">
             {MEMBER_AVATARS.map((avatar) => {
               const unlocked = unlockedIds.has(avatar.id);
               const selected = avatar.id === selectedAvatarId;
@@ -204,26 +271,30 @@ export function ProfileForm({
                   onClick={() => {
                     if (unlocked) setSelectedAvatarId(avatar.id);
                   }}
-                  className={`group relative aspect-square rounded-none border transition-all duration-300 ${
-                    selected
-                      ? "border-gold-300 bg-gold-gradient/10 shadow-[0_0_30px_rgba(232,192,64,0.15)] ring-1 ring-gold-300/20"
-                      : "border-white/5 bg-white/[0.01] hover:border-white/20"
-                  } ${!unlocked ? "grayscale opacity-20 cursor-not-allowed" : "hover:scale-105 active:scale-95"}`}
                   title={unlocked ? avatar.name : `${avatar.unlockPoints} XP benötigt`}
+                  className={`group relative aspect-square border transition-all duration-300 ${
+                    selected
+                      ? "border-gold-300 bg-gold-300/10 shadow-[0_0_28px_rgba(232,192,64,0.18)] ring-1 ring-gold-300/30"
+                      : "border-white/8 bg-white/[0.02] hover:border-white/25"
+                  } ${
+                    unlocked
+                      ? "hover:scale-[1.04] active:scale-95"
+                      : "cursor-not-allowed opacity-25 grayscale"
+                  }`}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center p-3">
-                    <MemberAvatar avatarId={avatar.id} points={0} size="sm" hidePoints={true} />
+                  <div className="absolute inset-0 flex items-center justify-center p-2.5">
+                    <MemberAvatar avatarId={avatar.id} points={0} size="sm" hidePoints />
                   </div>
-                  
+
                   {!unlocked && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-obsidian/60 backdrop-blur-[1px]">
-                      <Lock className="h-4 w-4 text-white/40" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-obsidian/55 backdrop-blur-[1px]">
+                      <Lock className="h-4 w-4 text-white/45" />
                     </div>
                   )}
-                  
+
                   {selected && (
-                    <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-gold-gradient shadow-md">
-                      <CheckCircle2 className="h-3 w-3 text-obsidian stroke-[3]" />
+                    <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center bg-gold-gradient shadow-md">
+                      <CheckCircle2 className="h-3 w-3 stroke-[3] text-obsidian" />
                     </div>
                   )}
                 </button>
@@ -232,121 +303,161 @@ export function ProfileForm({
           </div>
         </div>
 
-        {/* Configuration Panel */}
-        <div className="space-y-8">
-          <div className="tac-panel tac-corners p-8 bg-ink/40 border-gold-300/10 space-y-8">
-            <div className="flex items-center gap-3 text-gold-300">
-              <ShieldCheck className="h-5 w-5" />
-              <h3 className="font-heading text-2xl tracking-tight uppercase">System-Profil</h3>
+        {/* System profile form */}
+        <div className="tac-panel tac-corners space-y-7 bg-ink/40 p-7 sm:p-8">
+          <div className="flex items-center gap-3 text-gold-300">
+            <ShieldCheck className="h-5 w-5" />
+            <h3 className="font-heading text-2xl uppercase tracking-tight">System-Profil</h3>
+          </div>
+
+          <div className="space-y-5">
+            <div>
+              <label className="mb-2 block font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
+                Identifizierte E-Mail
+              </label>
+              <div className="border-b border-white/8 py-2 font-mono text-sm text-white/45">
+                {email}
+              </div>
             </div>
 
-            <div className="space-y-5">
-              <div>
-                <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">Identifizierte E-Mail</label>
-                <div className="border-b border-white/5 py-2 text-sm text-white/40 font-mono">
-                  {email}
-                </div>
-              </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="profile-name"
+                className="block font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60"
+              >
+                Rufname
+              </label>
+              <input
+                id="profile-name"
+                name="name"
+                type="text"
+                defaultValue={initialName}
+                placeholder="Dein Vorname"
+                className="w-full border border-white/10 bg-white/[0.02] px-4 py-3 text-white outline-none transition-all placeholder:text-white/15 focus:border-gold-300/40"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <label htmlFor="profile-name" className="block text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
-                  Rufname
+            <div className="space-y-2">
+              <label
+                htmlFor="profile-goal"
+                className="block font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60"
+              >
+                Aktuelle Mission
+              </label>
+              <textarea
+                id="profile-goal"
+                name="goal"
+                rows={3}
+                defaultValue={initialGoal}
+                placeholder="Was willst du erreichen?"
+                className="w-full resize-none border border-white/10 bg-white/[0.02] px-4 py-3 text-white outline-none transition-all placeholder:text-white/15 focus:border-gold-300/40"
+              />
+            </div>
+          </div>
+
+          {/* Business snapshot */}
+          <div className="space-y-5 border border-white/5 bg-white/[0.01] p-5">
+            <div className="flex items-center gap-2 text-white/30">
+              <Rocket className="h-4 w-4" />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]">
+                Business Snapshot
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-1">
+                <label
+                  htmlFor="profile-instagram"
+                  className="block font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-white/40"
+                >
+                  Instagram
                 </label>
                 <input
-                  id="profile-name"
-                  name="name"
+                  id="profile-instagram"
+                  name="instagramFollowers"
                   type="text"
-                  defaultValue={initialName}
-                  placeholder="Dein Vorname"
-                  className="w-full bg-white/[0.02] border border-white/10 px-4 py-3 text-white placeholder-white/10 outline-none focus:border-gold-300/40 transition-all"
+                  defaultValue={instagramFollowers}
+                  className="w-full border-b border-white/10 bg-transparent py-1 text-xs text-white outline-none focus:border-gold-300/30"
                 />
               </div>
-
-              <div className="space-y-2">
-                <label htmlFor="profile-goal" className="block text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
-                  Aktuelle Mission
+              <div className="space-y-1">
+                <label
+                  htmlFor="profile-tiktok"
+                  className="block font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-white/40"
+                >
+                  TikTok
                 </label>
-                <textarea
-                  id="profile-goal"
-                  name="goal"
-                  rows={3}
-                  defaultValue={initialGoal}
-                  placeholder="Was willst du erreichen?"
-                  className="w-full bg-white/[0.02] border border-white/10 px-4 py-3 text-white placeholder-white/10 outline-none focus:border-gold-300/40 transition-all resize-none"
+                <input
+                  id="profile-tiktok"
+                  name="tiktokFollowers"
+                  type="text"
+                  defaultValue={tiktokFollowers}
+                  className="w-full border-b border-white/10 bg-transparent py-1 text-xs text-white outline-none focus:border-gold-300/30"
+                />
+              </div>
+              <div className="space-y-1">
+                <label
+                  htmlFor="profile-sales"
+                  className="block font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-white/40"
+                >
+                  Sales / Mt.
+                </label>
+                <input
+                  id="profile-sales"
+                  name="monthlySales"
+                  type="text"
+                  defaultValue={monthlySales}
+                  className="w-full border-b border-white/10 bg-transparent py-1 text-xs text-white outline-none focus:border-gold-300/30"
+                />
+              </div>
+              <div className="space-y-1">
+                <label
+                  htmlFor="profile-stage"
+                  className="block font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-white/40"
+                >
+                  Status
+                </label>
+                <input
+                  id="profile-stage"
+                  name="businessStage"
+                  type="text"
+                  defaultValue={businessStage}
+                  className="w-full border-b border-white/10 bg-transparent py-1 text-xs text-white outline-none focus:border-gold-300/30"
                 />
               </div>
             </div>
-
-            <div className="p-6 border border-white/5 bg-white/[0.01] space-y-6">
-              <div className="flex items-center gap-2 text-white/20">
-                <Rocket className="h-4 w-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Business Snapshot</span>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-1">
-                  <label htmlFor="profile-instagram" className="block text-[9px] font-bold text-white/40 uppercase">Instagram</label>
-                  <input
-                    id="profile-instagram"
-                    name="instagramFollowers"
-                    type="text"
-                    defaultValue={instagramFollowers}
-                    className="w-full bg-transparent border-b border-white/10 py-1 text-xs text-white outline-none focus:border-gold-300/30"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label htmlFor="profile-tiktok" className="block text-[9px] font-bold text-white/40 uppercase">TikTok</label>
-                  <input
-                    id="profile-tiktok"
-                    name="tiktokFollowers"
-                    type="text"
-                    defaultValue={tiktokFollowers}
-                    className="w-full bg-transparent border-b border-white/10 py-1 text-xs text-white outline-none focus:border-gold-300/30"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label htmlFor="profile-sales" className="block text-[9px] font-bold text-white/40 uppercase">Sales / Mt.</label>
-                  <input
-                    id="profile-sales"
-                    name="monthlySales"
-                    type="text"
-                    defaultValue={monthlySales}
-                    className="w-full bg-transparent border-b border-white/10 py-1 text-xs text-white outline-none focus:border-gold-300/30"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label htmlFor="profile-stage" className="block text-[9px] font-bold text-white/40 uppercase">Status</label>
-                  <input
-                    id="profile-stage"
-                    name="businessStage"
-                    type="text"
-                    defaultValue={businessStage}
-                    className="w-full bg-transparent border-b border-white/10 py-1 text-xs text-white outline-none focus:border-gold-300/30"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={pending}
-              className="w-full relative flex items-center justify-center gap-3 bg-gold-gradient px-6 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(232,192,64,0.25)] active:scale-98 disabled:opacity-50"
-            >
-              {pending ? (
-                <div className="h-4 w-4 border-2 border-obsidian/30 border-t-obsidian rounded-full animate-spin" />
-              ) : (
-                <Save className="h-4 w-4" />
-              )}
-              {pending ? "Daten werden gesichert..." : "System-Profil sichern"}
-            </button>
-
-            {saved && (
-              <div className="flex items-center justify-center gap-2 text-gold-300 animate-in fade-in slide-in-from-top-2">
-                <CheckCircle2 className="h-4 w-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Update erfolgreich</span>
-              </div>
-            )}
           </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={pending}
+            className="btn-shimmer relative flex w-full items-center justify-center gap-3 bg-gold-gradient px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(232,192,64,0.25)] active:scale-[0.98] disabled:opacity-50"
+          >
+            {pending ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-obsidian/30 border-t-obsidian" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            {pending ? "Daten werden gesichert..." : "System-Profil sichern"}
+          </button>
+
+          {saved && (
+            <div className="flex items-center justify-center gap-2 text-gold-300 duration-300 animate-in fade-in slide-in-from-top-2">
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]">
+                Update erfolgreich
+              </span>
+            </div>
+          )}
+
+          {error && (
+            <div className="border border-red-500/30 bg-red-500/5 px-4 py-3 text-center">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-red-300/80">
+                {error}
+              </span>
+            </div>
+          )}
         </div>
       </section>
     </form>

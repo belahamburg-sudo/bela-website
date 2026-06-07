@@ -46,7 +46,7 @@ export function ProblemSection() {
   }, []);
 
   return (
-    <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-28 bg-obsidian overflow-hidden">
       {/* Muted gold-bars image as texture on the right */}
       <div
         className="pointer-events-none absolute right-0 top-0 bottom-0 w-1/2"
@@ -62,9 +62,9 @@ export function ProblemSection() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-obsidian via-obsidian/70 to-transparent" aria-hidden />
 
       <div className="relative mx-auto max-w-7xl px-6">
-        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-20 items-start mb-16 lg:mb-24">
+        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-20 items-start mb-10 lg:mb-14">
           <div ref={headingRef} style={{ opacity: 0 }}>
-            <p className="eyebrow mb-6 mx-auto">🎯 Der Ausgangspunkt</p>
+            <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Der Ausgangspunkt</p>
             <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
               Wer jetzt nicht handelt,{" "}
               <span className="gold-text">verliert.</span>{" "}

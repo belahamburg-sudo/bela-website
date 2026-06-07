@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { animate, onScroll, stagger } from "animejs";
+import { Sparkles, Lightbulb, Bot, Package, Rocket } from "lucide-react";
+import { RetroGrid } from "@/components/ui/retro-grid";
 
 const STEPS = [
   {
@@ -9,37 +11,35 @@ const STEPS = [
     title: "Idee finden",
     copy: "Aus Skill, Interesse oder Problem wird ein konkretes digitales Produkt: eine klare Entscheidung.",
     detail: "Framework + AI-Validierungsprompts",
-    icon: "💡",
+    Icon: Lightbulb,
   },
   {
     num: "02",
     title: "Mit AI bauen",
     copy: "AI übernimmt Struktur, Copy, Workbook und Assets. Du bleibst im Driver-Seat für Qualität.",
     detail: "Prompt-Packs für jede Phase",
-    icon: "🤖",
+    Icon: Bot,
   },
   {
     num: "03",
     title: "Sauber verpacken",
     copy: "Name, Promise, Module, Verkaufsseite. Aus einem Draft wird ein kaufbares Angebot.",
     detail: "Template-System für Sales-Pages",
-    icon: "📦",
+    Icon: Package,
   },
   {
     num: "04",
     title: "Automatisiert verkaufen",
     copy: "Store, Webinar, Newsletter, Community als System. Du baust einmal: es läuft.",
     detail: "Funnel-Map + Launch-Playbook",
-    icon: "🚀",
+    Icon: Rocket,
   },
 ];
 
-const ELEVATION = [0, 70, 140, 210];
-
 export function MethodSection() {
   const headingRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
-  const mobileListRef = useRef<HTMLDivElement>(null);
+  const stepsRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const cleanups: Array<() => void> = [];
@@ -50,31 +50,16 @@ export function MethodSection() {
       cleanups.push(() => { anim.revert(); obs.revert(); });
     }
 
-    if (cardsRef.current) {
-      const cards = cardsRef.current.querySelectorAll<HTMLElement>(".method-card");
-      const anim = animate(cards, {
-        opacity: [0, 1],
-        translateY: [20, 0],
-        delay: stagger(150),
-        duration: 700,
-        ease: "outExpo",
-        autoplay: false,
-      });
-      const obs = onScroll({ target: cardsRef.current, enter: "bottom-=10% top", onEnter: () => anim.play() });
+    if (stepsRef.current) {
+      const cards = stepsRef.current.querySelectorAll<HTMLElement>(".step-card");
+      const anim = animate(cards, { opacity: [0, 1], translateY: [28, 0], delay: stagger(140), duration: 700, ease: "outExpo", autoplay: false });
+      const obs = onScroll({ target: stepsRef.current, enter: "bottom-=10% top", onEnter: () => anim.play() });
       cleanups.push(() => { anim.revert(); obs.revert(); });
     }
 
-    if (mobileListRef.current) {
-      const rows = mobileListRef.current.querySelectorAll<HTMLElement>(".mobile-step");
-      const anim = animate(rows, {
-        opacity: [0, 1],
-        translateX: [-20, 0],
-        delay: stagger(100),
-        duration: 700,
-        ease: "outExpo",
-        autoplay: false,
-      });
-      const obs = onScroll({ target: mobileListRef.current, enter: "bottom-=10% top", onEnter: () => anim.play() });
+    if (resultRef.current) {
+      const anim = animate(resultRef.current, { opacity: [0, 1], translateY: [24, 0], duration: 800, ease: "outExpo", autoplay: false });
+      const obs = onScroll({ target: resultRef.current, enter: "bottom-=5% top", onEnter: () => anim.play() });
       cleanups.push(() => { anim.revert(); obs.revert(); });
     }
 
@@ -82,188 +67,105 @@ export function MethodSection() {
   }, []);
 
   return (
-    <section className="relative py-16 lg:py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-28 sec-glow overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-gold-300/[0.03] blur-[140px]" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-gold-300/[0.04] blur-[150px]" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/[0.03] blur-[140px]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-6">
+      {/* perspective goldmine floor grid */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3" aria-hidden>
+        <RetroGrid angle={70} opacity={0.35} cellSize={55} />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-6">
         {/* Heading */}
-        <div ref={headingRef} className="mb-16 lg:mb-20" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto">🎯 Die Methode</p>
-          <h2 className="font-heading tracking-gta leading-tight text-cream max-w-3xl" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
-            Von der Idee zur{" "}
+        <div ref={headingRef} className="text-center mb-10 lg:mb-14 max-w-2xl mx-auto" style={{ opacity: 0 }}>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Die Methode</p>
+          <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5rem)" }}>
+            Von der Idee zur<br />
             <span className="gold-text">digitalen Goldmine</span>
           </h2>
-          <p className="mt-6 text-cream/40 max-w-xl text-base lg:text-lg leading-relaxed">
+          <p className="mt-6 text-cream/45 text-base lg:text-lg leading-relaxed">
             Vier Schritte. Ein System. Einmal aufgebaut, läuft es von selbst.
           </p>
         </div>
 
-        {/* ── Desktop: Mountain path ── */}
-        <div
-          ref={cardsRef}
-          className="hidden lg:block relative"
-          style={{ paddingTop: "240px", paddingBottom: "40px" }}
-        >
-          {/* Mountain slope background */}
-          <svg
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            viewBox="0 0 1200 540"
-            preserveAspectRatio="none"
+        {/* Steps */}
+        <div ref={stepsRef} className="relative">
+          {/* connector line behind cards (desktop) */}
+          <div
+            className="hidden lg:block pointer-events-none absolute top-10 left-[12.5%] right-[12.5%] h-px"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(232,192,64,0.4) 15%, rgba(232,192,64,0.4) 85%, transparent)" }}
             aria-hidden
-          >
-            {/* Slope fill */}
-            <polygon points="0,510 1200,130 1200,540 0,540" fill="rgba(232,192,64,0.018)" />
-            {/* Slope edge */}
-            <line x1="0" y1="510" x2="1200" y2="130" stroke="rgba(232,192,64,0.07)" strokeWidth="1.5" />
-            {/* Trail path connecting card centers */}
-            <path
-              d="M 150,375 L 450,305 L 750,235 L 1050,165"
-              stroke="rgba(232,192,64,0.3)"
-              strokeWidth="2"
-              strokeDasharray="8 5"
-              fill="none"
-            />
-            {/* Trail markers */}
-            <circle cx="150" cy="375" r="5" fill="rgba(232,192,64,0.4)" />
-            <circle cx="450" cy="305" r="5" fill="rgba(232,192,64,0.4)" />
-            <circle cx="750" cy="235" r="5" fill="rgba(232,192,64,0.4)" />
-            <circle cx="1050" cy="165" r="7" fill="rgba(232,192,64,0.7)" />
-          </svg>
+          />
 
-          {/* Ascending cards */}
-          <div className="flex items-end gap-6">
-            {STEPS.map((step, i) => (
-              <div
-                key={step.num}
-                className="flex-1 relative"
-                style={{ transform: `translateY(-${ELEVATION[i]}px)` }}
-              >
-                {/* Summit label */}
-                {i === STEPS.length - 1 && (
-                  <p className="absolute -top-8 left-0 right-0 text-center text-[0.6rem] font-heading tracking-gta text-gold-300/70 uppercase">
-                    ⛰ Gipfel
-                  </p>
-                )}
-
-                <div
-                  className={`method-card relative border-2 rounded-sm bg-gradient-to-br p-6 flex flex-col transition-all duration-300 ${
-                    i === STEPS.length - 1
-                      ? "border-gold-300/55 from-gold-300/15 to-transparent shadow-[0_0_40px_rgba(232,192,64,0.12)]"
-                      : "border-gold-300/20 from-gold-300/8 to-transparent hover:border-gold-300/40 hover:from-gold-300/14"
-                  }`}
-                  style={{ opacity: 0 }}
-                >
-                  <div className="absolute -top-1.5 -left-1.5 w-2.5 h-2.5 bg-gold-300/40 rounded-full" />
-                  <div className="absolute -bottom-1.5 -right-1.5 w-2.5 h-2.5 bg-gold-300/40 rounded-full" />
-
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-2xl">{step.icon}</span>
-                    <span className="font-heading tracking-gta text-2xl text-gold-300/40 leading-none">
+          <div className="grid gap-6 lg:gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map((step, i) => {
+              const isLast = i === STEPS.length - 1;
+              const { Icon } = step;
+              return (
+                <div key={step.num} className="step-card relative flex flex-col items-center text-center" style={{ opacity: 0 }}>
+                  {/* numbered node */}
+                  <div
+                    className={`relative z-10 flex h-20 w-20 items-center justify-center rounded-full border bg-obsidian mb-5 ${
+                      isLast ? "border-gold-300/70" : "border-gold-300/30"
+                    }`}
+                    style={isLast ? { boxShadow: "0 0 30px rgba(232,192,64,0.3)" } : undefined}
+                  >
+                    <Icon className="h-8 w-8 text-gold-300" strokeWidth={1.5} />
+                    <span
+                      className={`absolute -bottom-2 -right-1 flex h-7 w-7 items-center justify-center rounded-full font-heading tracking-gta text-xs ${
+                        isLast ? "bg-gold-gradient text-obsidian" : "bg-obsidian border border-gold-300/40 text-gold-300"
+                      }`}
+                    >
                       {step.num}
                     </span>
                   </div>
 
-                  <h3 className="font-heading tracking-gta text-lg text-cream mb-3 leading-tight">
-                    {step.title}
-                  </h3>
-
-                  <p className="text-cream/50 text-sm leading-relaxed mb-4 flex-grow">
-                    {step.copy}
-                  </p>
-
-                  <p className="gta-label text-gold-300/35 text-xs">
-                    {step.detail}
-                  </p>
+                  {/* card */}
+                  <div
+                    className={`card-glow w-full flex-1 flex flex-col rounded-sm border p-5 ${
+                      isLast
+                        ? "border-gold-300/50 bg-gradient-to-b from-gold-300/12 to-transparent"
+                        : "border-gold-300/15 bg-gradient-to-b from-white/[0.03] to-transparent hover:border-gold-300/40"
+                    }`}
+                  >
+                    <h3 className="font-heading tracking-gta text-lg text-cream mb-2 leading-tight">{step.title}</h3>
+                    <p className="text-cream/50 text-sm leading-relaxed mb-4 flex-grow">{step.copy}</p>
+                    <span className="inline-flex items-center justify-center gap-1.5 rounded-full border border-gold-300/20 bg-gold-300/5 px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.15em] text-gold-300/70">
+                      {step.detail}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Result box */}
-          <div className="mt-16 relative rounded-sm border border-gold-300/15 bg-white/[0.02] p-6">
-            <div className="flex gap-4 items-start">
-              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-sm border border-gold-300/30 bg-gold-300/5">
-                <span className="text-lg">✨</span>
-              </div>
-              <div className="flex-grow">
-                <h4 className="font-heading tracking-gta text-cream mb-2">Das Ergebnis</h4>
-                <p className="text-cream/50 text-sm leading-relaxed">
-                  Eine automatisierte Verkaufs-Pipeline, die für dich arbeitet, während du schläfst. Fast reine Marge. Kein Kapital. Keine Abhängigkeiten.
-                </p>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* ── Mobile: Trail path ── */}
-        <div ref={mobileListRef} className="lg:hidden">
-          <div className="relative">
-            {/* Vertical trail line */}
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                left: "1.125rem",
-                top: "1.5rem",
-                bottom: "5rem",
-                width: "2px",
-                backgroundImage:
-                  "repeating-linear-gradient(to bottom, rgba(232,192,64,0.3) 0px, rgba(232,192,64,0.3) 6px, transparent 6px, transparent 12px)",
-              }}
-            />
+        {/* Result banner */}
+        <div
+          ref={resultRef}
+          className="relative mt-12 lg:mt-16 overflow-hidden rounded-sm border border-gold-300/25 p-7 lg:p-10"
+          style={{ opacity: 0 }}
+        >
+          <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(120deg, rgba(232,192,64,0.07), transparent 55%)" }} aria-hidden />
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold-300/60" aria-hidden />
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-gold-300/60" aria-hidden />
 
-            <div className="space-y-6">
-              {STEPS.map((step, i) => (
-                <div key={step.num} className="mobile-step relative pl-12" style={{ opacity: 0 }}>
-                  {/* Trail marker */}
-                  <div className="absolute left-[0.625rem] top-[1.1rem] flex items-center justify-center w-4 h-4 rounded-full border border-gold-300/50 bg-obsidian z-10">
-                    <div
-                      className={`rounded-full ${
-                        i === STEPS.length - 1 ? "w-2 h-2 bg-gold-300" : "w-1.5 h-1.5 bg-gold-300/55"
-                      }`}
-                    />
-                  </div>
-
-                  <div
-                    className={`border rounded-sm p-5 bg-gradient-to-b ${
-                      i === STEPS.length - 1
-                        ? "border-gold-300/50 from-gold-300/12 to-transparent"
-                        : "border-gold-300/20 from-gold-300/6 to-transparent"
-                    }`}
-                  >
-                    <div className="flex gap-3 items-center mb-3">
-                      <span className="text-xl">{step.icon}</span>
-                      <span className="font-heading tracking-gta text-sm text-gold-300/60">{step.num}</span>
-                      {i === STEPS.length - 1 && (
-                        <span className="ml-auto text-[0.6rem] font-heading tracking-gta text-gold-300/70 uppercase">
-                          ⛰ Gipfel
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-heading tracking-gta text-base text-cream mb-2 uppercase">
-                      {step.title}
-                    </h3>
-                    <p className="text-cream/60 text-sm leading-relaxed mb-2">{step.copy}</p>
-                    <p className="gta-label text-gold-300/50 text-xs">[{step.detail}]</p>
-                  </div>
-                </div>
-              ))}
-
-              {/* Summit complete */}
-              <div className="relative pl-12">
-                <div className="absolute left-[0.5rem] top-[0.9rem] flex items-center justify-center w-5 h-5 rounded-full border-2 border-gold-300/55 bg-gold-300/10 z-10">
-                  <span className="text-[0.6rem] leading-none">🏆</span>
-                </div>
-                <div className="border-2 border-gold-300/30 bg-gradient-to-br from-gold-300/12 to-transparent p-5 rounded-sm">
-                  <h4 className="font-heading tracking-gta text-cream mb-2 text-sm uppercase">
-                    🏆 Mission Complete
-                  </h4>
-                  <p className="text-cream/60 text-xs leading-relaxed">
-                    Eine automatisierte Pipeline. Fast reine Marge. Keine Abhängigkeiten.
-                  </p>
-                </div>
-              </div>
+          <div className="relative flex flex-col sm:flex-row gap-5 sm:items-center">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm border border-gold-300/40 bg-gold-300/10">
+              <Sparkles className="h-6 w-6 text-gold-300" />
+            </div>
+            <div>
+              <p className="gta-label text-gold-300 mb-2">Das Ergebnis</p>
+              <p className="font-heading tracking-gta text-cream leading-tight" style={{ fontSize: "clamp(1.2rem, 3.5vw, 2rem)" }}>
+                Eine automatisierte Verkaufs-Pipeline, die für dich arbeitet,{" "}
+                <span className="gold-text">während du schläfst.</span>
+              </p>
+              <p className="mt-2 text-cream/45 text-sm lg:text-base leading-relaxed">
+                Fast reine Marge. Kein Kapital. Keine Abhängigkeiten.
+              </p>
             </div>
           </div>
         </div>

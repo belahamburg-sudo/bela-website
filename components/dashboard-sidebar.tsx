@@ -1,16 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  BookOpen, 
-  User, 
-  LogOut, 
-  Pickaxe, 
-  Shield, 
-  Cpu,
-  Settings,
+import {
+  LayoutDashboard,
+  BookOpen,
+  User,
+  LogOut,
   ChevronRight
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -95,22 +92,20 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
         <Link
           href="/dashboard"
           onClick={onNavClick}
-          className="flex items-center gap-3 group"
+          className="group flex flex-col gap-2"
         >
-          <div className="relative">
-            <div className="absolute -inset-1 border border-gold-300/20 rounded-none group-hover:rotate-45 transition-transform duration-500" />
-            <div className="relative flex h-9 w-9 items-center justify-center border border-gold-300/40 bg-gold-300/5">
-              <Pickaxe className="h-4.5 w-4.5 text-gold-300" />
-            </div>
-          </div>
-          <div className="min-w-0">
-            <span className="block font-heading tracking-gta text-sm text-cream leading-none uppercase">
-              AI Goldmining
-            </span>
-            <span className="block mt-1.5 text-[9px] font-mono text-gold-300/40 tracking-widest uppercase">
-              Member Area
-            </span>
-          </div>
+          <Image
+            src="/assets/logo-ai-goldmining-3d.png"
+            alt="AI Goldmining"
+            width={1200}
+            height={204}
+            className="w-auto transition-opacity group-hover:opacity-90"
+            style={{ height: "30px" }}
+            priority
+          />
+          <span className="pl-0.5 text-[9px] font-mono text-gold-300/40 tracking-[0.3em] uppercase">
+            Member Area
+          </span>
         </Link>
       </div>
 
@@ -209,18 +204,16 @@ export function DashboardSidebar() {
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-gold-300/10 bg-ink/95 px-4 backdrop-blur-md lg:hidden">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="relative flex h-8 w-8 items-center justify-center border border-gold-300/40 bg-gold-300/5">
-            <Pickaxe className="h-3.5 w-3.5 text-gold-300" />
-          </div>
-          <div className="leading-none">
-            <span className="block font-heading tracking-gta text-xs text-cream uppercase">
-              AI Goldmining
-            </span>
-            <span className="block mt-0.5 text-[8px] font-mono text-gold-300/40 uppercase">
-              Member
-            </span>
-          </div>
+        <Link href="/dashboard" className="flex items-center">
+          <Image
+            src="/assets/logo-ai-goldmining-3d.png"
+            alt="AI Goldmining"
+            width={1200}
+            height={204}
+            className="w-auto"
+            style={{ height: "24px" }}
+            priority
+          />
         </Link>
         
         <button

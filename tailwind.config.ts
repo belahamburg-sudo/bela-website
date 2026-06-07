@@ -59,9 +59,43 @@ const config: Config = {
         "flicker": "flicker 3.1s ease-in-out infinite",
         "grain": "grain 1.2s steps(6) infinite",
         "drift": "drift 7s linear infinite",
-        "camera": "camera 10s cubic-bezier(.65,.02,.35,1) infinite"
+        "camera": "camera 10s cubic-bezier(.65,.02,.35,1) infinite",
+        "meteor": "meteor 5s linear infinite",
+        "marquee": "marquee var(--duration) linear infinite",
+        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
+        "gradient": "gradient 8s linear infinite",
+        "shine": "shine var(--duration) infinite linear",
+        "grid": "grid 18s linear infinite"
       },
       keyframes: {
+        meteor: {
+          "0%": { transform: "rotate(var(--angle)) translateX(0)", opacity: "1" },
+          "70%": { opacity: "1" },
+          "100%": {
+            transform: "rotate(var(--angle)) translateX(-500px)",
+            opacity: "0"
+          }
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - var(--gap)))" }
+        },
+        "marquee-vertical": {
+          from: { transform: "translateY(0)" },
+          to: { transform: "translateY(calc(-100% - var(--gap)))" }
+        },
+        gradient: {
+          to: { backgroundPosition: "var(--bg-size, 300%) 0" }
+        },
+        shine: {
+          "0%": { backgroundPosition: "0% 0%" },
+          "50%": { backgroundPosition: "100% 100%" },
+          to: { backgroundPosition: "0% 0%" }
+        },
+        grid: {
+          "0%": { transform: "translateY(-50%)" },
+          "100%": { transform: "translateY(0)" }
+        },
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" }

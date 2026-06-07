@@ -6,13 +6,13 @@ import { Zap } from "lucide-react";
 import Link from "next/link";
 
 const POINTS = [
-  { bold: "Du bist müde davon, zuzuschauen,", rest: " wie andere Leute das Leben leben, das du willst." },
-  { bold: "Du weißt, dass du mehr drauf hast", rest: ": aber niemand in deinem Umfeld versteht das." },
+  { bold: "Du hast Angst, dass KI deinen Job überflüssig macht", rest: ": und das Gefühl wird jeden Monat stärker." },
+  { bold: "Du steckst im 9 to 5 fest", rest: " und tauschst weiter Zeit gegen Geld, ohne echtes Polster." },
+  { bold: "Du willst nicht abhängig sein", rest: " von einem Arbeitgeber, der dich morgen durch ein Tool ersetzen kann." },
+  { bold: "Du siehst, dass KI alles verändert", rest: ": und willst sie für dich nutzen, statt von ihr ersetzt zu werden." },
   { bold: "Du hast YouTube und Free Content probiert", rest: ": aber nichts davon hat sich in echte Ergebnisse übersetzt." },
   { bold: "Du willst ein konkretes System,", rest: " keine zufälligen Tipps von Leuten, die es selbst nicht gemacht haben." },
   { bold: "Du bist bereit, die Arbeit zu machen,", rest: " wenn dir jemand genau zeigt, was zu tun ist." },
-  { bold: "Du willst echte Skills", rest: " die Einkommen generieren: kein Zertifikat, das Staub sammelt." },
-  { bold: "Du willst die 9 to 5 loswerden", rest: " und etwas Eigenes aufbauen." },
 ];
 
 export function IsThisYouSection() {
@@ -44,12 +44,12 @@ export function IsThisYouSection() {
   }, []);
 
   return (
-    <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-28 sec-glow overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-gold-300/[0.025] to-transparent" />
 
       <div className="relative mx-auto max-w-3xl px-6">
         <div ref={headingRef} className="text-center mb-10 lg:mb-16" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto">🎯 Bist das du?</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Bist das du?</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(2rem, 10vw, 7rem)" }}>
             Bist das{" "}
             <span className="gold-text">du?</span>

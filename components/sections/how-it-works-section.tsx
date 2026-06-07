@@ -41,12 +41,12 @@ export function HowItWorksSection() {
   }, []);
 
   return (
-    <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-28 sec-raised overflow-hidden">
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold-gradient/[0.03] blur-[140px]" />
 
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <div ref={headingRef} style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto">🎯 Das System</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Das System</p>
           <h2 className="font-heading tracking-gta leading-none text-cream mb-8 lg:mb-12" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
             Wie <span className="gold-text">AI Goldmining</span><br />funktioniert
           </h2>

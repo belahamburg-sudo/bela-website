@@ -8,7 +8,7 @@ import { featuredCourses } from "@/lib/content";
 
 export function ProductsSection() {
   return (
-    <section className="relative py-16 lg:py-40 bg-obsidian overflow-hidden scratch-border">
+    <section className="relative py-20 lg:py-28 sec-raised overflow-hidden scratch-border">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/[0.05] blur-[120px]" />
       </div>
@@ -21,7 +21,7 @@ export function ProductsSection() {
           transition={{ duration: 0.6 }}
           className="mb-10 lg:mb-16"
         >
-          <p className="eyebrow mb-6 mx-auto">🎯 Kurse & Produkte</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Kurse & Produkte</p>
           <h2
             className="font-heading tracking-gta leading-none text-cream max-w-3xl"
             style={{ fontSize: "clamp(1.75rem, 8vw, 5.5rem)" }}

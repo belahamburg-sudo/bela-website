@@ -90,6 +90,21 @@ create table if not exists public.member_rewards (
   unique(user_id, reward_key)
 );
 
+create table if not exists public.telegram_subscriptions (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  stripe_customer_id text,
+  stripe_subscription_id text unique,
+  status text not null default 'inactive',
+  current_period_end timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.telegram_subscriptions enable row level security;
+
+create policy "Telegram subscription readable by owner" on public.telegram_subscriptions
+  for select using (auth.uid() = user_id);
+
 alter table public.profiles enable row level security;
 alter table public.leads enable row level security;
 alter table public.courses enable row level security;

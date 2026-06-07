@@ -54,7 +54,7 @@ export function AntihypeSection() {
   }, []);
 
   return (
-    <section className="relative py-20 lg:py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-28 bg-obsidian overflow-hidden">
       {/* Heist image as atmospheric backdrop */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -70,7 +70,7 @@ export function AntihypeSection() {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div ref={headingRef} className="mb-16" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto">🎯 Kein Bullshit</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Kein Bullshit</p>
           <h2 className="font-heading tracking-gta leading-none text-cream max-w-2xl" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
             Was du hier{" "}
             <span className="gold-text">nicht</span> bekommst.

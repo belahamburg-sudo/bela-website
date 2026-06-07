@@ -1,6 +1,7 @@
-import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { getCourse } from "@/lib/content";
+import { getStripeClient } from "@/lib/stripe";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { absoluteUrl } from "@/lib/utils";
 
 export async function POST(request: Request) {
@@ -12,6 +13,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Kurs wurde nicht gefunden." }, { status: 404 });
     }
 
+    // Demo fallback: no Stripe key configured.
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({
         demo: true,
@@ -20,15 +22,42 @@ export async function POST(request: Request) {
       });
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2025-02-24.acacia"
-    });
+    const stripe = getStripeClient();
+    if (!stripe) {
+      return NextResponse.json(
+        { message: "Stripe ist nicht konfiguriert." },
+        { status: 500 }
+      );
+    }
+
+    // Resolve the logged-in user server-side via the auth cookies so we can
+    // bind the purchase to their account. Falls back to guest checkout.
+    let userId: string | null = null;
+    let userEmail: string | null = null;
+
+    try {
+      const supabase = await getSupabaseServerClient();
+      if (supabase) {
+        const {
+          data: { user }
+        } = await supabase.auth.getUser();
+        if (user) {
+          userId = user.id;
+          userEmail = user.email ?? null;
+        }
+      }
+    } catch {
+      // Auth resolution is best-effort: continue as guest on failure.
+    }
+
+    const resolvedEmail = userEmail ?? body.userEmail ?? null;
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       success_url: absoluteUrl(`/checkout/success?session_id={CHECKOUT_SESSION_ID}&course=${course.slug}`),
       cancel_url: absoluteUrl(`/checkout/cancel?course=${course.slug}`),
-      ...(body.userEmail ? { customer_email: body.userEmail } : {}),
+      ...(resolvedEmail ? { customer_email: resolvedEmail } : {}),
+      ...(userId ? { client_reference_id: userId } : {}),
       line_items: [
         {
           quantity: 1,
@@ -45,7 +74,8 @@ export async function POST(request: Request) {
       ],
       metadata: {
         course_slug: course.slug,
-        ...(body.userEmail ? { user_email: body.userEmail } : {})
+        ...(userId ? { user_id: userId } : {}),
+        ...(resolvedEmail ? { user_email: resolvedEmail } : {})
       }
     });
 

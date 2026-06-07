@@ -28,7 +28,13 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background: #0a0806;
+  background-color: #090705;
+  background-image:
+    radial-gradient(1100px 720px at 6% -10%, rgba(125, 88, 18, 0.20), transparent 60%),
+    radial-gradient(1000px 660px at 100% 2%, rgba(168, 122, 16, 0.12), transparent 58%),
+    radial-gradient(1200px 820px at 50% 118%, rgba(125, 88, 18, 0.16), transparent 60%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--foreground);
   font-family: var(--font-body), Inter, ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -60,6 +66,17 @@ body::after {
   60%  { transform: translate(-1%,2%) }
   80%  { transform: translate(2%,1%) }
   100% { transform: translate(0,0) }
+}
+
+/* Slow drifting ambient light for section backgrounds */
+@keyframes aurora-drift {
+  0%   { transform: translate3d(-4%, -2%, 0) scale(1.05); }
+  100% { transform: translate3d(4%, 3%, 0) scale(1.16); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
 }
 
 main {
@@ -317,6 +334,88 @@ select {
     right: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(232,192,64,0.6) 30%, rgba(255,245,140,0.9) 50%, rgba(232,192,64,0.6) 70%, transparent);
+  }
+
+  /* ── Section background variants — atmospheric depth, never flat black ── */
+  .sec-obsidian {
+    background-color: #0a0806;
+  }
+
+  /* Hero: cinematic vault-light gradient */
+  .sec-hero {
+    background:
+      radial-gradient(58% 48% at 50% 36%, rgba(232,192,64,0.10) 0%, transparent 62%),
+      radial-gradient(90% 60% at 50% 122%, rgba(125,88,18,0.16) 0%, transparent 60%),
+      linear-gradient(180deg, #0d0a07 0%, #090705 58%, #0a0806 100%);
+  }
+
+  /* Warm raised panel: gold corner spotlight + ambient depth */
+  .sec-raised {
+    position: relative;
+    background:
+      radial-gradient(72% 60% at 86% 0%, rgba(168,122,16,0.18) 0%, transparent 56%),
+      radial-gradient(58% 55% at 4% 100%, rgba(125,88,18,0.13) 0%, transparent 54%),
+      linear-gradient(180deg, #13100b 0%, #0c0907 55%, #0a0806 100%);
+  }
+  .sec-raised::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(40% 38% at 80% 8%, rgba(232,192,64,0.10), transparent 60%);
+    animation: glow-pulse 11s ease-in-out infinite;
+  }
+
+  /* Centered top bloom with ambient side glows */
+  .sec-glow {
+    position: relative;
+    background:
+      radial-gradient(58% 46% at 50% -6%, rgba(232,192,64,0.16) 0%, transparent 60%),
+      radial-gradient(46% 64% at 100% 38%, rgba(168,122,16,0.09) 0%, transparent 55%),
+      radial-gradient(46% 64% at 0% 62%, rgba(168,122,16,0.09) 0%, transparent 55%),
+      linear-gradient(180deg, #0c0907 0%, #0a0806 100%);
+  }
+  .sec-glow::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(50% 40% at 50% 0%, rgba(232,192,64,0.12) 0%, transparent 62%);
+    animation: glow-pulse 9s ease-in-out infinite;
+  }
+
+  /* Aurora: drifting gold light mesh on a warm diagonal base */
+  .sec-aurora {
+    position: relative;
+    background:
+      radial-gradient(50% 60% at 18% 22%, rgba(168,122,16,0.16) 0%, transparent 55%),
+      radial-gradient(46% 56% at 86% 82%, rgba(232,192,64,0.11) 0%, transparent 55%),
+      linear-gradient(135deg, #120e09 0%, #0a0806 55%, #0d0a07 100%);
+  }
+  .sec-aurora::before {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 50% at 30% 40%, rgba(232,192,64,0.12), transparent 60%),
+      radial-gradient(40% 50% at 70% 60%, rgba(168,122,16,0.10), transparent 60%);
+    filter: blur(30px);
+    animation: aurora-drift 16s ease-in-out infinite alternate;
+  }
+
+  /* Deep vignette base for image-backed sections */
+  .sec-vignette {
+    background:
+      radial-gradient(ellipse 90% 80% at 50% 50%, transparent 0%, rgba(10,8,6,0.6) 100%),
+      #0a0806;
+  }
+  /* Hairline gold divider at the top of a section */
+  .sec-divider {
+    border-top: 1px solid rgba(232,192,64,0.08);
   }
 
   /* Gold video frame as seen on SS */

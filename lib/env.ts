@@ -21,7 +21,12 @@ export function hasStripeWebhookEnv() {
 }
 
 export const telegramUrl =
-  process.env.NEXT_PUBLIC_TELEGRAM_URL || "https://t.me/ai_goldmining";
+  process.env.NEXT_PUBLIC_TELEGRAM_URL ||
+  "https://t.me/aigoldminingfreeminers";
+
+export const paidTelegramUrl =
+  process.env.NEXT_PUBLIC_TELEGRAM_PAID_URL ||
+  "https://t.me/+mjD_JqSrbO83MjAy";
 
 export const webinarUrl =
   process.env.NEXT_PUBLIC_WEBINAR_URL || "/webinar#anmeldung";

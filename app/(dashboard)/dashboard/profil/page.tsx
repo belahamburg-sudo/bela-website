@@ -2,6 +2,8 @@ import { AuthGate } from "@/components/auth-gate";
 import { ProfileForm } from "./profile-form";
 import { SpatialBackground } from "@/components/spatial-background";
 import { getUnifiedMemberData } from "@/lib/member-data";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getTelegramSubscription } from "@/lib/telegram";
 
 async function fetchProfile() {
   const data = await getUnifiedMemberData();
@@ -14,6 +16,22 @@ async function fetchProfile() {
 export default async function ProfilePage() {
   const { profile, businessSnapshot, user, purchasedCourses, totalLessonsCompleted, completedCourses, points, rewardCount } =
     await fetchProfile();
+
+  let telegram: { active: boolean; currentPeriodEnd: string | null } = { active: false, currentPeriodEnd: null };
+  try {
+    const supabase = await getSupabaseServerClient();
+    if (supabase) {
+      const {
+        data: { user: authUser }
+      } = await supabase.auth.getUser();
+      if (authUser) {
+        const sub = await getTelegramSubscription(supabase, authUser.id);
+        if (sub) telegram = { active: sub.active, currentPeriodEnd: sub.currentPeriodEnd };
+      }
+    }
+  } catch {
+    /* leave default */
+  }
 
   return (
     <AuthGate>
@@ -44,6 +62,7 @@ export default async function ProfilePage() {
             purchasedCourses={purchasedCourses.length}
             completedCourses={completedCourses}
             rewardCount={rewardCount}
+            telegram={telegram}
           />
         </div>
       </section>

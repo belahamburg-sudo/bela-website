@@ -37,12 +37,12 @@ export function CommunitySection() {
   }, []);
 
   return (
-    <section className="relative py-16 lg:py-40 bg-obsidian overflow-hidden">
+    <section className="relative py-20 lg:py-28 bg-obsidian overflow-hidden">
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-gold-300/[0.05] blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div ref={headingRef} className="mb-10 lg:mb-16 text-center" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto">🎯 Community</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Community</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.75rem, 8vw, 5rem)" }}>
             Meine Community cashed beim<br />
             <span className="gold-text">AI-Goldrausch</span> schon ab!

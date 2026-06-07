@@ -53,13 +53,13 @@ export function SiteHeader() {
             {/* Logo */}
             <Link href="/" className="focus-ring group flex items-center shrink-0 transition-opacity hover:opacity-90" onClick={() => setOpen(false)}>
               <Image
-                src="/assets/logo-ai-goldmining-tight.png"
+                src="/assets/logo-ai-goldmining-3d.png"
                 alt="AI Goldmining"
-                width={340}
-                height={64}
+                width={1200}
+                height={204}
                 className="w-auto"
                 style={{
-                  height: "28px",
+                  height: "30px",
                 }}
                 priority
               />
@@ -111,20 +111,15 @@ export function SiteHeader() {
                   </button>
                 </>
               ) : (
-                <>
-                  <Button
-                    href="/login"
-                    size="sm"
-                    variant="outline"
-                    className="flex items-center gap-1.5 rounded-full px-4"
-                  >
-                    <LogIn className="h-3.5 w-3.5" />
-                    Login
-                  </Button>
-                  <Button href="/webinar" size="sm" className="rounded-full px-5">
-                    Webinar
-                  </Button>
-                </>
+                <Button
+                  href="/login"
+                  size="sm"
+                  variant="outline"
+                  className="flex items-center gap-1.5 rounded-full px-4"
+                >
+                  <LogIn className="h-3.5 w-3.5" />
+                  Login
+                </Button>
               )}
             </div>
 
@@ -219,26 +214,15 @@ export function SiteHeader() {
                     </motion.button>
                   </>
                 ) : (
-                  <>
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                    >
-                      <Button href="/login" size="lg" variant="outline" className="w-full rounded-full" onClick={() => setOpen(false)}>
-                        Login
-                      </Button>
-                    </motion.div>
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                    >
-                      <Button href="/webinar" size="lg" className="w-full rounded-full" onClick={() => setOpen(false)}>
-                        Gratis Webinar
-                      </Button>
-                    </motion.div>
-                  </>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <Button href="/login" size="lg" variant="outline" className="w-full rounded-full" onClick={() => setOpen(false)}>
+                      Login
+                    </Button>
+                  </motion.div>
                 )}
               </div>
             </div>

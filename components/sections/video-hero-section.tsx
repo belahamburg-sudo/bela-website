@@ -1,27 +1,59 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Volume2, VolumeX, Play, Pause, Sparkles, Globe, Zap, EyeOff } from "lucide-react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { Volume2, VolumeX, Play, Pause, SkipBack, SkipForward, Sparkles, Globe, Zap, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { telegramUrl } from "@/lib/env";
+import { Particles } from "@/components/ui/particles";
+import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 
 export function VideoHeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const scrubbingRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [started, setStarted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [buffered, setBuffered] = useState(0);
+
+  const playedPct = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const bufferedPct = duration > 0 ? (buffered / duration) * 100 : 0;
+
+  // The native video can fire `loadedmetadata` before React hydrates and attaches
+  // its handler, leaving duration at 0. Read it directly on mount and keep it synced.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const syncDuration = () => {
+      if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
+    };
+    syncDuration();
+    v.addEventListener("loadedmetadata", syncDuration);
+    v.addEventListener("durationchange", syncDuration);
+    return () => {
+      v.removeEventListener("loadedmetadata", syncDuration);
+      v.removeEventListener("durationchange", syncDuration);
+    };
+  }, []);
+
+  function fmt(t: number) {
+    if (!Number.isFinite(t) || t < 0) return "0:00";
+    const m = Math.floor(t / 60);
+    const s = Math.floor(t % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
 
   function handlePlayPause() {
     const v = videoRef.current;
     if (!v) return;
     if (v.paused) {
       void v.play();
-      setPlaying(true);
       setStarted(true);
     } else {
       v.pause();
-      setPlaying(false);
     }
   }
 
@@ -32,10 +64,79 @@ export function VideoHeroSection() {
     setMuted(v.muted);
   }
 
+  function handleTimeUpdate() {
+    const v = videoRef.current;
+    if (v && !scrubbingRef.current) setCurrentTime(v.currentTime);
+  }
+
+  function handleProgress() {
+    const v = videoRef.current;
+    if (v && v.buffered.length > 0) setBuffered(v.buffered.end(v.buffered.length - 1));
+  }
+
+  function seekToClientX(clientX: number) {
+    const el = progressRef.current;
+    const v = videoRef.current;
+    if (!el || !v) return;
+    const total = duration || v.duration || 0;
+    if (!total) return;
+    const rect = el.getBoundingClientRect();
+    const frac = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    const t = frac * total;
+    v.currentTime = t;
+    setCurrentTime(t);
+  }
+
+  function onSeekPointerDown(e: ReactPointerEvent<HTMLDivElement>) {
+    scrubbingRef.current = true;
+    seekToClientX(e.clientX);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* pointer capture unsupported for this pointer — seeking still works */
+    }
+  }
+
+  function onSeekPointerMove(e: ReactPointerEvent<HTMLDivElement>) {
+    if (scrubbingRef.current) seekToClientX(e.clientX);
+  }
+
+  function onSeekPointerUp(e: ReactPointerEvent<HTMLDivElement>) {
+    scrubbingRef.current = false;
+    try {
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+    } catch {
+      /* nothing to release */
+    }
+  }
+
+  function skip(delta: number) {
+    const v = videoRef.current;
+    if (!v) return;
+    const max = duration || v.duration || 0;
+    const next = Math.min(max, Math.max(0, v.currentTime + delta));
+    v.currentTime = next;
+    setCurrentTime(next);
+    setStarted(true);
+  }
+
+  function onSeekKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      skip(5);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      skip(-5);
+    } else if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      handlePlayPause();
+    }
+  }
+
   return (
     <section
-      className="relative flex flex-col items-center justify-center overflow-hidden bg-obsidian px-6"
-      style={{ minHeight: "calc(100svh: 92px)", paddingTop: "clamp(6rem, 8vw, 7.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
+      className="relative flex flex-col items-center justify-center overflow-hidden sec-hero px-6"
+      style={{ minHeight: "calc(100svh - 92px)", paddingTop: "clamp(5rem, 7vw, 6.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
     >
       {/* Subtle gold radial glow */}
       <div
@@ -47,25 +148,45 @@ export function VideoHeroSection() {
         }}
       />
 
+      {/* Atmospheric gold dust */}
+      <Particles
+        className="absolute inset-0"
+        quantity={90}
+        ease={70}
+        staticity={40}
+        size={0.5}
+        color="#E8C040"
+        refresh
+      />
+
       <div className="relative w-full mx-auto max-w-4xl flex flex-col items-center gap-3 text-center">
 
-        {/* ── GTA Mission Badge ── */}
+        {/* ── Live Mission Badge ── */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="relative flex items-center gap-2.5 rounded-full border-2 border-gold-300/60 bg-black/60 backdrop-blur px-4 py-2"
-          style={{
-            boxShadow: "0 0 20px rgba(232,192,64,0.3), inset 0 0 20px rgba(232,192,64,0.1)"
-          }}
+          className="group relative inline-flex items-center gap-3 rounded-full border border-gold-300/25 bg-gradient-to-b from-white/[0.07] to-white/[0.02] px-1.5 py-1.5 pr-4 backdrop-blur-md"
+          style={{ boxShadow: "0 1px 0 0 rgba(255,255,255,0.06) inset, 0 8px 30px -12px rgba(232,192,64,0.4)" }}
         >
-          <span className="text-[0.65rem] font-mono font-bold uppercase tracking-[0.25em] text-gold-300">
-            [MISSION AKTIV]
+          {/* Live indicator pill */}
+          <span className="flex items-center gap-1.5 rounded-full bg-gold-gradient px-2.5 py-1">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-obsidian/70" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-obsidian" />
+            </span>
+            <span className="text-[0.6rem] font-extrabold uppercase tracking-[0.2em] text-obsidian">Live</span>
           </span>
-          <span className="w-1 h-1 rounded-full bg-gold-300 animate-pulse" />
-          <span className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-gold-300/80">
-            23. Mai · 19 Uhr
+          <span className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-cream/90">
+            Nächstes Webinar
           </span>
+          <span className="h-3 w-px bg-gold-300/30" aria-hidden />
+          <AnimatedGradientText
+            speed={1}
+            className="text-[0.68rem] font-bold uppercase tracking-[0.14em]"
+          >
+            11. Juni · 19 Uhr
+          </AnimatedGradientText>
         </motion.div>
 
         {/* ── Headline ── */}
@@ -106,6 +227,11 @@ export function VideoHeroSection() {
               playsInline
               muted
               preload="metadata"
+              onClick={() => started && handlePlayPause()}
+              onTimeUpdate={handleTimeUpdate}
+              onProgress={handleProgress}
+              onPlay={() => setPlaying(true)}
+              onPause={() => setPlaying(false)}
               onEnded={() => setPlaying(false)}
             />
 
@@ -138,35 +264,85 @@ export function VideoHeroSection() {
             )}
 
             <div
-              className="absolute bottom-0 inset-x-0 z-20 flex items-center justify-between px-4 py-2.5 transition-opacity duration-300"
+              className="absolute bottom-0 inset-x-0 z-20 px-3 pb-2.5 pt-7 transition-opacity duration-300 sm:px-4"
               style={{
-                background: "linear-gradient(to top, rgba(10,8,6,0.85) 0%, transparent 100%)",
+                background: "linear-gradient(to top, rgba(10,8,6,0.92) 0%, rgba(10,8,6,0.5) 55%, transparent 100%)",
                 opacity: started ? 1 : 0,
                 pointerEvents: started ? "auto" : "none",
               }}
             >
-              <button
-                type="button"
-                onClick={handlePlayPause}
-                aria-label={playing ? "Pause" : "Abspielen"}
-                className="flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 hover:bg-gold-300/20 transition-colors"
+              {/* Seek bar */}
+              <div
+                ref={progressRef}
+                role="slider"
+                aria-label="Video-Fortschritt"
+                aria-valuemin={0}
+                aria-valuemax={Math.round(duration)}
+                aria-valuenow={Math.round(currentTime)}
+                tabIndex={0}
+                onPointerDown={onSeekPointerDown}
+                onPointerMove={onSeekPointerMove}
+                onPointerUp={onSeekPointerUp}
+                onKeyDown={onSeekKeyDown}
+                className="group relative flex h-4 cursor-pointer touch-none select-none items-center outline-none"
               >
-                {playing
-                  ? <Pause className="h-3 w-3" fill="currentColor" />
-                  : <Play className="h-3 w-3 translate-x-px" fill="currentColor" />
-                }
-              </button>
-              <button
-                type="button"
-                onClick={handleMute}
-                aria-label={muted ? "Ton einschalten" : "Ton ausschalten"}
-                className="flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 hover:bg-gold-300/20 transition-colors"
-              >
-                {muted
-                  ? <VolumeX className="h-3 w-3" />
-                  : <Volume2 className="h-3 w-3" />
-                }
-              </button>
+                <div className="relative h-[3px] w-full overflow-hidden rounded-full bg-cream/15 transition-all duration-150 group-hover:h-[5px] group-focus-visible:h-[5px]">
+                  <div className="absolute inset-y-0 left-0 bg-cream/25" style={{ width: `${bufferedPct}%` }} />
+                  <div className="absolute inset-y-0 left-0 bg-gold-gradient" style={{ width: `${playedPct}%` }} />
+                </div>
+                <span
+                  className="pointer-events-none absolute h-3 w-3 -translate-x-1/2 rounded-full bg-gold-300 opacity-0 shadow-[0_0_10px_rgba(232,192,64,0.7)] transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                  style={{ left: `${playedPct}%` }}
+                  aria-hidden
+                />
+              </div>
+
+              {/* Control row */}
+              <div className="mt-1.5 flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handlePlayPause}
+                  aria-label={playing ? "Pause" : "Abspielen"}
+                  className="flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 transition-colors hover:bg-gold-300/20"
+                >
+                  {playing
+                    ? <Pause className="h-3 w-3" fill="currentColor" />
+                    : <Play className="h-3 w-3 translate-x-px" fill="currentColor" />
+                  }
+                </button>
+                <button
+                  type="button"
+                  onClick={() => skip(-10)}
+                  aria-label="10 Sekunden zurück"
+                  title="10 Sek. zurück"
+                  className="flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 transition-colors hover:bg-gold-300/20"
+                >
+                  <SkipBack className="h-3 w-3" fill="currentColor" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => skip(10)}
+                  aria-label="10 Sekunden vor"
+                  title="10 Sek. vor"
+                  className="flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 transition-colors hover:bg-gold-300/20"
+                >
+                  <SkipForward className="h-3 w-3" fill="currentColor" />
+                </button>
+                <span className="ml-1 font-mono text-[10px] tabular-nums tracking-wide text-cream/70">
+                  {fmt(currentTime)} <span className="text-cream/30">/</span> {fmt(duration)}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleMute}
+                  aria-label={muted ? "Ton einschalten" : "Ton ausschalten"}
+                  className="ml-auto flex h-7 w-7 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/10 text-gold-300 transition-colors hover:bg-gold-300/20"
+                >
+                  {muted
+                    ? <VolumeX className="h-3 w-3" />
+                    : <Volume2 className="h-3 w-3" />
+                  }
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -224,7 +400,7 @@ export function VideoHeroSection() {
           </div>
 
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-cream/25">
-            Kostenlos · ohne Bullshit · live am 23. Mai
+            Kostenlos · ohne Bullshit · live am 11. Juni
           </p>
 
           {/* Social proof */}

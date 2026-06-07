@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const email = String(body?.email ?? "").trim().toLowerCase();
   const password = String(body?.password ?? "");
+  const name = String(body?.name ?? "").trim();
 
   if (!email || !password) {
     return badRequest("Bitte E-Mail und Passwort angeben.");
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
     email_confirm: true,
     user_metadata: {
       avatar_id: DEFAULT_AVATAR_ID,
+      ...(name ? { full_name: name } : {}),
     },
   });
 
@@ -52,6 +54,7 @@ export async function POST(request: NextRequest) {
         id: data.user.id,
         email,
         onboarding_complete: false,
+        ...(name ? { full_name: name } : {}),
       },
       { onConflict: "id" }
     );

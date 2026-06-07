@@ -8,6 +8,7 @@ import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
 import { navItems } from "@/lib/content";
 import { telegramUrl } from "@/lib/env";
+import { Meteors } from "@/components/ui/meteors";
 
 const LEGAL = [
   { href: "/impressum", label: "Impressum" },
@@ -29,7 +30,7 @@ export function CtaFooterSection() {
   return (
     <footer className="relative">
       {/* ── Big CTA: cinematic banner style ── */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden border-t border-gold-300/15">
         {/* AI Goldmining banner image */}
         <div className="absolute inset-0" aria-hidden>
           <Image
@@ -39,28 +40,32 @@ export function CtaFooterSection() {
             className="object-cover object-center"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-obsidian/60 via-obsidian/50 to-obsidian" />
-          <div className="absolute inset-0 bg-gradient-to-r from-obsidian/40 to-obsidian/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-obsidian/80 via-obsidian/75 to-obsidian" />
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 60% at 50% 45%, transparent 0%, rgba(10,8,6,0.55) 100%)" }} />
         </div>
 
-        <div className="relative mx-auto max-w-7xl px-6 py-20 lg:py-40 text-center">
+        {/* gold meteor shower */}
+        <Meteors number={16} angle={235} minDuration={3} maxDuration={9} />
+
+
+        <div className="relative mx-auto max-w-3xl px-6 py-20 lg:py-28 text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <p className="eyebrow mb-6 mx-auto">Letzte Chance</p>
+            <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Letzte Chance</p>
             <h2
-              className="mx-auto max-w-4xl font-heading tracking-gta leading-none text-cream"
-              style={{ fontSize: "clamp(2.8rem,6vw,6.5rem)", textShadow: "0 0 30px rgba(232,192,64,0.3)" }}
+              className="mx-auto max-w-3xl font-heading tracking-gta leading-none text-cream"
+              style={{ fontSize: "clamp(2.5rem,6vw,5.5rem)", textShadow: "0 0 30px rgba(232,192,64,0.3)" }}
             >
               Hör auf zu warten.
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gold-300/70">
-              Digitale Produkte einmal bauen: dauerhaft verkaufen. Fast reine Marge.
+            <p className="mx-auto mt-5 max-w-lg text-base lg:text-lg leading-relaxed text-cream/60">
+              Digitale Produkte einmal bauen, dauerhaft verkaufen. Fast reine Marge.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/webinar" size="lg">
                 Webinar starten
                 <ArrowRight className="h-4 w-4" aria-hidden />
@@ -68,43 +73,42 @@ export function CtaFooterSection() {
               <Button href={telegramUrl} variant="outline" size="lg" target="_blank" rel="noopener noreferrer">
                 Community beitreten
               </Button>
-              <Button href="#newsletter" variant="outline" size="lg">
-                Newsletter sichern
-              </Button>
             </div>
           </motion.div>
 
+          {/* Newsletter panel — single, intentional */}
           <motion.div
             id="newsletter"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-16 max-w-lg"
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="relative mx-auto mt-14 max-w-md overflow-hidden rounded-md border border-gold-300/25 bg-gradient-to-b from-white/[0.04] to-obsidian/80 backdrop-blur-md p-7 lg:p-8 text-left shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7)]"
           >
-            <p className="gta-label mb-4 text-center">Newsletter</p>
-            <LeadForm source="newsletter" compact />
+            <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(232,192,64,0.07), transparent 55%)" }} aria-hidden />
+            <div className="relative">
+              <p className="eyebrow mb-4"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Newsletter</p>
+              <p className="font-heading tracking-gta text-cream text-xl mb-1.5">Noch nicht bereit?</p>
+              <p className="text-cream/50 text-sm mb-6 leading-relaxed">Hol dir den Newsletter und bleib beim Goldrausch dabei. Kein Spam, jederzeit kündbar.</p>
+              <LeadForm source="newsletter" />
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* ── Footer links ── */}
       <div className="bg-obsidian border-t border-gold-300/10">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="divider-gold" />
-        </div>
-
-        <div className="mx-auto max-w-7xl px-6 py-16">
-          <div className="grid gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:py-14">
+          <div className="grid gap-10 lg:gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>
               <div className="mb-5">
                 <Link href="/">
                   <Image
-                    src="/assets/logo-ai-goldmining-tight.png"
+                    src="/assets/logo-ai-goldmining-3d.png"
                     alt="AI Goldmining"
-                    width={340}
-                    height={64}
-                    className="h-auto w-[200px]"
+                    width={1200}
+                    height={204}
+                    className="h-auto w-[210px]"
                   />
                 </Link>
               </div>
@@ -118,9 +122,9 @@ export function CtaFooterSection() {
             <FooterColumn title="Social" items={SOCIALS} external />
           </div>
 
-          <div className="divider-gold mt-14" />
+          <div className="divider-gold mt-10" />
 
-          <div className="mt-8 flex flex-col items-start justify-between gap-3 text-xs text-cream/25 sm:flex-row sm:items-center">
+          <div className="mt-6 flex flex-col items-start justify-between gap-3 text-xs text-cream/25 sm:flex-row sm:items-center">
             <p>© {new Date().getFullYear()} Bela Goldmann · AI Goldmining. Alle Rechte vorbehalten.</p>
             <p className="gta-label opacity-50">
               Gebaut für Umsetzer: nicht für Zuschauer.

@@ -19,6 +19,7 @@ export type Course = {
   priceCents: number;
   image: string;
   level: "Start" | "Aufbau" | "System" | "Bundle";
+  format: "video" | "pdf";
   audience: string;
   outcome: string;
   featured?: boolean;
@@ -46,6 +47,7 @@ const sharedResources = [
 export const courses: Course[] = [
   {
     slug: "ai-goldmining-starter",
+    format: "video",
     title: "AI Goldmining Starter",
     tagline: "Dein erstes digitales Produkt mit AI",
     description:
@@ -107,6 +109,7 @@ export const courses: Course[] = [
   },
   {
     slug: "template-goldmine",
+    format: "pdf",
     title: "Template Goldmine",
     tagline: "Vorlagen bauen und verkaufen",
     description:
@@ -152,6 +155,7 @@ export const courses: Course[] = [
   },
   {
     slug: "mini-kurs-maschine",
+    format: "video",
     title: "Mini-Kurs Maschine",
     tagline: "Kursidee bis Verkaufsseite",
     description:
@@ -197,6 +201,7 @@ export const courses: Course[] = [
   },
   {
     slug: "funnel-store-system",
+    format: "video",
     title: "Funnel & Store System",
     tagline: "Automatisiert verkaufen",
     description:
@@ -242,6 +247,7 @@ export const courses: Course[] = [
   },
   {
     slug: "ai-content-factory",
+    format: "video",
     title: "AI Content Factory",
     tagline: "Content-System mit AI aufbauen",
     description:
@@ -302,6 +308,7 @@ export const courses: Course[] = [
   },
   {
     slug: "prompt-engineering-pro",
+    format: "pdf",
     title: "Prompt Engineering Pro",
     tagline: "AI wirklich steuern lernen",
     description:
@@ -347,6 +354,7 @@ export const courses: Course[] = [
   },
   {
     slug: "digital-product-launch",
+    format: "pdf",
     title: "Digital Product Launch",
     tagline: "Launch-System in 14 Tagen",
     description:
@@ -407,6 +415,7 @@ export const courses: Course[] = [
   },
   {
     slug: "ai-goldmining-starter-pack",
+    format: "video",
     title: "AI Goldmining Starter Pack",
     tagline: "Alle Startkurse im Bundle",
     description:

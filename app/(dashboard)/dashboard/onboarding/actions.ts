@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { sendTemplateEmail } from "@/lib/email";
 
 export async function completeOnboarding(formData: FormData): Promise<void> {
   const name = (formData.get("name") as string | null)?.trim() ?? "";
@@ -51,6 +52,16 @@ export async function completeOnboarding(formData: FormData): Promise<void> {
   if (avatarId) {
     await supabase.auth.updateUser({
       data: { avatar_id: avatarId },
+    });
+  }
+
+  // Best-effort onboarding email. Must run before redirect(), which throws a
+  // control-flow signal. Never throws.
+  if (user.email) {
+    await sendTemplateEmail({
+      template: "onboarding-complete",
+      to: user.email,
+      vars: { name, email: user.email ?? "" },
     });
   }
 
