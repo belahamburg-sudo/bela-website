@@ -15,7 +15,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       const demoUser = localStorage.getItem("ai-goldmining-demo-user");
       if (!hasSupabasePublicEnv()) {
         if (!demoUser) {
-          router.push("/login?redirect=/dashboard");
+          router.push("/login?redirect=/db");
           return;
         }
         setReady(true);
@@ -25,7 +25,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       const supabase = getSupabaseBrowserClient();
       const { data } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
       if (!data.user && !demoUser) {
-        router.push("/login?redirect=/dashboard");
+        router.push("/login?redirect=/db");
         return;
       }
       setReady(true);

@@ -55,7 +55,6 @@ export default function OnboardingPage() {
       if (step === 1 && !name.trim()) return;
       if (step === 2 && !goal) return;
       if (step === 3 && !stage) return;
-      if (step === 4 && !instagramFollowers.trim() && !tiktokFollowers.trim() && !monthlySales.trim()) return;
       setStep((current) => current + 1);
       return;
     }
@@ -276,6 +275,18 @@ export default function OnboardingPage() {
                       className="rounded-2xl border border-white/10 px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-cream/55 transition-all hover:border-gold-300/30 hover:text-cream"
                     >
                       Zurück
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setInstagramFollowers("");
+                        setTiktokFollowers("");
+                        setMonthlySales("");
+                        setStep(5);
+                      }}
+                      className="rounded-2xl border border-gold-300/10 bg-gold-300/[0.02] px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-gold-300/60 transition-all hover:border-gold-300/30 hover:text-gold-300"
+                    >
+                      Überspringen
                     </button>
                     <button
                       type="submit"

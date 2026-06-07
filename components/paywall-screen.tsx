@@ -47,7 +47,7 @@ export function PaywallScreen({ course }: PaywallScreenProps) {
         </div>
 
         <Link
-          href="/dashboard/kurse"
+          href="/db/kurse"
           className="mt-6 inline-block text-sm text-cream/30 transition-colors hover:text-cream/60"
         >
           ← Zurück zur Kursbibliothek

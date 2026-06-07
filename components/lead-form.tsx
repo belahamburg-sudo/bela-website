@@ -19,7 +19,8 @@ export function LeadForm({ source, compact, ctaLabel }: LeadFormProps) {
     setStatus("loading");
     setMessage("");
 
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const payload = {
       name: String(form.get("name") || ""),
       email: String(form.get("email") || ""),
@@ -36,7 +37,7 @@ export function LeadForm({ source, compact, ctaLabel }: LeadFormProps) {
       if (!response.ok) throw new Error(result.message || "Fehler beim Speichern");
       setStatus("success");
       setMessage(result.message || "Du bist drin. Check deine Inbox.");
-      event.currentTarget.reset();
+      formElement.reset();
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Bitte versuche es erneut.");

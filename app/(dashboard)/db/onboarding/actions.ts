@@ -17,12 +17,12 @@ export async function completeOnboarding(formData: FormData): Promise<void> {
   if (!name) return;
 
   if (!hasSupabasePublicEnv()) {
-    redirect("/dashboard");
+    redirect("/db");
   }
 
   const supabase = await getSupabaseServerClient();
   if (!supabase) {
-    redirect("/dashboard");
+    redirect("/db");
   }
 
   const {
@@ -65,5 +65,5 @@ export async function completeOnboarding(formData: FormData): Promise<void> {
     });
   }
 
-  redirect("/dashboard");
+  redirect("/db");
 }

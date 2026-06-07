@@ -58,7 +58,7 @@ export default async function CheckoutCancelPage({
 
             {/* CTAs */}
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button href="/dashboard/kurse" size="md">
+              <Button href="/db/kurse" size="md">
                 <ArrowLeft className="h-4 w-4" aria-hidden />
                 Zurück zum Store
               </Button>
@@ -66,7 +66,7 @@ export default async function CheckoutCancelPage({
 
             <div className="mt-8">
               <Link
-                href="/dashboard"
+                href="/db"
                 className="focus-ring text-[10px] font-mono uppercase tracking-[0.2em] text-cream/35 transition-colors hover:text-gold-300/70"
               >
                 Zur Übersicht

@@ -140,7 +140,7 @@ export function StoreProductCard({
               </div>
             )}
             <Button
-              href={`/dashboard/kurse/${course.slug}`}
+              href={`/db/kurse/${course.slug}`}
               variant="secondary"
               size="sm"
               className="w-full rounded-none"

@@ -58,7 +58,7 @@ export async function updateProfile(
     }
   }
 
-  revalidatePath("/dashboard/profil");
-  revalidatePath("/dashboard");
+  revalidatePath("/db/profil");
+  revalidatePath("/db");
   return { ok: true };
 }

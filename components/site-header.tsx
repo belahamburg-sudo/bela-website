@@ -94,7 +94,7 @@ export function SiteHeader() {
               {isLoggedIn ? (
                 <>
                   <Link
-                    href="/dashboard"
+                    href="/db"
                     className="focus-ring text-xs font-bold uppercase tracking-[0.12em] text-cream/50 transition-colors hover:text-cream"
                   >
                     Dashboard
@@ -192,7 +192,7 @@ export function SiteHeader() {
                       transition={{ delay: 0.4 }}
                     >
                       <Link
-                        href="/dashboard"
+                        href="/db"
                         className="block rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
                         onClick={() => setOpen(false)}
                       >

@@ -23,9 +23,9 @@ type NavLinkConfig = {
 };
 
 const NAV_LINKS: NavLinkConfig[] = [
-  { href: "/dashboard", label: "Übersicht", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/kurse", label: "Meine Kurse", icon: BookOpen, exact: false },
-  { href: "/dashboard/profil", label: "Mein Profil", icon: User, exact: false },
+  { href: "/db", label: "Übersicht", icon: LayoutDashboard, exact: true },
+  { href: "/db/kurse", label: "Meine Kurse", icon: BookOpen, exact: false },
+  { href: "/db/profil", label: "Mein Profil", icon: User, exact: false },
 ];
 
 function NavLink({
@@ -90,7 +90,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
       {/* Brand / Logo Section */}
       <div className="p-6">
         <Link
-          href="/dashboard"
+          href="/db"
           onClick={onNavClick}
           className="group flex flex-col gap-2"
         >
@@ -204,7 +204,7 @@ export function DashboardSidebar() {
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-gold-300/10 bg-ink/95 px-4 backdrop-blur-md lg:hidden">
-        <Link href="/dashboard" className="flex items-center">
+        <Link href="/db" className="flex items-center">
           <Image
             src="/assets/logo-ai-goldmining-3d.png"
             alt="AI Goldmining"

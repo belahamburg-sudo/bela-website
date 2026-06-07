@@ -4,7 +4,7 @@ import { CheckCircle2, Clock, Download, FileText, Lock, PlayCircle } from "lucid
 import { useMemo, useState } from "react";
 import type { DbCourse, DbLesson } from "@/lib/db-types";
 import { cn } from "@/lib/utils";
-import { toggleLessonProgress } from "@/app/(dashboard)/dashboard/kurse/[slug]/actions";
+import { toggleLessonProgress } from "@/app/(dashboard)/db/kurse/[slug]/actions";
 import { Button } from "./button";
 
 export function CoursePlayer({

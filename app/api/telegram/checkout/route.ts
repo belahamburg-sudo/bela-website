@@ -9,7 +9,7 @@ export async function POST() {
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({
         demo: true,
-        url: absoluteUrl("/dashboard/profil?vip=demo"),
+        url: absoluteUrl("/db/profil?vip=demo"),
         message: "Demo-Checkout aktiv."
       });
     }
@@ -48,8 +48,8 @@ export async function POST() {
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      success_url: absoluteUrl("/dashboard/profil?vip=success"),
-      cancel_url: absoluteUrl("/dashboard/kurse?vip=cancel"),
+      success_url: absoluteUrl("/db/profil?vip=success"),
+      cancel_url: absoluteUrl("/db/kurse?vip=cancel"),
       ...(userEmail ? { customer_email: userEmail } : {}),
       client_reference_id: userId,
       line_items: [

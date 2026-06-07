@@ -213,7 +213,7 @@ export default async function DashboardPage() {
                               />
                             </div>
                             <Button
-                              href={`/dashboard/kurse/${course.slug}`}
+                              href={`/db/kurse/${course.slug}`}
                               variant="secondary"
                               size="sm"
                               className="w-full rounded-none"
@@ -240,7 +240,7 @@ export default async function DashboardPage() {
                       Entdecke den Store und starte deine erste Operation.
                     </p>
                   </div>
-                  <Button href="/dashboard/kurse" variant="primary" size="md">
+                  <Button href="/db/kurse" variant="primary" size="md">
                     Zum Store
                     <ArrowRight className="h-4 w-4" />
                   </Button>
@@ -260,7 +260,7 @@ export default async function DashboardPage() {
                     icon={Sparkles}
                   />
                   <Button
-                    href="/dashboard/kurse"
+                    href="/db/kurse"
                     variant="outline"
                     size="sm"
                     className="rounded-none"
@@ -276,7 +276,7 @@ export default async function DashboardPage() {
                     return (
                       <Link
                         key={course.slug}
-                        href="/dashboard/kurse"
+                        href="/db/kurse"
                         className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(232,192,64,0.35)]"
                       >
                         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />

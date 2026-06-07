@@ -11,7 +11,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [message, setMessage] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const defaultRedirect = mode === "signup" ? "/dashboard/onboarding" : "/dashboard";
+  const defaultRedirect = mode === "signup" ? "/db/onboarding" : "/db";
   const redirect = searchParams.get("redirect") || defaultRedirect;
 
   function friendlyErrorMessage(error: unknown) {

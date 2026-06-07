@@ -19,12 +19,11 @@ import {
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2;
 
-const STEPS: { id: Step; label: string; icon: typeof User }[] = [
-  { id: 1, label: "Name", icon: User },
-  { id: 2, label: "E-Mail", icon: Mail },
-  { id: 3, label: "Passwort", icon: Lock },
+const STEPS: { id: Step; label: string; icon: any }[] = [
+  { id: 1, label: "E-Mail", icon: Mail },
+  { id: 2, label: "Passwort", icon: Lock },
 ];
 
 const STRENGTH_LABELS = ["Zu kurz", "Schwach", "Solide", "Stark"];
@@ -61,7 +60,7 @@ const labelClass =
 export function SignupFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard/onboarding";
+  const redirect = searchParams.get("redirect") || "/db/onboarding";
 
   const [step, setStep] = useState<Step>(1);
   const [direction, setDirection] = useState(1);
@@ -136,22 +135,12 @@ export function SignupFlow() {
     if (status === "loading") return;
 
     if (step === 1) {
-      if (!nameValid) {
-        setStatus("error");
-        setMessage("Bitte gib deinen Namen ein (min. 2 Zeichen).");
-        return;
-      }
-      go(2);
-      return;
-    }
-
-    if (step === 2) {
       if (!emailValid) {
         setStatus("error");
         setMessage("Bitte gib eine gültige E-Mail-Adresse ein.");
         return;
       }
-      go(3);
+      go(2);
       return;
     }
 
@@ -229,44 +218,6 @@ export function SignupFlow() {
             >
               <div>
                 <p className="font-heading text-lg uppercase tracking-gta text-cream">
-                  Wie heißt du?
-                </p>
-                <p className="mt-1 text-[12px] text-cream/40 font-mono">
-                  Dein Anzeigename im Dashboard und auf deiner Member-Map.
-                </p>
-              </div>
-              <div>
-                <label htmlFor="su-name" className={labelClass}>
-                  Name
-                </label>
-                <input
-                  id="su-name"
-                  name="name"
-                  type="text"
-                  autoFocus
-                  autoComplete="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className={inputClass}
-                  placeholder="z.B. Bela"
-                />
-              </div>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.26, ease: "easeOut" }}
-              className="grid gap-4"
-            >
-              <div>
-                <p className="font-heading text-lg uppercase tracking-gta text-cream">
                   Deine E-Mail
                 </p>
                 <p className="mt-1 text-[12px] text-cream/40 font-mono">
@@ -292,9 +243,9 @@ export function SignupFlow() {
             </motion.div>
           )}
 
-          {step === 3 && (
+          {step === 2 && (
             <motion.div
-              key="step3"
+              key="step2"
               custom={direction}
               variants={variants}
               initial="enter"
@@ -417,7 +368,7 @@ export function SignupFlow() {
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
-            ) : step < 3 ? (
+            ) : step < 2 ? (
               <>
                 Weiter
                 <ArrowRight className="h-4 w-4" />

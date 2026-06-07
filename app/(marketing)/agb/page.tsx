@@ -28,7 +28,7 @@ export default function AgbPage() {
           heading: "§ 4 Lieferung digitaler Inhalte",
           items: [
             "Nach erfolgreicher Zahlung erhält der Kunde sofortigen Zugang zu den digitalen Kursinhalten über sein Benutzerkonto",
-            "Die Kursinhalte stehen nach dem Login unter /dashboard/kurse abrufbar bereit",
+            "Die Kursinhalte stehen nach dem Login unter /db/kurse abrufbar bereit",
             "Der Zugangszeitraum ist unbegrenzt, solange die Plattform betrieben wird",
             "Der Anbieter behält sich vor, Kursinhalte zu aktualisieren, zu erweitern oder anzupassen",
           ],

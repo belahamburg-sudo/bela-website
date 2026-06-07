@@ -16,7 +16,7 @@ export function AuthHashHandler() {
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        router.replace("/dashboard");
+        router.replace("/db");
       }
     });
   }, [router]);
