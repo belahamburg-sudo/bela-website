@@ -4,16 +4,14 @@ import { CheckCircle2, Lock, PlayCircle } from "lucide-react";
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { CheckoutButton } from "@/components/checkout-button";
-import { courses, getCourse } from "@/lib/content";
+import { getPublicCourse } from "@/lib/courses";
 import { formatEuro } from "@/lib/utils";
 
-export function generateStaticParams() {
-  return courses.map((course) => ({ slug: course.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const course = getCourse(slug);
+  const course = await getPublicCourse(slug);
   return {
     title: course ? `${course.title} | AI Goldmining` : "Kurs | AI Goldmining"
   };
@@ -21,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const course = getCourse(slug);
+  const course = await getPublicCourse(slug);
   if (!course) notFound();
 
   return (

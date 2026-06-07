@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCourse } from "@/lib/content";
+import { getPublicCourse } from "@/lib/courses";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { absoluteUrl } from "@/lib/utils";
@@ -7,7 +7,7 @@ import { absoluteUrl } from "@/lib/utils";
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as { courseSlug?: string; userEmail?: string };
-    const course = body.courseSlug ? getCourse(body.courseSlug) : null;
+    const course = body.courseSlug ? await getPublicCourse(body.courseSlug) : null;
 
     if (!course) {
       return NextResponse.json({ message: "Kurs wurde nicht gefunden." }, { status: 404 });
@@ -66,8 +66,12 @@ export async function POST(request: Request) {
             unit_amount: course.priceCents,
             product_data: {
               name: course.title,
-              description: course.tagline,
-              images: [absoluteUrl(course.image)]
+              // Stripe rejects empty descriptions — only send a non-empty one.
+              ...(course.tagline ? { description: course.tagline } : {}),
+              // Stripe needs a real URL; skip storage:// refs (private bucket).
+              images: course.image && !course.image.startsWith("storage://")
+                ? [absoluteUrl(course.image)]
+                : []
             }
           }
         }

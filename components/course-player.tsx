@@ -7,6 +7,17 @@ import { cn } from "@/lib/utils";
 import { toggleLessonProgress } from "@/app/(dashboard)/db/kurse/[slug]/actions";
 import { Button } from "./button";
 
+const VIDEO_FILE_EXTENSIONS = /\.(mp4|webm|ogg|ogv|mov|m4v)$/i;
+
+/** Uploaded media files play in a native <video>; embeds (YouTube/Vimeo) use an <iframe>. */
+function isDirectVideoFile(url: string): boolean {
+  try {
+    return VIDEO_FILE_EXTENSIONS.test(new URL(url).pathname);
+  } catch {
+    return VIDEO_FILE_EXTENSIONS.test(url.split("?")[0]);
+  }
+}
+
 export function CoursePlayer({
   course,
   initialCompleted = [],
@@ -111,13 +122,25 @@ export function CoursePlayer({
           <div className="panel-surface overflow-hidden rounded-[1.35rem]">
             <div className="aspect-video bg-black">
               {activeLesson.video_url ? (
-                <iframe
-                  src={activeLesson.video_url}
-                  title={activeLesson.title}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                isDirectVideoFile(activeLesson.video_url) ? (
+                  <video
+                    key={activeLesson.video_url}
+                    src={activeLesson.video_url}
+                    title={activeLesson.title}
+                    className="h-full w-full"
+                    controls
+                    controlsList="nodownload"
+                    playsInline
+                  />
+                ) : (
+                  <iframe
+                    src={activeLesson.video_url}
+                    title={activeLesson.title}
+                    className="h-full w-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                )
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center">
                   <Clock className="h-9 w-9 text-gold-700" aria-hidden />
@@ -162,6 +185,8 @@ export function CoursePlayer({
               <a
                 key={resource.label}
                 href={resource.href}
+                target="_blank"
+                rel="noreferrer"
                 className="focus-ring panel-surface flex min-h-24 items-center gap-4 rounded-[1.35rem] p-5 transition hover:border-gold-300/50"
               >
                 {resource.type === "PDF" ? (
@@ -171,7 +196,7 @@ export function CoursePlayer({
                 )}
                 <span>
                   <span className="block font-bold text-cream">{resource.label}</span>
-                  <span className="block text-sm text-muted">{resource.type} Platzhalter</span>
+                  <span className="block text-sm text-muted">{resource.type}</span>
                 </span>
               </a>
             ))}

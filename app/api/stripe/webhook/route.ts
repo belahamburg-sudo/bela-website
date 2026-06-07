@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { sendTemplateEmail } from "@/lib/email";
-import { getCourse } from "@/lib/content";
+import { getPublicCourse } from "@/lib/courses";
 import { formatEuro, absoluteUrl } from "@/lib/utils";
 
 // Resolve the app user behind a Checkout Session: metadata.user_id ->
@@ -107,7 +107,7 @@ async function handleCoursePurchase(
     session.customer_details?.email ?? session.metadata?.user_email ?? null
   );
   if (email) {
-    const course = getCourse(courseSlug);
+    const course = await getPublicCourse(courseSlug);
     await sendTemplateEmail({
       template: "purchase-confirmation",
       to: email,

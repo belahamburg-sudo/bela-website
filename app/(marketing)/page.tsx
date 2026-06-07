@@ -10,8 +10,10 @@ import { ProductsSection } from "@/components/sections/products-section";
 import { TrustSection } from "@/components/sections/trust-section";
 import { FaqSection } from "@/components/sections/faq-section";
 import { CtaFooterSection } from "@/components/sections/cta-footer-section";
+import { getFeaturedCourses } from "@/lib/courses";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const featured = await getFeaturedCourses();
   return (
     <>
       <style>{`body > footer { display: none; }`}</style>
@@ -23,7 +25,7 @@ export default function HomePage() {
       <AiChangesSection />
       <MethodSection />
       <StatsSection />
-      <ProductsSection />
+      <ProductsSection courses={featured} />
       <TrustSection />
       <FaqSection />
       <CtaFooterSection />

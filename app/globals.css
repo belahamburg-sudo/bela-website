@@ -7,6 +7,16 @@
   src: local("Chalet Comprime Cologne Seventy");
 }
 
+/* Headings are bold by default — Tailwind preflight resets them to inherit (400). */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 800;
+  }
+}
+
 
 :root {
   color-scheme: dark;
@@ -109,6 +119,28 @@ select {
   cursor: none !important;
 }
 
+/* Admin area uses native cursors (data-entry heavy) — override the global hide. */
+.admin-root,
+.admin-root * {
+  cursor: auto !important;
+}
+.admin-root a,
+.admin-root button,
+.admin-root label,
+.admin-root summary,
+.admin-root [role="button"],
+.admin-root select {
+  cursor: pointer !important;
+}
+.admin-root input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.admin-root textarea {
+  cursor: text !important;
+}
+.admin-root button:disabled,
+.admin-root [aria-disabled="true"] {
+  cursor: not-allowed !important;
+}
+
 ::selection {
   background: rgba(232, 192, 64, 0.38);
   color: #fffaf0;
@@ -180,26 +212,26 @@ select {
 
   .gold-text {
     background: linear-gradient(
-      165deg,
+      170deg,
       #7D5812 0%,
-      #D4A520 20%,
-      #FFFCE8 50%,
-      #D4A520 80%,
+      #A87A10 26%,
+      #FBEFC4 50%,
+      #A87A10 74%,
       #7D5812 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 0 20px rgba(232,192,64,0.45));
+    filter: drop-shadow(0 0 16px rgba(168,122,16,0.40));
   }
 
   .gold-text-shine {
     background: linear-gradient(
       110deg,
       #7D5812 0%,
-      #E8C040 25%,
-      #FFFCE8 50%,
-      #E8C040 75%,
+      #A87A10 25%,
+      #FBEFC4 50%,
+      #A87A10 75%,
       #7D5812 100%
     );
     background-size: 200% 100%;
@@ -522,6 +554,7 @@ select {
   /* Heavy condensed letter-spacing for GTA headlines */
   .tracking-gta {
     letter-spacing: 0.06em;
+    font-weight: 800;
   }
 
   /* GTA Mission styling */

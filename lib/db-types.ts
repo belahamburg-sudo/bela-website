@@ -34,6 +34,16 @@ export type DbCourse = {
   price_cents: number;
   image_url: string | null;
   is_active: boolean;
+  // Marketing-fidelity columns (migration_007).
+  level?: string | null;
+  format?: string | null;
+  audience?: string | null;
+  outcome?: string | null;
+  featured?: boolean | null;
+  includes?: string[] | null;
+  sort_order?: number | null;
+  updated_at?: string | null;
+  created_at?: string | null;
   modules: DbModule[];
 };
 

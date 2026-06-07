@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 export function PickaxeCursor() {
   const elRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  // The admin area uses a normal cursor (data-entry heavy), so skip there.
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
+    if (isAdmin) return;
     const el = elRef.current;
     if (!el) return;
 
@@ -48,7 +53,9 @@ export function PickaxeCursor() {
       document.removeEventListener("mousemove", onMove);
       document.documentElement.classList.remove("hide-system-cursor");
     };
-  }, []);
+  }, [isAdmin]);
+
+  if (isAdmin) return null;
 
   return (
     <div

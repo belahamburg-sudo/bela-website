@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/button";
 import { CourseCard } from "@/components/course-card";
-import { featuredCourses } from "@/lib/content";
+import type { Course } from "@/lib/content";
 
-export function ProductsSection() {
+export function ProductsSection({ courses }: { courses: Course[] }) {
   return (
     <section className="relative py-20 lg:py-28 sec-raised overflow-hidden scratch-border">
       <div className="absolute inset-0 pointer-events-none">
@@ -35,7 +35,7 @@ export function ProductsSection() {
         </motion.div>
 
         <div className="mt-4 grid gap-6 lg:grid-cols-2">
-          {featuredCourses.map((course, i) => (
+          {courses.map((course, i) => (
             <motion.div
               key={course.slug}
               initial={{ opacity: 0, y: 40, scale: 0.97 }}

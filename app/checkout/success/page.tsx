@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/button";
 import { SpatialBackground } from "@/components/spatial-background";
-import { getCourse } from "@/lib/content";
+import { getPublicCourse } from "@/lib/courses";
 
 export default async function CheckoutSuccessPage({
   searchParams
@@ -10,7 +10,7 @@ export default async function CheckoutSuccessPage({
   searchParams: Promise<{ session_id?: string; course?: string; demo?: string }>;
 }) {
   const { course: courseSlug, demo } = await searchParams;
-  const course = courseSlug ? getCourse(courseSlug) : undefined;
+  const course = courseSlug ? await getPublicCourse(courseSlug) : undefined;
   const isDemo = demo === "1";
 
   return (

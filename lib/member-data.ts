@@ -1,5 +1,6 @@
 import { getSupabaseServerClient } from "./supabase-server";
-import { courses as staticCourses, getCourse } from "./content";
+import { courses as staticCourses, getCourse as getStaticCourse, type Course } from "./content";
+import { mapDbCourseToCourse } from "./courses";
 import { calculateMemberPoints } from "./avatar-system";
 import { syncMemberState } from "./member-state";
 import type { DbCourse, DbProfile } from "./db-types";
@@ -23,18 +24,22 @@ export async function getUnifiedMemberData() {
   const purchasedSlugs = new Set((purchasesResult.data ?? []).map((p) => p.course_slug));
   const completedLessonIds = new Set((progressResult.data ?? []).map((p) => p.lesson_id));
 
-  // Map courses with progress based on STATIC content for consistency with profile
-  const purchasedCourses = Array.from(purchasedSlugs).map((slug) => {
-    const staticCourse = getCourse(slug);
-    if (!staticCourse) return null;
+  // DB-first catalog mapped to the shared Course shape; static fallback when empty.
+  const catalog: Course[] =
+    dbCourses.length > 0 ? dbCourses.map(mapDbCourseToCourse) : staticCourses;
+  const catalogBySlug = new Map(catalog.map((c) => [c.slug, c] as const));
 
-    const lessonIds = staticCourse.modules.flatMap((m) => m.lessons.map((l) => l.id));
+  const purchasedCourses = Array.from(purchasedSlugs).map((slug) => {
+    const course = catalogBySlug.get(slug) ?? getStaticCourse(slug);
+    if (!course) return null;
+
+    const lessonIds = course.modules.flatMap((m) => m.lessons.map((l) => l.id));
     const completedCount = lessonIds.filter((id) => completedLessonIds.has(id)).length;
     const totalLessons = lessonIds.length;
     const progress = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
     return {
-      ...staticCourse,
+      ...course,
       slug,
       progress,
       completedLessons: completedCount,
@@ -43,7 +48,7 @@ export async function getUnifiedMemberData() {
     };
   }).filter(Boolean);
 
-  const availableCourses = staticCourses.filter((c) => !purchasedSlugs.has(c.slug));
+  const availableCourses = catalog.filter((c) => !purchasedSlugs.has(c.slug));
 
   const totalLessonsCompleted = completedLessonIds.size;
   const completedCoursesCount = purchasedCourses.filter((c) => c?.progress === 100).length;

@@ -5,7 +5,34 @@ import { PaywallScreen } from "@/components/paywall-screen";
 import type { DbCourse, DbModule } from "@/lib/db-types";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { resolveMediaUrl } from "@/lib/storage";
 import { getCourse } from "@/lib/content";
+
+/**
+ * Turn stored `storage://` refs into playable/downloadable URLs for an entitled
+ * viewer: lesson videos and resource files in the private bucket become
+ * short-lived signed URLs; external embeds and public assets pass through.
+ */
+async function resolveCourseMedia(course: DbCourse): Promise<DbCourse> {
+  const modules = await Promise.all(
+    course.modules.map(async (mod) => ({
+      ...mod,
+      lessons: await Promise.all(
+        mod.lessons.map(async (lesson) => ({
+          ...lesson,
+          video_url: await resolveMediaUrl(lesson.video_url),
+          resources: await Promise.all(
+            (lesson.resources ?? []).map(async (r) => ({
+              ...r,
+              href: (await resolveMediaUrl(r.href)) ?? r.href,
+            }))
+          ),
+        }))
+      ),
+    }))
+  );
+  return { ...course, modules };
+}
 
 async function fetchCourseAndAccess(
   slug: string
@@ -77,17 +104,21 @@ export default async function DashboardCoursePage({
   const { course: dbCourse, hasPurchase, completedLessonIds } = await fetchCourseAndAccess(slug);
 
   if (dbCourse) {
-    return (
-      <AuthGate>
-        {hasPurchase ? (
+    if (hasPurchase) {
+      const playableCourse = await resolveCourseMedia(dbCourse);
+      return (
+        <AuthGate>
           <section className="py-10 sm:py-14">
             <div className="container-shell">
-              <CoursePlayer course={dbCourse} initialCompleted={completedLessonIds} />
+              <CoursePlayer course={playableCourse} initialCompleted={completedLessonIds} />
             </div>
           </section>
-        ) : (
-          <PaywallScreen course={dbCourse} />
-        )}
+        </AuthGate>
+      );
+    }
+    return (
+      <AuthGate>
+        <PaywallScreen course={dbCourse} />
       </AuthGate>
     );
   }

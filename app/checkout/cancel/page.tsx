@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, XCircle } from "lucide-react";
 import { Button } from "@/components/button";
 import { SpatialBackground } from "@/components/spatial-background";
-import { getCourse } from "@/lib/content";
+import { getPublicCourse } from "@/lib/courses";
 
 export default async function CheckoutCancelPage({
   searchParams
@@ -10,7 +10,7 @@ export default async function CheckoutCancelPage({
   searchParams: Promise<{ session_id?: string; course?: string; demo?: string }>;
 }) {
   const { course: courseSlug } = await searchParams;
-  const course = courseSlug ? getCourse(courseSlug) : undefined;
+  const course = courseSlug ? await getPublicCourse(courseSlug) : undefined;
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian py-16 sm:py-24">

@@ -3,6 +3,21 @@ import path from "node:path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/** Allow uploaded Supabase Storage images to be served through next/image. */
+const remotePatterns = [];
+if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  try {
+    const { hostname } = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL);
+    remotePatterns.push({
+      protocol: "https",
+      hostname,
+      pathname: "/storage/v1/object/**",
+    });
+  } catch {
+    // Invalid URL — skip; local/static images still work.
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: __dirname,
@@ -11,6 +26,7 @@ const nextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    remotePatterns,
   },
   // Disabled due to causing 500 Internal Server Errors with framer-motion in some Next 15 setups
   /* experimental: {
