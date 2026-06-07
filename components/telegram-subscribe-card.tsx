@@ -22,6 +22,23 @@ type CheckoutResult = {
   message?: string;
 };
 
+type PlanKey = "monthly" | "yearly";
+
+const PLANS: Record<PlanKey, { label: string; price: string; cadence: string; badge: string }> = {
+  monthly: {
+    label: "Monatlich",
+    price: "9€",
+    cadence: "/ Monat",
+    badge: "Flexibel",
+  },
+  yearly: {
+    label: "Jährlich",
+    price: "79€",
+    cadence: "/ Jahr",
+    badge: "2 Monate sparen",
+  },
+};
+
 const BENEFITS = [
   "Direktes Feedback auf deine Produkte",
   "Exklusive Inhalte & Calls",
@@ -47,6 +64,7 @@ export function TelegramSubscribeCard() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [active, setActive] = useState(false);
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string | null>(null);
+  const [plan, setPlan] = useState<PlanKey>("monthly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,6 +88,9 @@ export function TelegramSubscribeCard() {
               }
             }
           }
+        } else if (typeof window !== "undefined") {
+          const demoUser = localStorage.getItem("ai-goldmining-demo-user");
+          if (demoUser && !cancelled) setLoggedIn(true);
         }
       } catch {
         // Status is best-effort; fall back to the logged-out CTA.
@@ -96,7 +117,7 @@ export function TelegramSubscribeCard() {
       const response = await fetch("/api/telegram/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: "{}"
+        body: JSON.stringify({ plan })
       });
       const result = (await response.json()) as CheckoutResult;
 
@@ -187,11 +208,37 @@ export function TelegramSubscribeCard() {
                   Mitgliedschaft
                 </span>
                 <span className="flex items-end gap-1.5">
-                  <span className="gold-text font-heading text-5xl leading-none">20€</span>
+                  <span className="gold-text font-heading text-5xl leading-none">{PLANS[plan].price}</span>
                   <span className="mb-1 font-mono text-[11px] uppercase tracking-[0.16em] text-cream/40">
-                    / Monat
+                    {PLANS[plan].cadence}
                   </span>
                 </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {(Object.keys(PLANS) as PlanKey[]).map((key) => {
+                  const selected = plan === key;
+                  const current = PLANS[key];
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setPlan(key)}
+                      className={`border px-3 py-3 text-left transition-all ${
+                        selected
+                          ? "border-gold-300/55 bg-gold-300/[0.10] text-cream"
+                          : "border-white/10 bg-white/[0.02] text-cream/45 hover:border-gold-300/30"
+                      }`}
+                    >
+                      <span className="block font-mono text-[9px] font-bold uppercase tracking-[0.16em]">
+                        {current.label}
+                      </span>
+                      <span className={`mt-1 block text-[8px] font-bold uppercase tracking-[0.14em] ${selected ? "text-gold-300/80" : "text-cream/25"}`}>
+                        {current.badge}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
               <button
@@ -205,7 +252,7 @@ export function TelegramSubscribeCard() {
                 ) : (
                   <Crown aria-hidden className="h-4 w-4" />
                 )}
-                {loggedIn ? "Beitreten — 20€ / Monat" : "Beitreten"}
+                {loggedIn ? `Beitreten — ${PLANS[plan].price} ${PLANS[plan].cadence}` : "Beitreten"}
               </button>
 
               {error ? (

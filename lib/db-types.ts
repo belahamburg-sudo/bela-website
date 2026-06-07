@@ -41,6 +41,7 @@ export type DbProfile = {
   id: string;
   email: string;
   full_name: string | null;
+  city: string | null;
   goal: string | null;
   business_snapshot: Record<string, string> | null;
   onboarding_complete: boolean;

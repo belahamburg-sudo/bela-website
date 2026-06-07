@@ -11,7 +11,7 @@ import {
   EyeOff,
   Loader2,
   Lock,
-  Mail,
+  MapPin,
   ShieldCheck,
   Sparkles,
   User,
@@ -22,7 +22,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 type Step = 1 | 2;
 
 const STEPS: { id: Step; label: string; icon: any }[] = [
-  { id: 1, label: "E-Mail", icon: Mail },
+  { id: 1, label: "Profil", icon: User },
   { id: 2, label: "Passwort", icon: Lock },
 ];
 
@@ -66,6 +66,7 @@ export function SignupFlow() {
   const [direction, setDirection] = useState(1);
 
   const [name, setName] = useState("");
+  const [city, setCity] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -75,6 +76,7 @@ export function SignupFlow() {
   const [message, setMessage] = useState("");
 
   const nameValid = name.trim().length >= 2;
+  const cityValid = city.trim().length >= 2;
   const emailValid = EMAIL_RE.test(email.trim());
   const strength = passwordStrength(password);
   const pwValid = password.length >= 6;
@@ -103,7 +105,7 @@ export function SignupFlow() {
       if (!hasSupabasePublicEnv()) {
         localStorage.setItem(
           "ai-goldmining-demo-user",
-          JSON.stringify({ email, name, demo: true, createdAt: new Date().toISOString() })
+          JSON.stringify({ email, name, city, demo: true, createdAt: new Date().toISOString() })
         );
         router.push(redirect);
         return;
@@ -112,7 +114,7 @@ export function SignupFlow() {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, city, email, password }),
       });
       const payload = (await response.json().catch(() => null)) as { error?: string } | null;
       if (!response.ok) throw new Error(payload?.error || "Registrierung fehlgeschlagen.");
@@ -135,9 +137,19 @@ export function SignupFlow() {
     if (status === "loading") return;
 
     if (step === 1) {
+      if (!nameValid) {
+        setStatus("error");
+        setMessage("Bitte gib deinen Namen ein.");
+        return;
+      }
       if (!emailValid) {
         setStatus("error");
         setMessage("Bitte gib eine gültige E-Mail-Adresse ein.");
+        return;
+      }
+      if (!cityValid) {
+        setStatus("error");
+        setMessage("Bitte gib deine Stadt ein.");
         return;
       }
       go(2);
@@ -218,11 +230,30 @@ export function SignupFlow() {
             >
               <div>
                 <p className="font-heading text-lg uppercase tracking-gta text-cream">
-                  Deine E-Mail
+                  Dein Profil
                 </p>
                 <p className="mt-1 text-[12px] text-cream/40 font-mono">
-                  Damit loggst du dich künftig ein. Keine Spam-Mails.
+                  Damit wir dich zu deiner Goldmine und passenden Leuten in deiner Nähe führen.
                 </p>
+              </div>
+              <div>
+                <label htmlFor="su-name" className={labelClass}>
+                  Name
+                </label>
+                <div className="relative">
+                  <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold-300/35" />
+                  <input
+                    id="su-name"
+                    name="name"
+                    type="text"
+                    autoFocus
+                    autoComplete="given-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className={`${inputClass} pl-11`}
+                    placeholder="Dein Vorname"
+                  />
+                </div>
               </div>
               <div>
                 <label htmlFor="su-email" className={labelClass}>
@@ -232,13 +263,30 @@ export function SignupFlow() {
                   id="su-email"
                   name="email"
                   type="email"
-                  autoFocus
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={inputClass}
                   placeholder="du@mail.com"
                 />
+              </div>
+              <div>
+                <label htmlFor="su-city" className={labelClass}>
+                  Stadt
+                </label>
+                <div className="relative">
+                  <MapPin className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold-300/35" />
+                  <input
+                    id="su-city"
+                    name="city"
+                    type="text"
+                    autoComplete="address-level2"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className={`${inputClass} pl-11`}
+                    placeholder="z.B. Hamburg"
+                  />
+                </div>
               </div>
             </motion.div>
           )}

@@ -31,6 +31,7 @@ import { updateProfile } from "./actions";
 
 type Props = {
   initialName: string;
+  initialCity: string;
   initialGoal: string;
   initialBusinessSnapshot: Record<string, string>;
   email: string;
@@ -54,6 +55,7 @@ const fadeUp: Variants = {
 
 export function ProfileForm({
   initialName,
+  initialCity,
   initialGoal,
   initialBusinessSnapshot,
   email,
@@ -333,6 +335,24 @@ export function ProfileForm({
                 type="text"
                 defaultValue={initialName}
                 placeholder="Dein Vorname"
+                className="w-full border border-white/10 bg-white/[0.02] px-4 py-3 text-white outline-none transition-all placeholder:text-white/15 focus:border-gold-300/40"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="profile-city"
+                className="block font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60"
+              >
+                Stadt
+              </label>
+              <input
+                id="profile-city"
+                name="city"
+                type="text"
+                defaultValue={initialCity}
+                placeholder="z.B. Hamburg"
+                autoComplete="address-level2"
                 className="w-full border border-white/10 bg-white/[0.02] px-4 py-3 text-white outline-none transition-all placeholder:text-white/15 focus:border-gold-300/40"
               />
             </div>

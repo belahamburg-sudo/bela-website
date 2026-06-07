@@ -71,11 +71,11 @@ export function TelegramMembership({ active, currentPeriodEnd }: Props) {
             </a>
           ) : (
             <Link
-              href="/dashboard/kurse"
+              href="/db/kurse"
               className="focus-ring inline-flex items-center justify-center gap-2.5 border border-gold-300/30 bg-gold-300/5 px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-gold-300 transition-all hover:border-gold-300/60 hover:bg-gold-300/10"
             >
               <Crown className="h-4 w-4" />
-              VIP beitreten — 20€/Monat
+              VIP beitreten — ab 9€/Monat
             </Link>
           )}
         </div>

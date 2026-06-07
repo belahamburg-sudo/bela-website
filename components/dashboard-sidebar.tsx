@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
-  BookOpen,
+  Pickaxe,
   User,
   LogOut,
   ChevronRight
@@ -24,7 +24,7 @@ type NavLinkConfig = {
 
 const NAV_LINKS: NavLinkConfig[] = [
   { href: "/db", label: "Übersicht", icon: LayoutDashboard, exact: true },
-  { href: "/db/kurse", label: "Meine Kurse", icon: BookOpen, exact: false },
+  { href: "/db/kurse", label: "Goldmine", icon: Pickaxe, exact: false },
   { href: "/db/profil", label: "Mein Profil", icon: User, exact: false },
 ];
 

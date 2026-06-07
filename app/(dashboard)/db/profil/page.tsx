@@ -53,6 +53,7 @@ export default async function ProfilePage() {
           </div>
           <ProfileForm
             initialName={profile?.full_name ?? ""}
+            initialCity={profile?.city ?? ""}
             initialGoal={profile?.goal ?? ""}
             initialBusinessSnapshot={businessSnapshot}
             email={user.email ?? ""}

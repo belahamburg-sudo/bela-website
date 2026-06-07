@@ -4,6 +4,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null,
   full_name text,
+  city text,
   goal text,
   business_snapshot jsonb not null default '{}'::jsonb,
   onboarding_complete boolean not null default false,

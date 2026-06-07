@@ -3,13 +3,39 @@ import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { absoluteUrl } from "@/lib/utils";
 
-export async function POST() {
+type TelegramPlan = {
+  key: "monthly" | "yearly";
+  amount: number;
+  interval: "month" | "year";
+  label: string;
+};
+
+const TELEGRAM_PLANS: Record<TelegramPlan["key"], TelegramPlan> = {
+  monthly: {
+    key: "monthly",
+    amount: 900,
+    interval: "month",
+    label: "9€/Monat",
+  },
+  yearly: {
+    key: "yearly",
+    amount: 7900,
+    interval: "year",
+    label: "79€/Jahr",
+  },
+};
+
+export async function POST(request: Request) {
   try {
+    const body = await request.json().catch(() => null);
+    const requestedPlan = body?.plan === "yearly" ? "yearly" : "monthly";
+    const plan = TELEGRAM_PLANS[requestedPlan];
+
     // Demo fallback: no Stripe key configured.
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({
         demo: true,
-        url: absoluteUrl("/db/profil?vip=demo"),
+        url: absoluteUrl(`/db/profil?vip=demo&plan=${plan.key}`),
         message: "Demo-Checkout aktiv."
       });
     }
@@ -57,17 +83,18 @@ export async function POST() {
           quantity: 1,
           price_data: {
             currency: "eur",
-            unit_amount: 2000,
-            recurring: { interval: "month" },
+            unit_amount: plan.amount,
+            recurring: { interval: plan.interval },
             product_data: {
               name: "VIP Telegram Gruppe",
-              description: "Exklusive Paid Community — 20€/Monat, jederzeit kündbar."
+              description: `Exklusive Paid Community — ${plan.label}, jederzeit kündbar.`
             }
           }
         }
       ],
       metadata: {
         kind: "telegram",
+        telegram_plan: plan.key,
         user_id: userId,
         user_email: userEmail ?? ""
       }

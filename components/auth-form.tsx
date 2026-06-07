@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Loader2, LogIn, Mail, UserPlus } from "lucide-react";
+import { CheckCircle2, Loader2, LogIn, Mail, MapPin, UserPlus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
@@ -45,12 +45,13 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") || "");
     const password = String(form.get("password") || "");
+    const city = String(form.get("city") || "").trim();
 
     try {
       if (!hasSupabasePublicEnv()) {
         localStorage.setItem(
           "ai-goldmining-demo-user",
-          JSON.stringify({ email, demo: true, createdAt: new Date().toISOString() })
+          JSON.stringify({ email, city, demo: true, createdAt: new Date().toISOString() })
         );
         router.push(redirect);
         return;
@@ -67,7 +68,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         const response = await fetch("/api/auth/signup", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, city }),
         });
 
         const payload = (await response.json().catch(() => null)) as { error?: string; mode?: string } | null;
@@ -125,6 +126,26 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           placeholder="du@mail.com"
         />
       </div>
+      {mode === "signup" ? (
+        <div>
+          <label htmlFor="city" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-gold-300/70">
+            Stadt
+          </label>
+          <div className="relative">
+            <MapPin className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold-300/35" />
+            <input
+              id="city"
+              name="city"
+              type="text"
+              required
+              minLength={2}
+              autoComplete="address-level2"
+              className="focus-ring min-h-12 w-full border border-gold-300/15 bg-black/40 px-4 pl-11 text-cream placeholder:text-cream/20 transition-colors focus:border-gold-300/50 focus:bg-black/60 outline-none"
+              placeholder="z.B. Hamburg"
+            />
+          </div>
+        </div>
+      ) : null}
       <div>
         <label htmlFor="password" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-gold-300/70">
           Passwort

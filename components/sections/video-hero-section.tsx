@@ -3,10 +3,18 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Volume2, VolumeX, Play, Pause, SkipBack, SkipForward, Sparkles, Globe, Zap, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { telegramUrl } from "@/lib/env";
 import { Particles } from "@/components/ui/particles";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+
+const SOCIAL_PROOF_IMAGES = [
+  "/assets/bela-jet.jpg",
+  "/assets/bela-night.jpg",
+  "/assets/bela-party.jpg",
+  "/assets/bela-seoul.jpg",
+];
 
 export function VideoHeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -194,11 +202,11 @@ export function VideoHeroSection() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="font-heading font-extrabold leading-[0.95] text-cream"
+          className="gold-text font-heading font-extrabold leading-[0.95]"
           style={{ fontSize: "clamp(1.85rem, 8vw, 4.6rem)" }}
         >
           Ich zeige dir, wie du mit <br />
-          <span className="gold-text">AI digitale Produkte <br /> baust und automatisiert <br /> verkaufst.</span>
+          AI digitale Produkte <br /> baust und automatisiert <br /> verkaufst.
         </motion.h1>
 
         {/* ── Subtext ── */}
@@ -407,17 +415,22 @@ export function VideoHeroSection() {
           <div className="flex items-center gap-2.5">
             {/* Avatar stack */}
             <div className="flex -space-x-2">
-              {["B", "M", "A", "K", "L"].map((initial, i) => (
+              {SOCIAL_PROOF_IMAGES.map((src, i) => (
                 <span
-                  key={i}
-                  className="flex h-6 w-6 items-center justify-center rounded-full border border-obsidian text-[0.5rem] font-bold text-obsidian"
+                  key={src}
+                  className="relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-obsidian bg-gold-300/10 shadow-[0_0_12px_rgba(232,192,64,0.18)]"
                   style={{
-                    background: `linear-gradient(135deg, #FFFCE8, #7D5812)`,
                     opacity: 0.85 + i * 0.03,
-                    zIndex: 5 - i,
+                    zIndex: SOCIAL_PROOF_IMAGES.length - i,
                   }}
                 >
-                  {initial}
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="24px"
+                    className="object-cover"
+                  />
                 </span>
               ))}
             </div>

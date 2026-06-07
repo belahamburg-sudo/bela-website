@@ -11,9 +11,10 @@ export async function POST(request: NextRequest) {
   const email = String(body?.email ?? "").trim().toLowerCase();
   const password = String(body?.password ?? "");
   const name = String(body?.name ?? "").trim();
+  const city = String(body?.city ?? "").trim();
 
-  if (!email || !password) {
-    return badRequest("Bitte E-Mail und Passwort angeben.");
+  if (!email || !password || !city) {
+    return badRequest("Bitte E-Mail, Passwort und Stadt angeben.");
   }
 
   if (password.length < 6) {
@@ -31,6 +32,7 @@ export async function POST(request: NextRequest) {
     email_confirm: true,
     user_metadata: {
       avatar_id: DEFAULT_AVATAR_ID,
+      city,
       ...(name ? { full_name: name } : {}),
     },
   });
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
       {
         id: data.user.id,
         email,
+        city,
         onboarding_complete: false,
         ...(name ? { full_name: name } : {}),
       },

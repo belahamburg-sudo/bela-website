@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { animate, onScroll, stagger } from "animejs";
+import Link from "next/link";
 import { Sparkles, Lightbulb, Bot, Package, Rocket } from "lucide-react";
 import { RetroGrid } from "@/components/ui/retro-grid";
 
@@ -11,6 +12,7 @@ const STEPS = [
     title: "Idee finden",
     copy: "Aus Skill, Interesse oder Problem wird ein konkretes digitales Produkt: eine klare Entscheidung.",
     detail: "Framework + AI-Validierungsprompts",
+    href: "/kurse/ai-goldmining-starter",
     Icon: Lightbulb,
   },
   {
@@ -18,6 +20,7 @@ const STEPS = [
     title: "Mit AI bauen",
     copy: "AI übernimmt Struktur, Copy, Workbook und Assets. Du bleibst im Driver-Seat für Qualität.",
     detail: "Prompt-Packs für jede Phase",
+    href: "/kurse/prompt-engineering-pro",
     Icon: Bot,
   },
   {
@@ -25,6 +28,7 @@ const STEPS = [
     title: "Sauber verpacken",
     copy: "Name, Promise, Module, Verkaufsseite. Aus einem Draft wird ein kaufbares Angebot.",
     detail: "Template-System für Sales-Pages",
+    href: "/kurse/template-goldmine",
     Icon: Package,
   },
   {
@@ -32,6 +36,7 @@ const STEPS = [
     title: "Automatisiert verkaufen",
     copy: "Store, Webinar, Newsletter, Community als System. Du baust einmal: es läuft.",
     detail: "Funnel-Map + Launch-Playbook",
+    href: "/kurse/funnel-store-system",
     Icon: Rocket,
   },
 ];
@@ -105,7 +110,13 @@ export function MethodSection() {
               const isLast = i === STEPS.length - 1;
               const { Icon } = step;
               return (
-                <div key={step.num} className="step-card relative flex flex-col items-center text-center" style={{ opacity: 0 }}>
+                <Link
+                  key={step.num}
+                  href={step.href}
+                  className="step-card focus-ring group relative flex flex-col items-center text-center"
+                  style={{ opacity: 0 }}
+                  aria-label={`${step.title}: passenden Kurs öffnen`}
+                >
                   {/* numbered node */}
                   <div
                     className={`relative z-10 flex h-20 w-20 items-center justify-center rounded-full border bg-obsidian mb-5 ${
@@ -137,7 +148,7 @@ export function MethodSection() {
                       {step.detail}
                     </span>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

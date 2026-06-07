@@ -44,8 +44,8 @@ export function SiteHeader() {
         className={cn(
           "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
           scrolled
-            ? "border-b border-gold-300/8 bg-obsidian/95 backdrop-blur-md"
-            : "border-b border-transparent bg-obsidian/60 backdrop-blur-sm"
+            ? "bg-obsidian/95 backdrop-blur-md"
+            : "bg-obsidian/60 backdrop-blur-sm"
         )}
       >
         <div className="container-shell">

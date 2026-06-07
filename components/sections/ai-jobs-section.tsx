@@ -102,9 +102,9 @@ export function AiJobsSection() {
           <p className="eyebrow mb-6 mx-auto">
             <AlertTriangle className="h-3 w-3" /> Die unbequeme Wahrheit
           </p>
-          <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
+          <h2 className="gold-text font-heading font-extrabold tracking-gta leading-none" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
             AI frisst Jobs.<br />
-            <span className="gold-text">Jeden Tag mehr.</span>
+            Jeden Tag mehr.
           </h2>
           <p className="mt-6 text-cream/50 text-base lg:text-lg max-w-2xl mx-auto leading-relaxed">
             Während du das liest, übernimmt KI Aufgaben, für die gestern noch Menschen bezahlt wurden.

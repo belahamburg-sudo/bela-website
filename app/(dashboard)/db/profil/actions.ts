@@ -8,6 +8,7 @@ export async function updateProfile(
   formData: FormData
 ): Promise<{ ok: boolean; error?: string }> {
   const name = (formData.get("name") as string | null)?.trim() ?? "";
+  const city = (formData.get("city") as string | null)?.trim() ?? "";
   const goal = (formData.get("goal") as string | null)?.trim() ?? "";
   const selectedAvatar = (formData.get("selectedAvatar") as string | null)?.trim() ?? "";
   const instagramFollowers = (formData.get("instagramFollowers") as string | null)?.trim() ?? "";
@@ -29,6 +30,7 @@ export async function updateProfile(
     .from("profiles")
     .update({
       full_name: name || null,
+      city: city || null,
       goal: goal || null,
       business_snapshot: {
         instagramFollowers,
