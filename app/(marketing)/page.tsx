@@ -14,6 +14,10 @@ import { FaqSection } from "@/components/sections/faq-section";
 import { CtaFooterSection } from "@/components/sections/cta-footer-section";
 import { getFeaturedCourses } from "@/lib/courses";
 
+// Re-read featured courses from the DB at most every 60s so catalog changes
+// (new/edited courses, hidden demos) show up without a redeploy.
+export const revalidate = 60;
+
 export default async function HomePage() {
   const featured = await getFeaturedCourses();
   return (
