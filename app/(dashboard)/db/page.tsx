@@ -15,6 +15,7 @@ import { AuthGate } from "@/components/auth-gate";
 import { Button } from "@/components/button";
 import { SpatialBackground } from "@/components/spatial-background";
 import { Reveal } from "@/components/dashboard/reveal";
+import { ReferAFriend } from "@/components/refer-a-friend";
 import { getUnifiedMemberData } from "@/lib/member-data";
 import { getMemberLevel } from "@/lib/avatar-system";
 import { formatEuro } from "@/lib/utils";
@@ -147,6 +148,11 @@ export default async function DashboardPage() {
             </div>
           </Reveal>
 
+          {/* ─── REFER A FRIEND ─── */}
+          <Reveal delay={0.1}>
+            <ReferAFriend />
+          </Reveal>
+
           {/* ─── DEINE KURSE / WEITERLERNEN ─── */}
           <Reveal delay={0.12}>
             <div className="space-y-6">
@@ -163,7 +169,7 @@ export default async function DashboardPage() {
                     return (
                       <div
                         key={course.slug}
-                        className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(232,192,64,0.35)]"
+                        className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201, 169, 97,0.35)]"
                       >
                         {/* hover wash */}
                         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -276,8 +282,8 @@ export default async function DashboardPage() {
                     return (
                       <Link
                         key={course.slug}
-                        href="/db/kurse"
-                        className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(232,192,64,0.35)]"
+                        href={`/db/kurse/${course.slug}`}
+                        className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201, 169, 97,0.35)]"
                       >
                         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                         <CornerTicks />

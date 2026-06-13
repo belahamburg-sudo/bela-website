@@ -17,3 +17,11 @@ export function absoluteUrl(path = "") {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   return `${base.replace(/\/$/, "")}${path}`;
 }
+
+export function formatDate(date: Date = new Date()) {
+  return new Intl.DateTimeFormat("de-DE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}

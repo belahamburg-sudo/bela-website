@@ -64,41 +64,86 @@ function stripeId(value: string | { id: string } | null | undefined): string | n
   return typeof value === "string" ? value : value.id;
 }
 
+// Record an affiliate/referral commission when the buyer used a code.
+async function recordReferral(
+  supabase: SupabaseClient,
+  session: Stripe.Checkout.Session,
+  referredUserId: string | null,
+  purchaseId: string | null
+) {
+  const code = session.metadata?.referral_code?.trim();
+  if (!code) return;
+
+  const { data: codeRow } = await supabase
+    .from("referral_codes")
+    .select("code, user_id, commission_percent, is_active")
+    .eq("code", code)
+    .maybeSingle();
+  if (!codeRow || !codeRow.is_active) return;
+
+  // Don't credit a referrer for their own purchase.
+  if (codeRow.user_id && codeRow.user_id === referredUserId) return;
+
+  const amountTotal = session.amount_total ?? 0;
+  const commissionCents = Math.round((amountTotal * (codeRow.commission_percent ?? 20)) / 100);
+
+  await supabase.from("referrals").insert({
+    code,
+    referrer_user_id: codeRow.user_id,
+    referred_user_id: referredUserId,
+    purchase_id: purchaseId,
+    amount_total: amountTotal,
+    commission_cents: commissionCents,
+    status: "pending",
+  });
+}
+
 async function handleCoursePurchase(
   supabase: SupabaseClient,
   session: Stripe.Checkout.Session
 ) {
-  const courseSlug = session.metadata?.course_slug;
-  if (!courseSlug) return;
+  const slugs = (session.metadata?.course_slugs ?? session.metadata?.course_slug ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (slugs.length === 0) return;
 
-  // Idempotency: if this session was already recorded, do nothing (no double email).
-  const { data: existing } = await supabase
+  // Idempotency: if this session's purchases already exist, skip the email +
+  // referral on webhook retries (the upsert itself stays safe either way).
+  const { data: existingRows } = await supabase
     .from("purchases")
     .select("id")
     .eq("stripe_session_id", session.id)
-    .maybeSingle();
-  if (existing) return;
+    .limit(1);
+  const alreadyRecorded = (existingRows?.length ?? 0) > 0;
 
   const userId = await resolveUserId(supabase, session);
   const stripeCustomerId = stripeId(session.customer);
 
-  const { error } = await supabase.from("purchases").upsert(
-    {
-      user_id: userId,
-      course_slug: courseSlug,
-      stripe_session_id: session.id,
-      stripe_customer_id: stripeCustomerId,
-      amount_total: session.amount_total,
-      currency: session.currency,
-      status: "paid",
-    },
-    { onConflict: "stripe_session_id", ignoreDuplicates: true }
-  );
+  // One row per course; attribute the total to the first row only.
+  const rows = slugs.map((slug, i) => ({
+    user_id: userId,
+    course_slug: slug,
+    stripe_session_id: session.id,
+    stripe_customer_id: stripeCustomerId,
+    amount_total: i === 0 ? session.amount_total : 0,
+    currency: session.currency,
+    status: "paid",
+  }));
+
+  const { data: upserted, error } = await supabase
+    .from("purchases")
+    .upsert(rows, { onConflict: "stripe_session_id,course_slug", ignoreDuplicates: true })
+    .select("id");
 
   if (error) {
     console.error("Purchase upsert failed:", error.message);
     return;
   }
+
+  if (alreadyRecorded) return; // webhook retry — don't resend / double-credit
+
+  await recordReferral(supabase, session, userId, upserted?.[0]?.id ?? null);
 
   // Confirmation email (no-op without RESEND_API_KEY).
   const { name, email } = await getRecipient(
@@ -107,15 +152,19 @@ async function handleCoursePurchase(
     session.customer_details?.email ?? session.metadata?.user_email ?? null
   );
   if (email) {
-    const course = await getPublicCourse(courseSlug);
+    const first = await getPublicCourse(slugs[0]);
+    const courseName =
+      slugs.length > 1
+        ? `${first?.title ?? slugs[0]} + ${slugs.length - 1} weitere`
+        : first?.title ?? slugs[0];
     await sendTemplateEmail({
       template: "purchase-confirmation",
       to: email,
       vars: {
         name,
         email,
-        courseName: course?.title ?? courseSlug,
-        courseUrl: absoluteUrl(`/db/kurse/${courseSlug}`),
+        courseName,
+        courseUrl: absoluteUrl(`/db/kurse/${slugs[0]}`),
         amount:
           typeof session.amount_total === "number"
             ? formatEuro(session.amount_total)

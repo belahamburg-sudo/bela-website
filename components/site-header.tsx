@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { telegramUrl } from "@/lib/env";
 import { navItems } from "@/lib/content";
 import { Button } from "@/components/button";
+import { CartButton } from "@/components/cart-button";
+import { CartDrawer } from "@/components/cart-drawer";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -91,6 +93,7 @@ export function SiteHeader() {
               >
                 Community
               </Link>
+              <CartButton />
               {isLoggedIn ? (
                 <>
                   <Link
@@ -123,16 +126,19 @@ export function SiteHeader() {
               )}
             </div>
 
-            {/* Mobile menu toggle */}
-            <button
-              type="button"
-              className="flex h-9 w-9 items-center justify-center text-cream/50 transition-colors hover:text-cream lg:hidden"
-              onClick={() => setOpen(!open)}
-              aria-expanded={open}
-              aria-label={open ? "Menü schließen" : "Menü öffnen"}
-            >
-              {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
+            {/* Mobile cart + menu toggle */}
+            <div className="flex items-center gap-1 lg:hidden">
+              <CartButton />
+              <button
+                type="button"
+                className="flex h-9 w-9 items-center justify-center text-cream/50 transition-colors hover:text-cream"
+                onClick={() => setOpen(!open)}
+                aria-expanded={open}
+                aria-label={open ? "Menü schließen" : "Menü öffnen"}
+              >
+                {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -229,6 +235,8 @@ export function SiteHeader() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <CartDrawer />
     </>
   );
 }

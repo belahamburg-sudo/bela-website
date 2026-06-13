@@ -17,3 +17,5 @@ tsconfig.tsbuildinfo
 docs/superpowers
 .superpowers
 .planning
+supabase/.temp
+.course-import

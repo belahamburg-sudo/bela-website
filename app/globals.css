@@ -20,10 +20,19 @@
 
 :root {
   color-scheme: dark;
-  --background: #0a0806;
-  --foreground: #fdfbf7;
-  --gold: #E8C040;
-  --gold-deep: #7D5812;
+  /* Antique-gold system — exact values from the brand brief. */
+  --gold-deep: #6a5530;
+  --gold-dark: #8a7340;
+  --gold: #c9a961;
+  --gold-light: #e5c97e;
+  --gold-bright: #f5e6a8;
+  --gold-white: #fff4c9;
+  --bg: #0c0805;        /* warm "mine black", never pure #000 */
+  --bg-deep: #0c0805;
+  --card: #15100a;
+  --background: #0c0805;
+  --foreground: #e8e6dc; /* primary text, white-cream */
+  --muted: #9a9890;
 }
 
 * {
@@ -38,11 +47,12 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background-color: #090705;
+  /* Warm "mine black" + two soft cones: goldish top-left, brownish bottom-right.
+     Exact brief values — deliberately faint (0.08–0.10) for depth, not show. */
+  background-color: #0c0805;
   background-image:
-    radial-gradient(1100px 720px at 6% -10%, rgba(125, 88, 18, 0.20), transparent 60%),
-    radial-gradient(1000px 660px at 100% 2%, rgba(168, 122, 16, 0.12), transparent 58%),
-    radial-gradient(1200px 820px at 50% 118%, rgba(125, 88, 18, 0.16), transparent 60%);
+    radial-gradient(ellipse 90% 70% at 25% 15%, rgba(201, 169, 97, 0.10), transparent 60%),
+    radial-gradient(ellipse 70% 60% at 80% 90%, rgba(138, 115, 64, 0.08), transparent 70%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   color: var(--foreground);
@@ -55,17 +65,18 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Film grain overlay */
+/* Gold-dust grain overlay — fine SVG noise, faintly gold-tinted, so the
+   background never looks digitally flat. Brief spec (opacity 0.05–0.08). */
 body::after {
   content: "";
   position: fixed;
   inset: -20%;
   pointer-events: none;
   z-index: 2;
-  opacity: 0.18;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 220px 220px;
+  opacity: 0.06;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.79  0 0 0 0 0.66  0 0 0 0 0.38  0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
   animation: grain 1.2s steps(6) infinite;
 }
 
@@ -142,8 +153,8 @@ select {
 }
 
 ::selection {
-  background: rgba(232, 192, 64, 0.38);
-  color: #fffaf0;
+  background: rgba(201, 169, 97, 0.38);
+  color: #fff4c9;
 }
 
 ::-webkit-scrollbar {
@@ -151,14 +162,14 @@ select {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0806;
+  background: #0c0805;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 122, 16, 0.35);
+  background: rgba(138, 115, 64, 0.35);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(232, 192, 64, 0.45);
+  background: rgba(201, 169, 97, 0.45);
 }
 
 @layer components {
@@ -176,15 +187,15 @@ select {
 
   .panel-surface {
     @apply relative rounded-[0.35rem] border border-gold-300/15 bg-gradient-to-b from-panel/90 to-graphite/80;
-    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.04), 0 20px 60px -30px rgba(0,0,0,0.9), 0 0 0 1px rgba(232,192,64,0.08);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.04), 0 20px 60px -30px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97,0.08);
   }
 
   .panel-surface-glow {
     @apply panel-surface;
     box-shadow:
       inset 0 1px 0 0 rgba(255,255,255,0.05),
-      0 0 0 1px rgba(232,192,64,0.15),
-      0 30px 80px -30px rgba(168,122,16,0.4);
+      0 0 0 1px rgba(201, 169, 97,0.15),
+      0 30px 80px -30px rgba(138, 115, 64,0.4);
   }
 
   .focus-ring {
@@ -196,49 +207,84 @@ select {
     @apply inline-flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-gold-200;
     @apply px-3 py-1.5 sm:px-4 rounded-full border border-gold-300/30 bg-gold-400/10 backdrop-blur-md;
     @apply w-fit whitespace-nowrap;
-    box-shadow: 0 0 15px rgba(232,192,64,0.1), inset 0 0 10px rgba(232,192,64,0.05);
+    box-shadow: 0 0 15px rgba(201, 169, 97,0.1), inset 0 0 10px rgba(201, 169, 97,0.05);
   }
 
+  /* Button / surface foil — starts + ends dark, bright glint mid (brief spec). */
   .bg-gold-gradient {
     background: linear-gradient(
-      180deg,
-      #7D5812 0%,
-      #FAE890 25%,
-      #FFFCE8 50%,
-      #FAE890 75%,
-      #7D5812 100%
+      135deg,
+      var(--gold-dark) 0%,
+      var(--gold) 18%,
+      var(--gold-light) 38%,
+      var(--gold-bright) 52%,
+      var(--gold-light) 66%,
+      var(--gold) 84%,
+      var(--gold-dark) 100%
     );
+    box-shadow: inset 0 0 0 1px rgba(106, 85, 48, 0.6);
   }
 
-  .gold-text {
+  /* Metallic shimmer-foil for accent words: starts AND ends deep, with a single
+     bright glint at 52% (--gold-white). Never flat, never neon. */
+  .gold-text,
+  .gold-accent {
     background: linear-gradient(
-      170deg,
-      #7D5812 0%,
-      #A87A10 26%,
-      #FBEFC4 50%,
-      #A87A10 74%,
-      #7D5812 100%
+      135deg,
+      var(--gold-deep) 0%,
+      var(--gold-dark) 15%,
+      var(--gold) 30%,
+      var(--gold-bright) 45%,
+      var(--gold-white) 52%,
+      var(--gold-bright) 58%,
+      var(--gold) 72%,
+      var(--gold-dark) 88%,
+      var(--gold-deep) 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
-    filter: drop-shadow(0 0 16px rgba(168,122,16,0.40));
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5));
+  }
+
+  /* .gold-accent is the headline accent — italic, per brief. */
+  .gold-accent {
+    font-style: italic;
   }
 
   .gold-text-shine {
     background: linear-gradient(
       110deg,
-      #7D5812 0%,
-      #A87A10 25%,
-      #FBEFC4 50%,
-      #A87A10 75%,
-      #7D5812 100%
+      var(--gold-deep) 0%,
+      var(--gold-dark) 25%,
+      var(--gold-bright) 50%,
+      var(--gold-dark) 75%,
+      var(--gold-deep) 100%
     );
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     animation: shimmer 3s ease-in-out infinite;
+  }
+
+  /* Two-cone warm backdrop for any full-area section on the dark --bg. */
+  .bg-cones {
+    background:
+      radial-gradient(ellipse 90% 70% at 25% 15%, rgba(201, 169, 97, 0.10), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 80% 90%, rgba(138, 115, 64, 0.08), transparent 70%),
+      #0c0805;
+  }
+
+  /* Fine gold-dust grain layer — drop inside a relatively-positioned section. */
+  .dust-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   @keyframes shimmer {
@@ -251,14 +297,17 @@ select {
     100% { transform: translateX(-50%); }
   }
 
+  /* Thin trenner — runs out at both ends, no solid gold bar (brief spec). */
   .divider-gold {
     @apply relative h-px w-full;
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(125,88,18,0.4) 25%,
-      rgba(232,192,64,0.65) 50%,
-      rgba(125,88,18,0.4) 75%,
+      var(--gold-dark) 8%,
+      var(--gold) 30%,
+      var(--gold-bright) 50%,
+      var(--gold) 70%,
+      var(--gold-dark) 92%,
       transparent 100%
     );
   }
@@ -300,7 +349,7 @@ select {
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(232,192,64,0.5), transparent 40%, transparent 60%, rgba(168,122,16,0.4));
+    background: linear-gradient(135deg, rgba(201, 169, 97,0.5), transparent 40%, transparent 60%, rgba(138, 115, 64,0.4));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -355,7 +404,7 @@ select {
 
   /* Scratched texture border */
   .scratch-border {
-    border-top: 1px solid rgba(232,192,64,0.2);
+    border-top: 1px solid rgba(201, 169, 97,0.2);
     position: relative;
   }
   .scratch-border::before {
@@ -365,7 +414,7 @@ select {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(232,192,64,0.6) 30%, rgba(255,245,140,0.9) 50%, rgba(232,192,64,0.6) 70%, transparent);
+    background: linear-gradient(90deg, transparent, rgba(201, 169, 97,0.6) 30%, rgba(245, 230, 168,0.9) 50%, rgba(201, 169, 97,0.6) 70%, transparent);
   }
 
   /* ── Section background variants — atmospheric depth, never flat black ── */
@@ -376,8 +425,8 @@ select {
   /* Hero: cinematic vault-light gradient */
   .sec-hero {
     background:
-      radial-gradient(58% 48% at 50% 36%, rgba(232,192,64,0.10) 0%, transparent 62%),
-      radial-gradient(90% 60% at 50% 122%, rgba(125,88,18,0.16) 0%, transparent 60%),
+      radial-gradient(58% 48% at 50% 36%, rgba(201, 169, 97,0.10) 0%, transparent 62%),
+      radial-gradient(90% 60% at 50% 122%, rgba(106, 85, 48,0.16) 0%, transparent 60%),
       linear-gradient(180deg, #0d0a07 0%, #090705 58%, #0a0806 100%);
   }
 
@@ -385,8 +434,8 @@ select {
   .sec-raised {
     position: relative;
     background:
-      radial-gradient(72% 60% at 86% 0%, rgba(168,122,16,0.18) 0%, transparent 56%),
-      radial-gradient(58% 55% at 4% 100%, rgba(125,88,18,0.13) 0%, transparent 54%),
+      radial-gradient(72% 60% at 86% 0%, rgba(138, 115, 64,0.18) 0%, transparent 56%),
+      radial-gradient(58% 55% at 4% 100%, rgba(106, 85, 48,0.13) 0%, transparent 54%),
       linear-gradient(180deg, #13100b 0%, #0c0907 55%, #0a0806 100%);
   }
   .sec-raised::before {
@@ -395,7 +444,7 @@ select {
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(40% 38% at 80% 8%, rgba(232,192,64,0.10), transparent 60%);
+    background: radial-gradient(40% 38% at 80% 8%, rgba(201, 169, 97,0.10), transparent 60%);
     animation: glow-pulse 11s ease-in-out infinite;
   }
 
@@ -403,9 +452,9 @@ select {
   .sec-glow {
     position: relative;
     background:
-      radial-gradient(58% 46% at 50% -6%, rgba(232,192,64,0.16) 0%, transparent 60%),
-      radial-gradient(46% 64% at 100% 38%, rgba(168,122,16,0.09) 0%, transparent 55%),
-      radial-gradient(46% 64% at 0% 62%, rgba(168,122,16,0.09) 0%, transparent 55%),
+      radial-gradient(58% 46% at 50% -6%, rgba(201, 169, 97,0.16) 0%, transparent 60%),
+      radial-gradient(46% 64% at 100% 38%, rgba(138, 115, 64,0.09) 0%, transparent 55%),
+      radial-gradient(46% 64% at 0% 62%, rgba(138, 115, 64,0.09) 0%, transparent 55%),
       linear-gradient(180deg, #0c0907 0%, #0a0806 100%);
   }
   .sec-glow::before {
@@ -414,7 +463,7 @@ select {
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(50% 40% at 50% 0%, rgba(232,192,64,0.12) 0%, transparent 62%);
+    background: radial-gradient(50% 40% at 50% 0%, rgba(201, 169, 97,0.12) 0%, transparent 62%);
     animation: glow-pulse 9s ease-in-out infinite;
   }
 
@@ -422,8 +471,8 @@ select {
   .sec-aurora {
     position: relative;
     background:
-      radial-gradient(50% 60% at 18% 22%, rgba(168,122,16,0.16) 0%, transparent 55%),
-      radial-gradient(46% 56% at 86% 82%, rgba(232,192,64,0.11) 0%, transparent 55%),
+      radial-gradient(50% 60% at 18% 22%, rgba(138, 115, 64,0.16) 0%, transparent 55%),
+      radial-gradient(46% 56% at 86% 82%, rgba(201, 169, 97,0.11) 0%, transparent 55%),
       linear-gradient(135deg, #120e09 0%, #0a0806 55%, #0d0a07 100%);
   }
   .sec-aurora::before {
@@ -433,8 +482,8 @@ select {
     z-index: 0;
     pointer-events: none;
     background:
-      radial-gradient(40% 50% at 30% 40%, rgba(232,192,64,0.12), transparent 60%),
-      radial-gradient(40% 50% at 70% 60%, rgba(168,122,16,0.10), transparent 60%);
+      radial-gradient(40% 50% at 30% 40%, rgba(201, 169, 97,0.12), transparent 60%),
+      radial-gradient(40% 50% at 70% 60%, rgba(138, 115, 64,0.10), transparent 60%);
     filter: blur(30px);
     animation: aurora-drift 16s ease-in-out infinite alternate;
   }
@@ -447,32 +496,32 @@ select {
   }
   /* Hairline gold divider at the top of a section */
   .sec-divider {
-    border-top: 1px solid rgba(232,192,64,0.08);
+    border-top: 1px solid rgba(201, 169, 97,0.08);
   }
 
   /* Gold video frame as seen on SS */
   .video-frame-gold {
     @apply relative overflow-hidden rounded-[4px] border-[3px];
-    border-image: linear-gradient(to bottom, #7D5812, #FFFCE8, #7D5812) 1;
-    box-shadow: 0 0 30px rgba(232,192,64,0.25), inset 0 0 20px rgba(0,0,0,0.5);
+    border-image: linear-gradient(to bottom, #6A5530, #FFF4C9, #6A5530) 1;
+    box-shadow: 0 0 30px rgba(201, 169, 97,0.25), inset 0 0 20px rgba(0,0,0,0.5);
   }
 
   .play-btn-gold {
     @apply flex items-center justify-center rounded-[8px] border border-gold-300/50 shadow-lg transition-all;
-    background: linear-gradient(135deg, #7D5812 0%, #FFFCE8 50%, #7D5812 100%);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px rgba(232,192,64,0.3);
+    background: linear-gradient(135deg, #6A5530 0%, #FFF4C9 50%, #6A5530 100%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px rgba(201, 169, 97,0.3);
   }
 
   .play-btn-gold:hover {
     @apply scale-105;
     filter: brightness(1.1);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(232,192,64,0.5);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(201, 169, 97,0.5);
   }
 
   /* Tactical UI Utilities */
   .tac-panel {
     @apply relative border border-gold-300/10 bg-obsidian/80 backdrop-blur-sm;
-    box-shadow: 0 0 0 1px rgba(232,192,64,0.03), 0 20px 40px -20px rgba(0,0,0,0.8);
+    box-shadow: 0 0 0 1px rgba(201, 169, 97,0.03), 0 20px 40px -20px rgba(0,0,0,0.8);
   }
 
   .tac-corners {
@@ -485,7 +534,7 @@ select {
     position: absolute;
     width: 8px;
     height: 8px;
-    border: 1.5px solid rgba(232,192,64,0.5);
+    border: 1.5px solid rgba(201, 169, 97,0.5);
     pointer-events: none;
     z-index: 5;
     transition: all 0.3s ease;
@@ -521,7 +570,7 @@ select {
     background: linear-gradient(
       to bottom,
       transparent 0%,
-      rgba(232,192,64,0.03) 50%,
+      rgba(201, 169, 97,0.03) 50%,
       transparent 100%
     );
     background-size: 100% 4px;
@@ -547,20 +596,20 @@ select {
 
 @layer utilities {
   .text-stroke-gold {
-    -webkit-text-stroke: 1.5px rgba(125, 88, 18, 0.6);
+    -webkit-text-stroke: 1.5px rgba(106, 85, 48, 0.6);
     color: transparent;
   }
 
-  /* Heavy condensed letter-spacing for GTA headlines */
+  /* Headlines: thick + TIGHT. Brief calls the old wide spacing wrong — pull it in. */
   .tracking-gta {
-    letter-spacing: 0.06em;
+    letter-spacing: -0.015em;
     font-weight: 800;
   }
 
   /* GTA Mission styling */
   .mission-badge {
     @apply relative inline-flex items-center gap-2 rounded-full border-2 border-gold-300/60 bg-black/60 backdrop-blur px-3 py-1.5;
-    box-shadow: 0 0 15px rgba(232,192,64,0.3), inset 0 0 15px rgba(232,192,64,0.1);
+    box-shadow: 0 0 15px rgba(201, 169, 97,0.3), inset 0 0 15px rgba(201, 169, 97,0.1);
   }
 
   .mission-text {
@@ -585,7 +634,7 @@ select {
   /* Gold text glow */
   .gold-glow {
     @apply text-gold-300;
-    text-shadow: 0 0 20px rgba(232,192,64,0.4);
+    text-shadow: 0 0 20px rgba(201, 169, 97,0.4);
   }
 }
 

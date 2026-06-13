@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { navItems } from "@/lib/content";
+import { socialLinks } from "@/lib/env";
 
 export function Footer() {
   const legal = [
@@ -12,10 +13,10 @@ export function Footer() {
   ];
 
   const socials = [
-    { href: "https://instagram.com", label: "Instagram" },
-    { href: "https://tiktok.com", label: "TikTok" },
-    { href: "https://youtube.com", label: "YouTube" },
-    { href: "https://x.com", label: "X / Twitter" }
+    { href: socialLinks.instagram, label: "Instagram" },
+    { href: socialLinks.tiktok, label: "TikTok" },
+    { href: socialLinks.youtube, label: "YouTube" },
+    { href: socialLinks.telegram, label: "Telegram" }
   ];
 
   return (

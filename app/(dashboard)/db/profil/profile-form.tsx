@@ -164,7 +164,7 @@ export function ProfileForm({
               </div>
               <div className="h-2.5 w-full overflow-hidden border border-white/8 bg-white/[0.04] p-0.5">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-gold-600 via-gold-100 to-gold-50 shadow-[0_0_16px_rgba(232,192,64,0.45)]"
+                  className="h-full bg-gradient-to-r from-gold-600 via-gold-100 to-gold-50 shadow-[0_0_16px_rgba(201, 169, 97,0.45)]"
                   initial={{ width: 0 }}
                   animate={{ width: `${memberLevel.progress}%` }}
                   transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] as const }}
@@ -276,7 +276,7 @@ export function ProfileForm({
                   title={unlocked ? avatar.name : `${avatar.unlockPoints} XP benötigt`}
                   className={`group relative aspect-square border transition-all duration-300 ${
                     selected
-                      ? "border-gold-300 bg-gold-300/10 shadow-[0_0_28px_rgba(232,192,64,0.18)] ring-1 ring-gold-300/30"
+                      ? "border-gold-300 bg-gold-300/10 shadow-[0_0_28px_rgba(201, 169, 97,0.18)] ring-1 ring-gold-300/30"
                       : "border-white/8 bg-white/[0.02] hover:border-white/25"
                   } ${
                     unlocked
@@ -452,7 +452,7 @@ export function ProfileForm({
           <button
             type="submit"
             disabled={pending}
-            className="btn-shimmer relative flex w-full items-center justify-center gap-3 bg-gold-gradient px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(232,192,64,0.25)] active:scale-[0.98] disabled:opacity-50"
+            className="btn-shimmer relative flex w-full items-center justify-center gap-3 bg-gold-gradient px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(201, 169, 97,0.25)] active:scale-[0.98] disabled:opacity-50"
           >
             {pending ? (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-obsidian/30 border-t-obsidian" />

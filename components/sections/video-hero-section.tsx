@@ -152,7 +152,7 @@ export function VideoHeroSection() {
         aria-hidden
         style={{
           background:
-            "radial-gradient(ellipse 70% 55% at 50% 35%, rgba(232,192,64,0.07) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 55% at 50% 35%, rgba(201, 169, 97,0.07) 0%, transparent 70%)",
         }}
       />
 
@@ -163,7 +163,7 @@ export function VideoHeroSection() {
         ease={70}
         staticity={40}
         size={0.5}
-        color="#E8C040"
+        color="#C9A961"
         refresh
       />
 
@@ -175,7 +175,7 @@ export function VideoHeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="group relative inline-flex items-center gap-3 rounded-full border border-gold-300/25 bg-gradient-to-b from-white/[0.07] to-white/[0.02] px-1.5 py-1.5 pr-4 backdrop-blur-md"
-          style={{ boxShadow: "0 1px 0 0 rgba(255,255,255,0.06) inset, 0 8px 30px -12px rgba(232,192,64,0.4)" }}
+          style={{ boxShadow: "0 1px 0 0 rgba(255,255,255,0.06) inset, 0 8px 30px -12px rgba(201, 169, 97,0.4)" }}
         >
           {/* Live indicator pill */}
           <span className="flex items-center gap-1.5 rounded-full bg-gold-gradient px-2.5 py-1">
@@ -252,7 +252,7 @@ export function VideoHeroSection() {
             {!playing && (
               <div
                 className="absolute inset-0 pointer-events-none"
-                style={{ background: "radial-gradient(ellipse at center, rgba(232,192,64,0.15) 0%, transparent 65%)" }}
+                style={{ background: "radial-gradient(ellipse at center, rgba(201, 169, 97,0.15) 0%, transparent 65%)" }}
                 aria-hidden
               />
             )}
@@ -299,7 +299,7 @@ export function VideoHeroSection() {
                   <div className="absolute inset-y-0 left-0 bg-gold-gradient" style={{ width: `${playedPct}%` }} />
                 </div>
                 <span
-                  className="pointer-events-none absolute h-3 w-3 -translate-x-1/2 rounded-full bg-gold-300 opacity-0 shadow-[0_0_10px_rgba(232,192,64,0.7)] transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                  className="pointer-events-none absolute h-3 w-3 -translate-x-1/2 rounded-full bg-gold-300 opacity-0 shadow-[0_0_10px_rgba(201, 169, 97,0.7)] transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
                   style={{ left: `${playedPct}%` }}
                   aria-hidden
                 />
@@ -391,7 +391,7 @@ export function VideoHeroSection() {
           <div className="flex flex-col items-center gap-3 sm:flex-row mb-1">
             <Link
               href="/webinar"
-              className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(232,192,64,0.35)] relative overflow-hidden"
+              className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(201, 169, 97,0.35)] relative overflow-hidden"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <span className="relative">Webinar starten</span> →
@@ -418,7 +418,7 @@ export function VideoHeroSection() {
               {SOCIAL_PROOF_IMAGES.map((src, i) => (
                 <span
                   key={src}
-                  className="relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-obsidian bg-gold-300/10 shadow-[0_0_12px_rgba(232,192,64,0.18)]"
+                  className="relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-obsidian bg-gold-300/10 shadow-[0_0_12px_rgba(201, 169, 97,0.18)]"
                   style={{
                     opacity: 0.85 + i * 0.03,
                     zIndex: SOCIAL_PROOF_IMAGES.length - i,

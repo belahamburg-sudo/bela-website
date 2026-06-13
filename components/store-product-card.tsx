@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   PlayCircle,
@@ -11,7 +12,7 @@ import {
   Download,
   Star,
 } from "lucide-react";
-import { CheckoutButton } from "./checkout-button";
+import { AddToCartButton } from "./add-to-cart-button";
 import { Button } from "./button";
 import { formatEuro } from "@/lib/utils";
 
@@ -47,7 +48,7 @@ export function StoreProductCard({
   const levelColor = LEVEL_COLORS[course.level] ?? LEVEL_COLORS.Start;
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(232,192,64,0.35)]">
+    <div className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201, 169, 97,0.35)]">
       {/* hover wash */}
       <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
@@ -57,8 +58,12 @@ export function StoreProductCard({
       <span className="pointer-events-none absolute bottom-0 left-0 z-20 h-3 w-3 border-b border-l border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
       <span className="pointer-events-none absolute bottom-0 right-0 z-20 h-3 w-3 border-b border-r border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
 
-      {/* Cover */}
-      <div className="relative h-40 overflow-hidden border-b border-white/5">
+      {/* Cover (links to the course product page) */}
+      <Link
+        href={`/db/kurse/${course.slug}`}
+        className="relative block h-40 overflow-hidden border-b border-white/5"
+        aria-label={`${course.title} ansehen`}
+      >
         <Image
           src={course.image}
           alt={course.title}
@@ -87,13 +92,15 @@ export function StoreProductCard({
           {course.isBundle && <Star className="h-2.5 w-2.5 fill-current" />}
           {course.level}
         </div>
-      </div>
+      </Link>
 
       {/* Body */}
       <div className="relative z-10 flex flex-1 flex-col p-5">
-        <h3 className="font-heading text-xl leading-tight text-cream transition-colors duration-300 group-hover:text-gold-300">
-          {course.title}
-        </h3>
+        <Link href={`/db/kurse/${course.slug}`}>
+          <h3 className="font-heading text-xl leading-tight text-cream transition-colors duration-300 group-hover:text-gold-300">
+            {course.title}
+          </h3>
+        </Link>
         <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-cream/45">
           {course.tagline}
         </p>
@@ -150,19 +157,35 @@ export function StoreProductCard({
             </Button>
           </div>
         ) : (
-          <div className="mt-auto flex items-end justify-between gap-3 pt-6">
-            <div>
-              <span className="block text-[8px] font-mono uppercase tracking-[0.2em] text-cream/30">
-                Einmalig
-              </span>
-              <span className="gold-text font-heading text-2xl leading-none">
-                {formatEuro(course.price_cents)}
-              </span>
+          <div className="mt-auto space-y-3 pt-6">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <span className="block text-[8px] font-mono uppercase tracking-[0.2em] text-cream/30">
+                  Einmalig
+                </span>
+                <span className="gold-text font-heading text-2xl leading-none">
+                  {formatEuro(course.price_cents)}
+                </span>
+              </div>
+              <Button
+                href={`/db/kurse/${course.slug}`}
+                variant="secondary"
+                size="sm"
+                className="rounded-none px-5"
+              >
+                Ansehen
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
             </div>
-            <CheckoutButton
-              courseSlug={course.slug}
-              label="Kaufen"
-              className="rounded-none px-6 py-3 text-[10px] tracking-[0.15em]"
+            <AddToCartButton
+              course={{
+                slug: course.slug,
+                title: course.title,
+                priceCents: course.price_cents,
+                image: course.image,
+                format: course.format,
+              }}
+              className="w-full rounded-none py-2.5 text-[10px]"
             />
           </div>
         )}

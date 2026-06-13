@@ -4,6 +4,8 @@ import { CheckCircle2, Lock, PlayCircle } from "lucide-react";
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { CheckoutButton } from "@/components/checkout-button";
+import { AddToCartButton } from "@/components/add-to-cart-button";
+import { CourseReviews } from "@/components/course-reviews";
 import { getPublicCourse } from "@/lib/courses";
 import { formatEuro } from "@/lib/utils";
 
@@ -46,11 +48,22 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                 <p className="font-semibold text-white/70 text-sm leading-relaxed">{course.audience}</p>
               </div>
             </div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 space-y-3">
               <CheckoutButton courseSlug={course.slug} label="Kurs kaufen" />
-              <Button href="/signup" variant="secondary">
-                Erst Account erstellen
-              </Button>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <AddToCartButton
+                  course={{
+                    slug: course.slug,
+                    title: course.title,
+                    priceCents: course.priceCents,
+                    image: course.image,
+                    format: course.format,
+                  }}
+                />
+                <Button href="/signup" variant="secondary">
+                  Erst Account erstellen
+                </Button>
+              </div>
             </div>
           </div>
           <Image
@@ -106,6 +119,14 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
               Kursinhalte werden nach Login und Kauf im Dashboard geöffnet.
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Bewertungen */}
+      <section className="py-24 bg-cones border-t border-white/[0.04]">
+        <div className="dust-overlay" aria-hidden />
+        <div className="relative mx-auto max-w-3xl px-6">
+          <CourseReviews courseSlug={course.slug} />
         </div>
       </section>
     </>

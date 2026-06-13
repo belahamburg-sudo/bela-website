@@ -16,7 +16,7 @@ export function RetroGrid({
   angle = 65,
   cellSize = 60,
   opacity = 0.4,
-  lineColor = "rgba(232,192,64,0.35)",
+  lineColor = "rgba(201, 169, 97,0.35)",
 }: RetroGridProps) {
   const gridStyles = {
     "--grid-angle": `${angle}deg`,

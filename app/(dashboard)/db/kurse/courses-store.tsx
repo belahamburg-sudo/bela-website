@@ -2,23 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ArrowRight,
-  BadgeCheck,
-  ExternalLink,
   Play,
   FileText,
   ShoppingBag,
   Library,
-  Mail,
-  MapPin,
-  Phone,
   Star,
   Check,
   Layers,
-  Users,
 } from "lucide-react";
 import { AuthGate } from "@/components/auth-gate";
 import { CheckoutButton } from "@/components/checkout-button";
@@ -33,96 +25,6 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 type StoreItem = StoreCardCourse & { featured: boolean; isPurchased: boolean };
 
 type Filter = "all" | "video" | "pdf";
-
-type NearbyMember = {
-  id: string;
-  name: string;
-  city: string;
-  goal: string;
-  stage: string;
-};
-
-type GoldmineCommunity = {
-  city: string | null;
-  nearby: NearbyMember[];
-  demo?: boolean;
-};
-
-const DEMO_GOLDMINE_MEMBERS: NearbyMember[] = [
-  {
-    id: "demo-hh-1",
-    name: "Mara",
-    city: "Hamburg",
-    goal: "Template-Shop mit Notion und Canva bauen",
-    stage: "Erste Verkäufe",
-  },
-  {
-    id: "demo-hh-2",
-    name: "Jonas",
-    city: "Hamburg",
-    goal: "AI-gestützte Mini-Kurse für Creator automatisieren",
-    stage: "Produkt im Aufbau",
-  },
-  {
-    id: "demo-berlin-1",
-    name: "Lea",
-    city: "Berlin",
-    goal: "Prompt-Packs für Selbstständige launchen",
-    stage: "Launchphase",
-  },
-];
-
-const FEATURED_MEMBER_PRODUCTS = [
-  {
-    title: "Notion Launch Dashboard",
-    creator: "Mara aus Hamburg",
-    kind: "Template",
-    price: "19€",
-    image: "/assets/generated/course-template.svg",
-    href: "/db/kurse",
-    copy: "Launch-Plan, Content-Pipeline und Umsatztracker für dein erstes digitales Produkt.",
-  },
-  {
-    title: "Creator Prompt Pack",
-    creator: "Lea aus Berlin",
-    kind: "Prompt-Pack",
-    price: "14€",
-    image: "/assets/generated/course-minikurs.svg",
-    href: "/db/kurse",
-    copy: "Prompts für Hooks, Skripte, Newsletter und Produktideen aus einem Thema.",
-  },
-  {
-    title: "Canva Sales Kit",
-    creator: "Nico aus Wien",
-    kind: "Design Bundle",
-    price: "29€",
-    image: "/assets/generated/course-bundle.svg",
-    href: "/db/kurse",
-    copy: "Salespage-Blöcke, Produkt-Mockups und Story-Vorlagen im Goldmining-Stil.",
-  },
-];
-
-const EXPERTS = [
-  {
-    name: "Lena Hoffmann",
-    topic: "Notion Systeme & Templates",
-    email: "experts+notion@aigoldmining.com",
-    social: "@lena.builds",
-    socialHref: "https://instagram.com/lena.builds",
-  },
-  {
-    name: "Max Berger",
-    topic: "Funnel, Checkout & Automationen",
-    email: "experts+funnel@aigoldmining.com",
-    social: "@maxfunnels",
-  },
-  {
-    name: "Sofia Klein",
-    topic: "AI Content & Kurzvideo-Skripte",
-    email: "experts+content@aigoldmining.com",
-    phone: "+49 40 5550134",
-  },
-];
 
 const gridVariants = {
   hidden: { opacity: 0 },
@@ -139,11 +41,6 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
   const [items, setItems] = useState<StoreItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
-  const [communityLoading, setCommunityLoading] = useState(true);
-  const [community, setCommunity] = useState<GoldmineCommunity>({
-    city: null,
-    nearby: [],
-  });
 
   useEffect(() => {
     async function load() {
@@ -200,66 +97,6 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
     load();
     setHasMounted(true);
   }, [courses]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadCommunity() {
-      try {
-        if (!hasSupabasePublicEnv()) {
-          const raw =
-            typeof window !== "undefined"
-              ? localStorage.getItem("ai-goldmining-demo-user")
-              : null;
-          let city: string | null = null;
-          if (raw) {
-            try {
-              city = (JSON.parse(raw) as { city?: string }).city?.trim() || null;
-            } catch {
-              city = null;
-            }
-          }
-
-          const normalizedCity = city?.toLowerCase() ?? "";
-          const nearby = normalizedCity
-            ? DEMO_GOLDMINE_MEMBERS.filter((member) => member.city.toLowerCase() === normalizedCity)
-            : DEMO_GOLDMINE_MEMBERS.slice(0, 2);
-
-          if (!cancelled) {
-            setCommunity({
-              city,
-              nearby,
-              demo: true,
-            });
-          }
-          return;
-        }
-
-        const response = await fetch("/api/goldmine/community", {
-          headers: { accept: "application/json" },
-        });
-
-        if (!response.ok) return;
-        const payload = (await response.json()) as GoldmineCommunity;
-        if (!cancelled) {
-          setCommunity({
-            city: payload.city ?? null,
-            nearby: Array.isArray(payload.nearby) ? payload.nearby : [],
-            demo: payload.demo,
-          });
-        }
-      } catch (err) {
-        console.error("Goldmine community load error:", err);
-      } finally {
-        if (!cancelled) setCommunityLoading(false);
-      }
-    }
-
-    void loadCommunity();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   if (!hasMounted || loading) {
     return (
@@ -337,7 +174,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
               DEINE <span className="gold-text">GOLDMINE.</span>
             </h1>
             <p className="mt-5 max-w-xl text-sm leading-relaxed text-cream/45">
-              Kurse, Community-Matches, Produkte von anderen AI Goldminern und Expertenkontakte
+              Alle Kurse, dein Elite-Miners-Zugang und jedes Produkt zum Freischalten —
               an einem Ort.
             </p>
 
@@ -359,21 +196,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
             </div>
           </motion.div>
 
-          {/* Goldmine community hub */}
-          <div className="mb-16 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-            <NearbyMembers
-              city={community.city}
-              members={community.nearby}
-              loading={communityLoading}
-            />
-            <FeaturedMemberProducts />
-          </div>
-
-          <div className="mb-16">
-            <ExpertsList />
-          </div>
-
-          {/* VIP Telegram subscription */}
+          {/* Elite Miners — VIP Telegram subscription */}
           <div className="mb-16">
             <TelegramSubscribeCard />
           </div>
@@ -544,212 +367,5 @@ function EmptyCategory() {
         Keine Produkte in dieser Kategorie
       </p>
     </div>
-  );
-}
-
-function NearbyMembers({
-  city,
-  members,
-  loading,
-}: {
-  city: string | null;
-  members: NearbyMember[];
-  loading: boolean;
-}) {
-  return (
-    <section className="tac-panel tac-corners relative overflow-hidden p-6 sm:p-7">
-      <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-gold-300/10 blur-[90px]" />
-      <div className="relative">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <div className="mb-3 flex items-center gap-2 text-gold-300/70">
-              <Users className="h-4 w-4" />
-              <span className="tac-label tracking-[0.22em]">Umgebung</span>
-            </div>
-            <h2 className="font-heading text-2xl uppercase leading-none text-cream sm:text-3xl">
-              Leute in deiner <span className="gold-text">Umgebung.</span>
-            </h2>
-          </div>
-          <span className="inline-flex items-center gap-1.5 border border-gold-300/20 bg-gold-300/[0.06] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.16em] text-gold-300/70">
-            <MapPin className="h-3 w-3" />
-            {city || "Stadt fehlt"}
-          </span>
-        </div>
-
-        {loading ? (
-          <div className="grid gap-3">
-            {[0, 1, 2].map((item) => (
-              <div key={item} className="h-20 animate-pulse border border-white/8 bg-white/[0.03]" />
-            ))}
-          </div>
-        ) : members.length > 0 ? (
-          <div className="grid gap-3">
-            {members.slice(0, 4).map((member) => (
-              <div key={member.id} className="border border-white/8 bg-white/[0.025] p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="font-heading text-lg uppercase leading-none text-cream">
-                      {member.name}
-                    </p>
-                    <p className="mt-1 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-gold-300/55">
-                      <MapPin className="h-3 w-3" />
-                      {member.city}
-                    </p>
-                  </div>
-                  <span className="border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-cream/35">
-                    {member.stage}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-cream/50">{member.goal}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="border border-white/8 bg-white/[0.025] p-5">
-            <p className="text-sm leading-relaxed text-cream/55">
-              {city
-                ? `Noch keine weiteren Goldminer aus ${city} gefunden.`
-                : "Trag deine Stadt im Profil ein, damit passende Leute in deiner Nähe auftauchen."}
-            </p>
-            <Link
-              href="/db/profil"
-              className="mt-5 inline-flex items-center gap-2 border border-gold-300/25 px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-gold-300 transition-colors hover:border-gold-300/50 hover:bg-gold-300/[0.05]"
-            >
-              Profil öffnen
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function FeaturedMemberProducts() {
-  return (
-    <section className="tac-panel tac-corners relative overflow-hidden p-6 sm:p-7">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <div className="mb-3 flex items-center gap-2 text-gold-300/70">
-            <ShoppingBag className="h-4 w-4" />
-            <span className="tac-label tracking-[0.22em]">Member Produkte</span>
-          </div>
-          <h2 className="font-heading text-2xl uppercase leading-none text-cream sm:text-3xl">
-            Featured <span className="gold-text">Products.</span>
-          </h2>
-        </div>
-        <Star className="mt-1 h-5 w-5 fill-current text-gold-300/50" />
-      </div>
-
-      <div className="grid gap-3">
-        {FEATURED_MEMBER_PRODUCTS.map((product) => (
-          <Link
-            key={product.title}
-            href={product.href}
-            className="group grid gap-4 border border-white/8 bg-white/[0.025] p-4 transition-all hover:border-gold-300/30 hover:bg-gold-300/[0.035] sm:grid-cols-[86px_1fr]"
-          >
-            <div className="relative aspect-square overflow-hidden border border-white/10 bg-ink/60">
-              <Image
-                src={product.image}
-                alt=""
-                fill
-                sizes="86px"
-                className="object-cover opacity-85 transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <span className="border border-gold-300/20 bg-gold-300/[0.06] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.15em] text-gold-300/70">
-                  {product.kind}
-                </span>
-                <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-cream/25">
-                  {product.creator}
-                </span>
-              </div>
-              <p className="font-heading text-lg uppercase leading-tight text-cream transition-colors group-hover:text-gold-300">
-                {product.title}
-              </p>
-              <p className="mt-1.5 line-clamp-2 text-[12px] leading-relaxed text-cream/45">
-                {product.copy}
-              </p>
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <span className="gold-text font-heading text-xl leading-none">{product.price}</span>
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.16em] text-gold-300/60">
-                  Ansehen
-                  <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ExpertsList() {
-  return (
-    <section className="relative overflow-hidden border border-gold-300/18 bg-ink/35 p-6 backdrop-blur-xl sm:p-7">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold-300/45 to-transparent" />
-      <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="mb-3 flex items-center gap-2 text-gold-300/70">
-            <BadgeCheck className="h-4 w-4" />
-            <span className="tac-label tracking-[0.22em]">Expertenliste</span>
-          </div>
-          <h2 className="font-heading text-2xl uppercase leading-none text-cream sm:text-3xl">
-            Frag jemanden, der <span className="gold-text">Ahnung hat.</span>
-          </h2>
-        </div>
-        <p className="max-w-sm text-sm leading-relaxed text-cream/40">
-          Direkter Kontakt per Mail. Socials und Telefonnummern stehen nur dort, wo sie hinterlegt sind.
-        </p>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        {EXPERTS.map((expert) => (
-          <div key={expert.email} className="border border-white/8 bg-white/[0.025] p-5">
-            <p className="font-heading text-xl uppercase leading-tight text-cream">{expert.name}</p>
-            <p className="mt-2 text-sm leading-relaxed text-gold-300/60">{expert.topic}</p>
-            <div className="mt-5 grid gap-2">
-              <a
-                href={`mailto:${expert.email}`}
-                className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-cream/55 transition-colors hover:text-gold-300"
-              >
-                <Mail className="h-3.5 w-3.5 text-gold-300/60" />
-                {expert.email}
-              </a>
-              {expert.social ? (
-                expert.socialHref ? (
-                  <a
-                    href={expert.socialHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-cream/40 transition-colors hover:text-gold-300"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5 text-gold-300/50" />
-                    {expert.social}
-                  </a>
-                ) : (
-                  <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-cream/40">
-                    <ExternalLink className="h-3.5 w-3.5 text-gold-300/50" />
-                    {expert.social}
-                  </span>
-                )
-              ) : null}
-              {expert.phone ? (
-                <a
-                  href={`tel:${expert.phone.replace(/\s/g, "")}`}
-                  className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-cream/40 transition-colors hover:text-gold-300"
-                >
-                  <Phone className="h-3.5 w-3.5 text-gold-300/50" />
-                  {expert.phone}
-                </a>
-              ) : null}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }

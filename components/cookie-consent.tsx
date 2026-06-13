@@ -56,7 +56,7 @@ export function CookieConsent() {
         />
         <div
           className="pointer-events-none absolute inset-0"
-          style={{ background: "linear-gradient(180deg, rgba(232,192,64,0.05), transparent 45%)" }}
+          style={{ background: "linear-gradient(180deg, rgba(201, 169, 97,0.05), transparent 45%)" }}
           aria-hidden
         />
 
@@ -90,7 +90,7 @@ export function CookieConsent() {
             <button
               type="button"
               onClick={() => choose("accepted")}
-              className="btn-shimmer flex-1 whitespace-nowrap rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_18px_rgba(232,192,64,0.28)] sm:flex-none"
+              className="btn-shimmer flex-1 whitespace-nowrap rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_18px_rgba(201, 169, 97,0.28)] sm:flex-none"
             >
               Alle akzeptieren
             </button>

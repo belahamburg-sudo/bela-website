@@ -90,7 +90,7 @@ export function ProgressTrack({ points }: Props) {
         </div>
         <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.18em] text-cream/30">
           <span className="flex items-center gap-2">
-            <span className="h-2 w-2 bg-gold-gradient shadow-[0_0_8px_rgba(232,192,64,0.6)]" />
+            <span className="h-2 w-2 bg-gold-gradient shadow-[0_0_8px_rgba(201, 169, 97,0.6)]" />
             {currentIndex + 1}/{MILESTONES.length} erreicht
           </span>
           <span className="text-gold-300/70">{fillPercent}%</span>
@@ -103,7 +103,7 @@ export function ProgressTrack({ points }: Props) {
         <div className="absolute left-0 right-0 top-7 h-[3px] -translate-y-1/2 bg-white/[0.06]" />
         {/* filled rail */}
         <motion.div
-          className="absolute left-0 top-7 h-[3px] -translate-y-1/2 bg-gradient-to-r from-gold-600 via-gold-200 to-gold-50 shadow-[0_0_14px_rgba(232,192,64,0.5)]"
+          className="absolute left-0 top-7 h-[3px] -translate-y-1/2 bg-gradient-to-r from-gold-600 via-gold-200 to-gold-50 shadow-[0_0_14px_rgba(201, 169, 97,0.5)]"
           initial={{ width: 0 }}
           whileInView={{ width: `${fillPercent}%` }}
           viewport={{ once: true }}
@@ -137,7 +137,7 @@ export function ProgressTrack({ points }: Props) {
         <div className="absolute bottom-0 left-7 top-0 w-[3px] -translate-x-1/2 bg-white/[0.06]" />
         {/* filled rail */}
         <motion.div
-          className="absolute left-7 top-0 w-[3px] -translate-x-1/2 bg-gradient-to-b from-gold-600 via-gold-200 to-gold-50 shadow-[0_0_14px_rgba(232,192,64,0.5)]"
+          className="absolute left-7 top-0 w-[3px] -translate-x-1/2 bg-gradient-to-b from-gold-600 via-gold-200 to-gold-50 shadow-[0_0_14px_rgba(201, 169, 97,0.5)]"
           initial={{ height: 0 }}
           whileInView={{ height: `${fillPercent}%` }}
           viewport={{ once: true }}
@@ -186,7 +186,7 @@ function MilestoneNode({
       <div
         className={`relative flex h-12 w-12 items-center justify-center border transition-colors duration-500 ${
           reached
-            ? "border-gold-300/60 bg-gold-gradient text-obsidian shadow-[0_0_22px_rgba(232,192,64,0.45)]"
+            ? "border-gold-300/60 bg-gold-gradient text-obsidian shadow-[0_0_22px_rgba(201, 169, 97,0.45)]"
             : "border-white/10 bg-obsidian/80 text-white/25"
         }`}
       >

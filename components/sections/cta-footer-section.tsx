@@ -7,7 +7,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
 import { navItems } from "@/lib/content";
-import { telegramUrl } from "@/lib/env";
+import { telegramUrl, socialLinks } from "@/lib/env";
 import { Meteors } from "@/components/ui/meteors";
 
 const LEGAL = [
@@ -19,29 +19,29 @@ const LEGAL = [
 ];
 
 const SOCIALS = [
-  { href: telegramUrl, label: "Telegram" },
-  { href: "https://instagram.com", label: "Instagram" },
-  { href: "https://tiktok.com", label: "TikTok" },
-  { href: "https://youtube.com", label: "YouTube" },
-  { href: "https://x.com", label: "X / Twitter" },
+  { href: socialLinks.telegram, label: "Telegram" },
+  { href: socialLinks.instagram, label: "Instagram" },
+  { href: socialLinks.tiktok, label: "TikTok" },
+  { href: socialLinks.youtube, label: "YouTube" },
 ];
 
 export function CtaFooterSection() {
   return (
     <footer className="relative">
       {/* ── Big CTA: cinematic banner style ── */}
-      <div className="relative overflow-hidden border-t border-gold-300/15">
-        {/* AI Goldmining banner image */}
+      <div className="relative overflow-hidden border-t border-gold-300/15 bg-cones">
+        {/* Two-cone gold-dust backdrop instead of a banner image */}
         <div className="absolute inset-0" aria-hidden>
-          <Image
-            src="/assets/ai-goldmining-banner.jpeg"
-            alt=""
-            fill
-            className="object-cover object-center"
-            sizes="100vw"
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 70% at 25% 10%, rgba(201,169,97,0.12), transparent 60%)," +
+                "radial-gradient(ellipse 70% 60% at 80% 95%, rgba(138,115,64,0.10), transparent 70%)",
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-obsidian/80 via-obsidian/75 to-obsidian" />
-          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 60% at 50% 45%, transparent 0%, rgba(10,8,6,0.55) 100%)" }} />
+          <div className="dust-overlay" />
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 60% at 50% 45%, transparent 0%, rgba(8,6,4,0.55) 100%)" }} />
         </div>
 
         {/* gold meteor shower */}
@@ -55,10 +55,10 @@ export function CtaFooterSection() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Letzte Chance</p>
+            <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201, 169, 97,0.55)]" aria-hidden />Letzte Chance</p>
             <h2
               className="mx-auto max-w-3xl font-heading tracking-gta leading-none text-cream"
-              style={{ fontSize: "clamp(2.5rem,6vw,5.5rem)", textShadow: "0 0 30px rgba(232,192,64,0.3)" }}
+              style={{ fontSize: "clamp(2.5rem,6vw,5.5rem)", textShadow: "0 0 30px rgba(201, 169, 97,0.3)" }}
             >
               Hör auf zu warten.
             </h2>
@@ -85,9 +85,9 @@ export function CtaFooterSection() {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="relative mx-auto mt-14 max-w-md overflow-hidden rounded-md border border-gold-300/25 bg-gradient-to-b from-white/[0.04] to-obsidian/80 backdrop-blur-md p-7 lg:p-8 text-left shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7)]"
           >
-            <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(232,192,64,0.07), transparent 55%)" }} aria-hidden />
+            <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201, 169, 97,0.07), transparent 55%)" }} aria-hidden />
             <div className="relative">
-              <p className="eyebrow mb-4"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Newsletter</p>
+              <p className="eyebrow mb-4"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201, 169, 97,0.55)]" aria-hidden />Newsletter</p>
               <p className="font-heading tracking-gta text-cream text-xl mb-1.5">Noch nicht bereit?</p>
               <p className="text-cream/50 text-sm mb-6 leading-relaxed">Hol dir den Newsletter und bleib beim Goldrausch dabei. Kein Spam, jederzeit kündbar.</p>
               <LeadForm source="newsletter" />

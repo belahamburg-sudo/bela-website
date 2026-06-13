@@ -42,10 +42,10 @@ export function XpRing({ avatarId, points, progress, level }: Props) {
       >
         <defs>
           <linearGradient id="xp-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#7D5812" />
-            <stop offset="35%" stopColor="#E8C040" />
-            <stop offset="65%" stopColor="#FFFCE8" />
-            <stop offset="100%" stopColor="#A87A10" />
+            <stop offset="0%" stopColor="#6A5530" />
+            <stop offset="35%" stopColor="#C9A961" />
+            <stop offset="65%" stopColor="#FFF4C9" />
+            <stop offset="100%" stopColor="#8A7340" />
           </linearGradient>
         </defs>
 
@@ -55,7 +55,7 @@ export function XpRing({ avatarId, points, progress, level }: Props) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(232,192,64,0.08)"
+          stroke="rgba(201, 169, 97,0.08)"
           strokeWidth={stroke}
         />
 
@@ -72,7 +72,7 @@ export function XpRing({ avatarId, points, progress, level }: Props) {
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: dashOffset }}
           transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-          style={{ filter: "drop-shadow(0 0 6px rgba(232,192,64,0.5))" }}
+          style={{ filter: "drop-shadow(0 0 6px rgba(201, 169, 97,0.5))" }}
         />
       </svg>
 

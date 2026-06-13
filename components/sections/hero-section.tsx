@@ -86,7 +86,7 @@ export function HeroSection() {
                 left: s.left,
                 top: s.top,
                 transform: `scale(${s.scale ?? 1})`,
-                background: "radial-gradient(circle, #FFFCE8 0%, #E8C040 40%, transparent 70%)",
+                background: "radial-gradient(circle, #FFF4C9 0%, #C9A961 40%, transparent 70%)",
                 filter: "blur(0.3px)",
                 opacity: 0,
                 animation: `twinkle 2.4s ease-in-out ${s.delay} infinite`,
@@ -104,7 +104,7 @@ export function HeroSection() {
               style={{
                 left,
                 top: `${88 + i * 1.5}%`,
-                background: "#FAE890",
+                background: "#F5E6A8",
                 boxShadow: "0 0 5px rgba(255,210,100,0.9)",
                 opacity: 0,
                 animation: `drift 7s linear ${(i * 1.2).toFixed(1)}s infinite`,
@@ -172,7 +172,7 @@ export function HeroSection() {
             >
               <Link
                 href="/webinar"
-                className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(232,192,64,0.35)]"
+                className="btn-shimmer inline-flex items-center gap-2 rounded-sm bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(201, 169, 97,0.35)]"
               >
                 Gratis Webinar →
               </Link>

@@ -1,10 +1,13 @@
 "use client";
 
-import { ShoppingCart, Loader2, AlertCircle } from "lucide-react";
+import { ShoppingCart, Loader2, AlertCircle, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { ORDER_BUMP, formatBumpPrice } from "@/lib/offers";
+import { getStoredReferral } from "@/components/referral-capture";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +17,10 @@ type CheckoutResult = {
   message?: string;
 };
 
+/**
+ * Single-item fast checkout. Includes the mandatory AGB checkbox and the order
+ * bump (brief section 1). Multi-item purchases go through /warenkorb instead.
+ */
 export function CheckoutButton({
   courseSlug,
   label = "Kurs kaufen",
@@ -25,10 +32,17 @@ export function CheckoutButton({
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [agb, setAgb] = useState(false);
+  const [bump, setBump] = useState(false);
   const router = useRouter();
 
   async function startCheckout() {
     setError(null);
+    if (!agb) {
+      setError("Bitte akzeptiere die AGB und das Widerrufsrecht.");
+      return;
+    }
+
     let userEmail: string | null = null;
 
     if (hasSupabasePublicEnv()) {
@@ -57,7 +71,13 @@ export function CheckoutButton({
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseSlug, userEmail })
+        body: JSON.stringify({
+          courseSlug,
+          userEmail,
+          agbAccepted: agb,
+          orderBump: bump,
+          referralCode: getStoredReferral() || undefined,
+        }),
       });
       const result = (await response.json()) as CheckoutResult;
 
@@ -71,7 +91,6 @@ export function CheckoutButton({
         return;
       }
 
-      // Should never reach here but guard anyway
       setError("Kein Checkout-Link erhalten. Bitte versuche es erneut.");
     } catch {
       setError("Verbindungsfehler. Bitte prüfe deine Internetverbindung und versuche es erneut.");
@@ -82,7 +101,49 @@ export function CheckoutButton({
 
   return (
     <div className="space-y-3">
-      <Button onClick={startCheckout} disabled={loading} className={cn("w-full sm:w-auto", className)}>
+      {/* Order bump */}
+      <label
+        className={cn(
+          "flex cursor-pointer items-start gap-3 rounded-sm border p-3 text-left transition-colors",
+          bump
+            ? "border-gold-300/60 bg-gold-300/[0.06]"
+            : "border-dashed border-gold-300/30 bg-gold-300/[0.02] hover:border-gold-300/50"
+        )}
+      >
+        <input
+          type="checkbox"
+          checked={bump}
+          onChange={(e) => setBump(e.target.checked)}
+          className="mt-0.5 h-4 w-4 flex-none accent-gold-300"
+        />
+        <span className="text-sm leading-snug text-cream/70">
+          <span className="inline-flex items-center gap-1.5 font-semibold text-cream">
+            <Gift className="h-3.5 w-3.5 text-gold-300" />
+            {ORDER_BUMP.label}
+          </span>{" "}
+          <span className="gold-text font-semibold">{formatBumpPrice()}</span>
+          <span className="mt-0.5 block text-xs text-cream/45">{ORDER_BUMP.description}</span>
+        </span>
+      </label>
+
+      {/* AGB consent (required) */}
+      <label className="flex cursor-pointer items-start gap-2.5 text-left text-xs leading-relaxed text-cream/60">
+        <input
+          type="checkbox"
+          checked={agb}
+          onChange={(e) => setAgb(e.target.checked)}
+          className="mt-0.5 h-4 w-4 flex-none accent-gold-300"
+        />
+        <span>
+          Ich akzeptiere die{" "}
+          <Link href="/agb" target="_blank" className="text-gold-300 underline hover:text-gold-200">
+            AGB
+          </Link>{" "}
+          und stimme zu, dass mit der Ausführung sofort begonnen wird (Widerrufsrecht erlischt).
+        </span>
+      </label>
+
+      <Button onClick={startCheckout} disabled={loading || !agb} className={cn("w-full sm:w-auto", className)}>
         {loading ? (
           <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
         ) : (

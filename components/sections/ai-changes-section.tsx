@@ -55,7 +55,7 @@ export function AiChangesSection() {
 
       <div className="relative mx-auto max-w-5xl px-6">
         <div ref={headingRef} className="text-center mb-10 lg:mb-14" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Der Wendepunkt</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201, 169, 97,0.55)]" aria-hidden />Der Wendepunkt</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
             AI verändert{" "}
             <span className="gold-text">alles.</span>
@@ -83,12 +83,12 @@ export function AiChangesSection() {
 
           {/* Winners column */}
           <div className="relative bg-obsidian p-6 lg:p-10">
-            <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(232,192,64,0.06), transparent 60%)" }} aria-hidden />
+            <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201, 169, 97,0.06), transparent 60%)" }} aria-hidden />
             <p className="gta-label text-gold-300 mb-7 relative">Wer KI nutzt</p>
             <ul className="space-y-5 relative">
               {WINNERS.map((t) => (
                 <li key={t} className="change-row flex items-start gap-3" style={{ opacity: 0 }}>
-                  <span className="mt-1.5 h-2 w-2 rounded-sm bg-gold-300/80 rotate-45 shrink-0" style={{ boxShadow: "0 0 10px rgba(232,192,64,0.5)" }} />
+                  <span className="mt-1.5 h-2 w-2 rounded-sm bg-gold-300/80 rotate-45 shrink-0" style={{ boxShadow: "0 0 10px rgba(201, 169, 97,0.5)" }} />
                   <span className="font-heading tracking-gta text-base lg:text-lg text-cream leading-snug">{t}</span>
                 </li>
               ))}
@@ -103,7 +103,7 @@ export function AiChangesSection() {
           </p>
           <Link
             href="/webinar"
-            className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-gradient px-10 py-4 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(232,192,64,0.35)]"
+            className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-gradient px-10 py-4 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(201, 169, 97,0.35)]"
           >
             Webinar starten <ArrowRight className="h-4 w-4" />
           </Link>

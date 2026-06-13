@@ -4,6 +4,9 @@ import { useEffect, useRef } from "react";
 import { animate, onScroll, stagger } from "animejs";
 import { Star, ShieldCheck, Lock, RotateCcw } from "lucide-react";
 import { Marquee } from "@/components/ui/marquee";
+import { trustpilotUrl, trustpilotBusinessUnitId } from "@/lib/env";
+
+const TRUSTPILOT_SCRIPT = "https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js";
 
 const BADGES = [
   { icon: Lock, title: "Sichere Zahlung", text: "SSL-verschlüsselt über Stripe" },
@@ -18,6 +21,7 @@ export function TrustSection() {
   const headingRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const badgesRef = useRef<HTMLDivElement>(null);
+  const widgetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const cleanups: Array<() => void> = [];
@@ -42,13 +46,34 @@ export function TrustSection() {
     return () => cleanups.forEach((fn) => fn());
   }, []);
 
+  // Load the official Trustpilot TrustBox once a business-unit id is configured.
+  useEffect(() => {
+    if (!trustpilotBusinessUnitId) return;
+    const w = window as typeof window & { Trustpilot?: { loadFromElement: (el: HTMLElement, force?: boolean) => void } };
+    const render = () => {
+      if (w.Trustpilot && widgetRef.current) w.Trustpilot.loadFromElement(widgetRef.current, true);
+    };
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${TRUSTPILOT_SCRIPT}"]`);
+    if (existing) {
+      render();
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = TRUSTPILOT_SCRIPT;
+    script.async = true;
+    script.onload = render;
+    document.body.appendChild(script);
+  }, []);
+
+  const hasWidget = Boolean(trustpilotBusinessUnitId);
+
   return (
     <section className="relative py-20 lg:py-28 sec-glow overflow-hidden scratch-border">
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-gold-300/[0.04] blur-[130px]" />
 
       <div className="relative mx-auto max-w-5xl px-6">
         <div ref={headingRef} className="text-center mb-12 lg:mb-16" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Vertrauen</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201, 169, 97,0.55)]" aria-hidden />Vertrauen</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5rem)" }}>
             Echte Menschen.{" "}
             <span className="gold-text">Echte Ergebnisse.</span>
@@ -64,32 +89,45 @@ export function TrustSection() {
           className="relative mx-auto max-w-2xl rounded-sm border border-gold-300/25 bg-white/[0.03] p-8 lg:p-10 text-center"
           style={{ opacity: 0 }}
         >
-          <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(232,192,64,0.05), transparent 60%)" }} aria-hidden />
+          <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201, 169, 97,0.05), transparent 60%)" }} aria-hidden />
 
           <div className="relative">
-            <div className="flex items-center justify-center gap-1.5 mb-4">
-              {[0, 1, 2, 3, 4].map((s) => (
-                <span key={s} className="flex h-9 w-9 items-center justify-center rounded-[3px] bg-[#00b67a]">
-                  <Star className="h-5 w-5 text-white" fill="currentColor" />
-                </span>
-              ))}
-            </div>
-            <p className="font-heading tracking-gta text-cream text-3xl lg:text-4xl mb-1">
-              4,8 <span className="text-cream/40 text-xl">/ 5</span>
-            </p>
-            <p className="text-cream/45 text-sm mb-6">
-              Basierend auf <span className="text-cream/80 font-semibold">1.200+ Bewertungen</span> auf Trustpilot
-            </p>
+            {hasWidget ? (
+              /* Official Trustpilot TrustBox — auto-rendered from the live profile. */
+              <div
+                ref={widgetRef}
+                className="trustpilot-widget mb-6"
+                data-locale="de-DE"
+                data-template-id="5419b6ffb0d04a076446a9af"
+                data-businessunit-id={trustpilotBusinessUnitId}
+                data-style-height="120px"
+                data-style-width="100%"
+                data-theme="dark"
+              >
+                <a href={trustpilotUrl} target="_blank" rel="noopener noreferrer">
+                  Trustpilot
+                </a>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-center gap-1.5 mb-4">
+                  {[0, 1, 2, 3, 4].map((s) => (
+                    <span key={s} className="flex h-9 w-9 items-center justify-center rounded-[3px] bg-[#00b67a]">
+                      <Star className="h-5 w-5 text-white" fill="currentColor" />
+                    </span>
+                  ))}
+                </div>
+                <p className="font-heading tracking-gta text-cream text-3xl lg:text-4xl mb-1">
+                  4,8 <span className="text-cream/40 text-xl">/ 5</span>
+                </p>
+                <p className="text-cream/45 text-sm mb-6">
+                  Basierend auf <span className="text-cream/80 font-semibold">1.200+ Bewertungen</span> auf Trustpilot
+                </p>
+              </>
+            )}
 
-            {/*
-              TRUSTPILOT WIDGET:
-              Echtes TrustBox-Widget hier einbauen — Script von Trustpilot
-              (Business-Account) + dieses div ersetzen. Beispiel:
-              <div class="trustpilot-widget" data-locale="de-DE"
-                   data-template-id="..." data-businessunit-id="..."></div>
-            */}
             <a
-              href="https://www.trustpilot.com"
+              href={trustpilotUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-shimmer inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"

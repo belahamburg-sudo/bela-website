@@ -5,6 +5,8 @@ import { AuthHashHandler } from "@/components/auth-hash-handler";
 import { PickaxeCursor } from "@/components/pickaxe-cursor";
 import { CookieConsent } from "@/components/cookie-consent";
 import { GoogleAnalytics } from "@/components/google-analytics";
+import { CartProvider } from "@/lib/cart";
+import { ReferralCapture } from "@/components/referral-capture";
 
 const hanken = Hanken_Grotesk({
   subsets: ["latin"],
@@ -17,6 +19,13 @@ export const metadata: Metadata = {
   description:
     "Baue mit AI digitale Produkte und verkaufe sie automatisiert. Templates, Guides, Mini-Kurse. Einmal erstellt, dauerhaft vermarktet.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/favicon.svg",
+  },
   openGraph: {
     title: "Bela Goldmann | AI Goldmining",
     description:
@@ -28,7 +37,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0a0806",
+  themeColor: "#0c0805",
 };
 
 export default function RootLayout({
@@ -48,7 +57,8 @@ export default function RootLayout({
         </a>
         <PickaxeCursor />
         <AuthHashHandler />
-        {children}
+        <ReferralCapture />
+        <CartProvider>{children}</CartProvider>
         <CookieConsent />
       </body>
     </html>

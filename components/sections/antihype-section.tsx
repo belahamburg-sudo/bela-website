@@ -54,23 +54,22 @@ export function AntihypeSection() {
   }, []);
 
   return (
-    <section className="relative py-20 lg:py-28 bg-obsidian overflow-hidden">
-      {/* Heist image as atmospheric backdrop */}
+    <section className="relative py-20 lg:py-28 bg-cones overflow-hidden">
+      {/* Two-cone gold-dust backdrop instead of an image */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden
         style={{
-          backgroundImage: "url('/assets/heist-action.jpeg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center 30%",
-          opacity: 0.05,
+          background:
+            "radial-gradient(ellipse 90% 70% at 25% 15%, rgba(201,169,97,0.10), transparent 60%)," +
+            "radial-gradient(ellipse 70% 60% at 80% 90%, rgba(138,115,64,0.08), transparent 70%)",
         }}
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-obsidian via-obsidian/90 to-obsidian" aria-hidden />
+      <div className="dust-overlay" aria-hidden />
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div ref={headingRef} className="mb-16" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Kein Bullshit</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201, 169, 97,0.55)]" aria-hidden />Kein Bullshit</p>
           <h2 className="font-heading tracking-gta leading-none text-cream max-w-2xl" style={{ fontSize: "clamp(2.5rem,5.5vw,5.5rem)" }}>
             Was du hier{" "}
             <span className="gold-text">nicht</span> bekommst.

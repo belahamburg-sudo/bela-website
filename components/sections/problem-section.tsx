@@ -47,24 +47,22 @@ export function ProblemSection() {
 
   return (
     <section className="relative py-20 lg:py-28 bg-obsidian overflow-hidden">
-      {/* Muted gold-bars image as texture on the right */}
+      {/* Warm cone glow on the right instead of a photo texture */}
       <div
-        className="pointer-events-none absolute right-0 top-0 bottom-0 w-1/2"
+        className="pointer-events-none absolute right-0 top-0 bottom-0 w-2/3"
         aria-hidden
         style={{
-          backgroundImage: "url('/assets/gold-bars.jpeg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0.06,
-          filter: "saturate(0.5)",
+          background:
+            "radial-gradient(ellipse 80% 70% at 85% 35%, rgba(201,169,97,0.10), transparent 65%)," +
+            "radial-gradient(ellipse 60% 60% at 95% 90%, rgba(138,115,64,0.08), transparent 70%)",
         }}
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-obsidian via-obsidian/70 to-transparent" aria-hidden />
+      <div className="dust-overlay" aria-hidden />
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-20 items-start mb-10 lg:mb-14">
           <div ref={headingRef} style={{ opacity: 0 }}>
-            <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Der Ausgangspunkt</p>
+            <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201, 169, 97,0.55)]" aria-hidden />Der Ausgangspunkt</p>
             <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
               Wer jetzt nicht handelt,{" "}
               <span className="gold-text">verliert.</span>{" "}
@@ -75,7 +73,7 @@ export function ProblemSection() {
           <ul ref={listRef} className="space-y-6 lg:space-y-8 pt-2">
             {PROBLEMS.map((p) => (
               <li key={p.num} className="flex gap-4 lg:gap-6 items-start" style={{ opacity: 0 }}>
-                <span className="font-heading tracking-gta text-3xl lg:text-4xl text-gold-300/60 leading-none select-none shrink-0 w-8 lg:w-10 text-right" style={{ textShadow: "0 0 10px rgba(232,192,64,0.3)" }}>
+                <span className="font-heading tracking-gta text-3xl lg:text-4xl text-gold-300/60 leading-none select-none shrink-0 w-8 lg:w-10 text-right" style={{ textShadow: "0 0 10px rgba(201, 169, 97,0.3)" }}>
                   {p.num}
                 </span>
                 <div>
@@ -98,7 +96,7 @@ export function ProblemSection() {
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(135deg, rgba(232,192,64,0.06), transparent 60%)",
+              background: "linear-gradient(135deg, rgba(201, 169, 97,0.06), transparent 60%)",
             }}
             aria-hidden
           />

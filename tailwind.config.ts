@@ -10,26 +10,27 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        obsidian: "#0a0806",
-        graphite: "#110e0a",
-        panel: "#1a1510",
-        ink: "#221c14",
+        // Warm "mine black" base + antique-gold system — exact values from the brand brief.
+        obsidian: "#0c0805",
+        graphite: "#100c08",
+        panel: "#15100a",
+        ink: "#1c160d",
         gold: {
-          50: "#FFFCE8",
-          100: "#FAE890",
-          200: "#F5D040",
-          300: "#E8C040",
-          400: "#D4A520",
-          500: "#A87A10",
-          600: "#7D5812",
-          700: "#5A3E0A",
-          800: "#3A2205",
-          900: "#1E1002"
+          50: "#FFF4C9", // --gold-white
+          100: "#F5E6A8", // --gold-bright
+          200: "#E5C97E", // --gold-light
+          300: "#C9A961", // --gold (workhorse)
+          400: "#B5984F",
+          500: "#8A7340", // --gold-dark
+          600: "#6A5530", // --gold-deep
+          700: "#4F4024",
+          800: "#342A18",
+          900: "#1C160D"
         },
-        cream: "#FDFBF7",
-        bone: "#E9E3D3",
-        muted: "#8E8271",
-        hairline: "rgba(232, 192, 64, 0.15)"
+        cream: "#e8e6dc", // --text (primary, white-cream)
+        bone: "#cfcabb",
+        muted: "#9a9890", // --muted
+        hairline: "rgba(201, 169, 97, 0.15)"
       },
       fontFamily: {
         heading: ["var(--font-hanken)", "sans-serif"],
@@ -37,20 +38,20 @@ const config: Config = {
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
       },
       fontSize: {
-        "display-xl": ["clamp(2.5rem, 8vw, 9rem)", { lineHeight: "0.93", letterSpacing: "0.04em", fontWeight: "800" }],
-        "display-lg": ["clamp(2rem, 6vw, 6.5rem)", { lineHeight: "0.95", letterSpacing: "0.04em", fontWeight: "800" }],
-        "display-md": ["clamp(1.75rem, 4vw, 4rem)", { lineHeight: "0.97", letterSpacing: "0.03em", fontWeight: "800" }]
+        "display-xl": ["clamp(2.5rem, 8vw, 9rem)", { lineHeight: "0.93", letterSpacing: "-0.02em", fontWeight: "800" }],
+        "display-lg": ["clamp(2rem, 6vw, 6.5rem)", { lineHeight: "0.95", letterSpacing: "-0.02em", fontWeight: "800" }],
+        "display-md": ["clamp(1.75rem, 4vw, 4rem)", { lineHeight: "0.97", letterSpacing: "-0.015em", fontWeight: "800" }]
       },
       boxShadow: {
-        gold: "0 0 0 1px rgba(232,192,64,0.25), 0 20px 60px -20px rgba(125,88,18,0.6)",
-        "gold-sm": "0 0 0 1px rgba(232,192,64,0.18), 0 10px 30px -10px rgba(125,88,18,0.4)",
+        gold: "0 0 0 1px rgba(201,169,97,0.25), 0 20px 60px -20px rgba(106,85,48,0.6)",
+        "gold-sm": "0 0 0 1px rgba(201,169,97,0.18), 0 10px 30px -10px rgba(106,85,48,0.4)",
         soft: "0 24px 80px rgba(0, 0, 0, 0.75)",
-        ring: "inset 0 1px 0 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(232,192,64,0.18)"
+        ring: "inset 0 1px 0 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(201,169,97,0.18)"
       },
       backgroundImage: {
-        "gold-radial": "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(232,192,64,0.28), transparent 60%)",
-        "gold-sweep": "linear-gradient(120deg, transparent 0%, rgba(232,192,64,0.10) 45%, rgba(255,240,120,0.22) 50%, rgba(232,192,64,0.10) 55%, transparent 100%)",
-        "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.94 0 0 0 0 0.71 0 0 0 0 0.16 0 0 0 0.14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
+        "gold-radial": "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,169,97,0.28), transparent 60%)",
+        "gold-sweep": "linear-gradient(120deg, transparent 0%, rgba(201,169,97,0.10) 45%, rgba(245,230,168,0.22) 50%, rgba(201,169,97,0.10) 55%, transparent 100%)",
+        "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.79 0 0 0 0 0.66 0 0 0 0 0.38 0 0 0 0.14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
       },
       animation: {
         "fade-in": "fadeIn 1s ease-out both",

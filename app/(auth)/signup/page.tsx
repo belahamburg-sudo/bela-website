@@ -74,7 +74,7 @@ export default function SignupPage() {
             </div>
 
             <div className="mt-8 inline-flex items-center gap-3 border border-gold-300/20 bg-gold-300/5 px-5 py-3">
-              <div className="h-2 w-2 rounded-full bg-gold-300 shadow-[0_0_8px_rgba(232,192,64,0.6)]" />
+              <div className="h-2 w-2 rounded-full bg-gold-300 shadow-[0_0_8px_rgba(201, 169, 97,0.6)]" />
               <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold-300/80">
                 Kostenloser Account · Kein Abo · Kein Risiko
               </span>

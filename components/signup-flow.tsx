@@ -185,7 +185,7 @@ export function SignupFlow() {
                 <div
                   className={`flex h-9 w-9 items-center justify-center border transition-all duration-300 ${
                     active
-                      ? "border-gold-300/60 bg-gold-300/15 text-gold-300 shadow-[0_0_18px_rgba(232,192,64,0.25)]"
+                      ? "border-gold-300/60 bg-gold-300/15 text-gold-300 shadow-[0_0_18px_rgba(201, 169, 97,0.25)]"
                       : done
                         ? "border-gold-300/40 bg-gold-300/10 text-gold-300"
                         : "border-white/10 bg-white/[0.02] text-cream/30"
@@ -412,7 +412,7 @@ export function SignupFlow() {
           <button
             type="submit"
             disabled={loading}
-            className="btn-shimmer relative flex min-h-12 flex-1 items-center justify-center gap-2.5 bg-gold-gradient px-6 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian shadow-[0_8px_30px_-8px_rgba(232,192,64,0.5)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+            className="btn-shimmer relative flex min-h-12 flex-1 items-center justify-center gap-2.5 bg-gold-gradient px-6 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian shadow-[0_8px_30px_-8px_rgba(201, 169, 97,0.5)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

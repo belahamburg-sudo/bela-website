@@ -75,7 +75,7 @@ export function PickaxeCursor() {
         transform: "translate3d(-200px, -200px, 0) rotate(-20deg)",
         willChange: "transform",
         filter:
-          "drop-shadow(0 0 2px rgba(255,255,255,1)) drop-shadow(0 0 6px rgba(255,255,255,0.8)) drop-shadow(0 0 12px rgba(232,192,64,0.6))",
+          "drop-shadow(0 0 2px rgba(255,255,255,1)) drop-shadow(0 0 6px rgba(255,255,255,0.8)) drop-shadow(0 0 12px rgba(201, 169, 97,0.6))",
       }}
     >
       ⛏️

@@ -43,17 +43,17 @@ export function StatsSection() {
 
   return (
     <section ref={sectionRef} className="relative py-0 bg-obsidian scratch-border">
-      {/* Cinematic banner with heist image as tinted backdrop */}
-      <div className="relative overflow-hidden">
+      {/* Warm gold-dust backdrop (two cones + grain) instead of an image */}
+      <div className="relative overflow-hidden bg-cones">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0"
           style={{
-            backgroundImage: "url('/assets/bela-jet.jpg')",
-            filter: "brightness(0.15) saturate(0.3)",
+            background:
+              "radial-gradient(ellipse 70% 90% at 50% 50%, rgba(201,169,97,0.06), transparent 70%)",
           }}
           aria-hidden
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-obsidian via-obsidian/80 to-obsidian" aria-hidden />
+        <div className="dust-overlay" aria-hidden />
 
         <div className="relative mx-auto max-w-7xl px-6 py-12 lg:py-16">
           <div className="grid grid-cols-2 lg:grid-cols-4">

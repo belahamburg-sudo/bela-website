@@ -121,7 +121,7 @@ export function AiJobsSection() {
                 <span
                   ref={(el) => { countersRef.current[i] = el; }}
                   className="font-heading tracking-gta text-2xl lg:text-4xl text-gold-300 shrink-0 leading-none"
-                  style={{ textShadow: "0 0 18px rgba(232,192,64,0.35)" }}
+                  style={{ textShadow: "0 0 18px rgba(201, 169, 97,0.35)" }}
                 >
                   0{bar.suffix}
                 </span>
@@ -132,7 +132,7 @@ export function AiJobsSection() {
                   data-pct={bar.pct}
                   data-value={bar.value}
                   data-suffix={bar.suffix}
-                  style={{ width: "0%", background: "linear-gradient(90deg, #7D5812, #E8C040, #FFFCE8)" }}
+                  style={{ width: "0%", background: "linear-gradient(90deg, #6A5530, #C9A961, #FFF4C9)" }}
                 />
               </div>
               <p className="mt-1.5 text-[0.6rem] uppercase tracking-[0.2em] text-cream/25">Quelle: {bar.source}</p>

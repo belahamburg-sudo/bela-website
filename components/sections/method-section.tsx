@@ -86,7 +86,7 @@ export function MethodSection() {
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Heading */}
         <div ref={headingRef} className="text-center mb-10 lg:mb-14 max-w-2xl mx-auto" style={{ opacity: 0 }}>
-          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />Die Methode</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201, 169, 97,0.55)]" aria-hidden />Die Methode</p>
           <h2 className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.85rem, 8vw, 5rem)" }}>
             Von der Idee zur<br />
             <span className="gold-text">digitalen Goldmine</span>
@@ -101,7 +101,7 @@ export function MethodSection() {
           {/* connector line behind cards (desktop) */}
           <div
             className="hidden lg:block pointer-events-none absolute top-10 left-[12.5%] right-[12.5%] h-px"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(232,192,64,0.4) 15%, rgba(232,192,64,0.4) 85%, transparent)" }}
+            style={{ background: "linear-gradient(90deg, transparent, rgba(201, 169, 97,0.4) 15%, rgba(201, 169, 97,0.4) 85%, transparent)" }}
             aria-hidden
           />
 
@@ -122,7 +122,7 @@ export function MethodSection() {
                     className={`relative z-10 flex h-20 w-20 items-center justify-center rounded-full border bg-obsidian mb-5 ${
                       isLast ? "border-gold-300/70" : "border-gold-300/30"
                     }`}
-                    style={isLast ? { boxShadow: "0 0 30px rgba(232,192,64,0.3)" } : undefined}
+                    style={isLast ? { boxShadow: "0 0 30px rgba(201, 169, 97,0.3)" } : undefined}
                   >
                     <Icon className="h-8 w-8 text-gold-300" strokeWidth={1.5} />
                     <span
@@ -160,7 +160,7 @@ export function MethodSection() {
           className="relative mt-12 lg:mt-16 overflow-hidden rounded-sm border border-gold-300/25 p-7 lg:p-10"
           style={{ opacity: 0 }}
         >
-          <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(120deg, rgba(232,192,64,0.07), transparent 55%)" }} aria-hidden />
+          <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(120deg, rgba(201, 169, 97,0.07), transparent 55%)" }} aria-hidden />
           <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold-300/60" aria-hidden />
           <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-gold-300/60" aria-hidden />
 

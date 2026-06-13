@@ -1,11 +1,12 @@
 "use client";
 
-import { CheckCircle2, Clock, Download, FileText, Lock, PlayCircle } from "lucide-react";
+import { CheckCircle2, Clock, Lock, PlayCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { DbCourse, DbLesson } from "@/lib/db-types";
 import { cn } from "@/lib/utils";
 import { toggleLessonProgress } from "@/app/(dashboard)/db/kurse/[slug]/actions";
 import { Button } from "./button";
+import { DownloadButton } from "./download-button";
 
 const VIDEO_FILE_EXTENSIONS = /\.(mp4|webm|ogg|ogv|mov|m4v)$/i;
 
@@ -182,27 +183,15 @@ export function CoursePlayer({
 
           <div className="grid gap-4 md:grid-cols-2">
             {activeLesson.resources.map((resource) => (
-              <a
+              <DownloadButton
                 key={resource.label}
-                href={resource.href}
-                target="_blank"
-                rel="noreferrer"
-                className="focus-ring panel-surface flex min-h-24 items-center gap-4 rounded-[1.35rem] p-5 transition hover:border-gold-300/50"
-              >
-                {resource.type === "PDF" ? (
-                  <FileText aria-hidden className="h-6 w-6 text-gold-300" />
-                ) : (
-                  <Download aria-hidden className="h-6 w-6 text-gold-300" />
-                )}
-                <span>
-                  <span className="block font-bold text-cream">{resource.label}</span>
-                  <span className="block text-sm text-muted">{resource.type}</span>
-                </span>
-              </a>
+                courseSlug={course.slug}
+                resource={resource}
+              />
             ))}
             <div className="panel-surface flex min-h-24 items-center gap-4 rounded-[1.35rem] p-5 text-muted">
               <Lock aria-hidden className="h-6 w-6 text-gold-700" />
-              Bonusmaterial wird im Live-System freigeschaltet.
+              Downloads sind personalisiert (sichtbares + unsichtbares Wasserzeichen). Videos sind nicht herunterladbar.
             </div>
           </div>
         </section>

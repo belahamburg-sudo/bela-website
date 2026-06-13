@@ -7,7 +7,9 @@ import { AiChangesSection } from "@/components/sections/ai-changes-section";
 import { MethodSection } from "@/components/sections/method-section";
 import { StatsSection } from "@/components/sections/stats-section";
 import { ProductsSection } from "@/components/sections/products-section";
+import { SolutionBannerSection } from "@/components/sections/solution-banner-section";
 import { TrustSection } from "@/components/sections/trust-section";
+import { AntihypeSection } from "@/components/sections/antihype-section";
 import { FaqSection } from "@/components/sections/faq-section";
 import { CtaFooterSection } from "@/components/sections/cta-footer-section";
 import { getFeaturedCourses } from "@/lib/courses";
@@ -26,7 +28,9 @@ export default async function HomePage() {
       <MethodSection />
       <StatsSection />
       <ProductsSection courses={featured} />
+      <SolutionBannerSection />
       <TrustSection />
+      <AntihypeSection />
       <FaqSection />
       <CtaFooterSection />
     </>

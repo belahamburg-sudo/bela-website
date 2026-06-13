@@ -194,7 +194,7 @@ export function TelegramSubscribeCard() {
                 href={paidTelegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-shimmer focus-ring relative flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-7 py-4 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(232,192,64,0.25)] active:scale-[0.98]"
+                className="btn-shimmer focus-ring relative flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-7 py-4 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(201, 169, 97,0.25)] active:scale-[0.98]"
               >
                 <Send className="h-4 w-4" />
                 VIP Gruppe öffnen
@@ -245,7 +245,7 @@ export function TelegramSubscribeCard() {
                 type="button"
                 onClick={startCheckout}
                 disabled={loading || statusLoading}
-                className="btn-shimmer focus-ring relative flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-7 py-4 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(232,192,64,0.25)] active:scale-[0.98] disabled:opacity-50"
+                className="btn-shimmer focus-ring relative flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-7 py-4 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(201, 169, 97,0.25)] active:scale-[0.98] disabled:opacity-50"
               >
                 {loading ? (
                   <Loader2 aria-hidden className="h-4 w-4 animate-spin" />

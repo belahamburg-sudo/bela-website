@@ -20,13 +20,11 @@ async function resolveCourseMedia(course: DbCourse): Promise<DbCourse> {
       lessons: await Promise.all(
         mod.lessons.map(async (lesson) => ({
           ...lesson,
+          // Videos get a short-lived signed URL for playback…
           video_url: await resolveMediaUrl(lesson.video_url),
-          resources: await Promise.all(
-            (lesson.resources ?? []).map(async (r) => ({
-              ...r,
-              href: (await resolveMediaUrl(r.href)) ?? r.href,
-            }))
-          ),
+          // …but resources keep their raw storage ref so /api/download can fetch
+          // the master, watermark it and hand back a buyer-specific signed URL.
+          resources: lesson.resources ?? [],
         }))
       ),
     }))

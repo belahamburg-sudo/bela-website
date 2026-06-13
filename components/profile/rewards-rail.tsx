@@ -44,7 +44,7 @@ export function RewardsRail({ points }: Props) {
             variants={card}
             className={`group relative flex h-full flex-col overflow-hidden border p-5 transition-all duration-500 ${
               unlocked
-                ? "border-gold-300/30 bg-gradient-to-b from-gold-300/[0.05] to-transparent shadow-[0_18px_50px_-30px_rgba(232,192,64,0.5)]"
+                ? "border-gold-300/30 bg-gradient-to-b from-gold-300/[0.05] to-transparent shadow-[0_18px_50px_-30px_rgba(201, 169, 97,0.5)]"
                 : "border-white/8 bg-ink/30"
             }`}
           >

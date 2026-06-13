@@ -16,9 +16,9 @@ export function SpatialBackground() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(62% 48% at 50% -8%, rgba(232,192,64,0.12) 0%, transparent 60%)," +
-            "radial-gradient(50% 60% at 12% 16%, rgba(168,122,16,0.13) 0%, transparent 55%)," +
-            "radial-gradient(48% 58% at 90% 88%, rgba(232,192,64,0.09) 0%, transparent 55%)," +
+            "radial-gradient(62% 48% at 50% -8%, rgba(201, 169, 97,0.12) 0%, transparent 60%)," +
+            "radial-gradient(50% 60% at 12% 16%, rgba(138, 115, 64,0.13) 0%, transparent 55%)," +
+            "radial-gradient(48% 58% at 90% 88%, rgba(201, 169, 97,0.09) 0%, transparent 55%)," +
             "linear-gradient(160deg, #100c08 0%, #0a0806 56%, #0c0907 100%)",
         }}
       />
@@ -36,14 +36,14 @@ export function SpatialBackground() {
         <div
           className="absolute left-[8%] top-[12%] h-[34rem] w-[34rem] rounded-full blur-[130px]"
           style={{
-            background: "radial-gradient(circle, rgba(232,192,64,0.11), transparent 65%)",
+            background: "radial-gradient(circle, rgba(201, 169, 97,0.11), transparent 65%)",
             animation: "aurora-drift 19s ease-in-out infinite alternate",
           }}
         />
         <div
           className="absolute bottom-[8%] right-[6%] h-[40rem] w-[40rem] rounded-full blur-[150px]"
           style={{
-            background: "radial-gradient(circle, rgba(168,122,16,0.12), transparent 65%)",
+            background: "radial-gradient(circle, rgba(138, 115, 64,0.12), transparent 65%)",
             animation: "aurora-drift 25s ease-in-out infinite alternate-reverse",
           }}
         />
@@ -56,7 +56,7 @@ export function SpatialBackground() {
         ease={60}
         staticity={55}
         size={0.5}
-        color="#E8C040"
+        color="#C9A961"
         refresh
       />
 

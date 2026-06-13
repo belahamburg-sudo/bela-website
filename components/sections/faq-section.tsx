@@ -15,7 +15,7 @@ export function FaqSection() {
     >
       <div className="mx-auto max-w-3xl px-6">
         <div className="text-center mb-14">
-          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(232,192,64,0.55)]" aria-hidden />FAQ</p>
+          <p className="eyebrow mb-6 mx-auto"><span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201, 169, 97,0.55)]" aria-hidden />FAQ</p>
           <h2
             className="font-heading tracking-gta leading-none text-cream"
             style={{ fontSize: "clamp(2.5rem,5vw,5rem)" }}
