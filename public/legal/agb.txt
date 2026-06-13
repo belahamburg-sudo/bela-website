@@ -1,42 +1,191 @@
-# Allgemeine Geschäftsbedingungen
-> Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen Bela Goldmann (AI Goldmining) und Kunden über den Kauf digitaler Produkte über diese Website.
+# Allgemeine Geschäftsbedingungen (AGB)
 
-## § 1 Geltungsbereich
-Diese AGB gelten für alle Verträge, die zwischen Bela Goldmann, [VOLLSTÄNDIGE ADRESSE EINTRAGEN], Deutschland (nachfolgend 'Anbieter') und Verbrauchern oder Unternehmern (nachfolgend 'Kunde') über die Website aigoldmining.com geschlossen werden. Abweichende AGB des Kunden haben keine Gültigkeit, sofern der Anbieter diesen nicht ausdrücklich schriftlich zustimmt.
+## § 1 Geltungsbereich und Anbieter
 
-## § 2 Vertragsschluss
-Die Darstellung der Produkte auf der Website stellt kein rechtlich bindendes Angebot dar. Durch Klicken auf 'Kurs kaufen' gibt der Kunde ein verbindliches Kaufangebot ab. Der Vertrag kommt zustande, wenn der Anbieter das Angebot ausdrücklich annimmt oder die digitalen Inhalte bereitstellt. Der Anbieter bestätigt den Vertragsschluss per E-Mail.
+(1) Diese Allgemeinen Geschäftsbedingungen (nachfolgend "AGB") gelten für alle Verträge, die du mit
 
-## § 3 Preise und Zahlungsbedingungen
-- Alle Preise verstehen sich in Euro (EUR) inklusive der gesetzlichen Umsatzsteuer, sofern anwendbar
-- Die Zahlung erfolgt über Stripe Payments Europe, Ltd. per Kredit-/Debitkarte oder sonstigen angebotenen Zahlungsmethoden
-- Die Zahlung wird mit Abschluss des Bestellvorgangs fällig
-- Stripe verarbeitet Zahlungsdaten im Rahmen seiner eigenen Datenschutzerklärung
+Bela Goldmann, Einzelunternehmer
+Gottschedstraße 17, 22301 Hamburg
+E-Mail: bela@aigoldmining.com
 
-## § 4 Lieferung digitaler Inhalte
-- Nach erfolgreicher Zahlung erhält der Kunde sofortigen Zugang zu den digitalen Kursinhalten über sein Benutzerkonto
-- Die Kursinhalte stehen nach dem Login unter /db/kurse abrufbar bereit
-- Heruntergeladene Dateien werden personalisiert (sichtbar und unsichtbar mit Käuferdaten markiert) ausgeliefert
-- Der Zugangszeitraum ist unbegrenzt, solange die Plattform betrieben wird
-- Der Anbieter behält sich vor, Kursinhalte zu aktualisieren, zu erweitern oder anzupassen
+(nachfolgend "Anbieter", "wir" oder "uns") über die Website aigoldmining.com (nachfolgend "Website") sowie über damit verbundene Verkaufs- und Auslieferungskanäle abschließt.
 
-## § 5 Widerrufsrecht für digitale Inhalte
-Verbraucher haben grundsätzlich ein 14-tägiges Widerrufsrecht. Für digitale Inhalte (Kurse, Downloads) gilt gemäß § 356 Abs. 5 BGB: Das Widerrufsrecht erlischt vorzeitig, sobald der Anbieter mit der Ausführung begonnen hat und der Verbraucher ausdrücklich zugestimmt hat, dass er sein Widerrufsrecht verliert, sobald der Anbieter die vollständige Vertragserfüllung beginnt. Diese Zustimmung erteilt der Käufer im Checkout durch entsprechende Checkbox.
+(2) Maßgeblich ist die zum Zeitpunkt des Vertragsschlusses gültige Fassung dieser AGB. Abweichende Bedingungen des Kunden werden nicht anerkannt, es sei denn, wir stimmen ihrer Geltung ausdrücklich schriftlich zu.
 
-## § 6 Nutzungsrechte
-Mit dem Kauf erhält der Kunde ein nicht übertragbares, nicht ausschließliches Nutzungsrecht für die Kursinhalte zum persönlichen Gebrauch. Eine Weitergabe, Vervielfältigung, Veröffentlichung oder gewerbliche Nutzung der Kursinhalte ist ohne ausdrückliche schriftliche Genehmigung des Anbieters untersagt. Ausgelieferte Dateien sind mit Käuferdaten markiert; eine unautorisierte Weitergabe ist nachverfolgbar.
+(3) Verbraucher im Sinne dieser AGB ist jede natürliche Person, die ein Rechtsgeschäft zu Zwecken abschließt, die überwiegend weder ihrer gewerblichen noch ihrer selbständigen beruflichen Tätigkeit zugerechnet werden können (§ 13 BGB). Unternehmer ist eine natürliche oder juristische Person oder eine rechtsfähige Personengesellschaft, die bei Abschluss des Rechtsgeschäfts in Ausübung ihrer gewerblichen oder selbständigen beruflichen Tätigkeit handelt (§ 14 BGB).
 
-## § 7 Haftungsbeschränkung
-Der Anbieter haftet unbeschränkt bei Vorsatz und grober Fahrlässigkeit sowie bei Verletzung von Leben, Körper und Gesundheit. Im Übrigen ist die Haftung des Anbieters auf den vorhersehbaren, vertragstypischen Schaden begrenzt. Eine Haftung für mittelbare Schäden, entgangenen Gewinn oder Folgeschäden ist ausgeschlossen, soweit gesetzlich zulässig.
+## § 2 Vertragsgegenstand und Leistungen
 
-## § 8 Kein Ergebnisversprechen
-Die Kursinhalte vermitteln Wissen und Methoden. Der Anbieter schuldet keine bestimmten wirtschaftlichen Ergebnisse. Individuelle Ergebnisse hängen von der persönlichen Umsetzung, dem Marktumfeld und weiteren Faktoren ab. Hinweise auf beispielhafte Einnahmen sind keine Garantien.
+Über die Website bieten wir insbesondere folgende Leistungen an:
 
-## § 9 Datenschutz
-Hinweise zur Verarbeitung personenbezogener Daten finden sich in unserer Datenschutzerklärung unter /datenschutz.
+a) **Digitale Produkte** zum einmaligen Kauf, zum Beispiel Online-Kurse, Minikurse, E-Books, Templates, Workbooks und sonstige digitale Inhalte.
 
-## § 10 Anwendbares Recht und Gerichtsstand
-Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts (CISG). Für Verbraucher gilt: Zwingende Schutzvorschriften des Staates, in dem der Verbraucher seinen gewöhnlichen Aufenthalt hat, bleiben unberührt. Gerichtsstand ist der Sitz des Anbieters, sofern der Kunde Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen ist.
+b) **Abonnements** mit wiederkehrender Zahlung, insbesondere den Zugang zu kostenpflichtigen Community- und Telegram-Angeboten (zum Beispiel "Elite Miners").
 
-## § 11 Salvatorische Klausel
-Sollten einzelne Bestimmungen dieser AGB ganz oder teilweise unwirksam sein oder werden, berührt dies die Wirksamkeit der übrigen Bestimmungen nicht. Anstelle der unwirksamen Bestimmung gilt die gesetzlich zulässige Regelung, die dem wirtschaftlichen Zweck der unwirksamen Bestimmung am nächsten kommt.
+c) **Kostenlose Angebote** wie Newsletter, kostenlose Telegram-Gruppen (zum Beispiel "Free Miners") und kostenlose Downloads.
+
+d) **Live-Leistungen** wie Webinare, Gruppen-Coachings und Einzel-Coachings (1:1).
+
+e) **Individuelle Dienstleistungen** (Services), die ausschließlich auf gesonderte Anfrage und auf Basis individueller Vereinbarung erbracht werden.
+
+Der konkrete Leistungsumfang ergibt sich aus der jeweiligen Produktbeschreibung zum Zeitpunkt der Bestellung.
+
+## § 3 Vertragsschluss
+
+(1) Die Darstellung der Produkte auf der Website stellt kein rechtlich bindendes Angebot dar, sondern eine Aufforderung zur Bestellung.
+
+(2) Durch Anklicken des Bestell- bzw. Zahlungsbuttons im Bestellprozess (Checkout) gibst du ein verbindliches Angebot zum Abschluss eines Vertrags über die im Warenkorb enthaltenen Leistungen ab. Vor dem Absenden der Bestellung kannst du deine Angaben jederzeit einsehen und ändern.
+
+(3) Nach Eingang deiner Bestellung senden wir dir eine automatische Bestätigung per E-Mail (Empfangsbestätigung). Diese Empfangsbestätigung dokumentiert lediglich, dass deine Bestellung bei uns eingegangen ist, und stellt noch keine Annahme deines Angebots dar.
+
+(4) Der Vertrag kommt zustande, wenn wir dein Angebot ausdrücklich annehmen (Annahmeerklärung, zum Beispiel durch eine gesonderte Auftragsbestätigung per E-Mail), spätestens jedoch mit der Bereitstellung bzw. Freischaltung der bestellten Leistung. Bei digitalen Inhalten, die unmittelbar nach Zahlung freigeschaltet werden, kommt der Vertrag mit der Freischaltung zustande.
+
+(5) Den Vertragstext (Bestellung, AGB und Bestätigung) speichern wir und stellen ihn dir auf einem dauerhaften Datenträger (per E-Mail oder im Kundenkonto) zur Verfügung. Der Vertragsschluss erfolgt in deutscher Sprache.
+
+(6) Die Zahlungsabwicklung erfolgt über den Zahlungsdienstleister Stripe. Es gelten ergänzend die Bedingungen von Stripe für den Zahlungsvorgang.
+
+## § 4 Preise und Zahlung
+
+(1) Alle Preise sind Endpreise.
+
+(2) Die Zahlung erfolgt über die im Checkout angebotenen Zahlungsmethoden (zum Beispiel über Stripe). Der Kaufpreis ist mit Vertragsschluss sofort fällig, soweit nicht ausdrücklich etwas anderes vereinbart ist.
+
+(3) Ratenzahlung ist nur möglich, soweit sie für ein Produkt ausdrücklich angeboten wird. Gerät der Kunde mit einer Rate in Verzug, wird der gesamte noch offene Restbetrag sofort zur Zahlung fällig.
+
+(4) Bei Abonnements wird der vereinbarte Betrag zu Beginn des jeweiligen Abrechnungszeitraums wiederkehrend abgebucht.
+
+(5) Eine Rechnung stellen wir dir in elektronischer Form (zum Beispiel per E-Mail oder im Kundenkonto) zur Verfügung.
+
+## § 5 Bereitstellung und Zugang
+
+(1) Digitale Produkte werden nach Zahlungseingang durch Freischaltung im Kundenbereich, durch Zusendung eines Zugangslinks oder durch Bereitstellung zum Download zur Verfügung gestellt.
+
+(2) Du bist selbst dafür verantwortlich, dass die technischen Voraussetzungen für die Nutzung der digitalen Produkte (zum Beispiel Internetverbindung, geeignetes Endgerät, aktueller Browser, gültige E-Mail-Adresse) vorliegen.
+
+(3) Die für den Zugang notwendigen Zugangsdaten sind vertraulich zu behandeln und dürfen nicht an Dritte weitergegeben werden.
+
+## § 6 Abonnements: Laufzeit, Verlängerung und Kündigung
+
+(1) Abonnements (zum Beispiel "Elite Miners") werden mit der im jeweiligen Angebot angegebenen Laufzeit abgeschlossen (zum Beispiel monatlich oder jährlich).
+
+(2) Soweit nicht anders angegeben, verlängert sich ein Abonnement automatisch um die jeweils gleiche Laufzeit, wenn es nicht vor Ablauf gekündigt wird.
+
+(3) Monatlich abgeschlossene Abonnements können jederzeit zum Ende des laufenden Abrechnungszeitraums gekündigt werden. Für Abonnements mit längerer Laufzeit gilt die im Angebot angegebene Kündigungsfrist.
+
+(4) Verbrauchern, die ein kostenpflichtiges Dauerschuldverhältnis online abgeschlossen haben, steht gemäß § 312k BGB eine leicht zugängliche Kündigungsmöglichkeit zur Verfügung (Kündigungsschaltfläche). Die Kündigung kann zudem jederzeit formlos in Textform an bela@aigoldmining.com erklärt werden.
+
+(5) Das Recht zur außerordentlichen Kündigung aus wichtigem Grund bleibt für beide Seiten unberührt.
+
+## § 7 Widerrufsrecht für Verbraucher
+
+Verbrauchern steht ein gesetzliches Widerrufsrecht zu. Über dieses informieren wir nach der gesetzlichen Muster-Widerrufsbelehrung wie folgt:
+
+### Widerrufsbelehrung
+
+**Widerrufsrecht**
+
+Du hast das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen. Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsschlusses.
+
+Um dein Widerrufsrecht auszuüben, musst du uns
+
+Bela Goldmann, Gottschedstraße 17, 22301 Hamburg, E-Mail: bela@aigoldmining.com
+
+mittels einer eindeutigen Erklärung (zum Beispiel ein mit der Post versandter Brief oder eine E-Mail) über deinen Entschluss, diesen Vertrag zu widerrufen, informieren. Du kannst dafür das beigefügte Muster-Widerrufsformular verwenden, das jedoch nicht vorgeschrieben ist.
+
+Zur Wahrung der Widerrufsfrist reicht es aus, dass du die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absendest.
+
+**Folgen des Widerrufs**
+
+Wenn du diesen Vertrag widerrufst, haben wir dir alle Zahlungen, die wir von dir erhalten haben, unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über deinen Widerruf dieses Vertrags bei uns eingegangen ist. Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das du bei der ursprünglichen Transaktion eingesetzt hast, es sei denn, mit dir wurde ausdrücklich etwas anderes vereinbart. In keinem Fall werden dir wegen dieser Rückzahlung Entgelte berechnet.
+
+### Vorzeitiges Erlöschen des Widerrufsrechts bei digitalen Inhalten
+
+Bei Verträgen über die Lieferung von digitalen Inhalten, die nicht auf einem körperlichen Datenträger geliefert werden (zum Beispiel Online-Kurse, E-Books, Downloads), erlischt dein Widerrufsrecht gemäß § 356 Abs. 5 BGB, wenn
+
+a) du ausdrücklich zugestimmt hast, dass wir mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist beginnen,
+
+b) du deine Kenntnis davon bestätigt hast, dass du durch diese Zustimmung mit Beginn der Ausführung des Vertrags dein Widerrufsrecht verlierst, und
+
+c) wir dir eine Bestätigung hierüber zur Verfügung gestellt haben.
+
+Diese Zustimmung holen wir im Bestellprozess gesondert ein.
+
+### Besonderheiten bei Live-Leistungen
+
+Bei der Erbringung von Dienstleistungen (zum Beispiel Coaching) erlischt das Widerrufsrecht gemäß § 356 Abs. 4 BGB, wenn wir die Dienstleistung vollständig erbracht haben und mit der Ausführung erst begonnen haben, nachdem du ausdrücklich zugestimmt hast und gleichzeitig deine Kenntnis davon bestätigt hast, dass du dein Widerrufsrecht bei vollständiger Vertragserfüllung verlierst. Bei Verträgen über Dienstleistungen im Zusammenhang mit Freizeitbetätigungen, die für einen spezifischen Termin oder Zeitraum vorgesehen sind (zum Beispiel terminlich festgelegte Webinare), kann das Widerrufsrecht nach § 312g Abs. 2 Nr. 9 BGB ausgeschlossen sein.
+
+### Muster-Widerrufsformular
+
+(Wenn du den Vertrag widerrufen willst, fülle dieses Formular aus und sende es zurück.)
+
+An: Bela Goldmann, Gottschedstraße 17, 22301 Hamburg, E-Mail: bela@aigoldmining.com
+
+Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*) / die Erbringung der folgenden Dienstleistung (*):
+
+Bestellt am (*) / erhalten am (*):
+Name des/der Verbraucher(s):
+Anschrift des/der Verbraucher(s):
+Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier):
+Datum:
+
+(*) Unzutreffendes streichen.
+
+## § 8 Nutzungsrechte und Lizenz
+
+(1) Mit vollständiger Zahlung erhältst du ein einfaches, nicht übertragbares Recht, die erworbenen digitalen Produkte für deine eigenen, persönlichen Zwecke zu nutzen.
+
+(2) Es ist nicht gestattet, die Inhalte ganz oder teilweise zu vervielfältigen, öffentlich zugänglich zu machen, weiterzuverkaufen, an Dritte weiterzugeben, zu vermieten oder auf sonstige Weise kommerziell zu verwerten, soweit dies nicht ausdrücklich gestattet wurde.
+
+(3) Eine Weitergabe von Zugangsdaten an Dritte ist untersagt. Bei Verstößen gegen die Nutzungsbedingungen sind wir berechtigt, den Zugang zu sperren. Schadensersatzansprüche bleiben vorbehalten.
+
+## § 9 Webinare, Coachings und individuelle Dienstleistungen
+
+(1) Für Webinare, Gruppen-Coachings und Einzel-Coachings gelten ergänzend die jeweiligen Angebotsbeschreibungen hinsichtlich Termin, Dauer und Umfang.
+
+(2) Vereinbarte Termine für Einzel-Coachings können bis 48 Stunden vor dem Termin kostenfrei verschoben werden. Bei späterer Absage oder Nichterscheinen gilt die Leistung als erbracht, soweit nicht ein wichtiger Grund vorliegt.
+
+(3) Individuelle Dienstleistungen (Services) kommen ausschließlich durch gesonderte Vereinbarung zustande. Diese AGB gelten ergänzend, soweit keine abweichende individuelle Vereinbarung getroffen wird.
+
+(4) Coaching und Beratung stellen eine Dienstleistung dar. Wir schulden ein fachgerechtes Tätigwerden, nicht jedoch einen bestimmten Erfolg.
+
+## § 10 Kostenlose Angebote
+
+(1) Auf kostenlose Angebote (Newsletter, kostenlose Telegram-Gruppen, kostenlose Downloads) besteht kein Anspruch. Wir behalten uns vor, kostenlose Angebote jederzeit zu ändern oder einzustellen.
+
+(2) Der Newsletter wird im Double-Opt-In-Verfahren versendet und kann jederzeit abbestellt werden. Näheres regelt unsere Datenschutzerklärung.
+
+## § 11 Gewährleistung
+
+(1) Es gelten die gesetzlichen Mängelrechte. Für digitale Produkte gelten ergänzend die besonderen Vorschriften der §§ 327 ff. BGB.
+
+(2) Soweit ein digitales Produkt mangelhaft ist, hast du im Rahmen der gesetzlichen Regelungen Anspruch auf Nacherfüllung, und unter den gesetzlichen Voraussetzungen auf Minderung oder Beendigung des Vertrags.
+
+## § 12 Haftung
+
+(1) Wir haften unbeschränkt für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit sowie für Schäden, die auf einer vorsätzlichen oder grob fahrlässigen Pflichtverletzung beruhen.
+
+(2) Bei der leicht fahrlässigen Verletzung einer wesentlichen Vertragspflicht (Kardinalpflicht), deren Erfüllung die ordnungsgemäße Durchführung des Vertrags überhaupt erst ermöglicht und auf deren Einhaltung du regelmäßig vertrauen darfst, ist die Haftung der Höhe nach auf den vertragstypischen, vorhersehbaren Schaden begrenzt.
+
+(3) Eine darüber hinausgehende Haftung ist ausgeschlossen. Die Haftung nach dem Produkthaftungsgesetz bleibt unberührt.
+
+## § 13 Kein Erfolgsversprechen
+
+Unsere Produkte, Kurse und Coachings vermitteln Wissen, Strategien und Werkzeuge. Sie stellen keine Rechts-, Steuer- oder Anlageberatung dar und ersetzen eine solche nicht. Ein bestimmter wirtschaftlicher Erfolg, ein bestimmtes Einkommen oder ein bestimmtes Ergebnis wird ausdrücklich nicht geschuldet und nicht garantiert. Dargestellte Beispiele und Ergebnisse sind individuell und nicht auf jede Person übertragbar. Der Erfolg hängt maßgeblich von deinem eigenen Einsatz, deinen Fähigkeiten und externen Faktoren ab.
+
+## § 14 Affiliate- und Empfehlungsprogramm
+
+Soweit wir ein Affiliate- oder Empfehlungsprogramm anbieten, über das Dritte unsere Produkte gegen Provision bewerben oder vermitteln, gelten hierfür gesonderte Teilnahmebedingungen, die mit den jeweiligen Partnern separat vereinbart werden.
+
+## § 15 Schlussbestimmungen
+
+(1) Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts. Bei Verbrauchern gilt diese Rechtswahl nur, soweit dadurch der durch zwingende Bestimmungen des Rechts des Staates des gewöhnlichen Aufenthalts des Verbrauchers gewährte Schutz nicht entzogen wird.
+
+(2) Ist der Kunde Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen, ist Gerichtsstand für alle Streitigkeiten aus diesem Vertragsverhältnis der Sitz des Anbieters.
+
+(3) Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+
+(4) Sollten einzelne Bestimmungen dieser AGB unwirksam sein oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen davon unberührt.
+
+---
+
+Stand: Juni 2026

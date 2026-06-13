@@ -1,46 +1,117 @@
 # Datenschutzerklärung
-> Wir nehmen den Schutz deiner persönlichen Daten ernst. Diese Datenschutzerklärung informiert dich gemäß Art. 13 DSGVO darüber, wie wir deine Daten verarbeiten.
 
-## Verantwortlicher
-Bela Goldmann, AI Goldmining: Bela@goldmvnn.com
+## 1. Verantwortlicher
 
-## Rechtsgrundlagen der Verarbeitung
-Wir verarbeiten deine personenbezogenen Daten auf Basis folgender Rechtsgrundlagen gemäß DSGVO:
-- Art. 6 Abs. 1 lit. a DSGVO: Einwilligung (z.B. Newsletter-Anmeldung)
-- Art. 6 Abs. 1 lit. b DSGVO: Vertragserfüllung (z.B. Kursübermittlung nach Kauf)
-- Art. 6 Abs. 1 lit. c DSGVO: Rechtliche Verpflichtung (z.B. Aufbewahrungsfristen)
-- Art. 6 Abs. 1 lit. f DSGVO: Berechtigtes Interesse (z.B. Sicherheit, Betrieb der Website)
+Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:
 
-## Hosting: Vercel Inc.
-Diese Website wird bei Vercel Inc. (440 N Barranca Ave #4133, Covina, CA 91723, USA) gehostet. Vercel verarbeitet beim Aufruf der Website automatisch Server-Logdaten (IP-Adresse, Browser, Betriebssystem, Aufrufzeitpunkt). Die Übertragung in die USA erfolgt auf Grundlage der EU-Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO). Datenschutzerklärung: https://vercel.com/legal/privacy-policy
+Bela Goldmann
+Gottschedstraße 17
+22301 Hamburg
+Deutschland
+E-Mail: bela@aigoldmining.com
 
-## Authentifizierung & Datenbank: Supabase
-Für Nutzerkonten und Datenverarbeitung setzen wir Supabase (Supabase Inc., 970 Toa Payoh North, #07-04, Singapur) ein. Die Datenspeicherung erfolgt auf Servern in Frankfurt (EU-West). Supabase verarbeitet E-Mail-Adresse, Passwort-Hash, Nutzer-ID und Kursfortschrittsdaten. Datenschutzerklärung: https://supabase.com/privacy
+Einen Datenschutzbeauftragten haben wir nicht bestellt, da hierfür die gesetzlichen Voraussetzungen nicht vorliegen.
 
-## Zahlungsabwicklung: Stripe
-Zahlungen werden über Stripe Payments Europe, Ltd. (1 Grand Canal Street Lower, Grand Canal Dock, Dublin, D02 H210, Irland) abgewickelt. Stripe verarbeitet Zahlungsdaten (Kartendaten, Transaktionsbetrag, E-Mail) im Rahmen der Kaufabwicklung. Die Übertragung von Daten in die USA erfolgt auf Grundlage der EU-Standardvertragsklauseln. Datenschutzerklärung: https://stripe.com/de/privacy
+## 2. Allgemeines zur Datenverarbeitung
 
-## Download-Protokollierung
-Beim Herunterladen gekaufter Dateien protokollieren wir aus Sicherheits- und Nachweisgründen (berechtigtes Interesse, Art. 6 Abs. 1 lit. f DSGVO) den Zeitpunkt, die Nutzer-ID, die Bestell-ID sowie die IP-Adresse. Heruntergeladene Dateien werden zudem mit Käuferdaten personalisiert (sichtbares und unsichtbares Wasserzeichen), um unautorisierte Weitergabe zu verhindern.
+Wir verarbeiten personenbezogene Daten unserer Nutzer grundsätzlich nur, soweit dies zur Bereitstellung einer funktionsfähigen Website sowie unserer Inhalte und Leistungen erforderlich ist. Die Verarbeitung erfolgt regelmäßig nur nach Einwilligung des Nutzers oder wenn die Verarbeitung durch gesetzliche Vorschriften gestattet ist.
 
-## Lead-Erfassung (Webinar-Anmeldung)
-Wenn du dich für das kostenlose Webinar anmeldest, erfassen wir deine E-Mail-Adresse und speichern sie in unserer Datenbank (Supabase). Diese Daten werden ausschließlich für die Zusendung von Informationen zu unseren digitalen Produkten und Kursen genutzt. Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO. Du kannst deine Einwilligung jederzeit per E-Mail an Bela@goldmvnn.com widerrufen.
+**Rechtsgrundlagen:** Soweit wir für Verarbeitungsvorgänge eine Einwilligung einholen, dient Art. 6 Abs. 1 lit. a DSGVO als Rechtsgrundlage. Bei der Verarbeitung zur Erfüllung eines Vertrags ist Art. 6 Abs. 1 lit. b DSGVO Rechtsgrundlage. Soweit eine Verarbeitung zur Erfüllung einer rechtlichen Verpflichtung erforderlich ist, dient Art. 6 Abs. 1 lit. c DSGVO als Grundlage. Ist die Verarbeitung zur Wahrung eines berechtigten Interesses erforderlich, dient Art. 6 Abs. 1 lit. f DSGVO als Rechtsgrundlage.
 
-## Cookies und lokale Speicherung
-Diese Website verwendet technisch notwendige Cookies für die Authentifizierungssitzung (Supabase Auth Session Cookie). Darüber hinaus wird im Demo-Modus ohne Konto der localStorage des Browsers genutzt. Es werden keine Tracking-Cookies, Analytics-Cookies oder Marketing-Cookies ohne deine Einwilligung eingesetzt. Eine Einwilligung nach § 25 TTDSG ist für technisch notwendige Cookies nicht erforderlich.
+**Speicherdauer:** Personenbezogene Daten werden gelöscht, sobald der Zweck der Speicherung entfällt. Eine Speicherung darüber hinaus erfolgt, wenn dies durch gesetzliche Aufbewahrungspflichten (zum Beispiel handels- und steuerrechtliche Pflichten, regelmäßig 6 bis 10 Jahre) vorgesehen ist.
 
-## Deine Rechte als betroffene Person
-Gemäß DSGVO stehen dir folgende Rechte zu:
-- Art. 15 DSGVO: Auskunftsrecht: Du kannst Auskunft über die von uns gespeicherten Daten verlangen
-- Art. 16 DSGVO: Berichtigungsrecht: Du kannst die Berichtigung unrichtiger Daten verlangen
-- Art. 17 DSGVO: Recht auf Löschung: Du kannst die Löschung deiner Daten verlangen
-- Art. 18 DSGVO: Recht auf Einschränkung der Verarbeitung
-- Art. 20 DSGVO: Recht auf Datenübertragbarkeit
-- Art. 21 DSGVO: Widerspruchsrecht gegen die Verarbeitung
-- Art. 77 DSGVO: Beschwerderecht bei der zuständigen Datenschutzaufsichtsbehörde
+## 3. Hosting und Bereitstellung der Website
 
-## Kontakt für Datenschutzanfragen
-Für alle Anfragen zu deinen personenbezogenen Daten wende dich per E-Mail an: Bela@goldmvnn.com. Wir bearbeiten Anfragen innerhalb von 30 Tagen.
+Diese Website wird bei Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA, gehostet. Vercel verarbeitet in unserem Auftrag personenbezogene Daten, die beim Aufruf der Website anfallen. Mit Vercel besteht ein Vertrag zur Auftragsverarbeitung gemäß Art. 28 DSGVO. Soweit Daten in die USA übermittelt werden, erfolgt dies auf Grundlage der Standardvertragsklauseln der EU-Kommission bzw. einer Zertifizierung nach dem EU-US Data Privacy Framework. Rechtsgrundlage ist unser berechtigtes Interesse an einer sicheren und effizienten Bereitstellung der Website, Art. 6 Abs. 1 lit. f DSGVO.
 
-## Aktualität und Änderungen
-Diese Datenschutzerklärung ist aktuell gültig (Stand: Juni 2026). Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf anzupassen, um sie aktuellen rechtlichen Anforderungen anzupassen oder Änderungen unserer Leistungen umzusetzen.
+Für Datenbank, Nutzerkonten und Authentifizierung setzen wir Supabase ein (Supabase Inc.). Supabase verarbeitet in unserem Auftrag die von dir bei der Kontoerstellung und Nutzung angegebenen Daten. Es besteht ein Auftragsverarbeitungsvertrag nach Art. 28 DSGVO. Soweit dabei eine Übermittlung in ein Drittland (zum Beispiel USA) erfolgt, geschieht dies auf Grundlage der Standardvertragsklauseln der EU-Kommission.
+
+### Server-Logfiles
+
+Beim Aufruf der Website werden automatisch Informationen erfasst, die dein Browser übermittelt. Dies sind: Browsertyp und Version, verwendetes Betriebssystem, Referrer-URL, Hostname des zugreifenden Rechners, Uhrzeit der Serveranfrage und die IP-Adresse. Diese Daten werden nicht mit anderen Datenquellen zusammengeführt. Die Erfassung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO zur technisch fehlerfreien Darstellung und Optimierung der Website sowie aus Sicherheitsgründen. Die Logfiles werden nach spätestens 7 Tagen gelöscht.
+
+## 4. Cookies und Einwilligungsverwaltung
+
+Unsere Website verwendet Cookies. Cookies sind kleine Textdateien, die auf deinem Endgerät gespeichert werden. Technisch notwendige Cookies, die für den Betrieb der Website erforderlich sind (zum Beispiel Login, Warenkorb, Speicherung deiner Cookie-Auswahl), setzen wir auf Grundlage von § 25 Abs. 2 TDDDG und Art. 6 Abs. 1 lit. f DSGVO ohne Einwilligung ein.
+
+Alle nicht notwendigen Cookies und Tools (zum Beispiel Analyse und Marketing) setzen wir nur mit deiner ausdrücklichen Einwilligung gemäß § 25 Abs. 1 TDDDG und Art. 6 Abs. 1 lit. a DSGVO ein. Du kannst deine Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen.
+
+Zur Verwaltung deiner Einwilligungen setzen wir ein Consent-Management-Tool (Cookie-Banner) ein. Beim ersten Aufruf der Website kannst du dort auswählen, welche Kategorien von Cookies und Diensten du zulässt. Deine Auswahl wird gespeichert und kann jederzeit über die Einstellungen erneut aufgerufen und geändert werden. Marketing- und Analyse-Dienste werden erst nach deiner Einwilligung geladen.
+
+## 5. Zahlungsabwicklung über Stripe
+
+Für die Abwicklung von Zahlungen nutzen wir den Zahlungsdienstleister Stripe (Stripe Payments Europe, Ltd., 1 Grand Canal Street Lower, Grand Canal Dock, Dublin, Irland). Wenn du eine kostenpflichtige Bestellung aufgibst, werden die für die Zahlungsabwicklung erforderlichen Daten (zum Beispiel Name, E-Mail-Adresse, Rechnungsadresse, Zahlungsdaten) an Stripe übermittelt und dort verarbeitet. Die Zahlungsdaten (Kreditkartennummer, Bankdaten) gibst du direkt bei Stripe ein, wir erhalten und speichern diese vollständigen Zahlungsdaten nicht. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung). Soweit eine Übermittlung in die USA stattfindet, erfolgt diese auf Grundlage der Standardvertragsklauseln. Weitere Informationen findest du in der Datenschutzerklärung von Stripe: https://stripe.com/de/privacy
+
+## 6. Vertragsabwicklung und Kundenkonto
+
+Zur Abwicklung von Käufen, zur Bereitstellung deiner Produkte und zur Verwaltung deines Kundenkontos verarbeiten wir die dafür erforderlichen Daten (Name, E-Mail-Adresse, Rechnungsdaten, gekaufte Produkte, Zugangsdaten). Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO. Rechnungsdaten bewahren wir aufgrund steuer- und handelsrechtlicher Pflichten für die gesetzlich vorgeschriebene Dauer auf.
+
+## 7. Kontaktaufnahme
+
+Wenn du uns per E-Mail oder über ein Kontaktformular kontaktierst, werden deine Angaben zur Bearbeitung der Anfrage und für den Fall von Anschlussfragen gespeichert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, sofern die Anfrage mit einem Vertrag zusammenhängt, sonst Art. 6 Abs. 1 lit. f DSGVO an der Beantwortung deiner Anfrage. Diese Daten löschen wir, sobald die Anfrage erledigt ist und keine Aufbewahrungspflichten entgegenstehen.
+
+## 8. Newsletter
+
+Auf unserer Website kannst du einen kostenlosen Newsletter abonnieren. Für die Anmeldung verwenden wir das Double-Opt-In-Verfahren: Nach deiner Anmeldung erhältst du eine E-Mail mit einem Bestätigungslink. Erst nach Bestätigung wirst du in den Verteiler aufgenommen. So stellen wir sicher, dass niemand mit einer fremden E-Mail-Adresse angemeldet wird.
+
+Für den Versand verarbeiten wir deine E-Mail-Adresse sowie gegebenenfalls deinen Vornamen. Rechtsgrundlage ist deine Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO. Du kannst den Newsletter jederzeit abbestellen, zum Beispiel über den Abmeldelink am Ende jeder E-Mail. Mit der Abmeldung widerrufst du auch deine Einwilligung.
+
+Für den Versand und die Verwaltung unseres Newsletters nutzen wir den Dienst ActiveCampaign (ActiveCampaign, LLC, 1 N Dearborn, 5th Floor, Chicago, IL 60602, USA). ActiveCampaign verarbeitet in unserem Auftrag die von dir bei der Anmeldung angegebenen Daten sowie statistische Auswertungen zum Versand (zum Beispiel ob eine E-Mail geöffnet wurde). Mit ActiveCampaign besteht ein Auftragsverarbeitungsvertrag nach Art. 28 DSGVO. Soweit dabei Daten in die USA übermittelt werden, erfolgt dies auf Grundlage der Standardvertragsklauseln der EU-Kommission. Weitere Informationen findest du in der Datenschutzerklärung von ActiveCampaign: https://www.activecampaign.com/legal/privacy-policy
+
+## 9. Telegram (Free Miners und Elite Miners)
+
+Wir bieten kostenlose und kostenpflichtige Telegram-Gruppen an. Wenn du diesen beitrittst, gelten zusätzlich die Datenschutzbestimmungen von Telegram (Telegram FZ-LLC, Dubai, VAE). Wir haben keinen Einfluss auf die Datenverarbeitung durch Telegram. Telegram verarbeitet Daten unter Umständen außerhalb der EU. Eine Teilnahme ist freiwillig. Innerhalb der Gruppen verarbeiten wir deinen Telegram-Benutzernamen und deine Nachrichten, soweit dies zur Bereitstellung des Angebots erforderlich ist. Für die kostenpflichtige Gruppe verknüpfen wir deinen Zugang mit deiner Bestellung. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (kostenpflichtige Gruppe) bzw. Art. 6 Abs. 1 lit. a DSGVO (freiwillige kostenlose Teilnahme). Weitere Informationen: https://telegram.org/privacy
+
+## 10. Dienste von Drittanbietern (nur mit Einwilligung)
+
+Die folgenden Dienste werden erst geladen, nachdem du über das Cookie-Banner eingewilligt hast.
+
+### Google Analytics 4
+
+Soweit du eingewilligt hast, nutzen wir Google Analytics 4, einen Webanalysedienst der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland. Google Analytics verwendet Cookies und ähnliche Technologien, um die Nutzung der Website zu analysieren. Die erfassten Informationen werden in der Regel an einen Server von Google übertragen und dort gespeichert, eine Übermittlung in die USA ist möglich. Wir haben die IP-Anonymisierung aktiviert. Rechtsgrundlage ist deine Einwilligung, Art. 6 Abs. 1 lit. a DSGVO und § 25 Abs. 1 TDDDG.
+
+### Meta-Pixel (Facebook und Instagram)
+
+Soweit du eingewilligt hast, nutzen wir das Meta-Pixel der Meta Platforms Ireland Limited. Damit können wir das Verhalten von Nutzern nachverfolgen, nachdem sie eine Werbeanzeige gesehen oder angeklickt haben, sowie Zielgruppen für Werbung bilden. Rechtsgrundlage ist deine Einwilligung, Art. 6 Abs. 1 lit. a DSGVO und § 25 Abs. 1 TDDDG.
+
+### ManyChat
+
+Für automatisierte Nachrichten und Funnels nutzen wir ManyChat (ManyChat Inc., USA). Wenn du über ManyChat mit uns interagierst, werden die dabei anfallenden Daten (zum Beispiel dein Social-Media-Profilname, Nachrichteninhalte) verarbeitet. Rechtsgrundlage ist Art. 6 Abs. 1 lit. a oder lit. b DSGVO.
+
+### Schriftarten (Google Fonts, selbst gehostet)
+
+Wir verwenden Schriftarten (Google Fonts), die lokal von unserem eigenen Server ausgeliefert werden. Die Schriftdateien werden beim Erstellen der Website eingebunden und beim Aufruf direkt von unserem Server geladen. Es findet dabei keine Verbindung zu Servern von Google statt, und es wird keine IP-Adresse an Google übertragen.
+
+## 11. Affiliate-Links und Empfehlungen
+
+Auf unserer Website und in unseren Produkten setzen wir Affiliate-Links ein. Wenn du einem solchen Link folgst, kann der jeweilige Partneranbieter Cookies setzen oder Tracking-Parameter verarbeiten, um eine Vermittlung uns zuzuordnen. Auf diese Verarbeitung durch den Partner haben wir keinen Einfluss, es gelten die Datenschutzbestimmungen des jeweiligen Anbieters.
+
+## 12. Deine Rechte als betroffene Person
+
+Dir stehen folgende Rechte zu:
+
+- Recht auf Auskunft (Art. 15 DSGVO)
+- Recht auf Berichtigung (Art. 16 DSGVO)
+- Recht auf Löschung (Art. 17 DSGVO)
+- Recht auf Einschränkung der Verarbeitung (Art. 18 DSGVO)
+- Recht auf Datenübertragbarkeit (Art. 20 DSGVO)
+- Recht auf Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)
+- Recht auf Widerruf einer erteilten Einwilligung mit Wirkung für die Zukunft (Art. 7 Abs. 3 DSGVO)
+
+Zur Ausübung deiner Rechte genügt eine formlose Nachricht an: bela@aigoldmining.com
+
+## 13. Beschwerderecht bei der Aufsichtsbehörde
+
+Du hast das Recht, dich bei einer Datenschutz-Aufsichtsbehörde über die Verarbeitung deiner personenbezogenen Daten zu beschweren. Die für uns zuständige Aufsichtsbehörde ist:
+
+Der Hamburgische Beauftragte für Datenschutz und Informationsfreiheit
+Ludwig-Erhard-Straße 22, 20459 Hamburg
+https://datenschutz-hamburg.de
+
+## 14. Datensicherheit
+
+Wir verwenden im Rahmen des Websitebesuchs das verbreitete TLS-Verfahren (Transport Layer Security) in Verbindung mit der jeweils höchsten Verschlüsselungsstufe, die dein Browser unterstützt. Ob eine einzelne Seite verschlüsselt übertragen wird, erkennst du an der geschlossenen Darstellung des Schloss-Symbols in deiner Browserzeile.
+
+## 15. Aktualität und Änderung dieser Datenschutzerklärung
+
+Diese Datenschutzerklärung ist aktuell gültig und hat den Stand Juni 2026. Durch die Weiterentwicklung unserer Website und Angebote oder aufgrund geänderter gesetzlicher Vorgaben kann es notwendig werden, diese Datenschutzerklärung zu ändern. Die jeweils aktuelle Fassung kann jederzeit auf dieser Seite abgerufen werden.

@@ -12,6 +12,19 @@ function sectionId(heading: string) {
     .replace(/\s+/g, "-");
 }
 
+/** Render inline **bold** markup. */
+function inline(text: string) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={i} className="font-semibold text-cream">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      part
+    )
+  );
+}
+
 function Block({ block }: { block: LegalBlock }) {
   if (block.type === "ul") {
     return (
@@ -19,13 +32,16 @@ function Block({ block }: { block: LegalBlock }) {
         {block.items.map((item) => (
           <li key={item} className="flex gap-3 leading-7 text-muted">
             <span className="mt-2 h-2 w-2 flex-none rounded-full bg-gold-300/60" aria-hidden />
-            {item}
+            {inline(item)}
           </li>
         ))}
       </ul>
     );
   }
-  return <p className="mt-4 leading-8 text-muted">{block.text}</p>;
+  if (block.type === "h3") {
+    return <h3 className="mt-6 font-heading text-lg font-bold text-cream">{inline(block.text)}</h3>;
+  }
+  return <p className="mt-4 leading-8 text-muted">{inline(block.text)}</p>;
 }
 
 /**

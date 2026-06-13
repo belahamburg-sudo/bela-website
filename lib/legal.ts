@@ -3,6 +3,7 @@ import path from "path";
 
 export type LegalBlock =
   | { type: "p"; text: string }
+  | { type: "h3"; text: string }
   | { type: "ul"; items: string[] };
 
 export type LegalSection = { heading: string; blocks: LegalBlock[] };
@@ -74,6 +75,11 @@ export async function readLegalDoc(slug: string): Promise<ParsedLegal | null> {
       intro = trimmed.slice(2).trim();
       continue;
     }
+    if (trimmed.startsWith("### ")) {
+      flushAll();
+      target().push({ type: "h3", text: trimmed.slice(4).trim() });
+      continue;
+    }
     if (trimmed.startsWith("## ")) {
       flushAll();
       current = { heading: trimmed.slice(3).trim(), blocks: [] };
@@ -85,7 +91,8 @@ export async function readLegalDoc(slug: string): Promise<ParsedLegal | null> {
       list.push(trimmed.slice(2).trim());
       continue;
     }
-    if (trimmed === "") {
+    // Horizontal rule / blank line both just end the current block.
+    if (trimmed === "" || trimmed === "---") {
       flushAll();
       continue;
     }
