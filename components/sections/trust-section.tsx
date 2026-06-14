@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { animate, onScroll, stagger } from "animejs";
 import { ShieldCheck, Lock } from "lucide-react";
 import { trustpilotUrl } from "@/lib/env";
-import { TrustpilotWidget, TRUSTPILOT_TEMPLATES } from "@/components/trustpilot-widget";
+import { TrustpilotReviewsPanel } from "@/components/trustpilot-reviews-panel";
 
 const BADGES = [
   { icon: Lock, title: "Sichere Zahlung", text: "SSL-verschlüsselt über Stripe" },
@@ -51,7 +51,7 @@ export function TrustSection() {
             <span className="gold-text">Echte Ergebnisse.</span>
           </h2>
           <p className="mt-6 text-cream/50 text-base lg:text-lg max-w-xl mx-auto leading-relaxed">
-            Live aus Trustpilot — Sterne, TrustScore und die neuesten Bewertungen. Keine Screenshots, kein Fake-Social-Proof.
+            Echte Bewertungen von Trustpilot — TrustScore, Sterne und die neuesten Stimmen. Keine Screenshots, kein Fake-Social-Proof.
           </p>
         </div>
 
@@ -63,21 +63,7 @@ export function TrustSection() {
           <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201, 169, 97,0.05), transparent 60%)" }} aria-hidden />
 
           <div className="relative space-y-6">
-            <TrustpilotWidget
-              templateId={TRUSTPILOT_TEMPLATES.micro}
-              height="52px"
-              className="mx-auto max-w-md"
-            />
-
-            <div className="border-t border-gold-300/10 pt-6">
-              <p className="mb-4 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-cream/40">
-                Neueste Bewertungen
-              </p>
-              <TrustpilotWidget
-                templateId={TRUSTPILOT_TEMPLATES.carousel}
-                height="240px"
-              />
-            </div>
+            <TrustpilotReviewsPanel />
 
             <div className="text-center pt-2">
               <a
