@@ -2,26 +2,19 @@
 
 import { useEffect, useRef } from "react";
 import { animate, onScroll, stagger } from "animejs";
-import { Star, ShieldCheck, Lock, RotateCcw } from "lucide-react";
-import { Marquee } from "@/components/ui/marquee";
-import { trustpilotUrl, trustpilotBusinessUnitId } from "@/lib/env";
-
-const TRUSTPILOT_SCRIPT = "https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js";
+import { ShieldCheck, Lock } from "lucide-react";
+import { trustpilotUrl } from "@/lib/env";
+import { TrustpilotWidget, TRUSTPILOT_TEMPLATES } from "@/components/trustpilot-widget";
 
 const BADGES = [
   { icon: Lock, title: "Sichere Zahlung", text: "SSL-verschlüsselt über Stripe" },
-  { icon: RotateCcw, title: "14 Tage Widerruf", text: "Gesetzliches Widerrufsrecht" },
   { icon: ShieldCheck, title: "DSGVO-konform", text: "Deine Daten bleiben in der EU" },
 ];
-
-// Platzhalter-Logos für "Bekannt aus" — später durch echte Presse-/Partnerlogos ersetzen
-const PRESS = ["FORBES", "BUSINESS INSIDER", "T3N", "GRÜNDER.DE", "OMR"];
 
 export function TrustSection() {
   const headingRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const badgesRef = useRef<HTMLDivElement>(null);
-  const widgetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const cleanups: Array<() => void> = [];
@@ -46,27 +39,6 @@ export function TrustSection() {
     return () => cleanups.forEach((fn) => fn());
   }, []);
 
-  // Load the official Trustpilot TrustBox once a business-unit id is configured.
-  useEffect(() => {
-    if (!trustpilotBusinessUnitId) return;
-    const w = window as typeof window & { Trustpilot?: { loadFromElement: (el: HTMLElement, force?: boolean) => void } };
-    const render = () => {
-      if (w.Trustpilot && widgetRef.current) w.Trustpilot.loadFromElement(widgetRef.current, true);
-    };
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${TRUSTPILOT_SCRIPT}"]`);
-    if (existing) {
-      render();
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = TRUSTPILOT_SCRIPT;
-    script.async = true;
-    script.onload = render;
-    document.body.appendChild(script);
-  }, []);
-
-  const hasWidget = Boolean(trustpilotBusinessUnitId);
-
   return (
     <section className="relative py-20 lg:py-28 sec-glow overflow-hidden scratch-border">
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-gold-300/[0.04] blur-[130px]" />
@@ -79,66 +51,48 @@ export function TrustSection() {
             <span className="gold-text">Echte Ergebnisse.</span>
           </h2>
           <p className="mt-6 text-cream/50 text-base lg:text-lg max-w-xl mx-auto leading-relaxed">
-            Verifizierte Bewertungen statt geschönter Screenshots. Lies selbst nach, was unsere Mitglieder sagen.
+            Live aus Trustpilot — Sterne, TrustScore und die neuesten Bewertungen. Keine Screenshots, kein Fake-Social-Proof.
           </p>
         </div>
 
-        {/* Trustpilot card */}
         <div
           ref={cardRef}
-          className="relative mx-auto max-w-2xl rounded-sm border border-gold-300/25 bg-white/[0.03] p-8 lg:p-10 text-center"
+          className="relative mx-auto max-w-3xl rounded-sm border border-gold-300/25 bg-white/[0.03] p-6 lg:p-8"
           style={{ opacity: 0 }}
         >
           <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201, 169, 97,0.05), transparent 60%)" }} aria-hidden />
 
-          <div className="relative">
-            {hasWidget ? (
-              /* Official Trustpilot TrustBox — auto-rendered from the live profile. */
-              <div
-                ref={widgetRef}
-                className="trustpilot-widget mb-6"
-                data-locale="de-DE"
-                data-template-id="5419b6ffb0d04a076446a9af"
-                data-businessunit-id={trustpilotBusinessUnitId}
-                data-style-height="120px"
-                data-style-width="100%"
-                data-theme="dark"
-              >
-                <a href={trustpilotUrl} target="_blank" rel="noopener noreferrer">
-                  Trustpilot
-                </a>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center justify-center gap-1.5 mb-4">
-                  {[0, 1, 2, 3, 4].map((s) => (
-                    <span key={s} className="flex h-9 w-9 items-center justify-center rounded-[3px] bg-[#00b67a]">
-                      <Star className="h-5 w-5 text-white" fill="currentColor" />
-                    </span>
-                  ))}
-                </div>
-                <p className="font-heading tracking-gta text-cream text-3xl lg:text-4xl mb-1">
-                  4,8 <span className="text-cream/40 text-xl">/ 5</span>
-                </p>
-                <p className="text-cream/45 text-sm mb-6">
-                  Basierend auf <span className="text-cream/80 font-semibold">1.200+ Bewertungen</span> auf Trustpilot
-                </p>
-              </>
-            )}
+          <div className="relative space-y-6">
+            <TrustpilotWidget
+              templateId={TRUSTPILOT_TEMPLATES.micro}
+              height="52px"
+              className="mx-auto max-w-md"
+            />
 
-            <a
-              href={trustpilotUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-shimmer inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
-            >
-              Auf Trustpilot ansehen →
-            </a>
+            <div className="border-t border-gold-300/10 pt-6">
+              <p className="mb-4 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-cream/40">
+                Neueste Bewertungen
+              </p>
+              <TrustpilotWidget
+                templateId={TRUSTPILOT_TEMPLATES.carousel}
+                height="240px"
+              />
+            </div>
+
+            <div className="text-center pt-2">
+              <a
+                href={trustpilotUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-shimmer inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
+              >
+                Alle Bewertungen auf Trustpilot →
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Trust badges */}
-        <div ref={badgesRef} className="mt-12 grid gap-4 sm:grid-cols-3">
+        <div ref={badgesRef} className="mt-12 grid gap-4 sm:grid-cols-2">
           {BADGES.map(({ icon: Icon, title, text }) => (
             <div key={title} className="trust-badge flex items-center gap-4 rounded-sm border border-gold-300/15 bg-white/[0.02] p-5" style={{ opacity: 0 }}>
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/5">
@@ -150,29 +104,6 @@ export function TrustSection() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* "Bekannt aus" logo strip — scrolling marquee */}
-        <div className="mt-14 text-center">
-          <p className="gta-label text-cream/30 mb-6">Bekannt aus</p>
-          <div
-            className="relative mx-auto max-w-3xl overflow-hidden"
-            style={{
-              maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
-              WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
-            }}
-          >
-            <Marquee pauseOnHover className="[--duration:28s] [--gap:3.5rem] py-0">
-              {PRESS.map((name) => (
-                <span
-                  key={name}
-                  className="font-heading tracking-gta text-cream/25 text-lg lg:text-xl select-none transition-colors hover:text-cream/50"
-                >
-                  {name}
-                </span>
-              ))}
-            </Marquee>
-          </div>
         </div>
       </div>
     </section>

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { animate, onScroll, stagger } from "animejs";
-import { PlayCircle, Clock, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
 
@@ -52,7 +52,7 @@ export default function WebinarPage() {
           >
             <p className="eyebrow mb-6 mx-auto">Kostenloses Training</p>
             <h1
-              className="font-heading font-extrabold uppercase tracking-gta leading-none text-cream mb-5"
+              className="font-heading font-extrabold tracking-gta leading-[1.02] text-cream mb-5"
               style={{ fontSize: "clamp(2.4rem, 5.5vw, 5.5rem)" }}
             >
               Wie du mit AI dein erstes digitales Produkt baust und{" "}
@@ -70,32 +70,6 @@ export default function WebinarPage() {
                   {p}
                 </span>
               ))}
-            </div>
-          </motion.div>
-
-          {/* Video */}
-          <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="mb-8"
-          >
-            <div className="video-frame-gold aspect-video bg-graphite">
-              <div
-                className="absolute inset-0"
-                style={{ background: "radial-gradient(ellipse at center, rgba(201, 169, 97,0.15) 0%, transparent 65%)" }}
-                aria-hidden
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                <div className="play-btn-gold h-20 w-24 cursor-pointer">
-                  <PlayCircle aria-hidden className="h-10 w-10 text-obsidian" />
-                </div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-100 drop-shadow-md">On-Demand · Jederzeit verfügbar</p>
-              </div>
-            </div>
-            <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-cream/25 font-semibold uppercase tracking-[0.12em]">
-              <Clock className="h-3.5 w-3.5" />
-              On-Demand Webinar: jederzeit abrufbar
             </div>
           </motion.div>
 
@@ -119,7 +93,7 @@ export default function WebinarPage() {
             <div>
               <p className="eyebrow mb-5 mx-auto">Was du lernst</p>
               <h2
-                className="font-heading font-extrabold uppercase tracking-gta leading-none text-cream"
+                className="font-heading font-extrabold tracking-gta leading-[1.05] text-cream"
                 style={{ fontSize: "clamp(1.8rem, 3.5vw, 3.5rem)" }}
               >
                 Ein klarer Einstieg statt{" "}
@@ -154,7 +128,7 @@ export default function WebinarPage() {
           <div>
             <p className="eyebrow mb-5 mx-auto">Anmeldung</p>
             <h2
-              className="font-heading font-extrabold uppercase tracking-gta leading-none text-cream"
+              className="font-heading font-extrabold tracking-gta leading-[1.05] text-cream"
               style={{ fontSize: "clamp(1.8rem, 3.5vw, 3.5rem)" }}
             >
               Sichere dir den{" "}

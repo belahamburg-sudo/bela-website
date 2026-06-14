@@ -12,11 +12,7 @@ type CourseCardProps = {
 
 export function CourseCard({ course, progress, status }: CourseCardProps) {
   return (
-    <article className="card-glow panel-surface group relative overflow-hidden rounded-sm">
-      {/* Corner accent marks: GTA style */}
-      <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold-300/50 z-10" aria-hidden />
-      <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold-300/50 z-10" aria-hidden />
-
+    <article className="card-glow panel-surface group relative overflow-hidden rounded-2xl border border-gold-300/15">
       {/* Image */}
       <div className="relative aspect-[5/3] overflow-hidden bg-gradient-to-br from-graphite via-obsidian to-ink">
         <Image

@@ -49,6 +49,10 @@ export const belaPrivateTelegram =
 /** Public Trustpilot review profile. */
 export const trustpilotUrl = "https://de.trustpilot.com/review/aigoldmining.com";
 
-/** Trustpilot TrustBox business unit id — set to render the live widget. */
+/**
+ * Trustpilot TrustBox business unit id — public profile id, not a paid product.
+ * Override via NEXT_PUBLIC_TRUSTPILOT_BUSINESS_UNIT_ID if the profile ever moves.
+ */
 export const trustpilotBusinessUnitId =
-  process.env.NEXT_PUBLIC_TRUSTPILOT_BUSINESS_UNIT_ID || "";
+  process.env.NEXT_PUBLIC_TRUSTPILOT_BUSINESS_UNIT_ID ||
+  "69fdcf8486c7ed6ca15dc5a6";

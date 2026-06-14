@@ -6,9 +6,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X, Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatEuro } from "@/lib/utils";
+import { featuredCourses } from "@/lib/content";
 
 export function CartDrawer() {
-  const { items, isOpen, close, setQty, remove, subtotalCents, count } = useCart();
+  const { items, isOpen, close, setQty, remove, subtotalCents, count, add, has } = useCart();
+
+  // Upsell suggestions: featured courses the customer hasn't added yet.
+  const upsells = featuredCourses.filter((c) => !has(c.slug)).slice(0, 2);
 
   return (
     <AnimatePresence>
@@ -118,6 +122,50 @@ export function CartDrawer() {
             {/* Footer */}
             {items.length > 0 && (
               <div className="border-t border-gold-300/10 px-6 py-5">
+                {/* Upsells: add more before checkout */}
+                {upsells.length > 0 && (
+                  <div className="mb-5">
+                    <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-cream/40">
+                      Das wird oft dazu gekauft
+                    </p>
+                    <ul className="grid gap-2">
+                      {upsells.map((c) => (
+                        <li
+                          key={c.slug}
+                          className="flex items-center gap-3 rounded-lg border border-gold-300/15 bg-white/[0.02] p-2.5"
+                        >
+                          <div className="relative h-11 w-11 flex-none overflow-hidden rounded-md border border-white/10 bg-ink">
+                            {c.image && !c.image.startsWith("storage://") ? (
+                              <Image src={c.image} alt="" fill sizes="44px" className="object-cover" />
+                            ) : null}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-semibold text-cream">{c.title}</p>
+                            <p className="gold-text font-heading text-sm leading-none">
+                              {formatEuro(c.priceCents)}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() =>
+                              add({
+                                slug: c.slug,
+                                title: c.title,
+                                priceCents: c.priceCents,
+                                image: c.image,
+                                format: c.format,
+                              })
+                            }
+                            aria-label={`${c.title} hinzufügen`}
+                            className="flex h-8 w-8 flex-none items-center justify-center rounded-md border border-gold-300/30 bg-gold-300/[0.08] text-gold-300 transition-colors hover:border-gold-300/60 hover:bg-gold-300/15"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 <div className="mb-4 flex items-center justify-between">
                   <span className="text-sm uppercase tracking-[0.14em] text-cream/50">Zwischensumme</span>
                   <span className="gold-text font-heading text-2xl leading-none">
@@ -135,7 +183,7 @@ export function CartDrawer() {
                   </span>
                 </Link>
                 <p className="mt-3 text-center text-[11px] text-cream/30">
-                  Sichere Zahlung über Stripe · 14 Tage Widerruf
+                  Sichere Zahlung über Stripe · SSL-verschlüsselt
                 </p>
               </div>
             )}

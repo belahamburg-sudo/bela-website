@@ -493,7 +493,7 @@ export const faqItems = [
     a: "Die meisten AI-Kurse sind Tool-Rundgänge. Hier geht es um den Verkaufsprozess. Das Tool ändert sich alle 3 Monate, die Methode bleibt. Du lernst, wie du aus AI-Output verkaufbare Produkte machst: nicht, welches Tool gerade trending ist."
   },
   {
-    q: "Kann ich den Kurs mit Ratenzahlung kaufen?",
-    a: "Ja. Mini-Kurse ab 49 € sind in 2 Raten buchbar, das Bundle in 3 Raten. Details im Checkout. Keine versteckten Gebühren, keine Abo-Falle."
+    q: "Kann ich später bezahlen?",
+    a: "Ja. Im Checkout kannst du bequem mit Klarna später bezahlen. Keine versteckten Gebühren, keine Abo-Falle."
   }
 ];

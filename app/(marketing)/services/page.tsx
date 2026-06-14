@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { ArrowRight, MessageCircle, Building2, Briefcase, Check } from "lucide-react";
-import { belaPrivateTelegram } from "@/lib/env";
+import { ArrowRight, MessageCircle, Building2, Briefcase, Check, Users } from "lucide-react";
+import { belaPrivateTelegram, paidTelegramUrl } from "@/lib/env";
 
 export const metadata: Metadata = {
-  title: "Services | 1:1 Coaching & Auslandsfirmen-Setup — AI Goldmining",
+  title: "Services | 1:1 Coaching & Auslandsfirmen-Setup · AI Goldmining",
   description:
     "Persönliches 1:1-Coaching direkt mit Bela und Auslandsfirmen-Setup. Direkter Draht, kein Gruppenchat.",
 };
@@ -20,56 +20,94 @@ const COMPANY_POINTS = [
   "Begleitung von der Idee bis zur fertigen Gesellschaft",
 ];
 
-/** Gold Dubai-skyline silhouette — drawn as SVG, no external asset needed. */
+const GROUP_POINTS = [
+  "Wöchentliche Gruppen-Calls mit Bela und der Community",
+  "Feedback auf deine Produkte, Funnels und Verkaufstexte",
+  "Austausch mit anderen Umsetzern in meiner Telegram-Gruppe",
+];
+
+/** Gold Dubai-skyline silhouette — layered SVG, no external asset needed. */
 function DubaiSkyline() {
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0" aria-hidden>
       <svg
-        viewBox="0 0 1440 280"
+        viewBox="0 0 1440 300"
         preserveAspectRatio="xMidYMax slice"
-        className="h-[42vh] max-h-[460px] w-full"
+        className="h-[44vh] max-h-[480px] w-full"
       >
         <defs>
-          <linearGradient id="sky" x1="0" y1="1" x2="0" y2="0">
+          <linearGradient id="skyBack" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stopColor="#5c4a2a" stopOpacity="0.34" />
+            <stop offset="60%" stopColor="#7a6536" stopOpacity="0.16" />
+            <stop offset="100%" stopColor="#c9a961" stopOpacity="0.03" />
+          </linearGradient>
+          <linearGradient id="skyMid" x1="0" y1="1" x2="0" y2="0">
             <stop offset="0%" stopColor="#6a5530" stopOpacity="0.55" />
             <stop offset="55%" stopColor="#8a7340" stopOpacity="0.28" />
             <stop offset="100%" stopColor="#c9a961" stopOpacity="0.05" />
           </linearGradient>
+          <linearGradient id="skyFront" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stopColor="#3a2f1a" stopOpacity="0.85" />
+            <stop offset="70%" stopColor="#5c4a2a" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#8a7340" stopOpacity="0.18" />
+          </linearGradient>
           <linearGradient id="spire" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0%" stopColor="#c9a961" stopOpacity="0.5" />
+            <stop offset="0%" stopColor="#c9a961" stopOpacity="0.55" />
             <stop offset="100%" stopColor="#fff4c9" stopOpacity="0.12" />
           </linearGradient>
         </defs>
-        {/* back layer towers */}
-        <g fill="url(#sky)">
-          <rect x="40" y="170" width="60" height="110" />
-          <rect x="120" y="140" width="44" height="140" />
-          <rect x="185" y="190" width="70" height="90" />
-          <rect x="280" y="120" width="40" height="160" />
-          <rect x="340" y="165" width="80" height="115" />
-          <rect x="980" y="150" width="54" height="130" />
-          <rect x="1050" y="185" width="80" height="95" />
-          <rect x="1150" y="135" width="42" height="145" />
-          <rect x="1210" y="175" width="70" height="105" />
-          <rect x="1300" y="150" width="48" height="130" />
-          <rect x="1360" y="185" width="60" height="95" />
+
+        {/* ── Back layer: distant, hazy towers ── */}
+        <g fill="url(#skyBack)">
+          <path d="M30 210 h54 v90 h-54 z" />
+          <path d="M96 175 h38 l4 -14 l4 14 h6 v139 h-52 z" />
+          <path d="M150 196 h64 v104 h-64 z" />
+          <path d="M232 150 h36 v150 h-36 z" />
+          <path d="M286 188 h72 v112 h-72 z" />
+          <path d="M372 168 l40 -10 v142 h-40 z" />
+          <path d="M1010 165 h48 v135 h-48 z" />
+          <path d="M1072 192 h74 v108 h-74 z" />
+          <path d="M1158 150 h38 l3 -12 l3 12 h2 v150 h-46 z" />
+          <path d="M1216 182 h64 v118 h-64 z" />
+          <path d="M1296 160 h44 v140 h-44 z" />
+          <path d="M1352 190 h62 v110 h-62 z" />
         </g>
-        {/* Burj-Khalifa-style central spire */}
+
+        {/* ── Mid layer ── */}
+        <g fill="url(#skyMid)">
+          {/* stepped tower */}
+          <path d="M120 200 h44 v-30 h26 v-26 h18 v152 h-88 z" />
+          <path d="M430 158 h40 v142 h-40 z" />
+          <path d="M484 192 h56 v108 h-56 z" />
+          <path d="M556 172 l34 -8 v136 h-34 z" />
+          {/* twin antenna tower */}
+          <path d="M600 150 h30 v150 h-30 z M612 150 v-24 M618 150 v-30" stroke="#c9a961" strokeOpacity="0.4" strokeWidth="2" />
+          <path d="M812 168 h44 v132 h-44 z" />
+          <path d="M868 138 h54 l0 162 h-54 z" />
+          <path d="M928 178 h40 v122 h-40 z" />
+        </g>
+
+        {/* ── Burj-Khalifa-style central spire with stepped setbacks ── */}
         <g fill="url(#spire)">
-          <path d="M720 20 L731 70 L741 280 L699 280 L709 70 Z" />
-          <rect x="690" y="120" width="20" height="160" />
-          <rect x="730" y="120" width="20" height="160" />
-          <rect x="668" y="160" width="16" height="120" />
-          <rect x="756" y="160" width="16" height="120" />
-          <line x1="720" y1="0" x2="720" y2="30" stroke="#fff4c9" strokeOpacity="0.35" strokeWidth="2" />
+          {/* outer wings step inward toward the top */}
+          <path d="M672 196 h22 v104 h-22 z" />
+          <path d="M746 196 h22 v104 h-22 z" />
+          <path d="M686 150 h20 v150 h-20 z" />
+          <path d="M734 150 h20 v150 h-20 z" />
+          <path d="M702 96 h36 v204 h-36 z" />
+          {/* tapering core + needle */}
+          <path d="M712 40 l8 -40 l8 40 l6 260 h-28 z" />
+          <line x1="720" y1="0" x2="720" y2="-22" stroke="#fff4c9" strokeOpacity="0.45" strokeWidth="2" />
         </g>
-        {/* mid towers */}
-        <g fill="url(#sky)">
-          <rect x="470" y="150" width="50" height="130" />
-          <rect x="540" y="185" width="70" height="95" />
-          <rect x="620" y="165" width="46" height="115" />
-          <rect x="800" y="165" width="46" height="115" />
-          <rect x="860" y="140" width="60" height="140" />
+
+        {/* ── Front layer: closest, darkest blocks ── */}
+        <g fill="url(#skyFront)">
+          <path d="M0 232 h70 v68 h-70 z" />
+          <path d="M340 214 h58 v86 h-58 z" />
+          <path d="M520 226 h70 v74 h-70 z" />
+          <path d="M980 220 h64 v80 h-64 z" />
+          <path d="M1140 232 h80 v68 h-80 z" />
+          <path d="M1380 216 h60 v84 h-60 z" />
         </g>
       </svg>
     </div>
@@ -83,6 +121,7 @@ function ServiceCard({
   copy,
   points,
   ctaLabel,
+  ctaHref,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   tag: string;
@@ -90,11 +129,12 @@ function ServiceCard({
   copy: string;
   points: string[];
   ctaLabel: string;
+  ctaHref: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-md border border-gold-300/20 bg-gradient-to-b from-white/[0.04] to-obsidian/70 p-7 lg:p-9">
+    <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-gold-300/20 bg-gradient-to-b from-white/[0.04] to-obsidian/70 p-7 lg:p-9">
       <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201,169,97,0.06), transparent 55%)" }} aria-hidden />
-      <div className="relative">
+      <div className="relative flex flex-1 flex-col">
         <div className="mb-5 flex items-center gap-3">
           <span className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/[0.06]">
             <Icon className="h-5 w-5 text-gold-300" />
@@ -103,7 +143,8 @@ function ServiceCard({
         </div>
 
         <h2 className="font-heading tracking-gta text-3xl lg:text-4xl text-cream leading-[1.02]">{title}</h2>
-        <p className="mt-4 max-w-md leading-relaxed text-cream/55">{copy}</p>
+        {/* min-height keeps the checkmark lists aligned across cards of varying copy length */}
+        <p className="mt-4 leading-relaxed text-cream/55 sm:min-h-[5.5rem]">{copy}</p>
 
         <ul className="mt-6 grid gap-3">
           {points.map((p) => (
@@ -115,10 +156,11 @@ function ServiceCard({
         </ul>
 
         <a
-          href={belaPrivateTelegram}
+          href={ctaHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-shimmer group mt-8 inline-flex items-center gap-2 rounded-full bg-gold-gradient px-7 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
+          className="btn-shimmer group mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-gold-gradient px-7 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
+          style={{ marginTop: "auto" }}
         >
           <span className="relative z-[2] inline-flex items-center gap-2">
             {ctaLabel}
@@ -167,7 +209,7 @@ export default function ServicesPage() {
       {/* ── Service blocks ── */}
       <section className="relative z-10 pb-28">
         <div className="container-shell mx-auto max-w-6xl">
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid items-stretch gap-6 lg:grid-cols-3">
             <ServiceCard
               icon={MessageCircle}
               tag="Persönlich"
@@ -175,6 +217,16 @@ export default function ServicesPage() {
               copy="Direktes Mentoring mit Bela: wir gehen deine Idee, dein Produkt und deinen Funnel Schritt für Schritt durch, bis es läuft."
               points={COACHING_POINTS}
               ctaLabel="1:1 Coaching anfragen"
+              ctaHref={belaPrivateTelegram}
+            />
+            <ServiceCard
+              icon={Users}
+              tag="Gruppe"
+              title="Gruppencoaching"
+              copy="Gemeinsam umsetzen statt allein: Gruppen-Calls, Feedback und Austausch direkt in meiner Telegram-Gruppe."
+              points={GROUP_POINTS}
+              ctaLabel="Zur Telegram-Gruppe"
+              ctaHref={paidTelegramUrl}
             />
             <ServiceCard
               icon={Building2}
@@ -183,6 +235,7 @@ export default function ServicesPage() {
               copy="Firmengründung im Ausland (z.B. Dubai / VAE): Struktur, Konten und Steuern sauber aufgesetzt, vollständig begleitet."
               points={COMPANY_POINTS}
               ctaLabel="Setup anfragen"
+              ctaHref={belaPrivateTelegram}
             />
           </div>
 

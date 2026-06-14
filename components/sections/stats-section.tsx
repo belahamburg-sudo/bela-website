@@ -4,9 +4,9 @@ import { useEffect, useRef } from "react";
 import { animate, onScroll } from "animejs";
 
 const STATS = [
-  { value: 5690, suffix: "+", label: "Community Mitglieder" },
+  { value: 689, suffix: "+", label: "Community Mitglieder" },
   { value: 97, suffix: "%", label: "Empfehlen es weiter" },
-  { value: 3839, suffix: "", label: "Verkaufte Kurse" },
+  { value: 837, suffix: "", label: "Verkaufte Kurse" },
   { value: 3165, suffix: "€", label: "Ø Ergebnis nach 2 Monaten" },
 ];
 

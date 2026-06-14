@@ -1,0 +1,44 @@
+{
+  "stan-store-masterclass": {
+    "title": "Stan Store Masterclass",
+    "cover": {
+      "bucket": "media",
+      "path": "courses/stan-store-masterclass/cover.png",
+      "match": ["cover.png", "cover.jpg", "cover.jpeg", "*cover*"]
+    },
+    "files": [
+      { "bucket": "course-content", "path": "courses/stan-store-masterclass/00_Overview_Stan_Store.pdf", "match": ["00_Overview_Stan_Store.pdf", "*Overview*Stan*"] },
+      { "bucket": "course-content", "path": "courses/stan-store-masterclass/01_Stan_Store_Foundations.pdf", "match": ["01_Stan_Store_Foundations.pdf", "*Foundations*"] },
+      { "bucket": "course-content", "path": "courses/stan-store-masterclass/02_Produkte_und_Checkout.pdf", "match": ["02_Produkte_und_Checkout.pdf", "*Produkte*Checkout*"] },
+      { "bucket": "course-content", "path": "courses/stan-store-masterclass/03_Storedesign_und_Promotion.pdf", "match": ["03_Storedesign_und_Promotion.pdf", "*Storedesign*Promotion*"] },
+      { "bucket": "course-content", "path": "courses/stan-store-masterclass/04_Produktuebergabe_und_Speicherung_Stan.pdf", "match": ["04_Produktuebergabe_und_Speicherung_Stan.pdf", "*Produktuebergabe*"] }
+    ]
+  },
+  "stop-care-want-more": {
+    "title": "Stop Care Want More",
+    "cover": {
+      "bucket": "media",
+      "path": "courses/stop-care-want-more/cover.png",
+      "match": ["cover.png", "cover.jpg", "cover.jpeg", "*cover*"]
+    },
+    "files": [
+      { "bucket": "course-content", "path": "courses/stop-care-want-more/Stop_Care_Want_More_Playbook.pdf", "match": ["Stop_Care_Want_More_Playbook.pdf", "*Playbook*"] }
+    ]
+  },
+  "rechtliches-digitale-produkte": {
+    "title": "Rechtliches für digitale Produkte",
+    "cover": {
+      "bucket": "media",
+      "path": "courses/rechtliches-digitale-produkte/cover.png",
+      "match": ["cover.png", "cover.jpg", "cover.jpeg", "*cover*"]
+    },
+    "files": [
+      { "bucket": "course-content", "path": "courses/rechtliches-digitale-produkte/00_Overview_Rechtliches.pdf", "match": ["00_Overview_Rechtliches.pdf", "*Overview*Recht*"] },
+      { "bucket": "course-content", "path": "courses/rechtliches-digitale-produkte/01_Grundlagen_Recht_und_Widerruf.pdf", "match": ["01_Grundlagen_Recht_und_Widerruf.pdf", "*Grundlagen*Recht*"] },
+      { "bucket": "course-content", "path": "courses/rechtliches-digitale-produkte/02_Disclaimer_Vorlagen_Nutzung.pdf", "match": ["02_Disclaimer_Vorlagen_Nutzung.pdf", "*Disclaimer*"] },
+      { "bucket": "course-content", "path": "courses/rechtliches-digitale-produkte/03_AGB_Vorlage.txt", "match": ["03_AGB_Vorlage.txt", "*AGB*Vorlage*"] },
+      { "bucket": "course-content", "path": "courses/rechtliches-digitale-produkte/04_Impressum_Vorlage.txt", "match": ["04_Impressum_Vorlage.txt", "*Impressum*Vorlage*"] },
+      { "bucket": "course-content", "path": "courses/rechtliches-digitale-produkte/05_Datenschutz_Vorlage.txt", "match": ["05_Datenschutz_Vorlage.txt", "*Datenschutz*Vorlage*"] }
+    ]
+  }
+}

@@ -87,12 +87,12 @@ export default function AboutPage() {
         <div className="relative mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm border border-gold-300/18 bg-white/[0.02] shadow-[0_30px_80px_rgba(0,0,0,0.32)] lg:mx-0">
             <Image
-              src="/assets/bela-character.jpeg"
-              alt="Bela Goldmann"
+              src="/assets/bela-portrait.jpeg"
+              alt="Schwarz-weiß Portrait von Bela Goldmann"
               width={900}
               height={1200}
               priority
-              className="h-full w-full object-cover object-top"
+              className="h-full w-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5">

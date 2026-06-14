@@ -193,7 +193,7 @@ export default function CartPage() {
                 <input
                   value={promo}
                   onChange={(e) => setPromo(e.target.value.toUpperCase())}
-                  placeholder="z. B. GOLDMININGX10"
+                  placeholder="Rabattcode"
                   className="w-full bg-transparent py-2.5 text-sm text-cream placeholder:text-cream/25 focus:outline-none"
                 />
               </div>

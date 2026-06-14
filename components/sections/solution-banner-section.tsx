@@ -33,32 +33,26 @@ export function SolutionBannerSection() {
         >
           <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201,169,97,0.07), transparent 55%)" }} aria-hidden />
 
-          <div className="relative">
-            <p className="eyebrow mb-6">
-              <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201,169,97,0.55)]" aria-hidden />
-              Die Lösung
-            </p>
-
-            <h2
-              className="font-heading tracking-gta leading-[0.98] text-cream max-w-3xl"
-              style={{ fontSize: "clamp(1.85rem, 5.5vw, 4rem)" }}
-            >
-              Digitale Produkte: einmal bauen,{" "}
-              <span className="gold-accent">dauerhaft verkaufen.</span>{" "}
-              Fast reine Marge. Mit AI in Tagen.
-            </h2>
-
-            <div className="mt-9">
-              <a
-                href="/webinar"
-                className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
-              >
-                <span className="relative z-[2] inline-flex items-center gap-2">
-                  Webinar starten
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </span>
-              </a>
+          <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="eyebrow mb-3">
+                <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201,169,97,0.55)]" aria-hidden />
+                Die Lösung
+              </p>
+              <p className="max-w-md text-base leading-relaxed text-cream/65 sm:text-lg">
+                Digitale Produkte einmal bauen, dauerhaft verkaufen. Fast reine Marge, mit AI in Tagen.
+              </p>
             </div>
+
+            <a
+              href="/webinar"
+              className="btn-shimmer group inline-flex shrink-0 items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
+            >
+              <span className="relative z-[2] inline-flex items-center gap-2">
+                Webinar starten
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </span>
+            </a>
           </div>
         </motion.div>
       </div>

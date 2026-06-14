@@ -3,10 +3,10 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { animate, onScroll, stagger } from "animejs";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Crown } from "lucide-react";
 import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
-import { telegramUrl } from "@/lib/env";
+import { telegramUrl, paidTelegramUrl } from "@/lib/env";
 
 const COMMUNITY_ITEMS = [
   "Produktideen und konkrete Beispiele aus der Praxis",
@@ -54,10 +54,16 @@ export default function CommunityPage() {
             <p className="text-lg leading-relaxed text-white/50 mb-10 max-w-xl">
               Die kostenlose Community ist der schnelle Einstieg für Produktideen, AI-Prompts, Umsetzungsimpulse und Updates zu neuen Mini-Kursen.
             </p>
-            <Button href={telegramUrl}>
-              <MessageCircle aria-hidden className="h-4 w-4" />
-              Free Telegram Gruppe
-            </Button>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button href={telegramUrl}>
+                <MessageCircle aria-hidden className="h-4 w-4" />
+                Free Telegram Gruppe
+              </Button>
+              <Button href={paidTelegramUrl} variant="secondary" target="_blank" rel="noopener noreferrer">
+                <Crown aria-hidden className="h-4 w-4" />
+                VIP Gruppe holen
+              </Button>
+            </div>
           </motion.div>
 
           {/* What you get: no card wrapper */}

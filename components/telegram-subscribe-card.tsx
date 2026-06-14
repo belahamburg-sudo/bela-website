@@ -159,8 +159,8 @@ export function TelegramSubscribeCard() {
             <Crown className="h-3 w-3 fill-current" />
             VIP Community
           </div>
-          <h2 className="font-heading text-3xl uppercase leading-none tracking-gta text-cream md:text-4xl">
-            VIP <span className="gold-text">TELEGRAM.</span>
+          <h2 className="font-heading text-3xl leading-none tracking-gta text-cream md:text-4xl">
+            VIP <span className="gold-text">Telegram.</span>
           </h2>
           <p className="mt-4 max-w-lg text-sm leading-relaxed text-cream/50">
             Exklusive Paid Community mit direktem Draht. Echtes Feedback, Live-Calls und
@@ -252,7 +252,7 @@ export function TelegramSubscribeCard() {
                 ) : (
                   <Crown aria-hidden className="h-4 w-4" />
                 )}
-                {loggedIn ? `Beitreten — ${PLANS[plan].price} ${PLANS[plan].cadence}` : "Beitreten"}
+                {loggedIn ? `Beitreten · ${PLANS[plan].price} ${PLANS[plan].cadence}` : "Beitreten"}
               </button>
 
               {error ? (

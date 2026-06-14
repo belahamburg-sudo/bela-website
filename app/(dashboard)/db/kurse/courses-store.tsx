@@ -170,11 +170,11 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
                 Goldmine
               </span>
             </div>
-            <h1 className="font-heading text-4xl uppercase leading-none tracking-gta text-cream md:text-6xl">
-              DEINE <span className="gold-text">GOLDMINE.</span>
+            <h1 className="font-heading text-4xl leading-none tracking-gta text-cream md:text-6xl">
+              Deine <span className="gold-text">Goldmine.</span>
             </h1>
             <p className="mt-5 max-w-xl text-sm leading-relaxed text-cream/45">
-              Alle Kurse, dein Elite-Miners-Zugang und jedes Produkt zum Freischalten —
+              Alle Kurse, dein Elite-Miners-Zugang und jedes Produkt zum Freischalten,
               an einem Ort.
             </p>
 
@@ -237,7 +237,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
                     <Star className="h-3 w-3 fill-current" />
                     Komplett-Paket
                   </div>
-                  <h2 className="font-heading text-3xl uppercase leading-none tracking-gta text-cream md:text-4xl">
+                  <h2 className="font-heading text-3xl leading-none tracking-gta text-cream md:text-4xl">
                     {bundle.title}
                   </h2>
                   <p className="mt-4 max-w-lg text-sm leading-relaxed text-cream/50">

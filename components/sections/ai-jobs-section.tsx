@@ -153,7 +153,7 @@ export function AiJobsSection() {
         </div>
 
         <p className="mt-10 text-center font-heading tracking-gta text-lg lg:text-2xl text-cream/80">
-          Die Frage ist nicht <span className="text-cream/40">ob</span>, sondern{" "}
+          Die Frage ist nicht <span className="gold-text">ob</span>, sondern{" "}
           <span className="gold-text">auf welcher Seite du stehst.</span>
         </p>
       </div>

@@ -48,15 +48,9 @@ export function StoreProductCard({
   const levelColor = LEVEL_COLORS[course.level] ?? LEVEL_COLORS.Start;
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201, 169, 97,0.35)]">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201, 169, 97,0.35)]">
       {/* hover wash */}
       <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-      {/* corner ticks */}
-      <span className="pointer-events-none absolute left-0 top-0 z-20 h-3 w-3 border-l border-t border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
-      <span className="pointer-events-none absolute right-0 top-0 z-20 h-3 w-3 border-r border-t border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
-      <span className="pointer-events-none absolute bottom-0 left-0 z-20 h-3 w-3 border-b border-l border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
-      <span className="pointer-events-none absolute bottom-0 right-0 z-20 h-3 w-3 border-b border-r border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
 
       {/* Cover (links to the course product page) */}
       <Link
@@ -150,7 +144,7 @@ export function StoreProductCard({
               href={`/db/kurse/${course.slug}`}
               variant="secondary"
               size="sm"
-              className="w-full rounded-none"
+              className="w-full rounded-lg"
             >
               {isVideo ? "Weiterlernen" : "Öffnen"}
               <ArrowRight className="h-3.5 w-3.5" />
@@ -171,7 +165,7 @@ export function StoreProductCard({
                 href={`/db/kurse/${course.slug}`}
                 variant="secondary"
                 size="sm"
-                className="rounded-none px-5"
+                className="rounded-lg px-5"
               >
                 Ansehen
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -185,7 +179,7 @@ export function StoreProductCard({
                 image: course.image,
                 format: course.format,
               }}
-              className="w-full rounded-none py-2.5 text-[10px]"
+              className="w-full rounded-lg py-2.5 text-[10px]"
             />
           </div>
         )}

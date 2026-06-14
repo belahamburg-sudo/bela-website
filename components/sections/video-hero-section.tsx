@@ -11,9 +11,11 @@ import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 
 const SOCIAL_PROOF_IMAGES = [
   "/assets/bela-jet.jpg",
+  "/assets/member-1.jpg",
+  "/assets/member-2.jpg",
+  "/assets/member-3.jpg",
+  "/assets/member-4.jpg",
   "/assets/bela-night.jpg",
-  "/assets/bela-party.jpg",
-  "/assets/bela-seoul.jpg",
 ];
 
 export function VideoHeroSection() {
@@ -202,11 +204,10 @@ export function VideoHeroSection() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="gold-text font-heading font-extrabold leading-[0.95]"
+          className="text-cream font-heading font-extrabold leading-[1.02] text-balance"
           style={{ fontSize: "clamp(1.85rem, 8vw, 4.6rem)" }}
         >
-          Ich zeige dir, wie du mit <br />
-          AI digitale Produkte <br /> baust und automatisiert <br /> verkaufst.
+          Ich zeige dir, wie du mit <span className="gold-text">AI digitale Produkte</span> baust und <span className="gold-text">automatisiert verkaufst.</span>
         </motion.h1>
 
         {/* ── Subtext ── */}
