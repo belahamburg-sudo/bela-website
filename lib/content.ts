@@ -23,6 +23,9 @@ export type Course = {
   audience: string;
   outcome: string;
   featured?: boolean;
+  /** Inactive catalog row — visible in member store, not purchasable yet. */
+  comingSoon?: boolean;
+  sortOrder?: number;
   includes: string[];
   modules: Array<{
     id: string;

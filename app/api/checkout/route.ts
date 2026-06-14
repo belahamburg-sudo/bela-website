@@ -57,7 +57,11 @@ export async function POST(request: Request) {
     }
 
     const resolved = await Promise.all(
-      requested.map(async (it) => ({ item: it, course: await getPublicCourse(it.slug) }))
+      requested.map(async (it) => {
+        const course = await getPublicCourse(it.slug);
+        if (!course || course.comingSoon) return { item: it, course: undefined };
+        return { item: it, course };
+      })
     );
     const valid = resolved.filter((r) => r.course);
 

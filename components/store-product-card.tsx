@@ -11,10 +11,12 @@ import {
   ArrowRight,
   Download,
   Star,
+  Sparkles,
+  Clock,
 } from "lucide-react";
 import { AddToCartButton } from "./add-to-cart-button";
 import { Button } from "./button";
-import { formatEuro } from "@/lib/utils";
+import { formatEuro, cn } from "@/lib/utils";
 
 export type StoreCardCourse = {
   slug: string;
@@ -28,6 +30,9 @@ export type StoreCardCourse = {
   completedLessons: number;
   progress: number;
   isBundle?: boolean;
+  comingSoon?: boolean;
+  isFlagship?: boolean;
+  sortOrder?: number;
 };
 
 const LEVEL_COLORS: Record<string, string> = {
@@ -46,13 +51,23 @@ export function StoreProductCard({
 }) {
   const isVideo = course.format === "video";
   const levelColor = LEVEL_COLORS[course.level] ?? LEVEL_COLORS.Start;
+  const comingSoon = Boolean(course.comingSoon);
+  const isFlagship = Boolean(course.isFlagship);
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201, 169, 97,0.35)]">
-      {/* hover wash */}
-      <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+    <div
+      className={cn(
+        "group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-ink/40 backdrop-blur-xl transition-all duration-500",
+        comingSoon
+          ? "border-white/[0.08] opacity-90"
+          : "border-white/10 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201,169,97,0.35)]",
+        isFlagship && comingSoon && "border-gold-300/25 ring-1 ring-gold-300/15"
+      )}
+    >
+      {!comingSoon && (
+        <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      )}
 
-      {/* Cover (links to the course product page) */}
       <Link
         href={`/db/kurse/${course.slug}`}
         className="relative block h-40 overflow-hidden border-b border-white/5"
@@ -63,11 +78,48 @@ export function StoreProductCard({
           alt={course.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover opacity-80 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100"
+          className={cn(
+            "object-cover transition-all duration-700",
+            comingSoon
+              ? "scale-110 opacity-45 blur-[3px] saturate-50"
+              : "opacity-80 group-hover:scale-105 group-hover:opacity-100"
+          )}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
+        <div
+          className={cn(
+            "absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent",
+            comingSoon && "from-ink/95 via-ink/70"
+          )}
+        />
 
-        {/* format badge */}
+        {comingSoon && (
+          <>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,0.12),transparent_55%)]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-2 border px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.2em] backdrop-blur-md",
+                  isFlagship
+                    ? "border-gold-300/40 bg-gold-300/15 text-gold-100"
+                    : "border-white/20 bg-white/10 text-cream/80"
+                )}
+              >
+                {isFlagship ? (
+                  <>
+                    <Star className="h-3 w-3 fill-current" />
+                    Flagship · Coming Soon
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3 w-3" />
+                    Coming Soon
+                  </>
+                )}
+              </span>
+            </div>
+          </>
+        )}
+
         <div
           className={`absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 border px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] backdrop-blur-md ${
             isVideo
@@ -79,7 +131,6 @@ export function StoreProductCard({
           {isVideo ? "Video-Kurs" : "PDF-Guide"}
         </div>
 
-        {/* level badge */}
         <div
           className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1 border px-2 py-1 text-[9px] font-bold uppercase tracking-[0.18em] backdrop-blur-md ${levelColor}`}
         >
@@ -88,20 +139,28 @@ export function StoreProductCard({
         </div>
       </Link>
 
-      {/* Body */}
       <div className="relative z-10 flex flex-1 flex-col p-5">
         <Link href={`/db/kurse/${course.slug}`}>
-          <h3 className="font-heading text-xl leading-tight text-cream transition-colors duration-300 group-hover:text-gold-300">
+          <h3
+            className={cn(
+              "font-heading text-xl leading-tight transition-colors duration-300",
+              comingSoon ? "text-cream/75 group-hover:text-cream/90" : "text-cream group-hover:text-gold-300"
+            )}
+          >
             {course.title}
           </h3>
         </Link>
-        <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-cream/45">
+        <p className={cn("mt-2 line-clamp-2 text-[13px] leading-relaxed", comingSoon ? "text-cream/35" : "text-cream/45")}>
           {course.tagline}
         </p>
 
-        {/* meta */}
         <div className="mt-4 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.15em] text-cream/35">
-          {isVideo ? (
+          {comingSoon ? (
+            <>
+              <Clock className="h-3.5 w-3.5 text-gold-300/40" />
+              <span>Bald verfügbar</span>
+            </>
+          ) : isVideo ? (
             <>
               <PlayCircle className="h-3.5 w-3.5 text-gold-300/50" />
               <span>{course.totalLessons} Lektionen</span>
@@ -114,7 +173,6 @@ export function StoreProductCard({
           )}
         </div>
 
-        {/* footer */}
         {isPurchased ? (
           <div className="mt-auto space-y-3 pt-6">
             {isVideo ? (
@@ -149,6 +207,37 @@ export function StoreProductCard({
               {isVideo ? "Weiterlernen" : "Öffnen"}
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
+          </div>
+        ) : comingSoon ? (
+          <div className="mt-auto space-y-3 pt-6">
+            <div className="flex items-end justify-between gap-3">
+              <div className="opacity-50 blur-[0.4px]">
+                <span className="block text-[8px] font-mono uppercase tracking-[0.2em] text-cream/30">
+                  Einmalig
+                </span>
+                <span className="font-heading text-2xl leading-none text-cream/40">
+                  {formatEuro(course.price_cents)}
+                </span>
+              </div>
+              <Button
+                href={`/db/kurse/${course.slug}`}
+                variant="secondary"
+                size="sm"
+                className="rounded-lg px-5"
+              >
+                Vorschau
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              className="inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-cream/30"
+            >
+              <Clock className="h-4 w-4" />
+              Coming Soon
+            </button>
           </div>
         ) : (
           <div className="mt-auto space-y-3 pt-6">

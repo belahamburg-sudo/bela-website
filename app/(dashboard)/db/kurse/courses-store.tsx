@@ -68,27 +68,32 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
         console.error("Store load error:", err);
       }
 
-      const built: StoreItem[] = courses.map((c) => {
-        const lessonIds = c.modules.flatMap((m) => m.lessons.map((l) => l.id));
-        const totalLessons = lessonIds.length;
-        const completedLessons = lessonIds.filter((id) => completedIds.has(id)).length;
-        const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-        return {
-          slug: c.slug,
-          title: c.title,
-          tagline: c.tagline,
-          image: c.image,
-          price_cents: c.priceCents,
-          level: c.level,
-          format: c.format,
-          totalLessons,
-          completedLessons,
-          progress,
-          isBundle: c.level === "Bundle",
-          featured: Boolean(c.featured),
-          isPurchased: purchasedSlugs.has(c.slug),
-        };
-      });
+      const built: StoreItem[] = courses
+        .map((c) => {
+          const lessonIds = c.modules.flatMap((m) => m.lessons.map((l) => l.id));
+          const totalLessons = lessonIds.length;
+          const completedLessons = lessonIds.filter((id) => completedIds.has(id)).length;
+          const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+          return {
+            slug: c.slug,
+            title: c.title,
+            tagline: c.tagline,
+            image: c.image,
+            price_cents: c.priceCents,
+            level: c.level,
+            format: c.format,
+            totalLessons,
+            completedLessons,
+            progress,
+            isBundle: c.level === "Bundle",
+            featured: Boolean(c.featured),
+            isPurchased: purchasedSlugs.has(c.slug),
+            comingSoon: Boolean(c.comingSoon),
+            isFlagship: c.slug === "ai-goldmining-method",
+            sortOrder: c.sortOrder ?? 999,
+          };
+        })
+        .sort((a, b) => a.sortOrder - b.sortOrder);
 
       setItems(built);
       setLoading(false);
@@ -111,7 +116,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
 
   const purchased = items.filter((i) => i.isPurchased);
   const available = items.filter((i) => !i.isPurchased);
-  const bundle = available.find((i) => i.isBundle);
+  const bundle = available.find((i) => i.isBundle && !i.comingSoon);
   const bundleStatic = bundle ? courses.find((c) => c.slug === bundle.slug) : undefined;
   const catalog = available.filter((i) => !i.isBundle);
   const videoItems = catalog.filter((i) => i.format === "video");

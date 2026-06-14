@@ -65,9 +65,170 @@ export function mapDbCourseToCourse(db: DbCourse): Course {
     audience: db.audience ?? "",
     outcome: db.outcome ?? "",
     featured: db.featured ?? false,
+    comingSoon: db.is_active === false,
+    sortOrder: db.sort_order ?? 0,
     includes: Array.isArray(db.includes) ? db.includes : [],
     modules,
   };
+}
+
+/** Static fallback placeholders (mirrors migration_010 inactive rows). */
+const COMING_SOON_CATALOG: Course[] = [
+  {
+    slug: "ai-goldmining-method",
+    title: "AI Goldmining Method",
+    tagline: "Der Hauptkurs",
+    description: "Der komplette AI-Goldmining-Hauptkurs. Inhalte folgen.",
+    priceCents: 29700,
+    image: FALLBACK_IMAGE,
+    level: "System",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 1,
+    includes: [],
+    modules: [],
+  },
+  {
+    slug: "prompt-engineering-pro",
+    title: "Prompt Engineering Pro",
+    tagline: "AI wirklich steuern",
+    description: "Inhalte folgen.",
+    priceCents: 4900,
+    image: FALLBACK_IMAGE,
+    level: "System",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 20,
+    includes: [],
+    modules: [],
+  },
+  {
+    slug: "ai-digital-product-builder",
+    title: "AI Digital Product Builder",
+    tagline: "Produkte mit AI bauen",
+    description: "Inhalte folgen.",
+    priceCents: 4900,
+    image: FALLBACK_IMAGE,
+    level: "System",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 30,
+    includes: [],
+    modules: [],
+  },
+  {
+    slug: "ai-nischenfinder",
+    title: "AI Nischenfinder",
+    tagline: "Deine Nische finden",
+    description: "Inhalte folgen.",
+    priceCents: 3900,
+    image: FALLBACK_IMAGE,
+    level: "Aufbau",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 31,
+    includes: [],
+    modules: [],
+  },
+  {
+    slug: "sales-und-vertrieb",
+    title: "Sales und Vertrieb",
+    tagline: "Verkaufen lernen",
+    description: "Inhalte folgen.",
+    priceCents: 4900,
+    image: FALLBACK_IMAGE,
+    level: "System",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 42,
+    includes: [],
+    modules: [],
+  },
+  {
+    slug: "webinar-mastery",
+    title: "Webinar Mastery",
+    tagline: "Webinare, die verkaufen",
+    description: "Inhalte folgen.",
+    priceCents: 3900,
+    image: FALLBACK_IMAGE,
+    level: "Aufbau",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 43,
+    includes: [],
+    modules: [],
+  },
+  {
+    slug: "website-kurspage-backend",
+    title: "Website mit Kurspage im Backend",
+    tagline: "Deine Kursplattform",
+    description: "Inhalte folgen.",
+    priceCents: 4900,
+    image: FALLBACK_IMAGE,
+    level: "System",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 44,
+    includes: [],
+    modules: [],
+  },
+  {
+    slug: "bio-funnel-system",
+    title: "Bio Funnel System",
+    tagline: "Funnel aus deiner Bio",
+    description: "Inhalte folgen.",
+    priceCents: 4900,
+    image: FALLBACK_IMAGE,
+    level: "System",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 50,
+    includes: [],
+    modules: [],
+  },
+  {
+    slug: "social-media-wachstum",
+    title: "Social Media Wachstum: 0 auf 10k",
+    tagline: "Von 0 auf 10k",
+    description: "Inhalte folgen.",
+    priceCents: 3900,
+    image: FALLBACK_IMAGE,
+    level: "Aufbau",
+    format: "video",
+    audience: "",
+    outcome: "",
+    comingSoon: true,
+    sortOrder: 61,
+    includes: [],
+    modules: [],
+  },
+];
+
+function mergeStaticStoreCatalog(): Course[] {
+  const bySlug = new Map<string, Course>();
+  for (const c of staticCourses) {
+    bySlug.set(c.slug, { ...c, comingSoon: false, sortOrder: c.sortOrder ?? 999 });
+  }
+  for (const c of COMING_SOON_CATALOG) {
+    if (!bySlug.has(c.slug)) bySlug.set(c.slug, c);
+  }
+  return [...bySlug.values()].sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
 }
 
 const COURSE_SELECT =
@@ -116,4 +277,22 @@ export async function getFeaturedCourses(): Promise<Course[]> {
   const all = await getPublicCourses();
   const featured = all.filter((c) => c.featured);
   return featured.length > 0 ? featured : all.slice(0, 3);
+}
+
+/** Full member-store catalog: active + coming-soon placeholders, ordered by sort_order. */
+export async function getStoreCatalog(): Promise<Course[]> {
+  const admin = getSupabaseAdminClient();
+  if (!admin) return mergeStaticStoreCatalog();
+
+  try {
+    const { data, error } = await admin
+      .from("courses")
+      .select(COURSE_SELECT)
+      .order("sort_order", { ascending: true });
+
+    if (error || !data || data.length === 0) return mergeStaticStoreCatalog();
+    return (data as DbCourse[]).map(mapDbCourseToCourse);
+  } catch {
+    return mergeStaticStoreCatalog();
+  }
 }

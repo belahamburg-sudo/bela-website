@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { AuthGate } from "@/components/auth-gate";
 import { CoursePlayer } from "@/components/course-player";
 import { PaywallScreen } from "@/components/paywall-screen";
+import { ComingSoonScreen } from "@/components/coming-soon-screen";
 import type { DbCourse, DbModule } from "@/lib/db-types";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
@@ -51,8 +52,7 @@ async function fetchCourseAndAccess(
       .from("courses")
       .select("*, modules(*, lessons(*))")
       .eq("slug", slug)
-      .eq("is_active", true)
-      .single(),
+      .maybeSingle(),
     user
       ? supabase
           .from("purchases")
@@ -102,7 +102,7 @@ export default async function DashboardCoursePage({
   const { course: dbCourse, hasPurchase, completedLessonIds } = await fetchCourseAndAccess(slug);
 
   if (dbCourse) {
-    if (hasPurchase) {
+    if (hasPurchase && dbCourse.is_active) {
       const playableCourse = await resolveCourseMedia(dbCourse);
       return (
         <AuthGate>
@@ -111,6 +111,16 @@ export default async function DashboardCoursePage({
               <CoursePlayer course={playableCourse} initialCompleted={completedLessonIds} />
             </div>
           </section>
+        </AuthGate>
+      );
+    }
+    if (!dbCourse.is_active) {
+      return (
+        <AuthGate>
+          <ComingSoonScreen
+            course={dbCourse}
+            isFlagship={slug === "ai-goldmining-method"}
+          />
         </AuthGate>
       );
     }
