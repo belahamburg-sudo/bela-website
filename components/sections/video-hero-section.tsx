@@ -10,12 +10,10 @@ import { Particles } from "@/components/ui/particles";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 
 const SOCIAL_PROOF_IMAGES = [
-  "/assets/bela-jet.jpg",
   "/assets/member-1.jpg",
   "/assets/member-2.jpg",
   "/assets/member-3.jpg",
   "/assets/member-4.jpg",
-  "/assets/bela-night.jpg",
 ];
 
 export function VideoHeroSection() {

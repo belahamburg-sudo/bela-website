@@ -43,8 +43,8 @@ const timeline = [
     num: "05",
     title: "Der Moment, in dem AI alles geändert hat",
     copy: "In den letzten Monaten ist so viel passiert, dass alte Modelle einfach kippen. Warum Warenhandel mit Lieferketten, Lager und Rücksendungen, wenn man digitale Produkte verkaufen kann, die unendlich skalieren? Warum Creator managen, wenn AI 80 Prozent davon übernimmt? Mir wurde klar: das ist kein Trend, das ist ein Systemwechsel.",
-    image: "/assets/bela-jet.jpg",
-    imageAlt: "Privatjet",
+    image: "/assets/bela-golf-2.jpeg",
+    imageAlt: "Bela",
   },
   {
     num: "06",
