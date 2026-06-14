@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { sendTemplateEmail, type EmailTemplate } from "@/lib/email";
+import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 const sources = new Set(["newsletter", "webinar", "community"]);
 
@@ -12,6 +13,16 @@ const leadEmailTemplates: Record<string, EmailTemplate> = {
 
 export async function POST(request: Request) {
   try {
+    const limited = await checkRateLimit({
+      bucket: "leads",
+      identifier: clientIp(request),
+      limit: 10,
+      windowSeconds: 60 * 60,
+    });
+    if (!limited.allowed) {
+      return rateLimitResponse(limited.retryAfterSeconds ?? 3600);
+    }
+
     const body = (await request.json()) as {
       name?: string;
       email?: string;

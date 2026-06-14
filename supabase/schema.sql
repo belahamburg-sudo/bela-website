@@ -134,13 +134,17 @@ create policy "Modules are public through active courses" on public.modules
     )
   );
 
-create policy "Lessons are public through active courses" on public.lessons
+create policy "Lessons readable by course buyers" on public.lessons
   for select using (
     exists (
-      select 1 from public.modules
-      join public.courses on public.courses.id = public.modules.course_id
-      where public.modules.id = public.lessons.module_id
-      and public.courses.is_active = true
+      select 1
+      from public.modules m
+      join public.courses c on c.id = m.course_id
+      join public.purchases p on p.course_slug = c.slug
+      where m.id = public.lessons.module_id
+        and c.is_active = true
+        and p.user_id = auth.uid()
+        and p.status = 'paid'
     )
   );
 

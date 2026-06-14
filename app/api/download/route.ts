@@ -4,6 +4,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase";
 import {
   BUCKETS,
   type BucketName,
+  isAllowedDownloadRef,
   parseStorageRef,
   signedUrl,
   uploadToBucket,
@@ -37,13 +38,15 @@ async function fetchMaster(
     return { bytes, filename, isPdf: isPdfPath(parsed.path) };
   }
 
-  // Plain URL / public asset (e.g. /downloads/foo.pdf).
-  const url = ref.startsWith("http") ? ref : absoluteUrl(ref);
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const bytes = new Uint8Array(await res.arrayBuffer());
-  const filename = ref.split("/").pop()?.split("?")[0] || "download";
-  return { bytes, filename, isPdf: isPdfPath(url) };
+  if (isAllowedDownloadRef(ref) && ref.startsWith("/assets/")) {
+    const res = await fetch(absoluteUrl(ref));
+    if (!res.ok) return null;
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    const filename = ref.split("/").pop()?.split("?")[0] || "download";
+    return { bytes, filename, isPdf: isPdfPath(ref) };
+  }
+
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -58,6 +61,9 @@ export async function POST(request: Request) {
   const ref = body.ref?.trim();
   if (!courseSlug || !ref) {
     return NextResponse.json({ message: "courseSlug und ref erforderlich." }, { status: 400 });
+  }
+  if (!isAllowedDownloadRef(ref)) {
+    return NextResponse.json({ message: "Ungültige Dateireferenz." }, { status: 400 });
   }
 
   // Auth + entitlement.

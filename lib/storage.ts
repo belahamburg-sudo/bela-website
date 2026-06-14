@@ -108,6 +108,12 @@ export function toStorageRef(bucket: BucketName, path: string): string {
   return `${STORAGE_SCHEME}${bucket}/${path}`;
 }
 
+/** Allowed download refs: private storage refs or same-site public assets only. */
+export function isAllowedDownloadRef(value: string): boolean {
+  if (parseStorageRef(value)) return true;
+  return value.startsWith("/assets/") && !value.startsWith("//");
+}
+
 export function parseStorageRef(
   value: string | null | undefined
 ): { bucket: BucketName; path: string } | null {

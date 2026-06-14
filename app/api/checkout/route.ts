@@ -6,6 +6,7 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { absoluteUrl } from "@/lib/utils";
 import { ORDER_BUMP } from "@/lib/offers";
+import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 type CheckoutItem = { slug: string; qty?: number };
 
@@ -23,6 +24,16 @@ type CheckoutBody = {
 
 export async function POST(request: Request) {
   try {
+    const limited = await checkRateLimit({
+      bucket: "checkout",
+      identifier: clientIp(request),
+      limit: 20,
+      windowSeconds: 15 * 60,
+    });
+    if (!limited.allowed) {
+      return rateLimitResponse(limited.retryAfterSeconds ?? 900);
+    }
+
     const body = (await request.json()) as CheckoutBody;
 
     // AGB is a hard requirement (brief: Pflicht-Checkbox im Checkout).

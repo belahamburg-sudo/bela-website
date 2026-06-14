@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { DEFAULT_AVATAR_ID } from "@/lib/avatar-system";
+import { validatePassword } from "@/lib/password";
+import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 function badRequest(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
 }
 
 export async function POST(request: NextRequest) {
+  const limited = await checkRateLimit({
+    bucket: "auth-signup",
+    identifier: clientIp(request),
+    limit: 5,
+    windowSeconds: 60 * 60,
+  });
+  if (!limited.allowed) {
+    return rateLimitResponse(limited.retryAfterSeconds ?? 3600);
+  }
+
   const body = await request.json().catch(() => null);
   const email = String(body?.email ?? "").trim().toLowerCase();
   const password = String(body?.password ?? "");
@@ -17,8 +29,9 @@ export async function POST(request: NextRequest) {
     return badRequest("Bitte E-Mail, Passwort und Stadt angeben.");
   }
 
-  if (password.length < 6) {
-    return badRequest("Das Passwort muss mindestens 6 Zeichen lang sein.");
+  const passwordError = validatePassword(password);
+  if (passwordError) {
+    return badRequest(passwordError);
   }
 
   const admin = getSupabaseAdminClient();

@@ -17,6 +17,7 @@ import {
   User,
 } from "lucide-react";
 import { hasSupabasePublicEnv } from "@/lib/env";
+import { passwordMeetsPolicy, validatePassword } from "@/lib/password";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 type Step = 1 | 2;
@@ -35,9 +36,9 @@ const STRENGTH_COLORS = [
 ];
 
 function passwordStrength(pw: string): number {
-  if (pw.length < 6) return 0;
-  let score = 1;
-  if (pw.length >= 10) score++;
+  if (!passwordMeetsPolicy(pw) && pw.length < 10) return 0;
+  if (pw.length < 10) return 1;
+  let score = 2;
   if (/[0-9]/.test(pw) && /[a-zA-Z]/.test(pw)) score++;
   if (/[^a-zA-Z0-9]/.test(pw)) score++;
   return Math.min(score, 4);
@@ -79,7 +80,7 @@ export function SignupFlow() {
   const cityValid = city.trim().length >= 2;
   const emailValid = EMAIL_RE.test(email.trim());
   const strength = passwordStrength(password);
-  const pwValid = password.length >= 6;
+  const pwValid = passwordMeetsPolicy(password);
   const confirmValid = confirm.length > 0 && confirm === password;
 
   function go(next: Step) {
@@ -158,7 +159,7 @@ export function SignupFlow() {
 
     if (!pwValid) {
       setStatus("error");
-      setMessage("Das Passwort muss mindestens 6 Zeichen lang sein.");
+      setMessage(validatePassword(password) ?? "Bitte wähle ein stärkeres Passwort.");
       return;
     }
     if (!confirmValid) {

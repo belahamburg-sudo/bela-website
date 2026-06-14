@@ -29,7 +29,7 @@ const timeline = [
     num: "03",
     title: "Die Erkenntnis: Ortsgebunden ist eine Sackgasse",
     copy: "Partys liefen mal gut, mal schlecht. Wetter, Konkurrenz, Stimmung. Dazu ständige Kommunikation mit hunderten Leuten. Und: alles hing am Standort. Mir war klar, dass das nicht die Zukunft sein kann. Ich wollte etwas, das läuft, egal wo ich gerade bin.",
-    image: "/assets/bela-seoul.jpg",
+    image: "/assets/bela-seoul.jpeg",
     imageAlt: "Seoul",
   },
   {
@@ -64,7 +64,7 @@ const principles = [
 
 const lifestyle = [
   { src: "/assets/bela-golf-2.jpeg", label: "Golf" },
-  { src: "/assets/bela-seoul.jpg", label: "Seoul" },
+  { src: "/assets/bela-seoul.jpeg", label: "Seoul" },
   { src: "/assets/bela-terrace.jpg", label: "Istanbul" },
   { src: "/assets/bela-party.jpg", label: "Hamburg" },
 ];
