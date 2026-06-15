@@ -577,7 +577,7 @@ export function BroadcastComposer() {
             onClick={() => setPreviewOpen(false)}
             className="fixed inset-0 bg-obsidian/80 backdrop-blur-sm"
           />
-          <div className="relative z-10 flex h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink/95 shadow-soft backdrop-blur-xl">
+          <div className="relative z-10 flex h-[90dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink/95 shadow-soft backdrop-blur-xl">
             <header className="flex items-start justify-between gap-4 border-b border-white/5 px-6 py-4">
               <div className="min-w-0">
                 <h2 className="text-lg font-extrabold tracking-tight text-cream">

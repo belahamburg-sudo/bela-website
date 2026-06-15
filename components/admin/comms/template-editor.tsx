@@ -10,7 +10,6 @@ import {
   ChevronDown,
   ChevronRight,
   Send,
-  MousePointerClick,
 } from "lucide-react";
 import { AdminButton } from "@/components/admin/admin-button";
 import { useToast } from "@/components/admin/toast";
@@ -23,8 +22,6 @@ import {
 
 const INPUT_CLASS =
   "w-full rounded-lg border border-white/10 bg-ink/60 px-3 py-2.5 text-sm text-cream/90 outline-none transition-colors focus:border-gold-300/40 focus:ring-1 focus:ring-gold-300/20";
-
-const LABEL_CLASS = "tac-label mb-1.5 block";
 
 function withDoctype(html: string): string {
   return /^\s*<!doctype/i.test(html) ? html : `<!DOCTYPE html>\n${html}`;
@@ -198,7 +195,7 @@ export function TemplateEditor({
             }}
             className="fixed inset-0 bg-obsidian/80 backdrop-blur-sm"
           />
-          <div className="relative z-10 flex h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink/95 shadow-soft backdrop-blur-xl">
+          <div className="relative z-10 flex h-[92dvh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink/95 shadow-soft backdrop-blur-xl">
             <header className="flex items-start justify-between gap-4 border-b border-white/5 px-6 py-4">
               <div className="min-w-0">
                 <h2 className="text-lg font-extrabold tracking-tight text-cream">
@@ -228,8 +225,8 @@ export function TemplateEditor({
               </div>
             ) : (
               <div className="flex min-h-0 flex-1 flex-col gap-4 p-5">
-                <div>
-                  <label className={LABEL_CLASS} htmlFor="te-subject">
+                <div className="flex items-center gap-3">
+                  <label className="tac-label flex-shrink-0" htmlFor="te-subject">
                     Betreff
                   </label>
                   <input
@@ -238,18 +235,8 @@ export function TemplateEditor({
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="Betreff der Vorlage"
-                    className={INPUT_CLASS}
+                    className={`${INPUT_CLASS} flex-1`}
                   />
-                </div>
-
-                <div className="flex items-center gap-2 rounded-lg border border-gold-300/20 bg-gold-300/[0.04] px-3 py-2 text-xs text-cream/70">
-                  <MousePointerClick className="h-3.5 w-3.5 flex-shrink-0 text-gold-300/70" />
-                  <span>
-                    Klick direkt in den Text und tippe, um ihn zu ändern.
-                    Platzhalter wie{" "}
-                    <code className="rounded bg-white/5 px-1 text-gold-200">{"{{name}}"}</code>{" "}
-                    bleiben stehen und werden beim Versand automatisch ersetzt.
-                  </span>
                 </div>
 
                 {/* Directly-editable email (WYSIWYG via designMode). */}
