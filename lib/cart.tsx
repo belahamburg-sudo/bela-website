@@ -23,7 +23,7 @@ type CartContextValue = {
   count: number;
   subtotalCents: number;
   isOpen: boolean;
-  add: (item: Omit<CartItem, "qty">, qty?: number) => void;
+  add: (item: Omit<CartItem, "qty">) => void;
   remove: (slug: string) => void;
   setQty: (slug: string, qty: number) => void;
   clear: () => void;
@@ -35,6 +35,16 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "ai-goldmining-cart";
+const MAX_COURSE_QTY = 1;
+
+function normalizeCartItems(raw: CartItem[]): CartItem[] {
+  const bySlug = new Map<string, CartItem>();
+  for (const item of raw) {
+    if (!item?.slug) continue;
+    bySlug.set(item.slug, { ...item, qty: MAX_COURSE_QTY });
+  }
+  return [...bySlug.values()];
+}
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -47,7 +57,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as CartItem[];
-        if (Array.isArray(parsed)) setItems(parsed.filter((i) => i && i.slug));
+        if (Array.isArray(parsed)) setItems(normalizeCartItems(parsed));
       }
     } catch {
       // ignore malformed cart
@@ -65,13 +75,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items, hydrated]);
 
-  const add = useCallback((item: Omit<CartItem, "qty">, qty = 1) => {
+  const add = useCallback((item: Omit<CartItem, "qty">) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.slug === item.slug);
-      if (existing) {
-        return prev.map((i) => (i.slug === item.slug ? { ...i, qty: i.qty + qty } : i));
-      }
-      return [...prev, { ...item, qty }];
+      if (prev.some((i) => i.slug === item.slug)) return prev;
+      return [...prev, { ...item, qty: MAX_COURSE_QTY }];
     });
     setIsOpen(true);
   }, []);
@@ -81,19 +88,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setQty = useCallback((slug: string, qty: number) => {
-    setItems((prev) =>
-      qty <= 0
-        ? prev.filter((i) => i.slug !== slug)
-        : prev.map((i) => (i.slug === slug ? { ...i, qty } : i))
-    );
+    setItems((prev) => {
+      if (qty <= 0) return prev.filter((i) => i.slug !== slug);
+      return prev.map((i) => (i.slug === slug ? { ...i, qty: MAX_COURSE_QTY } : i));
+    });
   }, []);
 
   const clear = useCallback(() => setItems([]), []);
   const has = useCallback((slug: string) => items.some((i) => i.slug === slug), [items]);
 
   const value = useMemo<CartContextValue>(() => {
-    const count = items.reduce((n, i) => n + i.qty, 0);
-    const subtotalCents = items.reduce((n, i) => n + i.priceCents * i.qty, 0);
+    const count = items.length;
+    const subtotalCents = items.reduce((n, i) => n + i.priceCents, 0);
     return {
       items,
       count,

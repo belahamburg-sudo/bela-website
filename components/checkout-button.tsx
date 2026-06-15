@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart, Loader2, AlertCircle, Gift } from "lucide-react";
+import { CreditCard, Loader2, AlertCircle, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
@@ -147,7 +147,7 @@ export function CheckoutButton({
         {loading ? (
           <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
         ) : (
-          <ShoppingCart aria-hidden className="h-4 w-4" />
+          <CreditCard aria-hidden className="h-4 w-4" />
         )}
         {label}
       </Button>

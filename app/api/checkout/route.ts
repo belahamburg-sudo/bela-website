@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getPublicCourse } from "@/lib/courses";
+import { readReferralFromCookieHeader } from "@/lib/referral";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
@@ -45,12 +46,14 @@ export async function POST(request: Request) {
     }
 
     // Normalise the requested items.
-    const requested: CheckoutItem[] =
+    const requestedRaw: CheckoutItem[] =
       body.items && body.items.length > 0
         ? body.items
         : body.courseSlug
           ? [{ slug: body.courseSlug, qty: 1 }]
           : [];
+
+    const requested = [...new Map(requestedRaw.map((item) => [item.slug, { slug: item.slug, qty: 1 }])).values()];
 
     if (requested.length === 0) {
       return NextResponse.json({ message: "Warenkorb ist leer." }, { status: 400 });
@@ -105,7 +108,7 @@ export async function POST(request: Request) {
     const resolvedEmail = userEmail ?? body.userEmail ?? null;
 
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = valid.map(({ item, course }) => ({
-      quantity: Math.max(1, item.qty ?? 1),
+      quantity: 1,
       price_data: {
         currency: "eur",
         unit_amount: course!.priceCents,
@@ -150,7 +153,9 @@ export async function POST(request: Request) {
 
     // Refer-a-friend: a valid referral code gives the friend a % discount.
     // (Skipped if a typed promo already applied, or the buyer owns the code.)
-    const referralCode = body.referralCode?.trim().toUpperCase();
+    const referralCode =
+      body.referralCode?.trim().toUpperCase() ||
+      readReferralFromCookieHeader(request.headers.get("cookie"));
     if (!appliedDiscount && referralCode) {
       try {
         const admin = getSupabaseAdminClient();
@@ -183,7 +188,7 @@ export async function POST(request: Request) {
       order_bump: body.orderBump ? "true" : "false",
       ...(userId ? { user_id: userId } : {}),
       ...(resolvedEmail ? { user_email: resolvedEmail } : {}),
-      ...(body.referralCode ? { referral_code: body.referralCode.trim() } : {}),
+      ...(referralCode ? { referral_code: referralCode } : {}),
     };
 
     const enableTax = process.env.STRIPE_AUTOMATIC_TAX === "1";

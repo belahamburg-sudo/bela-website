@@ -1,34 +1,69 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import {
+  REFERRAL_COOKIE_NAME,
+  REFERRAL_MAX_AGE_SECONDS,
+  REFERRAL_STORAGE_KEY,
+  normalizeReferralCode,
+} from "@/lib/referral";
 
-export const REFERRAL_STORAGE_KEY = "ai-goldmining-ref";
+function persistReferralCode(code: string) {
+  const normalized = normalizeReferralCode(code);
+  if (!normalized) return;
 
-/**
- * Captures an affiliate / refer-a-friend code from the URL (?ref=CODE or
- * ?via=CODE) and stores it so the checkout can attribute the sale. Runs once
- * on load across the whole app.
- */
-export function ReferralCapture() {
+  try {
+    localStorage.setItem(REFERRAL_STORAGE_KEY, normalized);
+  } catch {
+    // ignore
+  }
+
+  try {
+    document.cookie = `${REFERRAL_COOKIE_NAME}=${encodeURIComponent(normalized)}; path=/; max-age=${REFERRAL_MAX_AGE_SECONDS}; samesite=lax`;
+  } catch {
+    // ignore
+  }
+}
+
+function ReferralCaptureInner() {
+  const searchParams = useSearchParams();
+
   useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const code = (params.get("ref") || params.get("via") || "").trim();
-      if (code) {
-        localStorage.setItem(REFERRAL_STORAGE_KEY, code.toUpperCase());
-      }
-    } catch {
-      // ignore — referral attribution is best-effort
-    }
-  }, []);
+    const code = searchParams.get("ref") || searchParams.get("via");
+    if (code) persistReferralCode(code);
+  }, [searchParams]);
 
   return null;
 }
 
-/** Read the stored referral code (client-side). */
+/**
+ * Captures affiliate codes from ?ref= / ?via= on every client navigation and
+ * stores them in localStorage + cookie for checkout attribution.
+ */
+export function ReferralCapture() {
+  return (
+    <Suspense fallback={null}>
+      <ReferralCaptureInner />
+    </Suspense>
+  );
+}
+
+/** Read the stored referral code (client-side). Cookie first, then localStorage. */
 export function getStoredReferral(): string | null {
   try {
-    return localStorage.getItem(REFERRAL_STORAGE_KEY);
+    if (typeof document !== "undefined") {
+      const match = document.cookie
+        .split(";")
+        .map((part) => part.trim())
+        .find((part) => part.startsWith(`${REFERRAL_COOKIE_NAME}=`));
+      if (match) {
+        const value = decodeURIComponent(match.slice(REFERRAL_COOKIE_NAME.length + 1));
+        const normalized = normalizeReferralCode(value);
+        if (normalized) return normalized;
+      }
+    }
+    return normalizeReferralCode(localStorage.getItem(REFERRAL_STORAGE_KEY));
   } catch {
     return null;
   }

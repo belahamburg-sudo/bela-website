@@ -6,6 +6,8 @@ export type TelegramSubscription = {
   currentPeriodEnd: string | null;
   stripeSubscriptionId: string | null;
   stripeCustomerId: string | null;
+  telegramUserId: number | null;
+  telegramUsername: string | null;
 };
 
 /**
@@ -21,7 +23,7 @@ export async function getTelegramSubscription(
     const { data, error } = await supabase
       .from("telegram_subscriptions")
       .select(
-        "status, current_period_end, stripe_subscription_id, stripe_customer_id"
+        "status, current_period_end, stripe_subscription_id, stripe_customer_id, telegram_user_id, telegram_username"
       )
       .eq("user_id", userId)
       .maybeSingle();
@@ -33,6 +35,8 @@ export async function getTelegramSubscription(
       current_period_end: string | null;
       stripe_subscription_id: string | null;
       stripe_customer_id: string | null;
+      telegram_user_id: number | null;
+      telegram_username: string | null;
     };
 
     return {
@@ -41,6 +45,8 @@ export async function getTelegramSubscription(
       currentPeriodEnd: row.current_period_end ?? null,
       stripeSubscriptionId: row.stripe_subscription_id ?? null,
       stripeCustomerId: row.stripe_customer_id ?? null,
+      telegramUserId: row.telegram_user_id ?? null,
+      telegramUsername: row.telegram_username ?? null,
     };
   } catch {
     return null;

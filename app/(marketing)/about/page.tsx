@@ -43,8 +43,8 @@ const timeline = [
     num: "05",
     title: "Der Moment, in dem AI alles geändert hat",
     copy: "In den letzten Monaten ist so viel passiert, dass alte Modelle einfach kippen. Warum Warenhandel mit Lieferketten, Lager und Rücksendungen, wenn man digitale Produkte verkaufen kann, die unendlich skalieren? Warum Creator managen, wenn AI 80 Prozent davon übernimmt? Mir wurde klar: das ist kein Trend, das ist ein Systemwechsel.",
-    image: "/assets/bela-jet.jpg",
-    imageAlt: "Privatjet",
+    image: "/assets/bela-with-dad.jpeg",
+    imageAlt: "Bela — der Wendepunkt mit AI",
   },
   {
     num: "06",
@@ -198,7 +198,7 @@ export default function AboutPage() {
                   </p>
 
                   {/* Photo */}
-                  <div className="relative w-full overflow-hidden rounded-sm" style={{ aspectRatio: "4/3" }}>
+                  <div className="relative aspect-square w-full max-w-xl overflow-hidden rounded-sm">
                     <Image
                       src={entry.image}
                       alt={entry.imageAlt}

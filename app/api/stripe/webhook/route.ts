@@ -247,7 +247,6 @@ async function handleTelegramSubscription(
   }
 }
 
-// Keep the local subscription row in sync on lifecycle changes.
 async function handleSubscriptionChange(
   supabase: SupabaseClient,
   subscription: Stripe.Subscription
@@ -267,7 +266,11 @@ async function handleSubscriptionChange(
 
   if (error) {
     console.error("Telegram subscription sync failed:", error.message);
+    return;
   }
+
+  const { enforceTelegramAccessForSubscription } = await import("@/lib/telegram-access");
+  await enforceTelegramAccessForSubscription(supabase, subscription.id, subscription.status);
 }
 
 async function handlePaymentFailed(

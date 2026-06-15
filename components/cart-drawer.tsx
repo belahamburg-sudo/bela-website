@@ -3,13 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
+import { X, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatEuro } from "@/lib/utils";
 import { featuredCourses } from "@/lib/content";
 
 export function CartDrawer() {
-  const { items, isOpen, close, setQty, remove, subtotalCents, count, add, has } = useCart();
+  const { items, isOpen, close, remove, subtotalCents, count, add, has } = useCart();
 
   // Upsell suggestions: featured courses the customer hasn't added yet.
   const upsells = featuredCourses.filter((c) => !has(c.slug)).slice(0, 2);
@@ -86,30 +86,14 @@ export function CartDrawer() {
                         <p className="mt-0.5 gold-text font-heading text-base leading-none">
                           {formatEuro(item.priceCents)}
                         </p>
-                        <div className="mt-2 flex items-center justify-between">
-                          <div className="inline-flex items-center border border-white/10">
-                            <button
-                              onClick={() => setQty(item.slug, item.qty - 1)}
-                              aria-label="Weniger"
-                              className="flex h-7 w-7 items-center justify-center text-cream/60 hover:text-gold-300"
-                            >
-                              <Minus className="h-3 w-3" />
-                            </button>
-                            <span className="w-7 text-center font-mono text-xs text-cream">{item.qty}</span>
-                            <button
-                              onClick={() => setQty(item.slug, item.qty + 1)}
-                              aria-label="Mehr"
-                              className="flex h-7 w-7 items-center justify-center text-cream/60 hover:text-gold-300"
-                            >
-                              <Plus className="h-3 w-3" />
-                            </button>
-                          </div>
+                        <div className="mt-2 flex items-center justify-end">
                           <button
                             onClick={() => remove(item.slug)}
                             aria-label="Entfernen"
-                            className="flex h-7 w-7 items-center justify-center text-cream/40 hover:text-red-400"
+                            className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.12em] text-cream/40 hover:text-red-400"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
+                            Entfernen
                           </button>
                         </div>
                       </div>

@@ -1,8 +1,24 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import {
+  REFERRAL_COOKIE_NAME,
+  REFERRAL_MAX_AGE_SECONDS,
+  normalizeReferralCode,
+} from "@/lib/referral";
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
+
+  const refCode = normalizeReferralCode(
+    request.nextUrl.searchParams.get("ref") || request.nextUrl.searchParams.get("via")
+  );
+  if (refCode) {
+    supabaseResponse.cookies.set(REFERRAL_COOKIE_NAME, refCode, {
+      maxAge: REFERRAL_MAX_AGE_SECONDS,
+      path: "/",
+      sameSite: "lax",
+    });
+  }
 
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||

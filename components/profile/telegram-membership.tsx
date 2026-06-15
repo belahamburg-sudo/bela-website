@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { Crown, Check, Send, ExternalLink } from "lucide-react";
-import { paidTelegramUrl } from "@/lib/env";
+import { Crown, Check } from "lucide-react";
+import { TelegramAccessButton } from "@/components/telegram-access-button";
 
 type Props = {
   active: boolean;
@@ -57,18 +55,9 @@ export function TelegramMembership({ active, currentPeriodEnd }: Props) {
           )}
         </div>
 
-        <div className="flex-none">
+        <div className="flex-none w-full sm:w-auto">
           {active ? (
-            <a
-              href={paidTelegramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-shimmer focus-ring relative flex items-center justify-center gap-2.5 bg-gold-gradient px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition-all hover:brightness-110 hover:shadow-[0_0_40px_rgba(201, 169, 97,0.25)] active:scale-[0.98]"
-            >
-              <Send className="h-4 w-4" />
-              VIP Gruppe öffnen
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
+            <TelegramAccessButton active className="w-full sm:min-w-[260px]" />
           ) : (
             <Link
               href="/db/kurse"

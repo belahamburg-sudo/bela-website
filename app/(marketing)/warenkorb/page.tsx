@@ -4,17 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  ShoppingBag,
-  Minus,
-  Plus,
-  Trash2,
-  Loader2,
-  AlertCircle,
-  Lock,
-  Tag,
-  Gift,
-} from "lucide-react";
+import { ShoppingBag, Trash2, Loader2, AlertCircle, Lock, Tag, Gift } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatEuro } from "@/lib/utils";
 import { ORDER_BUMP, formatBumpPrice } from "@/lib/offers";
@@ -23,7 +13,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { getStoredReferral } from "@/components/referral-capture";
 
 export default function CartPage() {
-  const { items, setQty, remove, subtotalCents, clear } = useCart();
+  const { items, remove, subtotalCents, clear } = useCart();
   const router = useRouter();
 
   const [bump, setBump] = useState(false);
@@ -60,7 +50,7 @@ export default function CartPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((i) => ({ slug: i.slug, qty: i.qty })),
+          items: items.map((i) => ({ slug: i.slug, qty: 1 })),
           userEmail,
           agbAccepted: agb,
           orderBump: bump,
@@ -127,28 +117,11 @@ export default function CartPage() {
                     <p className="mt-0.5 gold-text font-heading text-xl leading-none">
                       {formatEuro(item.priceCents)}
                     </p>
-                    <div className="mt-3 flex items-center justify-between">
-                      <div className="inline-flex items-center border border-white/10">
-                        <button
-                          onClick={() => setQty(item.slug, item.qty - 1)}
-                          aria-label="Weniger"
-                          className="flex h-8 w-8 items-center justify-center text-cream/60 hover:text-gold-300"
-                        >
-                          <Minus className="h-3.5 w-3.5" />
-                        </button>
-                        <span className="w-8 text-center font-mono text-sm text-cream">{item.qty}</span>
-                        <button
-                          onClick={() => setQty(item.slug, item.qty + 1)}
-                          aria-label="Mehr"
-                          className="flex h-8 w-8 items-center justify-center text-cream/60 hover:text-gold-300"
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                    <div className="mt-3 flex items-center justify-end">
                       <button
                         onClick={() => remove(item.slug)}
                         aria-label="Entfernen"
-                        className="flex items-center gap-1.5 text-xs text-cream/40 hover:text-red-400"
+                        className="inline-flex items-center gap-1.5 text-xs text-cream/40 hover:text-red-400"
                       >
                         <Trash2 className="h-3.5 w-3.5" /> Entfernen
                       </button>
