@@ -1,8 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin, logAudit } from "@/lib/admin";
-import { publicUrl, parseStorageRef, uploadToBucket, BUCKETS } from "@/lib/storage";
+import { requireAdmin, logAudit, getAdminContext } from "@/lib/admin";
+import {
+  publicUrl,
+  parseStorageRef,
+  uploadToBucket,
+  BUCKETS,
+  listBucketRecursive,
+  toStorageRef,
+} from "@/lib/storage";
 import { courses as staticCourses } from "@/lib/content";
 import { serializeIncludes, IMPORT_SOURCE_LABEL } from "@/lib/course-includes";
 
@@ -82,6 +89,39 @@ function normalizeResources(resources?: ResourceItem[]): ResourceItem[] {
       href: clean(r.href) ?? "",
     }))
     .filter((r) => r.label && r.href);
+}
+
+// ─────────────────────────────── Storage file picker ───────────────────────────────
+
+/**
+ * List every file already in the private course-content bucket so the admin can
+ * attach files that were uploaded directly to Supabase (dashboard / S3 tool),
+ * not just files added through the in-app uploader. Returns portable refs.
+ */
+export async function listCourseContentFiles(): Promise<{
+  ok: boolean;
+  files?: { path: string; name: string; size: number; ref: string }[];
+  error?: string;
+}> {
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
+  try {
+    const files = await listBucketRecursive(BUCKETS.courseContent);
+    return {
+      ok: true,
+      files: files
+        .filter((f) => !f.name.startsWith(".")) // hide .keep folder placeholders
+        .sort((a, b) => a.path.localeCompare(b.path))
+        .map((f) => ({
+          path: f.path,
+          name: f.name,
+          size: f.size,
+          ref: toStorageRef(BUCKETS.courseContent, f.path),
+        })),
+    };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Konnte Dateien nicht laden." };
+  }
 }
 
 // ─────────────────────────────────────── Courses ───────────────────────────────────────

@@ -5,6 +5,7 @@ import { FileVideo, Link2, Plus, Trash2, Upload, X } from "lucide-react";
 import { AdminButton } from "@/components/admin/admin-button";
 import { Modal } from "@/components/admin/modal";
 import { FileUpload } from "@/components/admin/file-upload";
+import { StoragePicker } from "@/components/admin/storage-picker";
 import { useToast } from "@/components/admin/toast";
 import { createLesson, updateLesson } from "@/app/admin/kurse/actions";
 import type { EditorLesson, ResourceItem } from "./course-editor";
@@ -186,6 +187,15 @@ export function LessonModal({
               success("Video hochgeladen.");
             }}
           />
+
+          <StoragePicker
+            kind="video"
+            buttonLabel="oder bereits hochgeladenes Video aus Supabase wählen"
+            onSelect={(ref) => {
+              setVideoUrl(ref);
+              success("Video ausgewählt.");
+            }}
+          />
         </div>
 
         {/* Resources */}
@@ -248,16 +258,25 @@ export function LessonModal({
                         </button>
                       </div>
                     ) : (
-                      <FileUpload
-                        bucket="course-content"
-                        prefix={`${courseSlug}/downloads`}
-                        kind="pdf"
-                        label="Datei hochladen oder unten URL eintragen"
-                        onUploaded={(f) => {
-                          updateResource(i, { href: f.ref });
-                          success("Datei hochgeladen.");
-                        }}
-                      />
+                      <>
+                        <FileUpload
+                          bucket="course-content"
+                          prefix={`${courseSlug}/downloads`}
+                          kind="pdf"
+                          label="Datei hochladen oder unten URL eintragen"
+                          onUploaded={(f) => {
+                            updateResource(i, { href: f.ref });
+                            success("Datei hochgeladen.");
+                          }}
+                        />
+                        <StoragePicker
+                          buttonLabel="oder aus Supabase wählen"
+                          onSelect={(ref) => {
+                            updateResource(i, { href: ref });
+                            success("Datei ausgewählt.");
+                          }}
+                        />
+                      </>
                     )}
                     {!r.href.startsWith("storage://") && (
                       <input
