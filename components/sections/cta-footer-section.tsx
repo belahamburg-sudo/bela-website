@@ -14,8 +14,6 @@ const LEGAL = [
   { href: "/impressum", label: "Impressum" },
   { href: "/datenschutz", label: "Datenschutz" },
   { href: "/agb", label: "AGB" },
-  { href: "/agb#widerrufsrecht-fuer-digitale-inhalte", label: "Widerrufsrecht" },
-  { href: "/income-disclaimer", label: "Income Disclaimer" },
 ];
 
 const SOCIALS = [
