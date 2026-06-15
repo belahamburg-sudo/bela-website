@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin, logAudit } from "@/lib/admin";
+import { berlinLocalToIso } from "@/lib/webinar-format";
 
 type ActionResult = { ok: boolean; error?: string };
 
@@ -14,12 +15,13 @@ export type WebinarInput = {
   isActive?: boolean;
 };
 
-/** Normalises a datetime-local value into an ISO string (or null). */
+/**
+ * Normalises a `datetime-local` value into an ISO string (or null). The value
+ * is interpreted as Europe/Berlin wall-clock — NOT the server's UTC — so "19:00"
+ * entered in the admin is stored as 19:00 Berlin and shows as 19:00 everywhere.
+ */
 function toIso(value?: string | null): string | null {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toISOString();
+  return berlinLocalToIso(value);
 }
 
 function clean(value?: string | null): string | null {

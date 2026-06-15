@@ -27,9 +27,11 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
     ? `${webinarStart.toLocaleString("de-DE", {
         day: "numeric",
         month: "long",
+        timeZone: "Europe/Berlin",
       })} · ${webinarStart.toLocaleString("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "Europe/Berlin",
       })} Uhr`
     : null;
   const webinarUrl = webinar?.url ?? "/webinar";
@@ -433,7 +435,7 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
 
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-cream/25">
             Kostenlos · ohne Bullshit{hasValidDate
-              ? ` · live am ${webinarStart.toLocaleString("de-DE", { day: "numeric", month: "long" })}`
+              ? ` · live am ${webinarStart.toLocaleString("de-DE", { day: "numeric", month: "long", timeZone: "Europe/Berlin" })}`
               : ""}
           </p>
 

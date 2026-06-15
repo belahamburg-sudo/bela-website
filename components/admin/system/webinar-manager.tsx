@@ -15,6 +15,7 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { AdminButton } from "@/components/admin/admin-button";
 import { Modal } from "@/components/admin/modal";
 import { useToast } from "@/components/admin/toast";
+import { formatBerlin, isoToBerlinLocal } from "@/lib/webinar-format";
 import {
   createWebinar,
   updateWebinar,
@@ -52,27 +53,20 @@ const EMPTY_FORM: FormState = {
 };
 
 function formatDateTime(iso: string | null): string {
-  if (!iso) return "—";
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString("de-DE", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return (
+    formatBerlin(iso, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }) ?? "—"
+  );
 }
 
-/** Convert an ISO timestamp into the value a <input type="datetime-local"> expects. */
+/** Convert an ISO timestamp into the Berlin value a <input type="datetime-local"> expects. */
 function toDatetimeLocal(iso: string | null): string {
-  if (!iso) return "";
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return isoToBerlinLocal(iso);
 }
 
 const inputClass =
