@@ -91,8 +91,8 @@ export function SiteHeader() {
               <Image
                 src={SITE_LOGO_PATH}
                 alt="AI Goldmining"
-                width={1200}
-                height={204}
+                width={1203}
+                height={165}
                 className="w-auto"
                 style={{
                   height: "30px",

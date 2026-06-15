@@ -103,8 +103,8 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           <Image
             src={SITE_LOGO_PATH}
             alt="AI Goldmining"
-            width={1200}
-            height={204}
+            width={1203}
+            height={165}
             className="w-auto transition-opacity group-hover:opacity-90"
             style={{ height: "30px" }}
             priority
@@ -229,8 +229,8 @@ export function DashboardSidebar() {
           <Image
             src={SITE_LOGO_PATH}
             alt="AI Goldmining"
-            width={1200}
-            height={204}
+            width={1203}
+            height={165}
             className="w-auto"
             style={{ height: "24px" }}
             priority

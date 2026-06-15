@@ -123,8 +123,8 @@ export function CtaFooterSection({
                   <Image
                     src={SITE_LOGO_PATH}
                     alt="AI Goldmining"
-                    width={1200}
-                    height={204}
+                    width={1203}
+                    height={165}
                     className="h-auto w-[210px]"
                   />
                 </Link>
