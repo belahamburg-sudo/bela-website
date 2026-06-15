@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin, logAudit } from "@/lib/admin";
-import { publicUrl, parseStorageRef } from "@/lib/storage";
+import { publicUrl, parseStorageRef, uploadToBucket, BUCKETS } from "@/lib/storage";
 import { courses as staticCourses } from "@/lib/content";
 import { serializeIncludes, IMPORT_SOURCE_LABEL } from "@/lib/course-includes";
 
@@ -112,6 +112,21 @@ export async function createCourse(input: {
     .single();
 
   if (error) return { ok: false, error: duplicateMessage(error.message) };
+
+  // Give the course its own folder in the private course-content bucket so all
+  // its videos/downloads stay grouped under course-content/<slug>/… . A 0-byte
+  // ".keep" makes the folder visible in the Supabase dashboard. Best-effort.
+  try {
+    await uploadToBucket({
+      bucket: BUCKETS.courseContent,
+      path: `${slug}/.keep`,
+      body: new Uint8Array(0),
+      contentType: "text/plain",
+      upsert: true,
+    });
+  } catch {
+    // a missing folder placeholder must never block course creation
+  }
 
   await logAudit({
     actorEmail: user.email,

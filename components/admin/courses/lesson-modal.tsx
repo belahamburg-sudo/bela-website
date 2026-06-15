@@ -17,6 +17,7 @@ const RESOURCE_TYPES: ResourceItem["type"][] = ["PDF", "Template", "Prompt"];
 export function LessonModal({
   open,
   courseId,
+  courseSlug,
   moduleId,
   lesson,
   onClose,
@@ -24,6 +25,7 @@ export function LessonModal({
 }: {
   open: boolean;
   courseId: string;
+  courseSlug: string;
   moduleId: string;
   lesson: EditorLesson | null;
   onClose: () => void;
@@ -174,7 +176,7 @@ export function LessonModal({
 
           <FileUpload
             bucket="course-content"
-            prefix={`lessons/${moduleId}`}
+            prefix={`${courseSlug}/videos`}
             kind="video"
             accept="video/*"
             label={isUploadedVideo ? "Anderes Video hochladen" : "oder Video hochladen"}
@@ -248,7 +250,7 @@ export function LessonModal({
                     ) : (
                       <FileUpload
                         bucket="course-content"
-                        prefix={`resources/${moduleId}`}
+                        prefix={`${courseSlug}/downloads`}
                         kind="pdf"
                         label="Datei hochladen oder unten URL eintragen"
                         onUploaded={(f) => {

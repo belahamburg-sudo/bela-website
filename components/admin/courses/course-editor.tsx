@@ -430,7 +430,11 @@ export function CourseEditor({
 
       {/* Curriculum */}
       <div className="mt-6">
-        <CurriculumEditor courseId={course.id} modules={course.modules} />
+        <CurriculumEditor
+          courseId={course.id}
+          courseSlug={course.slug}
+          modules={course.modules}
+        />
       </div>
     </div>
   );

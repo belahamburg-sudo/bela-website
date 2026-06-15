@@ -36,9 +36,11 @@ const inputClass =
 
 export function CurriculumEditor({
   courseId,
+  courseSlug,
   modules,
 }: {
   courseId: string;
+  courseSlug: string;
   modules: EditorModule[];
 }) {
   const router = useRouter();
@@ -523,6 +525,7 @@ export function CurriculumEditor({
         <LessonModal
           open={Boolean(lessonModal)}
           courseId={courseId}
+          courseSlug={courseSlug}
           moduleId={lessonModal.moduleId}
           lesson={lessonModal.lesson}
           onClose={() => setLessonModal(null)}

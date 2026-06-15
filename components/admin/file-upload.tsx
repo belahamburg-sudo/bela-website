@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import * as tus from "tus-js-client";
 import { UploadCloud, FileVideo, FileText, CheckCircle2, X, Loader2 } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,13 @@ export type UploadedFile = {
 };
 
 type Status = "idle" | "uploading" | "done" | "error";
+
+// Files at/under this size take the quick signed-PUT path. Larger files (videos)
+// use resumable TUS uploads — chunked, with automatic resume on a dropped
+// connection — so a multi-GB upload survives network blips.
+const LARGE_FILE_BYTES = 40 * 1024 * 1024;
+// Supabase resumable uploads require exactly 6 MB chunks.
+const TUS_CHUNK = 6 * 1024 * 1024;
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -41,45 +49,116 @@ export function FileUpload({
   const [status, setStatus] = useState<Status>("idle");
   const [dragging, setDragging] = useState(false);
   const [current, setCurrent] = useState<{ name: string; size: number } | null>(null);
+  const [percent, setPercent] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const Icon = kind === "video" ? FileVideo : kind === "pdf" ? FileText : UploadCloud;
 
+  /** Quick path for small files: signed upload URL + single PUT. */
+  const uploadSmall = useCallback(
+    async (file: File) => {
+      const res = await fetch("/api/admin/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bucket, prefix, filename: file.name }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Konnte Upload nicht starten");
+      }
+      const { token, path, ref } = (await res.json()) as {
+        token: string;
+        path: string;
+        ref: string;
+      };
+
+      const supabase = getSupabaseBrowserClient();
+      if (!supabase) throw new Error("Supabase nicht konfiguriert");
+
+      const { error: upErr } = await supabase.storage
+        .from(bucket)
+        .uploadToSignedUrl(path, token, file, {
+          contentType: file.type || undefined,
+          upsert: true,
+        });
+      if (upErr) throw new Error(upErr.message);
+      return ref;
+    },
+    [bucket, prefix]
+  );
+
+  /** Resumable path for large files: chunked TUS upload with the admin's JWT. */
+  const uploadLarge = useCallback(
+    async (file: File) => {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      if (!supabaseUrl) throw new Error("Supabase nicht konfiguriert");
+
+      const supabase = getSupabaseBrowserClient();
+      if (!supabase) throw new Error("Supabase nicht konfiguriert");
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) throw new Error("Nicht angemeldet — bitte neu einloggen.");
+
+      // Server computes a per-course destination path (no signed reservation).
+      const res = await fetch("/api/admin/upload-target", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bucket, prefix, filename: file.name }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Konnte Upload nicht starten");
+      }
+      const { path, ref } = (await res.json()) as { path: string; ref: string };
+
+      await new Promise<void>((resolve, reject) => {
+        const upload = new tus.Upload(file, {
+          endpoint: `${supabaseUrl}/storage/v1/upload/resumable`,
+          retryDelays: [0, 3000, 5000, 10000, 20000],
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+            "x-upsert": "true",
+          },
+          uploadDataDuringCreation: true,
+          removeFingerprintOnSuccess: true,
+          chunkSize: TUS_CHUNK,
+          metadata: {
+            bucketName: bucket,
+            objectName: path,
+            contentType: file.type || "application/octet-stream",
+            cacheControl: "3600",
+          },
+          onError: (err) => reject(err),
+          onProgress: (sent, total) => {
+            setPercent(total > 0 ? Math.round((sent / total) * 100) : 0);
+          },
+          onSuccess: () => resolve(),
+        });
+
+        upload.findPreviousUploads().then((previous) => {
+          if (previous.length > 0) upload.resumeFromPreviousUpload(previous[0]);
+          upload.start();
+        });
+      });
+
+      return ref;
+    },
+    [bucket, prefix]
+  );
+
   const upload = useCallback(
     async (file: File) => {
       setError(null);
       setCurrent({ name: file.name, size: file.size });
+      setPercent(file.size > LARGE_FILE_BYTES ? 0 : null);
       setStatus("uploading");
 
       try {
-        const res = await fetch("/api/admin/upload-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ bucket, prefix, filename: file.name }),
-        });
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.error || "Konnte Upload nicht starten");
-        }
-        const { token, path, ref } = (await res.json()) as {
-          token: string;
-          path: string;
-          ref: string;
-        };
-
-        const supabase = getSupabaseBrowserClient();
-        if (!supabase) throw new Error("Supabase nicht konfiguriert");
-
-        const { error: upErr } = await supabase.storage
-          .from(bucket)
-          .uploadToSignedUrl(path, token, file, {
-            contentType: file.type || undefined,
-            upsert: true,
-          });
-        if (upErr) throw new Error(upErr.message);
-
+        const ref =
+          file.size > LARGE_FILE_BYTES ? await uploadLarge(file) : await uploadSmall(file);
         setStatus("done");
+        setPercent(null);
         onUploaded({
           ref,
           name: file.name,
@@ -88,10 +167,11 @@ export function FileUpload({
         });
       } catch (err) {
         setStatus("error");
+        setPercent(null);
         setError(err instanceof Error ? err.message : "Upload fehlgeschlagen");
       }
     },
-    [bucket, prefix, onUploaded]
+    [uploadLarge, uploadSmall, onUploaded]
   );
 
   const onDrop = useCallback(
@@ -107,6 +187,7 @@ export function FileUpload({
   function reset() {
     setStatus("idle");
     setCurrent(null);
+    setPercent(null);
     setError(null);
     if (inputRef.current) inputRef.current.value = "";
   }
@@ -133,11 +214,22 @@ export function FileUpload({
             <p className="truncate text-sm font-medium text-cream/90">{current?.name}</p>
             <p className="text-xs text-cream/40">
               {current ? formatBytes(current.size) : ""}
-              {status === "uploading" ? " · wird hochgeladen…" : " · fertig"}
+              {status === "uploading"
+                ? percent !== null
+                  ? ` · ${percent}% hochgeladen`
+                  : " · wird hochgeladen…"
+                : " · fertig"}
             </p>
             {status === "uploading" && (
               <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-1/3 animate-[shimmer_1.4s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-transparent via-gold-300 to-transparent" />
+                {percent !== null ? (
+                  <div
+                    className="h-full rounded-full bg-gold-300 transition-all duration-300"
+                    style={{ width: `${percent}%` }}
+                  />
+                ) : (
+                  <div className="h-full w-1/3 animate-[shimmer_1.4s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-transparent via-gold-300 to-transparent" />
+                )}
               </div>
             )}
           </div>

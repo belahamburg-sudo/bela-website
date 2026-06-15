@@ -17,7 +17,9 @@ export type BucketName = (typeof BUCKETS)[keyof typeof BUCKETS];
 
 const PUBLIC_BUCKETS: BucketName[] = [BUCKETS.media];
 const STORAGE_SCHEME = "storage://";
-const TWO_GB = 2 * 1024 * 1024 * 1024;
+// Course videos can be multi-GB. The real ceiling is the project-wide
+// "Upload file size limit" (Settings → Storage); the bucket simply inherits it.
+const FIVE_GB = 5 * 1024 * 1024 * 1024;
 const FIVE_HUNDRED_MB = 500 * 1024 * 1024;
 
 const ensured = new Set<string>();
@@ -33,7 +35,7 @@ async function ensureBucket(bucket: BucketName): Promise<void> {
     const isPublic = PUBLIC_BUCKETS.includes(bucket);
     await admin.storage.createBucket(bucket, {
       public: isPublic,
-      fileSizeLimit: bucket === BUCKETS.courseContent ? TWO_GB : FIVE_HUNDRED_MB,
+      fileSizeLimit: bucket === BUCKETS.courseContent ? FIVE_GB : FIVE_HUNDRED_MB,
     });
   }
   ensured.add(bucket);
@@ -86,6 +88,21 @@ export async function createSignedUpload(
     throw new Error(error?.message ?? "Could not create signed upload URL");
   }
   return { token: data.token, path: data.path, ref: toStorageRef(bucket, path) };
+}
+
+/**
+ * Compute a destination path + portable ref WITHOUT reserving a signed upload.
+ * Used for large resumable (TUS) uploads, which authenticate with the admin's
+ * own session JWT (see storage RLS policy) and stream the file directly to
+ * Supabase in 6 MB chunks with automatic resume.
+ */
+export function buildUploadTarget(
+  bucket: BucketName,
+  prefix: string,
+  filename: string
+): { path: string; ref: string } {
+  const path = buildObjectPath(prefix, filename);
+  return { path, ref: toStorageRef(bucket, path) };
 }
 
 export async function deleteFromBucket(bucket: BucketName, path: string): Promise<void> {
