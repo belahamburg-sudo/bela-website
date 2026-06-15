@@ -48,7 +48,6 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Inhalte",
     links: [
       { href: "/admin/kurse", label: "Kurse", icon: GraduationCap },
-      { href: "/admin/medien", label: "Medien", icon: ImageIcon },
       { href: "/admin/webinar", label: "Webinar", icon: CalendarClock },
     ],
   },
@@ -70,7 +69,10 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "System",
-    links: [{ href: "/admin/einstellungen", label: "Einstellungen", icon: Settings }],
+    links: [
+      { href: "/admin/einstellungen", label: "Einstellungen", icon: Settings },
+      { href: "/admin/medien", label: "Medien", icon: ImageIcon },
+    ],
   },
 ];
 

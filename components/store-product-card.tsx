@@ -16,7 +16,11 @@ import {
 } from "lucide-react";
 import { AddToCartButton } from "./add-to-cart-button";
 import { Button } from "./button";
+import { CourseLevelBadge } from "@/components/course-level-badge";
 import { formatEuro, cn } from "@/lib/utils";
+import type { Course } from "@/lib/content";
+
+const VALID_LEVELS: Course["level"][] = ["Start", "Aufbau", "System", "Bundle"];
 
 export type StoreCardCourse = {
   slug: string;
@@ -35,13 +39,6 @@ export type StoreCardCourse = {
   sortOrder?: number;
 };
 
-const LEVEL_COLORS: Record<string, string> = {
-  Start: "border-emerald-400/25 text-emerald-300 bg-emerald-500/[0.06]",
-  Aufbau: "border-sky-400/25 text-sky-300 bg-sky-500/[0.06]",
-  System: "border-violet-400/25 text-violet-300 bg-violet-500/[0.06]",
-  Bundle: "border-gold-300/40 text-gold-300 bg-gold-300/[0.08]",
-};
-
 export function StoreProductCard({
   course,
   isPurchased,
@@ -50,7 +47,9 @@ export function StoreProductCard({
   isPurchased: boolean;
 }) {
   const isVideo = course.format === "video";
-  const levelColor = LEVEL_COLORS[course.level] ?? LEVEL_COLORS.Start;
+  const level = (VALID_LEVELS.includes(course.level as Course["level"])
+    ? course.level
+    : "Start") as Course["level"];
   const comingSoon = Boolean(course.comingSoon);
   const isFlagship = Boolean(course.isFlagship);
 
@@ -131,28 +130,32 @@ export function StoreProductCard({
           {isVideo ? "Video-Kurs" : "PDF-Guide"}
         </div>
 
-        <div
-          className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1 border px-2 py-1 text-[9px] font-bold uppercase tracking-[0.18em] backdrop-blur-md ${levelColor}`}
-        >
-          {course.isBundle && <Star className="h-2.5 w-2.5 fill-current" />}
-          {course.level}
+        <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5">
+          {course.isBundle && <Star className="h-3 w-3 fill-current text-gold-300" />}
+          <CourseLevelBadge
+            level={level}
+            withIcon={false}
+            className="rounded-full px-2.5 py-1 text-[9px] tracking-[0.18em]"
+          />
         </div>
       </Link>
 
       <div className="relative z-10 flex flex-1 flex-col p-5">
-        <Link href={`/db/kurse/${course.slug}`}>
-          <h3
-            className={cn(
-              "font-heading text-xl leading-tight transition-colors duration-300",
-              comingSoon ? "text-cream/75 group-hover:text-cream/90" : "text-cream group-hover:text-gold-300"
-            )}
-          >
-            {course.title}
-          </h3>
-        </Link>
-        <p className={cn("mt-2 line-clamp-2 text-[13px] leading-relaxed", comingSoon ? "text-cream/35" : "text-cream/45")}>
-          {course.tagline}
-        </p>
+        <div className="min-h-[5.5rem]">
+          <Link href={`/db/kurse/${course.slug}`}>
+            <h3
+              className={cn(
+                "line-clamp-2 font-heading text-xl leading-tight transition-colors duration-300",
+                comingSoon ? "text-cream/75 group-hover:text-cream/90" : "text-cream group-hover:text-gold-300"
+              )}
+            >
+              {course.title}
+            </h3>
+          </Link>
+          <p className={cn("mt-2 line-clamp-2 text-[13px] leading-relaxed", comingSoon ? "text-cream/35" : "text-cream/45")}>
+            {course.tagline}
+          </p>
+        </div>
 
         <div className="mt-4 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.15em] text-cream/35">
           {comingSoon ? (

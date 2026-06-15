@@ -3,11 +3,28 @@
 import { revalidatePath } from "next/cache";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
-import { getAffiliateForUser, type Affiliate } from "@/lib/affiliate";
+import {
+  getAffiliateForUser,
+  getAffiliateSignups,
+  type Affiliate,
+  type AffiliateSignup,
+} from "@/lib/affiliate";
 import {
   createConnectAccount,
   createOnboardingLink,
 } from "@/lib/stripe-connect";
+
+/**
+ * Turn a raw Stripe error into actionable German guidance. The most common
+ * cause is that Stripe Connect is not enabled on the platform account yet.
+ */
+function describeStripeError(raw: string | undefined): string {
+  const msg = raw ?? "";
+  if (/connect|sign ?up|platform|not enabled|review the requirements/i.test(msg)) {
+    return "Stripe Connect ist nicht aktiviert. Bitte aktiviere Connect im Stripe-Dashboard.";
+  }
+  return msg || "Stripe-Konto konnte nicht erstellt werden.";
+}
 
 type ActionResult = { ok: boolean; error?: string; url?: string };
 
@@ -47,10 +64,11 @@ export async function startStripeOnboarding(): Promise<ActionResult> {
   let accountId = ctx.affiliate.stripeAccountId;
 
   if (!accountId) {
-    accountId = await createConnectAccount(ctx.email);
-    if (!accountId) {
-      return { ok: false, error: "Stripe-Konto konnte nicht erstellt werden." };
+    const created = await createConnectAccount(ctx.email);
+    if (!created.ok || !created.accountId) {
+      return { ok: false, error: describeStripeError(created.error) };
     }
+    accountId = created.accountId;
     const { error } = await admin
       .from("affiliates")
       .update({ stripe_account_id: accountId })
@@ -58,10 +76,12 @@ export async function startStripeOnboarding(): Promise<ActionResult> {
     if (error) return { ok: false, error: "Konto konnte nicht gespeichert werden." };
   }
 
-  const url = await createOnboardingLink(accountId);
-  if (!url) return { ok: false, error: "Onboarding-Link konnte nicht erstellt werden." };
+  const link = await createOnboardingLink(accountId);
+  if (!link.ok || !link.url) {
+    return { ok: false, error: describeStripeError(link.error) };
+  }
 
-  return { ok: true, url };
+  return { ok: true, url: link.url };
 }
 
 /**
@@ -93,4 +113,15 @@ export async function requestPayout(): Promise<ActionResult> {
 
   revalidatePath("/db/affiliate");
   return { ok: true };
+}
+
+/**
+ * List the people who signed up via this affiliate's link/code. Gated behind
+ * the same affiliate check; returns an empty list on any failure (never throws).
+ */
+export async function getMySignups(): Promise<{ ok: boolean; signups: AffiliateSignup[] }> {
+  const ctx = await requireAffiliate();
+  if (!ctx.ok) return { ok: false, signups: [] };
+  const signups = await getAffiliateSignups(ctx.userId);
+  return { ok: true, signups };
 }

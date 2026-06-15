@@ -1,5 +1,5 @@
 import { ScrollText } from "lucide-react";
-import { PageHeader, Panel, AdminBadge } from "@/components/admin/ui";
+import { PageHeader, AdminBadge } from "@/components/admin/ui";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { getSiteSettings } from "@/lib/settings";
@@ -51,7 +51,7 @@ export default async function EinstellungenPage() {
         .from("audit_log")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(100),
+        .limit(5),
     ]);
     settings = (settingsRes.data ?? []) as SettingDbRow[];
     auditRows = (auditRes.data ?? []) as AuditDbRow[];
@@ -78,6 +78,12 @@ export default async function EinstellungenPage() {
       paid_url: site.telegramPaidUrl ?? "",
     },
     contact: { email: site.contactEmail ?? "" },
+    socials: {
+      instagram: site.socials.instagram,
+      tiktok: site.socials.tiktok,
+      youtube: site.socials.youtube,
+      telegram: site.socials.telegram,
+    },
     hero: {
       headline: site.heroHeadline ?? "",
       subline: site.heroSubline ?? "",
@@ -138,20 +144,47 @@ export default async function EinstellungenPage() {
       </div>
 
       <div className="mt-6">
-        <Panel
-          title="Audit-Log"
-          description="Die letzten 100 Aktionen in der Kontrollzentrale."
-          noPadding
-        >
-          <DataTable
-            columns={auditColumns}
-            rows={auditRows}
-            getRowKey={(r) => r.id}
-            emptyIcon={ScrollText}
-            emptyTitle="Noch keine Einträge"
-            emptyDescription="Aktionen im Adminbereich werden hier protokolliert."
-          />
-        </Panel>
+        <details className="group rounded-xl border border-white/10 bg-panel/40 backdrop-blur-sm">
+          <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4">
+            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-gold-300/20 bg-gold-300/[0.06] text-gold-200">
+              <ScrollText className="h-4 w-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-cream/80">
+                Audit-Log
+              </h2>
+              <p className="mt-0.5 text-xs text-cream/40">
+                Die 5 neuesten Aktionen in der Kontrollzentrale. Zum Aufklappen
+                klicken.
+              </p>
+            </div>
+            <span className="flex-shrink-0 text-cream/40 transition-transform group-open:rotate-180">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+          </summary>
+          <div className="border-t border-white/5">
+            <DataTable
+              columns={auditColumns}
+              rows={auditRows}
+              getRowKey={(r) => r.id}
+              emptyIcon={ScrollText}
+              emptyTitle="Noch keine Einträge"
+              emptyDescription="Aktionen im Adminbereich werden hier protokolliert."
+            />
+          </div>
+        </details>
       </div>
     </div>
   );

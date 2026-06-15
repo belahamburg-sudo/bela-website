@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   Gift,
   Users,
@@ -24,8 +24,13 @@ import {
   type AffiliateStats,
   type AffiliateTier,
   type AffiliatePayout,
+  type AffiliateSignup,
 } from "@/lib/affiliate";
-import { startStripeOnboarding, requestPayout } from "@/app/(dashboard)/db/affiliate/actions";
+import {
+  startStripeOnboarding,
+  requestPayout,
+  getMySignups,
+} from "@/app/(dashboard)/db/affiliate/actions";
 
 type Props = {
   affiliate: Affiliate;
@@ -119,7 +124,99 @@ export function AffiliateDashboard({
         paidReferralCount={stats.paidReferralCount}
       />
 
+      <Referrals />
+
       <Payouts payouts={payouts} balanceCents={affiliate.balanceCents} />
+    </div>
+  );
+}
+
+/** Mask a name/email so the affiliate sees who signed up without full PII. */
+function maskIdentity(signup: AffiliateSignup): string {
+  if (signup.fullName && signup.fullName.trim()) {
+    const parts = signup.fullName.trim().split(/\s+/);
+    const first = parts[0];
+    const lastInitial = parts.length > 1 ? ` ${parts[parts.length - 1][0]}.` : "";
+    return `${first}${lastInitial}`;
+  }
+  if (signup.email && signup.email.includes("@")) {
+    const [local, domain] = signup.email.split("@");
+    const shownLocal =
+      local.length <= 2 ? local : `${local.slice(0, 2)}${"*".repeat(Math.max(1, local.length - 2))}`;
+    return `${shownLocal}@${domain}`;
+  }
+  return "Anonym";
+}
+
+function Referrals() {
+  const [signups, setSignups] = useState<AffiliateSignup[] | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    getMySignups()
+      .then((res) => {
+        if (active) setSignups(res.ok ? res.signups : []);
+      })
+      .catch(() => {
+        if (active) setSignups([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return (
+    <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+      <div className="flex items-center gap-2 text-sm font-bold text-gold-200/80">
+        <Users className="h-4 w-4" />
+        Deine Empfehlungen
+      </div>
+      <p className="mt-1 text-sm text-cream/50">
+        Wer sich über deinen Link oder Code angemeldet hat.
+      </p>
+
+      {signups === null ? (
+        <div className="mt-4 flex items-center gap-2 text-sm text-cream/40">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Wird geladen …
+        </div>
+      ) : signups.length === 0 ? (
+        <p className="mt-4 text-sm text-cream/40">
+          Noch keine Anmeldungen. Sobald sich jemand über deinen Link anmeldet,
+          erscheint er hier.
+        </p>
+      ) : (
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full min-w-[480px] text-sm">
+            <thead>
+              <tr className="border-b border-white/10 text-left text-[11px] font-bold uppercase tracking-widest text-cream/40">
+                <th className="pb-2 pr-4 font-bold">Empfehlung</th>
+                <th className="pb-2 pr-4 font-bold">Datum</th>
+                <th className="pb-2 pr-4 font-bold">Provision</th>
+                <th className="pb-2 font-bold">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {signups.map((s, i) => (
+                <tr key={s.referredUserId ?? `${i}`}>
+                  <td className="py-3 pr-4 text-cream/70">{maskIdentity(s)}</td>
+                  <td className="py-3 pr-4 text-cream/60">
+                    {s.createdAt
+                      ? new Date(s.createdAt).toLocaleDateString("de-DE")
+                      : "—"}
+                  </td>
+                  <td className="py-3 pr-4 font-bold text-cream">
+                    {formatEuro(s.commissionCents)}
+                  </td>
+                  <td className="py-3">
+                    <StatusBadge status={s.status ?? "pending"} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

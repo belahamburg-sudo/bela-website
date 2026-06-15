@@ -19,7 +19,7 @@ export default async function AffiliatePage() {
   const totalReferrals = rows.reduce((s, r) => s + (r.stats.referralCount ?? 0), 0);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex w-full min-w-0 flex-col gap-8">
       <PageHeader
         eyebrow="Partner-Programm"
         title="Affiliates"

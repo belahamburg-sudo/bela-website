@@ -126,6 +126,21 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
   const videoCount = items.filter((i) => i.format === "video").length;
   const pdfCount = items.filter((i) => i.format === "pdf").length;
 
+  // Count reconciliation: the admin counts every active course (is_active = true,
+  // i.e. comingSoon === false). On the member side those same courses are split
+  // across three places — the "Bibliothek" (purchased), the bundle banner and the
+  // "Verfügbar" catalog grids — so no single grid shows the full admin total.
+  // The bundle is the usual cause of an admin "6" vs catalog "5" mismatch: it is
+  // rendered as a banner, not inside a grid. We surface a per-section breakdown so
+  // the numbers always add up for the member.
+  const activeCount = items.filter((i) => !i.comingSoon).length;
+  const comingSoonCount = items.filter((i) => i.comingSoon).length;
+  const purchasedCount = purchased.length;
+  const bundleCount = bundle ? 1 : 0;
+  // Active courses visible in the "Verfügbar" catalog grids (excludes purchased &
+  // the bundle banner, but only counts non-coming-soon, mirroring admin "Aktiv").
+  const availableActiveCount = catalog.filter((i) => !i.comingSoon).length;
+
   const tabs: { key: Filter; label: string; icon: typeof Play; count: number }[] = [
     { key: "all", label: "Alle", icon: Layers, count: catalog.length },
     { key: "video", label: "Video-Kurse", icon: Play, count: videoItems.length },
@@ -137,10 +152,10 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
       variants={gridVariants}
       initial="hidden"
       animate="visible"
-      className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+      className="grid items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-3"
     >
       {list.map((c) => (
-        <motion.div key={c.slug} variants={itemVariants}>
+        <motion.div key={c.slug} variants={itemVariants} className="h-full">
           <StoreProductCard course={c} isPurchased={false} />
         </motion.div>
       ))}
@@ -199,6 +214,16 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
                 </span>
               ))}
             </div>
+
+            {/* Count reconciliation — shows how the active total splits across
+                sections so the member never sees a "missing" course. */}
+            <p className="mt-4 text-[10px] font-mono uppercase tracking-[0.15em] text-cream/30">
+              {activeCount} aktiv
+              {purchasedCount > 0 && ` · ${purchasedCount} in deiner Bibliothek`}
+              {bundleCount > 0 && ` · ${bundleCount} Bundle`}
+              {` · ${availableActiveCount} verfügbar`}
+              {comingSoonCount > 0 && ` · ${comingSoonCount} bald`}
+            </p>
           </motion.div>
 
           {/* Elite Miners — VIP Telegram subscription */}
@@ -214,10 +239,10 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
                 variants={gridVariants}
                 initial="hidden"
                 animate="visible"
-                className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+                className="grid items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-3"
               >
                 {purchased.map((c) => (
-                  <motion.div key={c.slug} variants={itemVariants}>
+                  <motion.div key={c.slug} variants={itemVariants} className="h-full">
                     <StoreProductCard course={c} isPurchased={true} />
                   </motion.div>
                 ))}

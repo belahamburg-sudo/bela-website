@@ -268,9 +268,18 @@ export function CourseEditor({ course }: { course: EditorCourse }) {
                 value={includesText}
                 onChange={(e) => setIncludesText(e.target.value)}
                 rows={4}
-                placeholder={"Produktideen-Framework\nVerkaufsseiten-Checkliste"}
+                placeholder={
+                  "Produktideen-Framework\nVerkaufsseiten-Checkliste | https://example.com/checkliste\nWeiterführender Kurs -> /kurse/ai-goldmining-system"
+                }
                 className={`${inputClass} resize-y`}
               />
+              <span className="mt-1.5 block text-xs text-cream/40">
+                Optional pro Zeile ein Link:{" "}
+                <code className="font-mono text-cream/60">Label | https://…</code> oder
+                Kurs-Verweis{" "}
+                <code className="font-mono text-cream/60">Label -&gt; /kurse/slug</code>.
+                Reiner Text funktioniert weiterhin.
+              </span>
             </label>
 
             <div className="flex flex-wrap gap-3 pt-1">

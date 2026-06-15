@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import type { Course } from "@/lib/content";
 import { formatEuro } from "@/lib/utils";
-import { Badge } from "./badge";
+import { CourseLevelBadge } from "@/components/course-level-badge";
 
 type CourseCardProps = {
   course: Course;
@@ -12,9 +12,9 @@ type CourseCardProps = {
 
 export function CourseCard({ course, progress, status }: CourseCardProps) {
   return (
-    <article className="card-glow panel-surface group relative overflow-hidden rounded-2xl border border-gold-300/15">
+    <article className="card-glow panel-surface group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gold-300/15">
       {/* Image */}
-      <div className="relative aspect-[5/3] overflow-hidden bg-gradient-to-br from-graphite via-obsidian to-ink">
+      <div className="relative aspect-[5/3] shrink-0 overflow-hidden bg-gradient-to-br from-graphite via-obsidian to-ink">
         <Image
           src={course.image}
           alt={`Cover für ${course.title}`}
@@ -31,19 +31,21 @@ export function CourseCard({ course, progress, status }: CourseCardProps) {
 
         {/* Level + price */}
         <div className="absolute inset-x-5 top-5 flex items-center justify-between">
-          <Badge variant="default">{course.level}</Badge>
+          <CourseLevelBadge level={course.level} />
           <span className="rounded-sm border border-gold-300/35 bg-obsidian/85 px-3 py-1 font-heading tracking-gta text-[0.9rem] text-gold-200 backdrop-blur-md">
             {formatEuro(course.priceCents)}
           </span>
         </div>
       </div>
 
-      <div className="relative p-6">
-        <h3 className="font-heading tracking-gta text-2xl text-cream leading-tight">
-          {course.title}
-        </h3>
-        <p className="mt-1.5 text-sm font-semibold text-gold-300/80">{course.tagline}</p>
-        <p className="mt-4 line-clamp-3 text-sm leading-[1.75] text-cream/45">
+      <div className="relative flex flex-1 flex-col p-6">
+        <div className="min-h-[7.5rem]">
+          <h3 className="font-heading tracking-gta text-2xl text-cream leading-tight">
+            {course.title}
+          </h3>
+          <p className="mt-1.5 text-sm font-semibold text-gold-300/80">{course.tagline}</p>
+        </div>
+        <p className="mt-4 line-clamp-3 min-h-[4.5rem] text-sm leading-[1.75] text-cream/45">
           {course.description}
         </p>
 
@@ -72,7 +74,7 @@ export function CourseCard({ course, progress, status }: CourseCardProps) {
 
         <a
           href={`/kurse/${course.slug}`}
-          className="focus-ring mt-6 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.1em] text-cream transition-colors hover:text-gold-300"
+          className="focus-ring mt-auto inline-flex items-center gap-2 pt-6 text-sm font-bold uppercase tracking-[0.1em] text-cream transition-colors hover:text-gold-300"
         >
           <span>Kurs ansehen</span>
           <span className="relative flex h-7 w-7 items-center justify-center overflow-hidden rounded-sm border border-gold-300/35 bg-gold-300/[0.08] transition-all duration-300 group-hover:border-gold-300/70 group-hover:bg-gold-300/15">

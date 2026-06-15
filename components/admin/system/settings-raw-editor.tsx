@@ -2,12 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Settings2 } from "lucide-react";
-import { Panel } from "@/components/admin/ui";
+import { Plus, Pencil, Trash2, Settings2, ChevronDown, Code2 } from "lucide-react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { AdminButton } from "@/components/admin/admin-button";
 import { Modal } from "@/components/admin/modal";
 import { useToast } from "@/components/admin/toast";
+import { cn } from "@/lib/utils";
 import { upsertSetting, deleteSetting } from "@/app/admin/einstellungen/actions";
 
 export type RawSettingRow = {
@@ -45,6 +45,7 @@ export function SettingsRawEditor({ rows }: { rows: RawSettingRow[] }) {
   const { success, error } = useToast();
   const [pending, startTransition] = useTransition();
 
+  const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<RawSettingRow | null>(null);
   const [creating, setCreating] = useState(false);
   const [toDelete, setToDelete] = useState<RawSettingRow | null>(null);
@@ -160,25 +161,55 @@ export function SettingsRawEditor({ rows }: { rows: RawSettingRow[] }) {
 
   return (
     <>
-      <Panel
-        title="Alle Einstellungen"
-        description="Roh-Editor für jede gespeicherte Einstellung (JSON)."
-        noPadding
-        actions={
-          <AdminButton variant="secondary" size="sm" icon={Plus} onClick={openCreate}>
-            Einstellung hinzufügen
-          </AdminButton>
-        }
-      >
-        <DataTable
-          columns={columns}
-          rows={rows}
-          getRowKey={(r) => r.key}
-          emptyIcon={Settings2}
-          emptyTitle="Keine Einstellungen"
-          emptyDescription="Es sind noch keine Einstellungen gespeichert."
-        />
-      </Panel>
+      <section className="rounded-xl border border-white/10 bg-panel/40 backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="flex w-full items-center gap-3 px-5 py-4 text-left"
+        >
+          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-gold-300/20 bg-gold-300/[0.06] text-gold-200">
+            <Code2 className="h-4 w-4" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-cream/80">
+              Erweitert (für Entwickler)
+            </h2>
+            <p className="mt-0.5 text-xs text-cream/40">
+              Roh-Editor mit JSON für jede gespeicherte Einstellung. Normalerweise
+              nicht nötig — bitte nur mit Bedacht ändern.
+            </p>
+          </div>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 flex-shrink-0 text-cream/40 transition-transform",
+              open && "rotate-180"
+            )}
+          />
+        </button>
+
+        {open && (
+          <div className="border-t border-white/5">
+            <div className="flex items-center justify-end px-5 py-3">
+              <AdminButton
+                variant="secondary"
+                size="sm"
+                icon={Plus}
+                onClick={openCreate}
+              >
+                Einstellung hinzufügen
+              </AdminButton>
+            </div>
+            <DataTable
+              columns={columns}
+              rows={rows}
+              getRowKey={(r) => r.key}
+              emptyIcon={Settings2}
+              emptyTitle="Keine Einstellungen"
+              emptyDescription="Es sind noch keine Einstellungen gespeichert."
+            />
+          </div>
+        )}
+      </section>
 
       {/* Create / edit */}
       <Modal

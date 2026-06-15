@@ -16,14 +16,32 @@ const LEGAL = [
   { href: "/agb", label: "AGB" },
 ];
 
-const SOCIALS = [
-  { href: socialLinks.telegram, label: "Telegram" },
-  { href: socialLinks.instagram, label: "Instagram" },
-  { href: socialLinks.tiktok, label: "TikTok" },
-  { href: socialLinks.youtube, label: "YouTube" },
-];
+/**
+ * Effective social-media links for the footer. A server parent can pass the
+ * admin-managed values from `getEffectiveSocials()` (lib/settings) so editing
+ * them in /admin/einstellungen updates the footer. When omitted, we fall back
+ * to the hardcoded brand defaults in lib/env so the footer still renders if no
+ * parent provides them (this is a client component and cannot fetch itself).
+ */
+type FooterSocials = {
+  telegram: string;
+  instagram: string;
+  tiktok: string;
+  youtube: string;
+};
 
-export function CtaFooterSection() {
+export function CtaFooterSection({
+  socials = socialLinks,
+}: {
+  socials?: FooterSocials;
+}) {
+  const SOCIALS = [
+    { href: socials.telegram, label: "Telegram" },
+    { href: socials.instagram, label: "Instagram" },
+    { href: socials.tiktok, label: "TikTok" },
+    { href: socials.youtube, label: "YouTube" },
+  ];
+
   return (
     <footer className="relative">
       {/* ── Big CTA: cinematic banner style ── */}

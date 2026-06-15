@@ -8,10 +8,12 @@ import { absoluteUrl } from "./utils";
  * null when Stripe is not configured.
  */
 
-/** Create an Express connected account for an affiliate. Returns the account id. */
-export async function createConnectAccount(email: string | null): Promise<string | null> {
+/** Create an Express connected account for an affiliate. */
+export async function createConnectAccount(
+  email: string | null
+): Promise<{ ok: boolean; accountId?: string; error?: string }> {
   const stripe = getStripeClient();
-  if (!stripe) return null;
+  if (!stripe) return { ok: false, error: "Stripe nicht konfiguriert." };
   try {
     const account = await stripe.accounts.create({
       type: "express",
@@ -20,16 +22,21 @@ export async function createConnectAccount(email: string | null): Promise<string
       business_type: "individual",
       metadata: { purpose: "aigoldmining_affiliate" },
     });
-    return account.id;
-  } catch {
-    return null;
+    return { ok: true, accountId: account.id };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Stripe-Konto konnte nicht erstellt werden.",
+    };
   }
 }
 
 /** Hosted onboarding link the affiliate visits to finish KYC. */
-export async function createOnboardingLink(accountId: string): Promise<string | null> {
+export async function createOnboardingLink(
+  accountId: string
+): Promise<{ ok: boolean; url?: string; error?: string }> {
   const stripe = getStripeClient();
-  if (!stripe) return null;
+  if (!stripe) return { ok: false, error: "Stripe nicht konfiguriert." };
   try {
     const link = await stripe.accountLinks.create({
       account: accountId,
@@ -37,9 +44,12 @@ export async function createOnboardingLink(accountId: string): Promise<string | 
       return_url: absoluteUrl("/db/affiliate?stripe=done"),
       type: "account_onboarding",
     });
-    return link.url;
-  } catch {
-    return null;
+    return { ok: true, url: link.url };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Onboarding-Link konnte nicht erstellt werden.",
+    };
   }
 }
 

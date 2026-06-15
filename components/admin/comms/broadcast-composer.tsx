@@ -11,6 +11,8 @@ import {
   ChevronDown,
   ChevronRight,
   Trash2,
+  X,
+  Pencil,
 } from "lucide-react";
 import { Panel, KeyValue, EmptyState } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
@@ -85,10 +87,15 @@ export function BroadcastComposer() {
   const [testing, startTest] = useTransition();
   const [sending, startSend] = useTransition();
 
-  // Template preview (rendered HTML in a modal).
+  // Template preview (rendered HTML in a near-fullscreen overlay).
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [preview, setPreview] = useState<{ html: string; subject: string } | null>(null);
+
+  // One-time edit applied to the NEXT send only (does not persist an override).
+  const [oneTime, setOneTime] = useState<{ subject?: string; html: string } | null>(
+    null
+  );
 
   // Collapsible recipient list (lazy-loaded per segment).
   const [listOpen, setListOpen] = useState(false);
@@ -99,6 +106,22 @@ export function BroadcastComposer() {
   // Email currently being acted on (single send / remove), for per-row spinners.
   const [busyEmail, setBusyEmail] = useState<string | null>(null);
   const [, startRowAction] = useTransition();
+
+  // A one-time edit is tied to a specific template; drop it if the template
+  // selection changes so we never send stale content for the wrong template.
+  useEffect(() => {
+    setOneTime(null);
+  }, [template]);
+
+  // Close the preview overlay on Escape.
+  useEffect(() => {
+    if (!previewOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPreviewOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [previewOpen]);
 
   // Refresh the live recipient-count preview whenever the segment changes, and
   // reset the (now-stale) recipient list + exclusions for the new segment.
@@ -162,6 +185,16 @@ export function BroadcastComposer() {
     setPreviewOpen(true);
     setPreviewLoading(true);
     setPreview(null);
+    // If a one-time edit is active, preview that exact content instead of the
+    // stored/default template so the admin sees what will actually be sent.
+    if (oneTime) {
+      setPreview({
+        html: oneTime.html,
+        subject: oneTime.subject?.trim() || subject.trim() || "(Standard-Betreff)",
+      });
+      setPreviewLoading(false);
+      return;
+    }
     previewTemplate(template)
       .then((res) => {
         if (res.ok) setPreview({ html: res.html, subject: res.subject });
@@ -180,7 +213,14 @@ export function BroadcastComposer() {
   const handleSendOne = (r: Recipient) => {
     setBusyEmail(r.email);
     startRowAction(async () => {
-      const res = await sendToOne({ template, email: r.email, name: r.name, subject });
+      const res = await sendToOne({
+        template,
+        email: r.email,
+        name: r.name,
+        subject,
+        oneTimeHtml: oneTime?.html,
+        oneTimeSubject: oneTime?.subject,
+      });
       if (res.ok) success(`E-Mail an ${r.email} versendet.`);
       else error(res.error ?? "Versand fehlgeschlagen.");
       setBusyEmail(null);
@@ -209,7 +249,12 @@ export function BroadcastComposer() {
 
   const handleTest = () => {
     startTest(async () => {
-      const res = await sendTestEmail({ template, subject });
+      const res = await sendTestEmail({
+        template,
+        subject,
+        oneTimeHtml: oneTime?.html,
+        oneTimeSubject: oneTime?.subject,
+      });
       if (res.ok) success("Test-E-Mail an dich versendet.");
       else error(res.error ?? "Test fehlgeschlagen.");
     });
@@ -222,12 +267,15 @@ export function BroadcastComposer() {
         subject,
         segment,
         exclude: Array.from(excluded),
+        oneTimeHtml: oneTime?.html,
+        oneTimeSubject: oneTime?.subject,
       });
       if (res.ok) {
         success("Broadcast wurde versendet.");
         setConfirmOpen(false);
         setSubject("");
         setExcluded(new Set());
+        setOneTime(null);
         router.refresh();
       } else {
         error(res.error ?? "Versand fehlgeschlagen.");
@@ -279,8 +327,33 @@ export function BroadcastComposer() {
             >
               Vorschau
             </AdminButton>
-            <TemplateEditor template={template} onSaved={() => router.refresh()} />
+            <TemplateEditor
+              template={template}
+              onSaved={() => router.refresh()}
+              onApplyOnce={(content) => {
+                setOneTime(content);
+                success("Einmalige Bearbeitung für den nächsten Versand übernommen.");
+              }}
+            />
           </div>
+
+          {oneTime && (
+            <div className="mt-2 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/40 bg-amber-300/10 px-3 py-1 text-xs font-bold text-amber-200">
+                <Pencil className="h-3 w-3" />
+                Einmalige Bearbeitung aktiv
+              </span>
+              <button
+                type="button"
+                onClick={() => setOneTime(null)}
+                className="inline-flex items-center gap-1 text-xs text-cream/50 transition-colors hover:text-cream/80"
+                title="Einmalige Bearbeitung verwerfen"
+              >
+                <X className="h-3 w-3" />
+                Verwerfen
+              </button>
+            </div>
+          )}
         </div>
 
         <div>
@@ -497,30 +570,52 @@ export function BroadcastComposer() {
         </div>
       </Modal>
 
-      <Modal
-        open={previewOpen}
-        onClose={() => setPreviewOpen(false)}
-        title="Template-Vorschau"
-        description={preview ? `Betreff: ${preview.subject}` : "Vorlage wird gerendert …"}
-        size="lg"
-      >
-        {previewLoading || !preview ? (
-          <div className="flex items-center justify-center gap-2 py-16 text-sm text-cream/40">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Vorschau wird geladen …
+      {/* Near-fullscreen preview overlay — shows the WHOLE email comfortably. */}
+      {previewOpen && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6">
+          <div
+            onClick={() => setPreviewOpen(false)}
+            className="fixed inset-0 bg-obsidian/80 backdrop-blur-sm"
+          />
+          <div className="relative z-10 flex h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink/95 shadow-soft backdrop-blur-xl">
+            <header className="flex items-start justify-between gap-4 border-b border-white/5 px-6 py-4">
+              <div className="min-w-0">
+                <h2 className="text-lg font-extrabold tracking-tight text-cream">
+                  Template-Vorschau
+                </h2>
+                <p className="mt-1 truncate text-sm text-cream/40">
+                  {preview ? `Betreff: ${preview.subject}` : "Vorlage wird gerendert …"}
+                </p>
+              </div>
+              <button
+                onClick={() => setPreviewOpen(false)}
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-cream/40 transition-colors hover:bg-white/5 hover:text-cream"
+                aria-label="Schließen"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </header>
+            <div className="flex min-h-0 flex-1 flex-col p-4">
+              {previewLoading || !preview ? (
+                <div className="flex flex-1 items-center justify-center gap-2 text-sm text-cream/40">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Vorschau wird geladen …
+                </div>
+              ) : (
+                <div className="min-h-[75vh] flex-1 overflow-hidden rounded-lg border border-white/10 bg-white">
+                  <iframe
+                    srcDoc={preview.html}
+                    title="E-Mail-Vorschau"
+                    sandbox=""
+                    className="h-full min-h-[75vh] w-full border-0"
+                    scrolling="yes"
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="overflow-hidden rounded-lg border border-white/10 bg-white">
-            <iframe
-              srcDoc={preview.html}
-              title="E-Mail-Vorschau"
-              sandbox=""
-              className="h-[80vh] w-full border-0"
-              scrolling="yes"
-            />
-          </div>
-        )}
-      </Modal>
+        </div>
+      )}
     </Panel>
   );
 }

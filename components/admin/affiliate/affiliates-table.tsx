@@ -11,8 +11,12 @@ import {
   Settings2,
   Banknote,
   Power,
+  Trash2,
+  Percent,
+  Coins,
+  ShieldCheck,
 } from "lucide-react";
-import { Panel, AdminBadge, KeyValue, EmptyState } from "@/components/admin/ui";
+import { Panel, AdminBadge, KeyValue } from "@/components/admin/ui";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { AdminButton } from "@/components/admin/admin-button";
 import { Modal } from "@/components/admin/modal";
@@ -23,6 +27,7 @@ import {
   updateAffiliate,
   createPayout,
   issueCoupon,
+  deleteAffiliate,
 } from "@/app/admin/affiliate/actions";
 
 function statusTone(status: string): "green" | "amber" | "red" | "neutral" {
@@ -71,6 +76,9 @@ export function AffiliatesTable({
   const [couponCode, setCouponCode] = useState("");
   const [couponPercent, setCouponPercent] = useState("");
 
+  // Delete confirmation state
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return rows;
@@ -107,6 +115,27 @@ export function AffiliatesTable({
     setPayoutMethod(row.stripeOnboarded ? "stripe" : "manual");
     setCouponCode("");
     setCouponPercent("");
+    setConfirmDelete(false);
+  }
+
+  function closeDetail() {
+    setDetail(null);
+    setConfirmDelete(false);
+  }
+
+  function handleDelete() {
+    if (!activeDetail) return;
+    const userId = activeDetail.userId;
+    startTransition(async () => {
+      const res = await deleteAffiliate({ userId });
+      if (res.ok) {
+        success("Affiliate gelöscht.");
+        closeDetail();
+        router.refresh();
+      } else {
+        error(res.error ?? "Löschen fehlgeschlagen.");
+      }
+    });
   }
 
   function handleSaveConfig() {
@@ -170,10 +199,17 @@ export function AffiliatesTable({
   function handleIssueCoupon() {
     if (!activeDetail) return;
     const userId = activeDetail.userId;
+    const percentOff = Number(couponPercent) || 0;
+    // The affiliate's self-discount cap doubles as the max coupon % they may give.
+    const cap = Number(selfDiscount) || 0;
+    if (cap > 0 && percentOff > cap) {
+      error(`Rabatt darf das erlaubte Maximum von ${cap}% nicht überschreiten.`);
+      return;
+    }
     startTransition(async () => {
       const res = await issueCoupon({
         userId,
-        percentOff: Number(couponPercent) || 0,
+        percentOff,
         code: couponCode,
       });
       if (res.ok) {
@@ -308,7 +344,7 @@ export function AffiliatesTable({
 
       <Modal
         open={Boolean(activeDetail)}
-        onClose={() => setDetail(null)}
+        onClose={closeDetail}
         title={activeDetail?.fullName || activeDetail?.email || "Affiliate"}
         description={activeDetail?.code ? `Code: ${activeDetail.code}` : activeDetail?.email ?? undefined}
         size="lg"
@@ -358,122 +394,207 @@ export function AffiliatesTable({
             )}
 
             {/* Reward config */}
-            <div className="rounded-xl border border-white/10 bg-panel/40 p-4">
-              <div className="mb-3 flex items-center gap-2">
+            <div className="rounded-xl border border-white/10 bg-panel/40">
+              <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
                 <Settings2 className="h-4 w-4 text-gold-300/60" />
                 <span className="tac-label">Belohnungs-Konfiguration</span>
               </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label className="flex flex-col gap-1">
-                  <span className="tac-label">Belohnungs-Typ</span>
-                  <select
-                    value={rewardType}
-                    onChange={(e) => setRewardType(e.target.value)}
-                    className={inputClass}
-                  >
-                    <option value="percent_cash" className="bg-ink text-cream">
-                      Cash % pro Verkauf
-                    </option>
-                    <option value="fixed_cash" className="bg-ink text-cream">
-                      Fixbetrag pro Verkauf
-                    </option>
-                    <option value="both" className="bg-ink text-cream">
-                      Beides
-                    </option>
-                  </select>
-                </label>
-                <label className="flex flex-col gap-1">
-                  <span className="tac-label">Eigenrabatt (%)</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={selfDiscount}
-                    onChange={(e) => setSelfDiscount(e.target.value)}
-                    className={inputClass}
-                  />
-                </label>
-                {showPercent && (
-                  <label className="flex flex-col gap-1">
-                    <span className="tac-label">Cash % pro Verkauf</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={cashPercent}
-                      onChange={(e) => setCashPercent(e.target.value)}
+
+              <div className="flex flex-col gap-6 p-4">
+                {/* Group: reward type + amounts */}
+                <fieldset className="flex flex-col gap-4">
+                  <legend className="mb-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cream/50">
+                    <Coins className="h-3.5 w-3.5 text-gold-300/60" />
+                    Provision pro Verkauf
+                  </legend>
+
+                  <label className="flex flex-col gap-1.5">
+                    <span className="tac-label">Belohnungs-Typ</span>
+                    <select
+                      value={rewardType}
+                      onChange={(e) => setRewardType(e.target.value)}
                       className={inputClass}
-                    />
-                  </label>
-                )}
-                {showFixed && (
-                  <label className="flex flex-col gap-1">
-                    <span className="tac-label">Fixbetrag pro Verkauf (€)</span>
-                    <input
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      value={fixedCash}
-                      onChange={(e) => setFixedCash(e.target.value)}
-                      className={inputClass}
-                    />
-                  </label>
-                )}
-                <label className="flex flex-col gap-1">
-                  <span className="tac-label">Tier</span>
-                  <select
-                    value={tierId}
-                    onChange={(e) => setTierId(e.target.value)}
-                    className={inputClass}
-                  >
-                    <option value="" className="bg-ink text-cream">
-                      Kein Tier
-                    </option>
-                    {tiers.map((t) => (
-                      <option key={t.id} value={t.id} className="bg-ink text-cream">
-                        {t.name}
+                    >
+                      <option value="percent_cash" className="bg-ink text-cream">
+                        Cash % pro Verkauf
                       </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="flex items-center gap-2 pt-6">
-                  <input
-                    type="checkbox"
-                    checked={canIssueCoupons}
-                    onChange={(e) => setCanIssueCoupons(e.target.checked)}
-                    className="h-4 w-4 rounded border-white/20 bg-obsidian/60 accent-gold-400"
+                      <option value="fixed_cash" className="bg-ink text-cream">
+                        Fixbetrag pro Verkauf
+                      </option>
+                      <option value="both" className="bg-ink text-cream">
+                        Beides (Cash % + Fixbetrag)
+                      </option>
+                    </select>
+                    <span className="text-xs text-cream/40">
+                      Bestimmt, wie der Partner pro vermitteltem Verkauf vergütet wird.
+                    </span>
+                  </label>
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {showPercent && (
+                      <label className="flex flex-col gap-1.5">
+                        <span className="tac-label">Cash % pro Verkauf</span>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={cashPercent}
+                            onChange={(e) => setCashPercent(e.target.value)}
+                            className={`${inputClass} pr-8`}
+                          />
+                          <Percent className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream/30" />
+                        </div>
+                        <span className="text-xs text-cream/40">
+                          Prozentualer Anteil am Verkaufswert.
+                        </span>
+                      </label>
+                    )}
+                    {showFixed && (
+                      <label className="flex flex-col gap-1.5">
+                        <span className="tac-label">Fixbetrag pro Verkauf (€)</span>
+                        <input
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          value={fixedCash}
+                          onChange={(e) => setFixedCash(e.target.value)}
+                          className={inputClass}
+                        />
+                        <span className="text-xs text-cream/40">
+                          Fester Euro-Betrag je Verkauf.
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                </fieldset>
+
+                {/* Group: tier + self discount */}
+                <fieldset className="flex flex-col gap-4 border-t border-white/5 pt-5">
+                  <legend className="mb-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cream/50">
+                    <Percent className="h-3.5 w-3.5 text-gold-300/60" />
+                    Rabatte &amp; Einstufung
+                  </legend>
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1.5">
+                      <span className="tac-label">
+                        {canIssueCoupons
+                          ? "Eigenrabatt / max. Gutschein (%)"
+                          : "Eigenrabatt (%)"}
+                      </span>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={selfDiscount}
+                          onChange={(e) => setSelfDiscount(e.target.value)}
+                          className={`${inputClass} pr-8`}
+                        />
+                        <Percent className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream/30" />
+                      </div>
+                      <span className="text-xs text-cream/40">
+                        {canIssueCoupons
+                          ? "Rabatt für eigene Bestellungen — gilt zugleich als Obergrenze für ausgegebene Gutscheine."
+                          : "Rabatt, den der Partner auf eigene Bestellungen erhält."}
+                      </span>
+                    </label>
+
+                    <label className="flex flex-col gap-1.5">
+                      <span className="tac-label">Tier</span>
+                      <select
+                        value={tierId}
+                        onChange={(e) => setTierId(e.target.value)}
+                        className={inputClass}
+                      >
+                        <option value="" className="bg-ink text-cream">
+                          Kein Tier
+                        </option>
+                        {tiers.map((t) => (
+                          <option key={t.id} value={t.id} className="bg-ink text-cream">
+                            {t.name}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="text-xs text-cream/40">
+                        Provisions-Stufe des Partners.
+                      </span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                {/* Group: coupon permission + policy */}
+                <fieldset className="flex flex-col gap-4 border-t border-white/5 pt-5">
+                  <legend className="mb-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cream/50">
+                    <Ticket className="h-3.5 w-3.5 text-gold-300/60" />
+                    Gutschein-Berechtigung
+                  </legend>
+
+                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-3">
+                    <input
+                      type="checkbox"
+                      checked={canIssueCoupons}
+                      onChange={(e) => setCanIssueCoupons(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 rounded border-white/20 bg-obsidian/60 accent-gold-400"
+                    />
+                    <span className="flex flex-col gap-0.5">
+                      <span className="text-sm font-medium text-cream/80">
+                        Darf Gutscheine ausgeben
+                      </span>
+                      <span className="text-xs text-cream/40">
+                        Erlaubt diesem Partner, eigene Rabatt-Codes zu verteilen.
+                      </span>
+                    </span>
+                  </label>
+
+                  {canIssueCoupons && (
+                    <div className="flex items-start gap-2 rounded-lg border border-gold-300/20 bg-gold-300/[0.03] px-3 py-2.5">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-300/70" />
+                      <p className="text-xs text-cream/50">
+                        Maximal erlaubter Rabatt pro Gutschein:{" "}
+                        <span className="font-semibold text-gold-200">
+                          {Number(selfDiscount) > 0 ? `${Number(selfDiscount)}%` : "unbegrenzt"}
+                        </span>
+                        . Dieser Wert wird über das Feld „Eigenrabatt / max. Gutschein“
+                        gesteuert.
+                      </p>
+                    </div>
+                  )}
+                </fieldset>
+
+                {/* Notes */}
+                <label className="flex flex-col gap-1.5 border-t border-white/5 pt-5">
+                  <span className="tac-label">Notizen</span>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={2}
+                    className={inputClass}
+                    placeholder="Interne Notizen zu diesem Partner…"
                   />
-                  <span className="text-sm text-cream/70">Darf Gutscheine ausgeben</span>
                 </label>
-              </div>
-              <label className="mt-3 flex flex-col gap-1">
-                <span className="tac-label">Notizen</span>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows={2}
-                  className={inputClass}
-                />
-              </label>
-              <div className="mt-3 flex items-center justify-between gap-2">
-                <AdminButton
-                  variant={activeDetail.status === "active" ? "danger" : "secondary"}
-                  size="sm"
-                  icon={Power}
-                  onClick={handleToggleStatus}
-                  loading={pending}
-                >
-                  {activeDetail.status === "active" ? "Sperren" : "Aktivieren"}
-                </AdminButton>
-                <AdminButton
-                  variant="primary"
-                  size="md"
-                  icon={Settings2}
-                  onClick={handleSaveConfig}
-                  loading={pending}
-                >
-                  Konfiguration speichern
-                </AdminButton>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/5 pt-4">
+                  <AdminButton
+                    variant={activeDetail.status === "active" ? "danger" : "secondary"}
+                    size="sm"
+                    icon={Power}
+                    onClick={handleToggleStatus}
+                    loading={pending}
+                  >
+                    {activeDetail.status === "active" ? "Sperren" : "Aktivieren"}
+                  </AdminButton>
+                  <AdminButton
+                    variant="primary"
+                    size="md"
+                    icon={Settings2}
+                    onClick={handleSaveConfig}
+                    loading={pending}
+                  >
+                    Konfiguration speichern
+                  </AdminButton>
+                </div>
               </div>
             </div>
 
@@ -525,39 +646,102 @@ export function AffiliatesTable({
               </div>
             </div>
 
-            {/* Coupon */}
-            <div className="rounded-xl border border-white/10 bg-panel/40 p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <Ticket className="h-4 w-4 text-gold-300/60" />
-                <span className="tac-label">Gutschein-Code ausgeben</span>
+            {/* Coupon issuing — only relevant when the partner may issue coupons */}
+            {canIssueCoupons && (
+              <div className="rounded-xl border border-white/10 bg-panel/40">
+                <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
+                  <Ticket className="h-4 w-4 text-gold-300/60" />
+                  <span className="tac-label">Gutschein-Code ausgeben</span>
+                </div>
+                <div className="flex flex-col gap-3 p-4">
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="CODE"
+                      className={`${inputClass} font-mono uppercase`}
+                    />
+                    <input
+                      type="number"
+                      min={1}
+                      max={Number(selfDiscount) > 0 ? Number(selfDiscount) : 100}
+                      value={couponPercent}
+                      onChange={(e) => setCouponPercent(e.target.value)}
+                      placeholder="Rabatt %"
+                      className={inputClass}
+                    />
+                    <AdminButton
+                      variant="secondary"
+                      size="md"
+                      icon={Ticket}
+                      onClick={handleIssueCoupon}
+                      loading={pending}
+                      disabled={!couponCode.trim() || !couponPercent}
+                    >
+                      Code erstellen
+                    </AdminButton>
+                  </div>
+                  <p className="text-xs text-cream/40">
+                    Erstellt einen teilbaren Rabatt-Code für diesen Partner.{" "}
+                    {Number(selfDiscount) > 0
+                      ? `Maximal erlaubter Rabatt: ${Number(selfDiscount)}%.`
+                      : "Aktuell ist kein Maximum gesetzt."}
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <input
-                  type="text"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  placeholder="CODE"
-                  className={`${inputClass} font-mono uppercase`}
-                />
-                <input
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={couponPercent}
-                  onChange={(e) => setCouponPercent(e.target.value)}
-                  placeholder="Rabatt %"
-                  className={inputClass}
-                />
-                <AdminButton
-                  variant="secondary"
-                  size="md"
-                  icon={Ticket}
-                  onClick={handleIssueCoupon}
-                  loading={pending}
-                  disabled={!couponCode.trim() || !couponPercent}
-                >
-                  Code erstellen
-                </AdminButton>
+            )}
+
+            {/* Danger zone — delete affiliate */}
+            <div className="rounded-xl border border-red-500/20 bg-red-500/[0.03]">
+              <div className="flex items-center gap-2 border-b border-red-500/10 px-4 py-3">
+                <Trash2 className="h-4 w-4 text-red-300/70" />
+                <span className="tac-label text-red-200/70">Affiliate löschen</span>
+              </div>
+              <div className="flex flex-col gap-3 p-4">
+                {confirmDelete ? (
+                  <>
+                    <p className="text-sm text-cream/70">
+                      Diesen Affiliate wirklich löschen? Der Partner-Datensatz wird
+                      entfernt und der zugehörige Code deaktiviert. Bisherige
+                      Empfehlungen bleiben erhalten.
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <AdminButton
+                        variant="danger"
+                        size="sm"
+                        icon={Trash2}
+                        onClick={handleDelete}
+                        loading={pending}
+                      >
+                        Endgültig löschen
+                      </AdminButton>
+                      <AdminButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setConfirmDelete(false)}
+                        disabled={pending}
+                      >
+                        Abbrechen
+                      </AdminButton>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-xs text-cream/40">
+                      Entfernt den Affiliate dauerhaft. Der Rabatt-Code wird nur
+                      deaktiviert, nicht gelöscht.
+                    </p>
+                    <AdminButton
+                      variant="danger"
+                      size="sm"
+                      icon={Trash2}
+                      onClick={() => setConfirmDelete(true)}
+                    >
+                      Löschen
+                    </AdminButton>
+                  </div>
+                )}
               </div>
             </div>
           </div>

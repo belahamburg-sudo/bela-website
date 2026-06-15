@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock, Lock, PlayCircle } from "lucide-react";
+import { CheckCircle2, Clock, FileText, Lock, PlayCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { DbCourse, DbLesson } from "@/lib/db-types";
 import { cn } from "@/lib/utils";
@@ -70,6 +70,10 @@ export function CoursePlayer({
 
   const progress = lessons.length ? Math.round((completed.length / lessons.length) * 100) : 0;
 
+  const hasVideo = Boolean(activeLesson?.video_url);
+  const resources = activeLesson?.resources ?? [];
+  const hasResources = resources.length > 0;
+
   return (
     <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[360px_1fr]">
       <aside className="order-last panel-surface rounded-[1.35rem] p-5 lg:order-none lg:col-start-1 lg:row-start-1 lg:sticky lg:top-28 lg:self-start">
@@ -121,12 +125,13 @@ export function CoursePlayer({
       {activeLesson ? (
         <section className="grid gap-6 lg:col-start-2">
           <div className="panel-surface overflow-hidden rounded-[1.35rem]">
-            <div className="aspect-video bg-black">
-              {activeLesson.video_url ? (
-                isDirectVideoFile(activeLesson.video_url) ? (
+            {/* Video lessons keep the player; PDF-only lessons skip the empty frame entirely. */}
+            {hasVideo ? (
+              <div className="aspect-video bg-black">
+                {isDirectVideoFile(activeLesson.video_url!) ? (
                   <video
                     key={activeLesson.video_url}
-                    src={activeLesson.video_url}
+                    src={activeLesson.video_url!}
                     title={activeLesson.title}
                     className="h-full w-full"
                     controls
@@ -135,27 +140,62 @@ export function CoursePlayer({
                   />
                 ) : (
                   <iframe
-                    src={activeLesson.video_url}
+                    src={activeLesson.video_url!}
                     title={activeLesson.title}
                     className="h-full w-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
-                )
-              ) : (
-                <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center">
-                  <Clock className="h-9 w-9 text-gold-700" aria-hidden />
-                  <p className="font-heading text-xl text-cream">Video erscheint bald</p>
-                  <p className="text-sm text-white/40">
-                    Dieses Modul wird in Kürze freigeschaltet.
-                  </p>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : null}
             <div className="p-6">
               <p className="eyebrow">{activeLesson.moduleTitle}</p>
               <h1 className="mt-3 font-heading text-3xl font-black text-cream">{activeLesson.title}</h1>
-              <p className="mt-4 max-w-3xl text-base leading-8 text-muted">{activeLesson.description}</p>
+              {activeLesson.description ? (
+                <p className="mt-4 max-w-3xl text-base leading-8 text-muted">{activeLesson.description}</p>
+              ) : null}
+
+              {/* PDF-only lesson: make the resources the hero, right inside the lesson card. */}
+              {!hasVideo ? (
+                hasResources ? (
+                  <div className="mt-6 grid gap-4">
+                    <p className="text-sm font-semibold uppercase tracking-gta text-gold-200">
+                      {resources.length === 1
+                        ? "Dein Material zu dieser Lektion"
+                        : "Deine Materialien zu dieser Lektion"}
+                    </p>
+                    {resources.map((resource) => (
+                      <div
+                        key={resource.label}
+                        className="rounded-[1.5rem] border border-gold-300/30 bg-gold-500/[0.06] p-5 sm:p-6"
+                      >
+                        <div className="mb-4 flex items-center gap-3">
+                          <span className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl border border-gold-300/30 bg-gold-300/10">
+                            <FileText aria-hidden className="h-6 w-6 text-gold-200" />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block font-heading text-xl font-black text-cream">
+                              {resource.label}
+                            </span>
+                            <span className="block text-sm text-gold-200/70">
+                              {resource.type} · sofort verfügbar
+                            </span>
+                          </span>
+                        </div>
+                        <DownloadButton courseSlug={course.slug} resource={resource} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-6 flex flex-col items-center justify-center gap-3 rounded-[1.35rem] border border-dashed border-gold-500/20 bg-gold-500/[0.04] px-6 py-12 text-center">
+                    <Clock className="h-9 w-9 text-gold-700" aria-hidden />
+                    <p className="font-heading text-xl text-cream">Material erscheint bald</p>
+                    <p className="text-sm text-white/40">Diese Lektion wird in Kürze freigeschaltet.</p>
+                  </div>
+                )
+              ) : null}
+
               <Button onClick={markDone} className="mt-6">
                 <CheckCircle2 aria-hidden className="h-4 w-4" />
                 {completed.includes(activeId) ? "Als erledigt markiert ✓" : "Als erledigt markieren"}
@@ -181,19 +221,37 @@ export function CoursePlayer({
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {activeLesson.resources.map((resource) => (
-              <DownloadButton
-                key={resource.label}
-                courseSlug={course.slug}
-                resource={resource}
-              />
-            ))}
-            <div className="panel-surface flex min-h-24 items-center gap-4 rounded-[1.35rem] p-5 text-muted">
-              <Lock aria-hidden className="h-6 w-6 text-gold-700" />
-              Downloads sind personalisiert (sichtbares + unsichtbares Wasserzeichen). Videos sind nicht herunterladbar.
+          {/* For video lessons, list resources below the player as prominent download cards. */}
+          {hasVideo && hasResources ? (
+            <div className="grid gap-4">
+              <div className="flex items-center gap-3">
+                <FileText aria-hidden className="h-5 w-5 text-gold-300" />
+                <h2 className="font-heading text-lg uppercase tracking-gta text-cream">
+                  Downloads zur Lektion
+                </h2>
+                <span className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {resources.map((resource) => (
+                  <DownloadButton
+                    key={resource.label}
+                    courseSlug={course.slug}
+                    resource={resource}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
+
+          {hasResources ? (
+            <div className="flex items-start gap-3 rounded-[1.35rem] border border-white/[0.06] bg-white/[0.02] p-5 text-sm text-muted">
+              <Lock aria-hidden className="h-5 w-5 flex-none text-gold-700" />
+              <span>
+                Downloads sind personalisiert (sichtbares + unsichtbares Wasserzeichen). Videos sind
+                nicht herunterladbar.
+              </span>
+            </div>
+          ) : null}
         </section>
       ) : null}
     </div>

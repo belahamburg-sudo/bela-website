@@ -1,4 +1,5 @@
 import { getSupabaseAdminClient } from "./supabase";
+import { socialLinks } from "./env";
 
 /**
  * Typed access to the `site_settings` key/value (jsonb) store. Each setting is a
@@ -12,6 +13,13 @@ export type AnnouncementSetting = {
   href: string;
 };
 
+export type SocialLinks = {
+  instagram: string;
+  tiktok: string;
+  youtube: string;
+  telegram: string;
+};
+
 export type SiteSettings = {
   heroHeadline: string | null;
   heroSubline: string | null;
@@ -21,6 +29,7 @@ export type SiteSettings = {
   telegramPaidUrl: string | null;
   contactEmail: string | null;
   promoBanner: AnnouncementSetting;
+  socials: SocialLinks;
 };
 
 type RawSettings = Record<string, Record<string, unknown>>;
@@ -34,6 +43,19 @@ function announcement(raw: Record<string, unknown> | undefined): AnnouncementSet
     enabled: Boolean(raw?.enabled),
     text: str(raw?.text) ?? "",
     href: str(raw?.href) ?? "",
+  };
+}
+
+/**
+ * Resolve the social-media links from the `socials` site_settings row, falling
+ * back to the hardcoded brand defaults in lib/env.ts for any missing/empty value.
+ */
+function resolveSocials(raw: Record<string, unknown> | undefined): SocialLinks {
+  return {
+    instagram: str(raw?.instagram) ?? socialLinks.instagram,
+    tiktok: str(raw?.tiktok) ?? socialLinks.tiktok,
+    youtube: str(raw?.youtube) ?? socialLinks.youtube,
+    telegram: str(raw?.telegram) ?? socialLinks.telegram,
   };
 }
 
@@ -65,5 +87,15 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     telegramPaidUrl: str(raw.telegram?.paid_url),
     contactEmail: str(raw.contact?.email) ?? str(raw.contact_email?.value),
     promoBanner: announcement(raw.promo_banner),
+    socials: resolveSocials(raw.socials),
   };
+}
+
+/**
+ * Effective social-media links (admin overrides + env defaults), for use in
+ * server components like the footer so editing them in admin updates the site.
+ */
+export async function getEffectiveSocials(): Promise<SocialLinks> {
+  const raw = await getRawSiteSettings();
+  return resolveSocials(raw.socials);
 }

@@ -3,7 +3,7 @@
 import { CreditCard, Loader2, AlertCircle, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { ORDER_BUMP, formatBumpPrice } from "@/lib/offers";
@@ -17,54 +17,67 @@ type CheckoutResult = {
   message?: string;
 };
 
+/** Resolve the current user's email, or null when not logged in. */
+async function resolveUserEmail(): Promise<{ loggedIn: boolean; email: string | null }> {
+  if (hasSupabasePublicEnv()) {
+    const supabase = getSupabaseBrowserClient();
+    const { data } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+    if (!data.user) return { loggedIn: false, email: null };
+    return { loggedIn: true, email: data.user.email ?? null };
+  }
+
+  const raw = typeof window !== "undefined" ? localStorage.getItem("ai-goldmining-demo-user") : null;
+  if (!raw) return { loggedIn: false, email: null };
+  try {
+    return { loggedIn: true, email: (JSON.parse(raw) as { email?: string }).email ?? null };
+  } catch {
+    return { loggedIn: true, email: null };
+  }
+}
+
 /**
  * Single-item fast checkout. Includes the mandatory AGB checkbox and the order
  * bump (brief section 1). Multi-item purchases go through /warenkorb instead.
+ *
+ * Session-aware: logged-in users go straight to Stripe. Guests are sent to
+ * /login with a redirect back to this course (carrying ?buy=1) so they can
+ * complete the purchase in one step after authenticating. When `autoBuy` is set
+ * (i.e. the page loaded with ?buy=1) and the visitor is logged in, checkout is
+ * triggered automatically on mount.
  */
 export function CheckoutButton({
   courseSlug,
   label = "Kurs kaufen",
   className,
+  autoBuy = false,
 }: {
   courseSlug: string;
   label?: string;
   className?: string;
+  autoBuy?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [agb, setAgb] = useState(false);
+  const [agb, setAgb] = useState(autoBuy);
   const [bump, setBump] = useState(false);
   const router = useRouter();
+  const autoBuyHandled = useRef(false);
 
-  async function startCheckout() {
+  const startCheckout = useCallback(async () => {
     setError(null);
     if (!agb) {
       setError("Bitte akzeptiere die AGB und das Widerrufsrecht.");
       return;
     }
 
-    let userEmail: string | null = null;
-
-    if (hasSupabasePublicEnv()) {
-      const supabase = getSupabaseBrowserClient();
-      const { data } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
-      if (!data.user) {
-        router.push(`/login?redirect=/db/kurse/${courseSlug}`);
-        return;
-      }
-      userEmail = data.user.email ?? null;
-    } else {
-      const raw = typeof window !== "undefined" ? localStorage.getItem("ai-goldmining-demo-user") : null;
-      if (!raw) {
-        router.push(`/login?redirect=/db/kurse/${courseSlug}`);
-        return;
-      }
-      try {
-        userEmail = (JSON.parse(raw) as { email?: string }).email ?? null;
-      } catch {
-        // malformed demo entry: proceed without email
-      }
+    const { loggedIn, email } = await resolveUserEmail();
+    if (!loggedIn) {
+      // Send guests to login, then back to this course with ?buy=1 so the
+      // purchase auto-resumes once they are authenticated.
+      router.push(`/login?redirect=${encodeURIComponent(`/kurse/${courseSlug}?buy=1`)}`);
+      return;
     }
+    const userEmail = email;
 
     setLoading(true);
     try {
@@ -97,7 +110,17 @@ export function CheckoutButton({
     } finally {
       setLoading(false);
     }
-  }
+  }, [agb, bump, courseSlug, router]);
+
+  // Resume the purchase automatically after login (page loaded with ?buy=1).
+  useEffect(() => {
+    if (!autoBuy || autoBuyHandled.current) return;
+    autoBuyHandled.current = true;
+    (async () => {
+      const { loggedIn } = await resolveUserEmail();
+      if (loggedIn) await startCheckout();
+    })();
+  }, [autoBuy, startCheckout]);
 
   return (
     <div className="space-y-3">

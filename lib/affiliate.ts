@@ -52,6 +52,15 @@ export type AffiliateStats = {
   revenueBroughtCents: number;
 };
 
+export type AffiliateSignup = {
+  referredUserId: string | null;
+  email: string | null;
+  fullName: string | null;
+  status: string | null;
+  commissionCents: number;
+  createdAt: string | null;
+};
+
 type DbAffiliate = {
   user_id: string;
   code: string | null;
@@ -164,6 +173,64 @@ export async function getAffiliateStats(userId: string): Promise<AffiliateStats>
     };
   } catch {
     return empty;
+  }
+}
+
+/**
+ * Who signed up via this affiliate's link/code. Reads `referrals` for the
+ * affiliate, then joins `profiles` (by referred_user_id) for name/email.
+ * Tolerates missing tables/columns by returning [].
+ */
+export async function getAffiliateSignups(userId: string): Promise<AffiliateSignup[]> {
+  const admin = getSupabaseAdminClient();
+  if (!admin || !userId) return [];
+  try {
+    const { data, error } = await admin
+      .from("referrals")
+      .select("referred_user_id, status, commission_cents, created_at")
+      .eq("referrer_user_id", userId)
+      .order("created_at", { ascending: false });
+    if (error) return [];
+
+    const rows = (data ?? []) as {
+      referred_user_id: string | null;
+      status: string | null;
+      commission_cents: number | null;
+      created_at: string | null;
+    }[];
+    if (rows.length === 0) return [];
+
+    const ids = Array.from(
+      new Set(rows.map((r) => r.referred_user_id).filter((id): id is string => Boolean(id)))
+    );
+    const byId = new Map<string, { email: string | null; full_name: string | null }>();
+    if (ids.length > 0) {
+      const { data: profiles } = await admin
+        .from("profiles")
+        .select("id, email, full_name")
+        .in("id", ids);
+      for (const p of (profiles ?? []) as {
+        id: string;
+        email: string | null;
+        full_name: string | null;
+      }[]) {
+        byId.set(p.id, { email: p.email, full_name: p.full_name });
+      }
+    }
+
+    return rows.map((r) => {
+      const profile = r.referred_user_id ? byId.get(r.referred_user_id) : undefined;
+      return {
+        referredUserId: r.referred_user_id,
+        email: profile?.email ?? null,
+        fullName: profile?.full_name ?? null,
+        status: r.status,
+        commissionCents: r.commission_cents ?? 0,
+        createdAt: r.created_at,
+      };
+    });
+  } catch {
+    return [];
   }
 }
 

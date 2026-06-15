@@ -4,10 +4,30 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin, logAudit } from "@/lib/admin";
 import { publicUrl, parseStorageRef } from "@/lib/storage";
 import { courses as staticCourses } from "@/lib/content";
+import { serializeIncludes, IMPORT_SOURCE_LABEL } from "@/lib/course-includes";
 
 type ActionResult = { ok: boolean; error?: string };
 type CreateResult = ActionResult & { id?: string };
-type SeedResult = ActionResult & { created?: number; skipped?: number };
+
+/** Per-course outcome of an import run, for a human-readable summary. */
+export type ImportedCourse = {
+  title: string;
+  slug: string;
+  lessonCount: number;
+  moduleCount: number;
+};
+export type SkippedCourse = { title: string; slug: string };
+
+export type SeedResult = ActionResult & {
+  /** Absolute label of where the catalog was read from. */
+  source?: string;
+  created?: number;
+  skipped?: number;
+  lessonsImported?: number;
+  modulesImported?: number;
+  importedCourses?: ImportedCourse[];
+  skippedCourses?: SkippedCourse[];
+};
 
 type ResourceItem = { label: string; type: "PDF" | "Template" | "Prompt"; href: string };
 
@@ -41,6 +61,18 @@ function resolvePublicImage(value?: string | null): string | null {
   return publicUrl(ref.bucket, ref.path) ?? v;
 }
 
+/**
+ * Parse one "Enthalten" line into a structured point.
+ *
+ * Supported syntaxes (all optional — plain text keeps working):
+ *   "Label | https://example.com"        → external link
+ *   "Label -> /kurse/other-slug"         → internal/course cross-reference
+ *   "Label"                              → plain text point
+ *
+ * Returns a clean, canonical string that round-trips:
+ *   with link  → "Label | href"
+ *   plain      → "Label"
+ */
 function normalizeResources(resources?: ResourceItem[]): ResourceItem[] {
   if (!Array.isArray(resources)) return [];
   return resources
@@ -143,7 +175,7 @@ export async function updateCourse(input: CourseInput): Promise<ActionResult> {
           ? Math.round(input.sortOrder)
           : 0,
       includes: Array.isArray(input.includes)
-        ? input.includes.map((s) => s.trim()).filter(Boolean)
+        ? serializeIncludes(input.includes)
         : [],
       updated_at: new Date().toISOString(),
     })
@@ -463,20 +495,22 @@ export async function reorderLessons(input: {
 
 // ──────────────────────────────────── Seed import ────────────────────────────────────
 
-/** Import the bundled static catalog (content.ts) into the DB. Idempotent by slug. */
+/** Import the bundled static catalog (lib/content.ts) into the DB. Idempotent by slug. */
 export async function seedStarterCatalog(): Promise<SeedResult> {
   const { user, supabase } = await requireAdmin();
 
   const { data: existing } = await supabase.from("courses").select("slug");
   const existingSlugs = new Set((existing ?? []).map((c) => c.slug));
 
-  let created = 0;
-  let skipped = 0;
+  const importedCourses: ImportedCourse[] = [];
+  const skippedCourses: SkippedCourse[] = [];
+  let lessonsImported = 0;
+  let modulesImported = 0;
 
   for (let i = 0; i < staticCourses.length; i++) {
     const c = staticCourses[i];
     if (existingSlugs.has(c.slug)) {
-      skipped++;
+      skippedCourses.push({ title: c.title, slug: c.slug });
       continue;
     }
 
@@ -503,6 +537,8 @@ export async function seedStarterCatalog(): Promise<SeedResult> {
 
     if (courseErr || !courseRow) continue;
 
+    let courseLessons = 0;
+    let courseModules = 0;
     for (let mi = 0; mi < c.modules.length; mi++) {
       const m = c.modules[mi];
       const { data: modRow } = await supabase
@@ -511,6 +547,7 @@ export async function seedStarterCatalog(): Promise<SeedResult> {
         .select("id")
         .single();
       if (!modRow) continue;
+      courseModules++;
 
       if (m.lessons.length > 0) {
         await supabase.from("lessons").insert(
@@ -524,21 +561,41 @@ export async function seedStarterCatalog(): Promise<SeedResult> {
             resources: l.resources,
           }))
         );
+        courseLessons += m.lessons.length;
       }
     }
 
-    created++;
+    lessonsImported += courseLessons;
+    modulesImported += courseModules;
+    importedCourses.push({
+      title: c.title,
+      slug: c.slug,
+      lessonCount: courseLessons,
+      moduleCount: courseModules,
+    });
   }
+
+  const created = importedCourses.length;
+  const skipped = skippedCourses.length;
 
   await logAudit({
     actorEmail: user.email,
     action: "course.seed_catalog",
     entity: "courses",
-    meta: { created, skipped },
+    meta: { source: IMPORT_SOURCE_LABEL, created, skipped, lessonsImported, modulesImported },
   });
 
   revalidatePath("/admin/kurse");
   revalidatePath("/kurse");
   revalidatePath("/db/kurse");
-  return { ok: true, created, skipped };
+  return {
+    ok: true,
+    source: IMPORT_SOURCE_LABEL,
+    created,
+    skipped,
+    lessonsImported,
+    modulesImported,
+    importedCourses,
+    skippedCourses,
+  };
 }

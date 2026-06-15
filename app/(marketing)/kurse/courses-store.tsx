@@ -134,12 +134,12 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
       variants={gridVariants}
       initial="hidden"
       animate="visible"
-      className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+      className="grid items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-3"
     >
       {list.map((c) => {
         const full = coursesBySlug.get(c.slug);
         return (
-          <motion.div key={c.slug} variants={itemVariants}>
+          <motion.div key={c.slug} variants={itemVariants} className="h-full">
             {full ? (
               // Public catalog cards link to the PUBLIC detail route (/kurse/<slug>),
               // not the auth-gated member route. Avoids the login redirect.
@@ -219,10 +219,10 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
               variants={gridVariants}
               initial="hidden"
               animate="visible"
-              className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+              className="grid items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-3"
             >
               {purchased.map((c) => (
-                <motion.div key={c.slug} variants={itemVariants}>
+                <motion.div key={c.slug} variants={itemVariants} className="h-full">
                   <StoreProductCard course={c} isPurchased={true} />
                 </motion.div>
               ))}

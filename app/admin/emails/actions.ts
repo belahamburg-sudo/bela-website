@@ -254,17 +254,29 @@ export async function resetTemplateOverride(input: {
 export async function sendTestEmail(input: {
   template: EmailTemplate;
   subject?: string;
+  oneTimeHtml?: string;
+  oneTimeSubject?: string;
 }): Promise<ActionResult> {
   const { user } = await requireAdmin();
   const to = user.email;
   if (!to) return { ok: false, error: "Keine Admin-E-Mail-Adresse gefunden" };
 
-  const res = await sendTemplateEmail({
-    template: input.template,
-    to,
-    subject: input.subject?.trim() || undefined,
-    vars: { name: user.email ?? "Admin", email: to },
-  });
+  const vars = { name: user.email ?? "Admin", email: to };
+  // A one-time edit (from the editor) takes precedence over the stored/default
+  // template and is sent as raw HTML — never persisted.
+  const res = input.oneTimeHtml?.trim()
+    ? await sendRawEmail({
+        to,
+        subject: input.subject?.trim() || input.oneTimeSubject?.trim() || "AI Goldmining",
+        html: input.oneTimeHtml,
+        vars,
+      })
+    : await sendTemplateEmail({
+        template: input.template,
+        to,
+        subject: input.subject?.trim() || undefined,
+        vars,
+      });
 
   if (!res.ok) return { ok: false, error: res.error ?? "Versand fehlgeschlagen" };
 
@@ -284,6 +296,8 @@ export async function sendToOne(input: {
   email: string;
   name?: string;
   subject?: string;
+  oneTimeHtml?: string;
+  oneTimeSubject?: string;
 }): Promise<ActionResult> {
   const ctx = await getAdminContext();
   if (!ctx) return { ok: false, error: "Nicht autorisiert." };
@@ -292,20 +306,31 @@ export async function sendToOne(input: {
   if (!to) return { ok: false, error: "Keine E-Mail-Adresse." };
 
   const vars = { email: to, name: input.name?.trim() || undefined };
-  const override = await getTemplateOverride(input.template);
-  const res = override
-    ? await sendRawEmail({
-        to,
-        subject: input.subject?.trim() || override.subject,
-        html: override.html,
-        vars,
-      })
-    : await sendTemplateEmail({
-        template: input.template,
-        to,
-        subject: input.subject?.trim() || undefined,
-        vars,
-      });
+  // Precedence: one-time edit > stored override > default template.
+  let res: Awaited<ReturnType<typeof sendRawEmail>>;
+  if (input.oneTimeHtml?.trim()) {
+    res = await sendRawEmail({
+      to,
+      subject: input.subject?.trim() || input.oneTimeSubject?.trim() || "AI Goldmining",
+      html: input.oneTimeHtml,
+      vars,
+    });
+  } else {
+    const override = await getTemplateOverride(input.template);
+    res = override
+      ? await sendRawEmail({
+          to,
+          subject: input.subject?.trim() || override.subject,
+          html: override.html,
+          vars,
+        })
+      : await sendTemplateEmail({
+          template: input.template,
+          to,
+          subject: input.subject?.trim() || undefined,
+          vars,
+        });
+  }
 
   if (!res.ok) return { ok: false, error: res.error ?? "Versand fehlgeschlagen" };
 
@@ -372,6 +397,8 @@ export async function sendBroadcast(input: {
   subject?: string;
   segment: Segment;
   exclude?: string[];
+  oneTimeHtml?: string;
+  oneTimeSubject?: string;
 }): Promise<ActionResult> {
   const { user, supabase } = await requireAdmin();
 
@@ -386,27 +413,41 @@ export async function sendBroadcast(input: {
 
   const subject = input.subject?.trim() || null;
 
+  // A one-time edit (passed from the editor) is used for THIS send only and is
+  // never persisted. Otherwise fall back to a stored override, then the default.
+  const oneTimeHtml = input.oneTimeHtml?.trim() ? input.oneTimeHtml : null;
+  const oneTimeSubject = input.oneTimeSubject?.trim() || null;
   // Resolve any admin override once; reuse it for every recipient.
-  const override = await getTemplateOverride(input.template);
+  const override = oneTimeHtml ? null : await getTemplateOverride(input.template);
 
   let success = 0;
   let failed = 0;
   for (const recipient of recipients) {
     try {
       const vars = { email: recipient.email, name: recipient.name || undefined };
-      const res = override
-        ? await sendRawEmail({
-            to: recipient.email,
-            subject: subject ?? override.subject,
-            html: override.html,
-            vars,
-          })
-        : await sendTemplateEmail({
-            template: input.template,
-            to: recipient.email,
-            subject: subject ?? undefined,
-            vars,
-          });
+      let res: Awaited<ReturnType<typeof sendRawEmail>>;
+      if (oneTimeHtml) {
+        res = await sendRawEmail({
+          to: recipient.email,
+          subject: subject ?? oneTimeSubject ?? "AI Goldmining",
+          html: oneTimeHtml,
+          vars,
+        });
+      } else if (override) {
+        res = await sendRawEmail({
+          to: recipient.email,
+          subject: subject ?? override.subject,
+          html: override.html,
+          vars,
+        });
+      } else {
+        res = await sendTemplateEmail({
+          template: input.template,
+          to: recipient.email,
+          subject: subject ?? undefined,
+          vars,
+        });
+      }
       if (res.ok) success += 1;
       else failed += 1;
     } catch {

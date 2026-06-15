@@ -11,6 +11,7 @@ import {
   Mail,
   Type,
   ChevronDown,
+  Share2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Panel } from "@/components/admin/ui";
@@ -267,6 +268,20 @@ export function SettingsEditor({
     str(settings.contact, "email")
   );
 
+  // Social-Media-Links
+  const [socInstagram, setSocInstagram] = useState(() =>
+    str(settings.socials, "instagram")
+  );
+  const [socTiktok, setSocTiktok] = useState(() =>
+    str(settings.socials, "tiktok")
+  );
+  const [socYoutube, setSocYoutube] = useState(() =>
+    str(settings.socials, "youtube")
+  );
+  const [socTelegram, setSocTelegram] = useState(() =>
+    str(settings.socials, "telegram")
+  );
+
   // Hero
   const [heroHeadline, setHeroHeadline] = useState(() =>
     str(settings.hero, "headline")
@@ -325,6 +340,7 @@ export function SettingsEditor({
             label="Text"
             value={annText}
             onChange={setAnnText}
+            hint="Kurze Zeile ganz oben auf jeder Seite, über dem Menü."
             placeholder="z. B. Black Friday: 30 % auf alle Kurse"
           />
           <Field
@@ -365,6 +381,7 @@ export function SettingsEditor({
             label="Text"
             value={promoText}
             onChange={setPromoText}
+            hint="Aktionshinweis, der auf der Startseite hervorgehoben wird."
             placeholder="z. B. Nur heute: Gutscheincode GOLD20"
           />
           <Field
@@ -372,6 +389,7 @@ export function SettingsEditor({
             type="url"
             value={promoHref}
             onChange={setPromoHref}
+            hint="Wohin der Hinweis führt, wenn man darauf klickt."
             placeholder="https://… oder /kurse"
           />
         </Section>
@@ -413,6 +431,7 @@ export function SettingsEditor({
             type="url"
             value={tgFree}
             onChange={setTgFree}
+            hint="Öffentliche Community — z. B. über „Community beitreten“-Buttons."
             placeholder="https://t.me/…"
           />
           <Field
@@ -420,6 +439,7 @@ export function SettingsEditor({
             type="url"
             value={tgPaid}
             onChange={setTgPaid}
+            hint="Zugang für zahlende Mitglieder, z. B. nach dem Kauf."
             placeholder="https://t.me/…"
           />
         </Section>
@@ -437,7 +457,57 @@ export function SettingsEditor({
             type="email"
             value={contactEmail}
             onChange={setContactEmail}
+            hint="Wird auf Kontakt-/Impressum-Seiten und für Rückfragen angezeigt."
             placeholder="kontakt@beispiel.de"
+          />
+        </Section>
+
+        {/* Social-Media-Links */}
+        <Section
+          icon={Share2}
+          title="Social-Media-Links"
+          description="Profile, die im Footer der Website verlinkt werden."
+          saving={saving("socials")}
+          onSave={() =>
+            save("socials", {
+              instagram: socInstagram.trim(),
+              tiktok: socTiktok.trim(),
+              youtube: socYoutube.trim(),
+              telegram: socTelegram.trim(),
+            })
+          }
+        >
+          <Field
+            label="Instagram"
+            type="url"
+            value={socInstagram}
+            onChange={setSocInstagram}
+            hint="Vollständige Profil-URL. Erscheint im Footer unter „Social“."
+            placeholder="https://www.instagram.com/belagoldmann"
+          />
+          <Field
+            label="TikTok"
+            type="url"
+            value={socTiktok}
+            onChange={setSocTiktok}
+            hint="Vollständige Profil-URL. Erscheint im Footer unter „Social“."
+            placeholder="https://www.tiktok.com/@belagoldmann"
+          />
+          <Field
+            label="YouTube"
+            type="url"
+            value={socYoutube}
+            onChange={setSocYoutube}
+            hint="Vollständige Kanal-URL. Erscheint im Footer unter „Social“."
+            placeholder="https://www.youtube.com/@belagoldmann"
+          />
+          <Field
+            label="Telegram (Brand-Profil)"
+            type="url"
+            value={socTelegram}
+            onChange={setSocTelegram}
+            hint="Bela's persönliches Telegram-Profil im Footer — nicht die Community-Gruppen oben."
+            placeholder="https://t.me/belagoldmann"
           />
         </Section>
 

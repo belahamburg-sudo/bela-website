@@ -78,7 +78,9 @@ export async function getAdminStats(): Promise<AdminStats> {
     status: string;
     created_at: string;
   }[];
-  const paid = rows.filter((r) => r.status === "paid");
+  // A "sale" is a paid purchase with a real amount. Manually granted (free)
+  // course unlocks have amount_total = 0 and must NOT count as sales/revenue.
+  const paid = rows.filter((r) => r.status === "paid" && (r.amount_total ?? 0) > 0);
   const revenueCents = paid.reduce((sum, r) => sum + (r.amount_total ?? 0), 0);
 
   const startOfToday = new Date();

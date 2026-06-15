@@ -27,12 +27,24 @@ export async function getAdminSession(): Promise<{
   user: User | null;
   isAdmin: boolean;
 }> {
-  const server = await getSupabaseServerClient();
-  if (!server) return { user: null, isAdmin: false };
-  const {
-    data: { user },
-  } = await server.auth.getUser();
-  return { user, isAdmin: isAdminEmail(user?.email) };
+  try {
+    const server = await getSupabaseServerClient();
+    if (!server) return { user: null, isAdmin: false };
+    const {
+      data: { user },
+    } = await server.auth.getUser();
+    return { user, isAdmin: isAdminEmail(user?.email) };
+  } catch (error) {
+    // A transient Supabase auth/network failure must NOT crash the whole admin
+    // layout (which renders for every /admin/* route). Treat it as "no session"
+    // so requireAdmin() redirects to login instead of throwing a server-side
+    // exception that takes down the page.
+    console.error(
+      "[admin] getAdminSession failed:",
+      error instanceof Error ? error.message : error
+    );
+    return { user: null, isAdmin: false };
+  }
 }
 
 /**

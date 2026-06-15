@@ -200,6 +200,47 @@ export async function updateAffiliate(input: {
   return { ok: true };
 }
 
+/**
+ * Deletes an affiliate. Removes the affiliates row but only deactivates the
+ * linked affiliate referral code (kind='affiliate') instead of hard-deleting
+ * it, so historical referrals keep their foreign-key reference intact.
+ */
+export async function deleteAffiliate(input: {
+  userId: string;
+}): Promise<ActionResult> {
+  if (!input.userId) return { ok: false, error: "Kein Affiliate angegeben." };
+
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
+  const { user, supabase } = ctx;
+
+  // Deactivate the affiliate's referral code(s) — keep the row for FK integrity.
+  const { error: codeError } = await supabase
+    .from("referral_codes")
+    .update({ is_active: false })
+    .eq("user_id", input.userId)
+    .eq("kind", "affiliate");
+  if (codeError) return { ok: false, error: codeError.message };
+
+  // Delete the affiliate row itself.
+  const { error: delError } = await supabase
+    .from("affiliates")
+    .delete()
+    .eq("user_id", input.userId);
+  if (delError) return { ok: false, error: delError.message };
+
+  await logAudit({
+    actorEmail: user.email,
+    action: "affiliate.delete",
+    entity: "affiliates",
+    entityId: input.userId,
+    meta: { userId: input.userId },
+  });
+
+  revalidatePath("/admin/affiliate");
+  return { ok: true };
+}
+
 /** Records a payout (Stripe transfer or manual) and decrements the balance. */
 export async function createPayout(input: {
   userId: string;

@@ -13,6 +13,8 @@ import { AntihypeSection } from "@/components/sections/antihype-section";
 import { FaqSection } from "@/components/sections/faq-section";
 import { CtaFooterSection } from "@/components/sections/cta-footer-section";
 import { getFeaturedCourses } from "@/lib/courses";
+import { getActiveWebinar } from "@/lib/webinar";
+import { getEffectiveSocials } from "@/lib/settings";
 
 // Re-read featured courses from the DB at most every 60s so catalog changes
 // (new/edited courses, hidden demos) show up without a redeploy.
@@ -20,10 +22,11 @@ export const revalidate = 60;
 
 export default async function HomePage() {
   const featured = await getFeaturedCourses();
+  const webinar = await getActiveWebinar();
   return (
     <>
       <style>{`body > footer { display: none; }`}</style>
-      <VideoHeroSection />
+      <VideoHeroSection webinar={webinar} />
       <AiJobsSection />
       <ProblemSection />
       <IsThisYouSection />
@@ -36,7 +39,7 @@ export default async function HomePage() {
       <TrustSection />
       <AntihypeSection />
       <FaqSection />
-      <CtaFooterSection />
+      <CtaFooterSection socials={await getEffectiveSocials()} />
     </>
   );
 }

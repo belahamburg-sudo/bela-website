@@ -1,10 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckCircle2, Lock, PlayCircle } from "lucide-react";
-import { Badge } from "@/components/badge";
-import { Button } from "@/components/button";
+import { ArrowLeft, CheckCircle2, Lock, PlayCircle } from "lucide-react";
 import { CheckoutButton } from "@/components/checkout-button";
 import { AddToCartButton } from "@/components/add-to-cart-button";
+import { CourseLevelBadge } from "@/components/course-level-badge";
 import { CourseReviews } from "@/components/course-reviews";
 import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
 import { getPublicCourse } from "@/lib/courses";
@@ -20,10 +20,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CourseDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ buy?: string }>;
+}) {
   const { slug } = await params;
+  const { buy } = await searchParams;
   const course = await getPublicCourse(slug);
   if (!course) notFound();
+
+  const autoBuy = buy === "1";
 
   return (
     <>
@@ -33,7 +42,17 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
         </div>
         <div className="relative mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div>
-            <Badge>{course.level}</Badge>
+            <Link
+              href="/kurse"
+              className="group mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white/40 transition-colors hover:text-gold-200"
+            >
+              <ArrowLeft
+                aria-hidden
+                className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+              />
+              Zurück zur Kursübersicht
+            </Link>
+            <CourseLevelBadge level={course.level} />
             <h1 className="mt-5 font-heading text-4xl leading-tight text-white sm:text-6xl">
               {course.title}
             </h1>
@@ -50,7 +69,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
               </div>
             </div>
             <div className="mt-8 space-y-3">
-              <CheckoutButton courseSlug={course.slug} label="Kurs kaufen" />
+              <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" autoBuy={autoBuy} />
               <div className="flex flex-col gap-3 sm:flex-row">
                 <AddToCartButton
                   course={{
@@ -61,9 +80,6 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     format: course.format,
                   }}
                 />
-                <Button href="/signup" variant="secondary">
-                  Erst Account erstellen
-                </Button>
               </div>
             </div>
           </div>

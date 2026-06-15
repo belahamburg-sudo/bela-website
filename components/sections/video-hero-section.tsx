@@ -8,6 +8,7 @@ import Link from "next/link";
 import { telegramUrl } from "@/lib/env";
 import { Particles } from "@/components/ui/particles";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+import type { Webinar } from "@/lib/webinar";
 
 const SOCIAL_PROOF_IMAGES = [
   "/assets/member-1.jpg",
@@ -16,7 +17,23 @@ const SOCIAL_PROOF_IMAGES = [
   "/assets/member-4.jpg",
 ];
 
-export function VideoHeroSection() {
+export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
+  // Build the German-formatted "11. Juni · 19:00 Uhr" pill label from the active
+  // webinar's start time. When there's no webinar (or no date) we fall back to a
+  // neutral label rather than risk showing a stale hardcoded date.
+  const webinarStart = webinar?.startsAt ? new Date(webinar.startsAt) : null;
+  const hasValidDate = webinarStart != null && !Number.isNaN(webinarStart.getTime());
+  const webinarDateLabel = hasValidDate
+    ? `${webinarStart.toLocaleString("de-DE", {
+        day: "numeric",
+        month: "long",
+      })} · ${webinarStart.toLocaleString("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })} Uhr`
+    : null;
+  const webinarUrl = webinar?.url ?? "/webinar";
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const scrubbingRef = useRef(false);
@@ -174,27 +191,35 @@ export function VideoHeroSection() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="group relative inline-flex items-center gap-3 rounded-full border border-gold-300/25 bg-gradient-to-b from-white/[0.07] to-white/[0.02] px-1.5 py-1.5 pr-4 backdrop-blur-md"
-          style={{ boxShadow: "0 1px 0 0 rgba(255,255,255,0.06) inset, 0 8px 30px -12px rgba(201, 169, 97,0.4)" }}
         >
-          {/* Live indicator pill */}
-          <span className="flex items-center gap-1.5 rounded-full bg-gold-gradient px-2.5 py-1">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-obsidian/70" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-obsidian" />
-            </span>
-            <span className="text-[0.6rem] font-extrabold uppercase tracking-[0.2em] text-obsidian">Live</span>
-          </span>
-          <span className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-cream/90">
-            Nächstes Webinar
-          </span>
-          <span className="h-3 w-px bg-gold-300/30" aria-hidden />
-          <AnimatedGradientText
-            speed={1}
-            className="text-[0.68rem] font-bold uppercase tracking-[0.14em]"
+          <Link
+            href={webinarUrl}
+            className="group relative inline-flex items-center gap-3 rounded-full border border-gold-300/25 bg-gradient-to-b from-white/[0.07] to-white/[0.02] px-1.5 py-1.5 pr-4 backdrop-blur-md"
+            style={{ boxShadow: "0 1px 0 0 rgba(255,255,255,0.06) inset, 0 8px 30px -12px rgba(201, 169, 97,0.4)" }}
           >
-            11. Juni · 19 Uhr
-          </AnimatedGradientText>
+            {/* Live indicator pill */}
+            <span className="flex items-center gap-1.5 rounded-full bg-gold-gradient px-2.5 py-1">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-obsidian/70" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-obsidian" />
+              </span>
+              <span className="text-[0.6rem] font-extrabold uppercase tracking-[0.2em] text-obsidian">Live</span>
+            </span>
+            <span className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-cream/90">
+              Nächstes Webinar
+            </span>
+            {webinarDateLabel && (
+              <>
+                <span className="h-3 w-px bg-gold-300/30" aria-hidden />
+                <AnimatedGradientText
+                  speed={1}
+                  className="text-[0.68rem] font-bold uppercase tracking-[0.14em]"
+                >
+                  {webinarDateLabel}
+                </AnimatedGradientText>
+              </>
+            )}
+          </Link>
         </motion.div>
 
         {/* ── Headline ── */}
@@ -389,7 +414,7 @@ export function VideoHeroSection() {
         >
           <div className="flex flex-col items-center gap-3 sm:flex-row mb-1">
             <Link
-              href="/webinar"
+              href={webinarUrl}
               className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(201, 169, 97,0.35)] relative overflow-hidden"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -407,7 +432,9 @@ export function VideoHeroSection() {
           </div>
 
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-cream/25">
-            Kostenlos · ohne Bullshit · live am 11. Juni
+            Kostenlos · ohne Bullshit{hasValidDate
+              ? ` · live am ${webinarStart.toLocaleString("de-DE", { day: "numeric", month: "long" })}`
+              : ""}
           </p>
 
           {/* Social proof */}
