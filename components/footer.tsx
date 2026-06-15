@@ -8,8 +8,7 @@ export function Footer() {
   const legal = [
     { href: "/impressum", label: "Impressum" },
     { href: "/datenschutz", label: "Datenschutz" },
-    { href: "/agb", label: "AGB" },
-    { href: "/income-disclaimer", label: "Income Disclaimer" }
+    { href: "/agb", label: "AGB" }
   ];
 
   const socials = [

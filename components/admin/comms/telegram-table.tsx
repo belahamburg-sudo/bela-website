@@ -16,19 +16,35 @@ export type TelegramRow = {
   stripeSubscriptionId: string | null;
   status: string;
   currentPeriodEnd: string | null;
-  createdAt: string;
+  createdAt: string | null;
 };
 
-function formatDate(iso: string | null): string {
+/**
+ * Null-safe date formatter. Returns "—" for missing values and for any string
+ * that does not parse into a valid date, so a malformed row can never throw
+ * during (server or client) render.
+ */
+function formatDate(iso: string | null | undefined): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  try {
+    return date.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    // Extremely defensive: fall back to ISO date if locale formatting fails.
+    return iso.slice(0, 10);
+  }
 }
 
-function truncateMiddle(value: string | null, head = 10, tail = 4): string {
+function truncateMiddle(
+  value: string | null | undefined,
+  head = 10,
+  tail = 4
+): string {
   if (!value) return "—";
   if (value.length <= head + tail + 1) return value;
   return `${value.slice(0, head)}…${value.slice(-tail)}`;
@@ -39,10 +55,14 @@ function RowActions({ row }: { row: TelegramRow }) {
   const { success, error } = useToast();
   const [pending, startTransition] = useTransition();
 
-  const isActive = row.status === "active";
+  const isActive = row?.status === "active";
   const nextStatus: "active" | "inactive" = isActive ? "inactive" : "active";
 
   const toggle = () => {
+    if (!row?.userId) {
+      error("Diesem Eintrag fehlt eine Benutzer-ID.");
+      return;
+    }
     startTransition(async () => {
       const res = await updateTelegramStatus({ userId: row.userId, status: nextStatus });
       if (res.ok) {
@@ -69,7 +89,7 @@ function RowActions({ row }: { row: TelegramRow }) {
       >
         {isActive ? "Deaktivieren" : "Aktivieren"}
       </AdminButton>
-      {row.stripeCustomerId && (
+      {row?.stripeCustomerId && (
         <a
           href={`https://dashboard.stripe.com/customers/${row.stripeCustomerId}`}
           target="_blank"
@@ -92,43 +112,48 @@ export function TelegramTable({
   rows: TelegramRow[];
   emptyIcon?: LucideIcon;
 }) {
+  const safeRows = Array.isArray(rows) ? rows.filter(Boolean) : [];
+
   const [columns] = useState<Column<TelegramRow>[]>(() => [
     {
       key: "email",
       header: "E-Mail",
       render: (r) => (
         <span className="font-medium text-cream/90">
-          {r.email ?? <span className="text-cream/40">unbekannt</span>}
+          {r?.email ?? <span className="text-cream/40">unbekannt</span>}
         </span>
       ),
     },
     {
       key: "status",
       header: "Status",
-      render: (r) => (
-        <AdminBadge tone={r.status === "active" ? "green" : "neutral"}>
-          {r.status === "active" ? "Aktiv" : r.status}
-        </AdminBadge>
-      ),
+      render: (r) => {
+        const status = r?.status ?? "inactive";
+        return (
+          <AdminBadge tone={status === "active" ? "green" : "neutral"}>
+            {status === "active" ? "Aktiv" : status || "—"}
+          </AdminBadge>
+        );
+      },
     },
     {
       key: "stripeSubscriptionId",
       header: "Abo-ID",
       render: (r) => (
         <span className="font-mono text-xs text-cream/60">
-          {truncateMiddle(r.stripeSubscriptionId)}
+          {truncateMiddle(r?.stripeSubscriptionId)}
         </span>
       ),
     },
     {
       key: "currentPeriodEnd",
       header: "Läuft bis",
-      render: (r) => <span className="text-cream/60">{formatDate(r.currentPeriodEnd)}</span>,
+      render: (r) => <span className="text-cream/60">{formatDate(r?.currentPeriodEnd)}</span>,
     },
     {
       key: "createdAt",
       header: "Seit",
-      render: (r) => <span className="text-cream/60">{formatDate(r.createdAt)}</span>,
+      render: (r) => <span className="text-cream/60">{formatDate(r?.createdAt)}</span>,
     },
     {
       key: "actions",
@@ -141,8 +166,8 @@ export function TelegramTable({
   return (
     <DataTable
       columns={columns}
-      rows={rows}
-      getRowKey={(r) => r.userId}
+      rows={safeRows}
+      getRowKey={(r, i) => r?.userId ?? `row-${i}`}
       emptyIcon={emptyIcon}
       emptyTitle="Noch keine Abonnenten"
       emptyDescription="Sobald jemand ein Telegram-Abo abschließt, erscheint er hier."

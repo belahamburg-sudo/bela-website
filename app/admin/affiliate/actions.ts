@@ -3,8 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { getAdminContext, logAudit } from "@/lib/admin";
 import { createPayoutTransfer } from "@/lib/stripe-connect";
+import { absoluteUrl } from "@/lib/utils";
 
 type ActionResult = { ok: boolean; error?: string };
+
+/** Normalises an admin-supplied custom code: uppercased, only A-Z/0-9. */
+function normalizeCustomCode(raw: string): string {
+  return raw.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
 
 /** Default friend-discount applied to a new affiliate's referral code. */
 const DEFAULT_FRIEND_DISCOUNT = 20;
@@ -30,12 +36,19 @@ function generateCode(email: string): string {
 /** Creates an affiliate from a registered customer's email address. */
 export async function createAffiliate(input: {
   email: string;
+  customCode?: string;
+  rewardType?: string;
   cashPercent: number;
+  fixedCashCents?: number;
   selfDiscountPercent: number;
   canIssueCoupons: boolean;
 }): Promise<ActionResult> {
   const email = (input.email ?? "").trim().toLowerCase();
   if (!email) return { ok: false, error: "Keine E-Mail angegeben." };
+
+  const rewardType = input.rewardType ?? "percent_cash";
+  const cashPercent = input.cashPercent ?? 0;
+  const fixedCashCents = input.fixedCashCents ?? 0;
 
   const ctx = await getAdminContext();
   if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
@@ -63,7 +76,25 @@ export async function createAffiliate(input: {
     return { ok: false, error: "Dieser Kunde ist bereits Affiliate." };
   }
 
-  const code = generateCode(email);
+  // Resolve the code: custom (validated unique) or auto-generated.
+  let code: string;
+  const customCode = normalizeCustomCode(input.customCode ?? "");
+  if (customCode) {
+    if (customCode.length < 3) {
+      return { ok: false, error: "Eigener Code muss mindestens 3 Zeichen haben." };
+    }
+    const { data: codeTaken } = await supabase
+      .from("referral_codes")
+      .select("code")
+      .eq("code", customCode)
+      .maybeSingle();
+    if (codeTaken) {
+      return { ok: false, error: "Dieser Code ist bereits vergeben." };
+    }
+    code = customCode;
+  } else {
+    code = generateCode(email);
+  }
 
   // Upsert the affiliate referral code.
   const { error: codeError } = await supabase.from("referral_codes").upsert(
@@ -72,7 +103,7 @@ export async function createAffiliate(input: {
       user_id: userId,
       kind: "affiliate",
       discount_percent: DEFAULT_FRIEND_DISCOUNT,
-      commission_percent: input.cashPercent,
+      commission_percent: cashPercent,
       is_active: true,
     },
     { onConflict: "code" }
@@ -84,8 +115,9 @@ export async function createAffiliate(input: {
     user_id: userId,
     code,
     status: "active",
-    reward_type: "percent_cash",
-    cash_percent: input.cashPercent,
+    reward_type: rewardType,
+    cash_percent: cashPercent,
+    fixed_cash_cents: fixedCashCents,
     self_discount_percent: input.selfDiscountPercent,
     can_issue_coupons: input.canIssueCoupons,
   });
@@ -96,7 +128,16 @@ export async function createAffiliate(input: {
     action: "affiliate.create",
     entity: "affiliates",
     entityId: userId,
-    meta: { email, code, cashPercent: input.cashPercent },
+    meta: {
+      email,
+      code,
+      rewardType,
+      cashPercent,
+      fixedCashCents,
+      selfDiscountPercent: input.selfDiscountPercent,
+      canIssueCoupons: input.canIssueCoupons,
+      link: absoluteUrl(`/signup?ref=${code}`),
+    },
   });
 
   revalidatePath("/admin/affiliate");
@@ -137,6 +178,15 @@ export async function updateAffiliate(input: {
     .update(patch)
     .eq("user_id", input.userId);
   if (error) return { ok: false, error: error.message };
+
+  // Keep the referral code's commission in sync with the cash percentage.
+  if (input.cashPercent !== undefined) {
+    await supabase
+      .from("referral_codes")
+      .update({ commission_percent: input.cashPercent })
+      .eq("user_id", input.userId)
+      .eq("kind", "affiliate");
+  }
 
   await logAudit({
     actorEmail: user.email,

@@ -29,7 +29,7 @@ export function SolutionBannerSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="relative overflow-hidden rounded-md border border-gold-300/25 bg-gradient-to-b from-white/[0.04] to-obsidian/70 p-8 sm:p-12 lg:p-14 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)]"
+          className="panel-surface relative overflow-hidden rounded-2xl border border-white/10 p-8 sm:p-10 lg:p-12"
         >
           <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201,169,97,0.07), transparent 55%)" }} aria-hidden />
 

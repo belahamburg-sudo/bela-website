@@ -9,7 +9,8 @@ import {
   User,
   LogOut,
   ChevronRight,
-  Gift
+  Gift,
+  Globe
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -133,6 +134,15 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
             <span className="text-[10px] font-bold text-cream/40 uppercase tracking-widest">Verbindung Aktiv</span>
           </div>
         </div>
+
+        <Link
+          href="/"
+          onClick={onNavClick}
+          className="group flex w-full items-center gap-3 px-4 py-3 border border-white/5 bg-white/[0.02] text-[10px] font-bold uppercase tracking-[0.2em] text-cream/40 transition-all hover:text-gold-300 hover:border-gold-300/20 hover:bg-gold-300/[0.02]"
+        >
+          <Globe className="h-3.5 w-3.5 flex-shrink-0 opacity-40 group-hover:opacity-100" />
+          <span>Zur Website</span>
+        </Link>
 
         <button
           onClick={handleLogout}

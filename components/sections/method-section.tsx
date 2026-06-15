@@ -157,15 +157,13 @@ export function MethodSection() {
         {/* Result banner */}
         <div
           ref={resultRef}
-          className="relative mt-12 lg:mt-16 overflow-hidden rounded-sm border border-gold-300/25 p-7 lg:p-10"
+          className="panel-surface relative mt-12 lg:mt-16 overflow-hidden rounded-2xl border border-white/10 p-7 lg:p-10"
           style={{ opacity: 0 }}
         >
           <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(120deg, rgba(201, 169, 97,0.07), transparent 55%)" }} aria-hidden />
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold-300/60" aria-hidden />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-gold-300/60" aria-hidden />
 
           <div className="relative flex flex-col sm:flex-row gap-5 sm:items-center">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm border border-gold-300/40 bg-gold-300/10">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-gold-300/40 bg-gold-300/10">
               <Sparkles className="h-6 w-6 text-gold-300" />
             </div>
             <div>

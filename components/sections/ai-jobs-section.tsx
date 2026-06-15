@@ -102,7 +102,7 @@ export function AiJobsSection() {
           <p className="eyebrow mb-6 mx-auto">
             <AlertTriangle className="h-3 w-3" /> Die unbequeme Wahrheit
           </p>
-          <h2 className="gold-text font-heading font-extrabold tracking-gta leading-none" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)" }}>
+          <h2 className="gold-text font-heading font-extrabold tracking-gta pb-2" style={{ fontSize: "clamp(1.85rem, 8vw, 5.5rem)", lineHeight: 1.05 }}>
             AI frisst Jobs.<br />
             Jeden Tag mehr.
           </h2>

@@ -100,8 +100,9 @@ create policy "Affiliate reads own payouts" on public.affiliate_payouts
 -- ── Seed a default tier ladder (only if empty) ───────────────────────────────
 insert into public.affiliate_tiers (name, min_sales, cash_percent, self_discount_percent, sort_order)
 select * from (values
-  ('Bronze', 0,  20, 10, 0),
-  ('Silber', 10, 25, 15, 1),
-  ('Gold',   30, 30, 20, 2)
+  ('Standard', 0,  20, 10, 0),
+  ('Bronze',  10, 22, 12, 1),
+  ('Silber',  20, 25, 15, 2),
+  ('Gold',    50, 30, 20, 3)
 ) as v(name, min_sales, cash_percent, self_discount_percent, sort_order)
 where not exists (select 1 from public.affiliate_tiers);

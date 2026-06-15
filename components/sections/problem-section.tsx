@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { animate, onScroll, stagger } from "animejs";
-import { Button } from "@/components/button";
+import { ArrowRight } from "lucide-react";
 
 const PROBLEMS = [
   { num: "01", name: "Dropshipping", why: "Kapitalintensiv: Testing-Budget, Logistik, Retouren, lange Margen-Kette." },
@@ -87,38 +87,17 @@ export function ProblemSection() {
           </ul>
         </div>
 
-        {/* Solution strip: full-width like a wanted poster */}
-        <div
-          ref={solutionRef}
-          className="relative overflow-hidden rounded-sm border border-gold-300/20 p-6 lg:p-12"
-          style={{ opacity: 0 }}
-        >
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(135deg, rgba(201, 169, 97,0.06), transparent 60%)",
-            }}
-            aria-hidden
-          />
-          {/* Notched corner accent */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold-300/60" aria-hidden />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-gold-300/60" aria-hidden />
-
-          <div className="relative grid lg:grid-cols-[auto_1fr] gap-6 lg:gap-8 items-center">
-            <span className="eyebrow shrink-0">Die Lösung</span>
-            <div>
-              <p className="font-heading tracking-gta leading-none text-cream" style={{ fontSize: "clamp(1.4rem, 6vw, 3.2rem)" }}>
-                Digitale Produkte: einmal bauen,{" "}
-                <span className="gold-text">dauerhaft verkaufen.</span>{" "}
-                Fast reine Marge. Mit AI in Tagen.
-              </p>
-              <div className="mt-6">
-                <Button href="/webinar">
-                  Webinar starten →
-                </Button>
-              </div>
-            </div>
-          </div>
+        {/* Solution CTA: one strong sentence as a single prominent gold button */}
+        <div ref={solutionRef} className="flex justify-center" style={{ opacity: 0 }}>
+          <a
+            href="/webinar"
+            className="btn-shimmer group inline-flex max-w-3xl items-center justify-center rounded-full bg-gold-gradient px-10 py-6 text-center text-base font-bold leading-snug text-obsidian shadow-[0_30px_80px_-30px_rgba(201,169,97,0.6)] transition-all hover:brightness-110 sm:px-14 sm:py-7 sm:text-lg lg:text-xl"
+          >
+            <span className="relative z-[2] inline-flex items-center gap-3">
+              Jedes Modell oben kostet dich Jahre, Kapital oder beides. Es gibt genau einen Weg, der das überspringt.
+              <ArrowRight className="hidden h-5 w-5 shrink-0 sm:inline" aria-hidden />
+            </span>
+          </a>
         </div>
       </div>
     </section>

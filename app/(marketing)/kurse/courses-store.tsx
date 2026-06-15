@@ -15,6 +15,7 @@ import {
 import { CheckoutButton } from "@/components/checkout-button";
 import { SpatialBackground } from "@/components/spatial-background";
 import { StoreProductCard, type StoreCardCourse } from "@/components/store-product-card";
+import { CourseCard } from "@/components/course-card";
 import { TelegramSubscribeCard } from "@/components/telegram-subscribe-card";
 import type { Course } from "@/lib/content";
 import { formatEuro } from "@/lib/utils";
@@ -126,6 +127,8 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
     { key: "pdf", label: "PDF-Guides", icon: FileText, count: pdfItems.length },
   ];
 
+  const coursesBySlug = new Map(courses.map((c) => [c.slug, c]));
+
   const renderGrid = (list: StoreItem[]) => (
     <motion.div
       variants={gridVariants}
@@ -133,11 +136,20 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
       animate="visible"
       className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
     >
-      {list.map((c) => (
-        <motion.div key={c.slug} variants={itemVariants}>
-          <StoreProductCard course={c} isPurchased={false} />
-        </motion.div>
-      ))}
+      {list.map((c) => {
+        const full = coursesBySlug.get(c.slug);
+        return (
+          <motion.div key={c.slug} variants={itemVariants}>
+            {full ? (
+              // Public catalog cards link to the PUBLIC detail route (/kurse/<slug>),
+              // not the auth-gated member route. Avoids the login redirect.
+              <CourseCard course={full} />
+            ) : (
+              <StoreProductCard course={c} isPurchased={false} />
+            )}
+          </motion.div>
+        );
+      })}
     </motion.div>
   );
 

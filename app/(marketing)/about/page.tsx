@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import { telegramUrl } from "@/lib/env";
+import { getSiteImages } from "@/lib/site-images";
 
 const profileFacts = [
   { label: "Positionierung", value: "AI Goldmining" },
@@ -15,42 +16,42 @@ const timeline = [
     num: "01",
     title: "Mit 14: Notizbuch voller Geschäftsideen",
     copy: "Während andere in meinem Alter gezockt haben, habe ich Geschäftsideen aufgeschrieben. Limonadenstand, Gartenarbeit in der Nachbarschaft (mit angestellten Kindern), Drohnenaufnahmen als Dienstleistung. Kinderkram, klar. Aber der Drang war da: ich wollte Business machen, nicht angestellt sein.",
-    image: "/assets/bela-with-dad.jpeg",
+    slot: "about_timeline_1",
     imageAlt: "Bela mit seinem Vater",
   },
   {
     num: "02",
     title: "Mit 17: Vier Partyreihen pro Woche",
     copy: "Mit zwei Freunden habe ich Events in Hamburg, auf Sylt und in Luxemburg gestartet. In Hamburg jeden Donnerstag eine Veranstaltung. Innerhalb von einem Jahr vier laufende Partyreihen. Eintritt 15 bis 25 Euro pro Gast, kaum Ausgaben. Plötzlich waren 20/100/1000 Euro nichts mehr, wenn ein Gast 20 Euro bezahlt und man mit EINER Party 3.000+ Euro verdient.",
-    image: "/assets/bela-party.jpg",
+    slot: "about_timeline_2",
     imageAlt: "Hamburg Party",
   },
   {
     num: "03",
     title: "Die Erkenntnis: Ortsgebunden ist eine Sackgasse",
     copy: "Partys liefen mal gut, mal schlecht. Wetter, Konkurrenz, Stimmung. Dazu ständige Kommunikation mit hunderten Leuten. Und: alles hing am Standort. Mir war klar, dass das nicht die Zukunft sein kann. Ich wollte etwas, das läuft, egal wo ich gerade bin.",
-    image: "/assets/bela-seoul.jpeg",
+    slot: "about_timeline_3",
     imageAlt: "Seoul",
   },
   {
     num: "04",
     title: "Social Media Management und E-Commerce",
     copy: "Dann kamen ganz andere Zahlen. Ich habe Creator gemanaged, Shopify Shops gebaut, auf TikTok Shop und Amazon verkauft. Aber: LUCID-Registrierung, Verpackungsverordnung, Streit mit Manufakturen. Beim Management war ich abhängig von der Person: wenn die wegfiel, war alles weg, weil die Brand nicht mir gehörte.",
-    image: "/assets/bela-golf-1.jpeg",
+    slot: "about_timeline_4",
     imageAlt: "Bela beim Golf",
   },
   {
     num: "05",
     title: "Der Moment, in dem AI alles geändert hat",
     copy: "In den letzten Monaten ist so viel passiert, dass alte Modelle einfach kippen. Warum Warenhandel mit Lieferketten, Lager und Rücksendungen, wenn man digitale Produkte verkaufen kann, die unendlich skalieren? Warum Creator managen, wenn AI 80 Prozent davon übernimmt? Mir wurde klar: das ist kein Trend, das ist ein Systemwechsel.",
-    image: "/assets/bela-with-dad.jpeg",
+    slot: "about_timeline_5",
     imageAlt: "Bela — der Wendepunkt mit AI",
   },
   {
     num: "06",
     title: "Heute: AI Goldmining",
     copy: "Ich habe alles andere hingeschmissen und mache nur noch das hier. Digitale Produkte online verkaufen, mit AI gebaut, mit AI vermarktet, ohne Lager, ohne Mitarbeiter, ohne Standortbindung. Entspannt aufgesetzt und es läuft, wenn man weiß, was man tut. Genau das zeige ich der deutschsprachigen Community.",
-    image: "/assets/bela-terrace.jpg",
+    slot: "about_timeline_6",
     imageAlt: "Istanbul Terrasse",
   },
 ];
@@ -63,10 +64,10 @@ const principles = [
 ];
 
 const lifestyle = [
-  { src: "/assets/bela-golf-2.jpeg", label: "Golf" },
-  { src: "/assets/bela-seoul.jpeg", label: "Seoul" },
-  { src: "/assets/bela-terrace.jpg", label: "Istanbul" },
-  { src: "/assets/bela-party.jpg", label: "Hamburg" },
+  { slot: "about_lifestyle_1", label: "Golf" },
+  { slot: "about_lifestyle_2", label: "Seoul" },
+  { slot: "about_lifestyle_3", label: "Istanbul" },
+  { slot: "about_lifestyle_4", label: "Hamburg" },
 ];
 
 const ctas = [
@@ -76,7 +77,11 @@ const ctas = [
   { href: "/#newsletter", label: "Newsletter", primary: false, external: false },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  // Resolve overridable image slots server-side; missing overrides fall back to
+  // the original static asset paths, so the page never breaks.
+  const siteImages = await getSiteImages();
+
   return (
     <>
       {/* ── Hero ── */}
@@ -87,7 +92,7 @@ export default function AboutPage() {
         <div className="relative mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-sm border border-gold-300/18 bg-white/[0.02] shadow-[0_30px_80px_rgba(0,0,0,0.32)] lg:mx-0">
             <Image
-              src="/assets/bela-portrait.jpeg"
+              src={siteImages.about_portrait}
               alt="Schwarz-weiß Portrait von Bela Goldmann"
               width={900}
               height={1200}
@@ -200,7 +205,7 @@ export default function AboutPage() {
                   {/* Photo */}
                   <div className="relative aspect-square w-full max-w-xl overflow-hidden rounded-sm">
                     <Image
-                      src={entry.image}
+                      src={siteImages[entry.slot]}
                       alt={entry.imageAlt}
                       fill
                       className="object-cover object-center"
@@ -252,9 +257,9 @@ export default function AboutPage() {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4">
           {lifestyle.map((photo) => (
-            <div key={photo.src} className="group relative aspect-[3/4] overflow-hidden">
+            <div key={photo.slot} className="group relative aspect-[3/4] overflow-hidden">
               <Image
-                src={photo.src}
+                src={siteImages[photo.slot]}
                 alt={photo.label}
                 fill
                 className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"

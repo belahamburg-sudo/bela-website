@@ -1,13 +1,66 @@
 import { notFound } from "next/navigation";
+import { Layers } from "lucide-react";
 import { AuthGate } from "@/components/auth-gate";
 import { CoursePlayer } from "@/components/course-player";
 import { PaywallScreen } from "@/components/paywall-screen";
 import { ComingSoonScreen } from "@/components/coming-soon-screen";
+import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
 import type { DbCourse, DbModule } from "@/lib/db-types";
+import type { Course } from "@/lib/content";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { resolveMediaUrl } from "@/lib/storage";
 import { getCourse } from "@/lib/content";
+
+/** Map DB modules/lessons to the outline's Course module shape (read-only). */
+function toOutlineModules(course: DbCourse): Course["modules"] {
+  return [...course.modules]
+    .sort((a, b) => a.position - b.position)
+    .map((mod) => ({
+      id: mod.id,
+      title: mod.title,
+      lessons: [...mod.lessons]
+        .sort((a, b) => a.position - b.position)
+        .map((lesson) => ({
+          id: lesson.id,
+          title: lesson.title,
+          duration: lesson.duration ?? "",
+          summary: lesson.description ?? "",
+          videoUrl: lesson.video_url ?? "",
+          resources: lesson.resources ?? [],
+        })),
+    }));
+}
+
+/**
+ * Not-yet-purchased member view: the existing buy box (PaywallScreen) plus the
+ * course CONTENTS as a locked outline preview, so members can see what they buy.
+ */
+function PaywallWithCurriculum({ course }: { course: DbCourse }) {
+  const modules = toOutlineModules(course);
+  return (
+    <>
+      <PaywallScreen course={course} />
+      {modules.length > 0 ? (
+        <section className="pb-14">
+          <div className="container-shell">
+            <div className="mb-7 flex items-center gap-3">
+              <Layers aria-hidden className="h-5 w-5 text-gold-300" />
+              <h2 className="font-heading text-2xl uppercase tracking-gta text-cream">
+                Kursinhalte
+              </h2>
+              <span className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+            </div>
+            <CourseCurriculumOutline modules={modules} locked className="max-w-3xl" />
+            <p className="mt-5 max-w-3xl text-[13px] leading-relaxed text-cream/40">
+              Vorschau der Inhalte. Videos und Downloads werden nach dem Kauf freigeschaltet.
+            </p>
+          </div>
+        </section>
+      ) : null}
+    </>
+  );
+}
 
 /**
  * Turn stored `storage://` refs into playable/downloadable URLs for an entitled
@@ -126,7 +179,7 @@ export default async function DashboardCoursePage({
     }
     return (
       <AuthGate>
-        <PaywallScreen course={dbCourse} />
+        <PaywallWithCurriculum course={dbCourse} />
       </AuthGate>
     );
   }
@@ -168,7 +221,7 @@ export default async function DashboardCoursePage({
   // Static fallback always shows paywall (purchase check unavailable without Supabase env)
   return (
     <AuthGate>
-      <PaywallScreen course={fallbackCourse} />
+      <PaywallWithCurriculum course={fallbackCourse} />
     </AuthGate>
   );
 }

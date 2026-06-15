@@ -6,6 +6,7 @@ import { Button } from "@/components/button";
 import { CheckoutButton } from "@/components/checkout-button";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { CourseReviews } from "@/components/course-reviews";
+import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
 import { getPublicCourse } from "@/lib/courses";
 import { formatEuro } from "@/lib/utils";
 
@@ -97,26 +98,12 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           <div>
             <div className="mb-8 flex items-center gap-3">
               <PlayCircle aria-hidden className="h-6 w-6 text-gold-300" />
-              <h2 className="font-heading text-2xl text-white">Modulvorschau</h2>
+              <h2 className="font-heading text-2xl text-white">Kursinhalte</h2>
             </div>
-            <div className="grid gap-4">
-              {course.modules.map((module) => (
-                <div key={module.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
-                  <h3 className="font-semibold text-gold-100">{module.title}</h3>
-                  <div className="mt-3 grid gap-2">
-                    {module.lessons.map((lesson) => (
-                      <div key={lesson.id} className="flex items-center justify-between gap-4 text-sm text-white/40">
-                        <span>{lesson.title}</span>
-                        <span className="shrink-0">{lesson.duration}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <CourseCurriculumOutline modules={course.modules} locked />
             <div className="mt-5 flex items-start gap-3 rounded-2xl border border-gold-500/15 bg-gold-500/[0.07] p-4 text-sm leading-7 text-gold-100">
               <Lock aria-hidden className="mt-1 h-5 w-5 flex-none" />
-              Kursinhalte werden nach Login und Kauf im Dashboard geöffnet.
+              Vorschau der Inhalte. Nach dem Kauf schaltest du Videos und Downloads im Dashboard frei.
             </div>
           </div>
         </div>

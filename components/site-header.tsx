@@ -118,22 +118,14 @@ export function SiteHeader() {
 
             {/* Desktop CTA */}
             <div className="hidden items-center gap-3 lg:flex">
-              <Link
-                href={telegramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="focus-ring text-xs font-bold uppercase tracking-[0.12em] text-cream/50 transition-colors hover:text-cream"
-              >
-                Community
-              </Link>
               <CartButton />
               {isLoggedIn ? (
                 <>
                   <Link
-                    href="/db"
+                    href="/db/profil"
                     className="focus-ring text-xs font-bold uppercase tracking-[0.12em] text-cream/50 transition-colors hover:text-cream"
                   >
-                    Dashboard
+                    Mein Profil
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -228,11 +220,11 @@ export function SiteHeader() {
                       transition={{ delay: 0.4 }}
                     >
                       <Link
-                        href="/db"
+                        href="/db/profil"
                         className="block rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
                         onClick={() => setOpen(false)}
                       >
-                        Dashboard
+                        Mein Profil
                       </Link>
                     </motion.div>
                     <motion.button

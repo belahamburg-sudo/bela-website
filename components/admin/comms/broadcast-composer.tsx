@@ -15,6 +15,7 @@ import {
 import { Panel, KeyValue, EmptyState } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
 import { Modal } from "@/components/admin/modal";
+import { TemplateEditor } from "@/components/admin/comms/template-editor";
 import { useToast } from "@/components/admin/toast";
 import type { EmailTemplate } from "@/lib/email";
 import {
@@ -278,6 +279,7 @@ export function BroadcastComposer() {
             >
               Vorschau
             </AdminButton>
+            <TemplateEditor template={template} onSaved={() => router.refresh()} />
           </div>
         </div>
 
@@ -513,7 +515,8 @@ export function BroadcastComposer() {
               srcDoc={preview.html}
               title="E-Mail-Vorschau"
               sandbox=""
-              className="h-[60vh] w-full border-0"
+              className="h-[80vh] w-full border-0"
+              scrolling="yes"
             />
           </div>
         )}

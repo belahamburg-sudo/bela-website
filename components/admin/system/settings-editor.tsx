@@ -65,6 +65,58 @@ function Field({
   );
 }
 
+/**
+ * "Aktuell live"-Vorschau for a banner. Mirrors the slim gold bar from
+ * components/announcement-bar.tsx so the admin sees exactly what is shown on the
+ * site. When disabled (or empty) it falls back to a muted deactivated state.
+ */
+function BannerPreview({
+  enabled,
+  text,
+  href,
+}: {
+  enabled: boolean;
+  text: string;
+  href: string;
+}) {
+  const trimmedText = text.trim();
+  const trimmedHref = href.trim();
+  const isLive = enabled && trimmedText.length > 0;
+
+  return (
+    <div>
+      <span className="tac-label mb-1.5 block">Aktuell live</span>
+      {isLive ? (
+        <div className="overflow-hidden rounded-lg border border-white/10">
+          <div className="w-full bg-gradient-to-r from-gold-400 via-gold-300 to-gold-400">
+            <div className="flex items-center justify-center px-4 py-2">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="line-clamp-1 text-center text-xs font-semibold uppercase tracking-[0.12em] text-obsidian sm:text-[13px]">
+                  {trimmedText}
+                </span>
+                {trimmedHref && (
+                  <span
+                    aria-hidden
+                    className="text-xs font-bold text-obsidian"
+                  >
+                    &rarr;
+                  </span>
+                )}
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-dashed border-white/10 bg-obsidian/40 px-4 py-2.5 text-center">
+          <span className="text-xs text-cream/40">
+            Aktuell deaktiviert — wird nicht angezeigt
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** A switch-style toggle row used by the banner sections. */
 function Toggle({
   checked,
@@ -259,6 +311,11 @@ export function SettingsEditor({
             })
           }
         >
+          <BannerPreview
+            enabled={annEnabled}
+            text={annText}
+            href={annHref}
+          />
           <Toggle
             checked={annEnabled}
             onChange={setAnnEnabled}
@@ -294,6 +351,11 @@ export function SettingsEditor({
             })
           }
         >
+          <BannerPreview
+            enabled={promoEnabled}
+            text={promoText}
+            href={promoHref}
+          />
           <Toggle
             checked={promoEnabled}
             onChange={setPromoEnabled}

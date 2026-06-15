@@ -17,7 +17,7 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { AdminButton } from "@/components/admin/admin-button";
 import { Modal } from "@/components/admin/modal";
 import { useToast } from "@/components/admin/toast";
-import { formatEuro } from "@/lib/utils";
+import { formatEuro, absoluteUrl } from "@/lib/utils";
 import type { AdminAffiliateRow, AffiliateTier } from "@/lib/affiliate";
 import {
   updateAffiliate,
@@ -87,6 +87,12 @@ export function AffiliatesTable({
     if (!detail) return null;
     return rows.find((r) => r.userId === detail.userId) ?? detail;
   }, [detail, rows]);
+
+  const showPercent = rewardType === "percent_cash" || rewardType === "both";
+  const showFixed = rewardType === "fixed_cash" || rewardType === "both";
+  const affiliateLink = activeDetail?.code
+    ? absoluteUrl(`/signup?ref=${activeDetail.code}`)
+    : null;
 
   function openDetail(row: AdminAffiliateRow) {
     setDetail(row);
@@ -343,6 +349,14 @@ export function AffiliatesTable({
               </KeyValue>
             </div>
 
+            {affiliateLink && (
+              <KeyValue label="Affiliate-Link">
+                <span className="break-all font-mono text-xs text-gold-200">
+                  {affiliateLink}
+                </span>
+              </KeyValue>
+            )}
+
             {/* Reward config */}
             <div className="rounded-xl border border-white/10 bg-panel/40 p-4">
               <div className="mb-3 flex items-center gap-2">
@@ -351,15 +365,22 @@ export function AffiliatesTable({
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className="flex flex-col gap-1">
-                  <span className="tac-label">Provision (%)</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={cashPercent}
-                    onChange={(e) => setCashPercent(e.target.value)}
+                  <span className="tac-label">Belohnungs-Typ</span>
+                  <select
+                    value={rewardType}
+                    onChange={(e) => setRewardType(e.target.value)}
                     className={inputClass}
-                  />
+                  >
+                    <option value="percent_cash" className="bg-ink text-cream">
+                      Cash % pro Verkauf
+                    </option>
+                    <option value="fixed_cash" className="bg-ink text-cream">
+                      Fixbetrag pro Verkauf
+                    </option>
+                    <option value="both" className="bg-ink text-cream">
+                      Beides
+                    </option>
+                  </select>
                 </label>
                 <label className="flex flex-col gap-1">
                   <span className="tac-label">Eigenrabatt (%)</span>
@@ -372,32 +393,32 @@ export function AffiliatesTable({
                     className={inputClass}
                   />
                 </label>
-                <label className="flex flex-col gap-1">
-                  <span className="tac-label">Fix-Betrag (€)</span>
-                  <input
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={fixedCash}
-                    onChange={(e) => setFixedCash(e.target.value)}
-                    className={inputClass}
-                  />
-                </label>
-                <label className="flex flex-col gap-1">
-                  <span className="tac-label">Belohnungs-Typ</span>
-                  <select
-                    value={rewardType}
-                    onChange={(e) => setRewardType(e.target.value)}
-                    className={inputClass}
-                  >
-                    <option value="percent_cash" className="bg-ink text-cream">
-                      Prozent (Cash)
-                    </option>
-                    <option value="fixed_cash" className="bg-ink text-cream">
-                      Fixbetrag (Cash)
-                    </option>
-                  </select>
-                </label>
+                {showPercent && (
+                  <label className="flex flex-col gap-1">
+                    <span className="tac-label">Cash % pro Verkauf</span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={cashPercent}
+                      onChange={(e) => setCashPercent(e.target.value)}
+                      className={inputClass}
+                    />
+                  </label>
+                )}
+                {showFixed && (
+                  <label className="flex flex-col gap-1">
+                    <span className="tac-label">Fixbetrag pro Verkauf (€)</span>
+                    <input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      value={fixedCash}
+                      onChange={(e) => setFixedCash(e.target.value)}
+                      className={inputClass}
+                    />
+                  </label>
+                )}
                 <label className="flex flex-col gap-1">
                   <span className="tac-label">Tier</span>
                   <select

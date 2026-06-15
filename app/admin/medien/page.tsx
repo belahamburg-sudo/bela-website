@@ -1,8 +1,10 @@
 import { Image as ImageIcon, HardDrive, Film } from "lucide-react";
-import { PageHeader, StatCard } from "@/components/admin/ui";
+import { PageHeader, StatCard, Panel } from "@/components/admin/ui";
 import { listBucketRecursive, publicUrl, toStorageRef, BUCKETS } from "@/lib/storage";
 import { MediaUploader } from "@/components/admin/system/media-uploader";
 import { MediaGrid, type MediaItem } from "@/components/admin/system/media-grid";
+import { SiteImages, type SiteImageSlotView } from "@/components/admin/system/site-images";
+import { SITE_IMAGE_SLOTS, getSiteImages } from "@/lib/site-images";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +41,15 @@ export default async function MedienPage() {
   const totalBytes = items.reduce((sum, i) => sum + i.size, 0);
   const videoCount = items.filter((i) => isVideoName(i.name)).length;
 
+  // Effective URLs for the swappable website image slots (override or default).
+  const siteImageUrls = await getSiteImages();
+  const siteImageSlots: SiteImageSlotView[] = SITE_IMAGE_SLOTS.map((slot) => ({
+    key: slot.key,
+    label: slot.label,
+    defaultSrc: slot.defaultSrc,
+    url: siteImageUrls[slot.key] ?? slot.defaultSrc,
+  }));
+
   return (
     <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
       <PageHeader
@@ -51,6 +62,15 @@ export default async function MedienPage() {
         <StatCard label="Dateien" value={items.length} icon={ImageIcon} />
         <StatCard label="Videos" value={videoCount} icon={Film} />
         <StatCard label="Speicher" value={formatBytes(totalBytes)} icon={HardDrive} />
+      </div>
+
+      <div className="mt-8">
+        <Panel
+          title="Website-Bilder"
+          description="Bilder, die fest auf öffentlichen Seiten verbaut sind (z. B. Über mich). Ersetzen oder auf Original zurücksetzen."
+        >
+          <SiteImages slots={siteImageSlots} />
+        </Panel>
       </div>
 
       <div className="mt-6">

@@ -1,10 +1,14 @@
 "use server";
 
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, getAdminContext, logAudit } from "@/lib/admin";
 import { sendTemplateEmail, type EmailTemplate } from "@/lib/email";
+import {
+  getEffectiveTemplate,
+  getTemplateOverride,
+  overrideKey,
+  sendRawEmail,
+} from "@/lib/email-overrides";
 import type { Segment } from "./segments";
 
 type ActionResult = { ok: boolean; error?: string };
@@ -120,10 +124,13 @@ const PREVIEW_VARS: Record<string, string> = {
 
 const PREVIEW_PLACEHOLDER_RE = /\{\{\s*([\w.]+)\s*\}\}/g;
 
+const interpolatePreview = (input: string) =>
+  input.replace(PREVIEW_PLACEHOLDER_RE, (_m, key: string) => PREVIEW_VARS[key] ?? "");
+
 /**
- * Render a template to HTML for an in-panel preview. Mirrors how lib/email.ts
- * loads the template from supabase/email-templates and derives the subject from
- * the leading "Subject:" comment. Known placeholders get sample values; any
+ * Render a template to HTML for an in-panel preview. Uses the EFFECTIVE template
+ * (admin override if present, else the default file from supabase/email-templates)
+ * and derives the subject the same way. Known placeholders get sample values; any
  * unknown {{var}} is blanked (matching the real interpolation behaviour).
  */
 export async function previewTemplate(
@@ -132,30 +139,115 @@ export async function previewTemplate(
   const ctx = await getAdminContext();
   if (!ctx) return { ok: false, error: "Nicht autorisiert." };
 
-  let raw: string;
+  let content: { subject: string; html: string };
   try {
-    const templatePath = path.join(
-      process.cwd(),
-      "supabase",
-      "email-templates",
-      `${template}.html`
-    );
-    raw = await readFile(templatePath, "utf-8");
+    content = await getEffectiveTemplate(template);
   } catch {
     return { ok: false, error: "Vorlage nicht gefunden." };
   }
 
-  const subjectMatch = raw.match(/Subject:\s*(.+)/i);
-  const rawSubject = subjectMatch?.[1]?.trim() || "AI Goldmining";
-
-  const interpolate = (input: string) =>
-    input.replace(PREVIEW_PLACEHOLDER_RE, (_m, key: string) => PREVIEW_VARS[key] ?? "");
-
   return {
     ok: true,
-    html: interpolate(raw),
-    subject: interpolate(rawSubject),
+    html: interpolatePreview(content.html),
+    subject: interpolatePreview(content.subject),
   };
+}
+
+/**
+ * Return the EFFECTIVE template content for the editor: the admin override if
+ * present, else the default file content. `isOverridden` tells the UI whether a
+ * stored override is currently active (controls the "reset" affordance).
+ */
+export async function getTemplateForEdit(input: {
+  template: string;
+}): Promise<
+  | { ok: true; subject: string; html: string; isOverridden: boolean }
+  | { ok: false; error: string }
+> {
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert." };
+
+  try {
+    const override = await getTemplateOverride(input.template);
+    const content = override ?? (await getEffectiveTemplate(input.template));
+    return {
+      ok: true,
+      subject: content.subject,
+      html: content.html,
+      isOverridden: override !== null,
+    };
+  } catch {
+    return { ok: false, error: "Vorlage nicht gefunden." };
+  }
+}
+
+/**
+ * Save (upsert) an admin override for a template into site_settings under the
+ * key `email_tpl:<template>` with value { subject, html }. No DB migration.
+ */
+export async function saveTemplateOverride(input: {
+  template: string;
+  subject: string;
+  html: string;
+}): Promise<ActionResult> {
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert." };
+
+  const template = input.template?.trim();
+  if (!template) return { ok: false, error: "Keine Vorlage angegeben." };
+
+  const html = input.html ?? "";
+  if (!html.trim()) return { ok: false, error: "Der Inhalt darf nicht leer sein." };
+
+  const key = overrideKey(template);
+  const value = { subject: (input.subject ?? "").trim(), html };
+
+  const { error: dbError } = await ctx.supabase
+    .from("site_settings")
+    .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+
+  if (dbError) return { ok: false, error: dbError.message };
+
+  await logAudit({
+    actorEmail: ctx.user.email,
+    action: "email.template_override_saved",
+    entity: "site_settings",
+    entityId: key,
+    meta: { template },
+  });
+
+  revalidatePath("/admin/emails");
+  return { ok: true };
+}
+
+/** Delete a template override row, restoring the default file-based content. */
+export async function resetTemplateOverride(input: {
+  template: string;
+}): Promise<ActionResult> {
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert." };
+
+  const template = input.template?.trim();
+  if (!template) return { ok: false, error: "Keine Vorlage angegeben." };
+
+  const key = overrideKey(template);
+  const { error: dbError } = await ctx.supabase
+    .from("site_settings")
+    .delete()
+    .eq("key", key);
+
+  if (dbError) return { ok: false, error: dbError.message };
+
+  await logAudit({
+    actorEmail: ctx.user.email,
+    action: "email.template_override_reset",
+    entity: "site_settings",
+    entityId: key,
+    meta: { template },
+  });
+
+  revalidatePath("/admin/emails");
+  return { ok: true };
 }
 
 /** Send a single test e-mail of the chosen template to the admin themselves. */
@@ -199,12 +291,21 @@ export async function sendToOne(input: {
   const to = input.email?.trim().toLowerCase();
   if (!to) return { ok: false, error: "Keine E-Mail-Adresse." };
 
-  const res = await sendTemplateEmail({
-    template: input.template,
-    to,
-    subject: input.subject?.trim() || undefined,
-    vars: { email: to, name: input.name?.trim() || undefined },
-  });
+  const vars = { email: to, name: input.name?.trim() || undefined };
+  const override = await getTemplateOverride(input.template);
+  const res = override
+    ? await sendRawEmail({
+        to,
+        subject: input.subject?.trim() || override.subject,
+        html: override.html,
+        vars,
+      })
+    : await sendTemplateEmail({
+        template: input.template,
+        to,
+        subject: input.subject?.trim() || undefined,
+        vars,
+      });
 
   if (!res.ok) return { ok: false, error: res.error ?? "Versand fehlgeschlagen" };
 
@@ -285,16 +386,27 @@ export async function sendBroadcast(input: {
 
   const subject = input.subject?.trim() || null;
 
+  // Resolve any admin override once; reuse it for every recipient.
+  const override = await getTemplateOverride(input.template);
+
   let success = 0;
   let failed = 0;
   for (const recipient of recipients) {
     try {
-      const res = await sendTemplateEmail({
-        template: input.template,
-        to: recipient.email,
-        subject: subject ?? undefined,
-        vars: { email: recipient.email, name: recipient.name || undefined },
-      });
+      const vars = { email: recipient.email, name: recipient.name || undefined };
+      const res = override
+        ? await sendRawEmail({
+            to: recipient.email,
+            subject: subject ?? override.subject,
+            html: override.html,
+            vars,
+          })
+        : await sendTemplateEmail({
+            template: input.template,
+            to: recipient.email,
+            subject: subject ?? undefined,
+            vars,
+          });
       if (res.ok) success += 1;
       else failed += 1;
     } catch {
