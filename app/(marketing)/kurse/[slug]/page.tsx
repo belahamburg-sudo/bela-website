@@ -4,10 +4,12 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Lock, PlayCircle } from "lucide-react";
 import { CheckoutButton } from "@/components/checkout-button";
 import { AddToCartButton } from "@/components/add-to-cart-button";
+import { Button } from "@/components/button";
 import { CourseLevelBadge } from "@/components/course-level-badge";
 import { CourseReviews } from "@/components/course-reviews";
 import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
 import { getPublicCourse, getPublicCourses } from "@/lib/courses";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { parseIncludeLine } from "@/lib/course-includes";
 import { formatEuro } from "@/lib/utils";
 import { Boxes } from "lucide-react";
@@ -35,6 +37,31 @@ export default async function CourseDetailPage({
   if (!course) notFound();
 
   const autoBuy = buy === "1";
+
+  // Does the signed-in user already own this course? (paid purchase) — if so we
+  // still show this preview page (incl. reviews) but swap the buy CTAs for a
+  // link straight into the dashboard player.
+  let owned = false;
+  const supabase = await getSupabaseServerClient();
+  if (supabase) {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { data: purchase } = await supabase
+          .from("purchases")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("course_slug", slug)
+          .eq("status", "paid")
+          .maybeSingle();
+        owned = Boolean(purchase);
+      }
+    } catch {
+      owned = false;
+    }
+  }
 
   // Resolve bundled/linked courses (slugs → titles) for the "included" display.
   const bundledSlugs = course.bundledCourses ?? [];
@@ -108,18 +135,33 @@ export default async function CourseDetailPage({
               </div>
             </div>
             <div className="mt-8 space-y-3">
-              <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" autoBuy={autoBuy} />
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <AddToCartButton
-                  course={{
-                    slug: course.slug,
-                    title: course.title,
-                    priceCents: course.priceCents,
-                    image: course.image,
-                    format: course.format,
-                  }}
-                />
-              </div>
+              {owned ? (
+                <>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/[0.06] px-4 py-1.5 text-sm font-semibold text-emerald-200">
+                    <CheckCircle2 aria-hidden className="h-4 w-4" />
+                    Du besitzt diesen Kurs bereits
+                  </span>
+                  <Button href={`/db/kurse/${course.slug}`} size="lg" className="w-full sm:w-auto">
+                    <PlayCircle aria-hidden className="h-5 w-5" />
+                    Jetzt im Dashboard ansehen
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" autoBuy={autoBuy} />
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <AddToCartButton
+                      course={{
+                        slug: course.slug,
+                        title: course.title,
+                        priceCents: course.priceCents,
+                        image: course.image,
+                        format: course.format,
+                      }}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <Image
@@ -173,10 +215,17 @@ export default async function CourseDetailPage({
               <h2 className="font-heading text-2xl text-white">Kursinhalte</h2>
             </div>
             <CourseCurriculumOutline modules={course.modules} locked />
-            <div className="mt-5 flex items-start gap-3 rounded-2xl border border-gold-500/15 bg-gold-500/[0.07] p-4 text-sm leading-7 text-gold-100">
-              <Lock aria-hidden className="mt-1 h-5 w-5 flex-none" />
-              Vorschau der Inhalte. Nach dem Kauf schaltest du Videos und Downloads im Dashboard frei.
-            </div>
+            {owned ? (
+              <div className="mt-5 flex items-start gap-3 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4 text-sm leading-7 text-emerald-100">
+                <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none" />
+                Du hast diesen Kurs freigeschaltet — Videos und Downloads findest du im Dashboard.
+              </div>
+            ) : (
+              <div className="mt-5 flex items-start gap-3 rounded-2xl border border-gold-500/15 bg-gold-500/[0.07] p-4 text-sm leading-7 text-gold-100">
+                <Lock aria-hidden className="mt-1 h-5 w-5 flex-none" />
+                Vorschau der Inhalte. Nach dem Kauf schaltest du Videos und Downloads im Dashboard frei.
+              </div>
+            )}
           </div>
         </div>
       </section>
