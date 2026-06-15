@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getAdminContext, logAudit } from "@/lib/admin";
 import { createPayoutTransfer } from "@/lib/stripe-connect";
+import { getAffiliateAvailableCents } from "@/lib/affiliate";
 import { absoluteUrl } from "@/lib/utils";
 
 type ActionResult = { ok: boolean; error?: string };
@@ -255,17 +256,19 @@ export async function createPayout(input: {
   if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
   const { user, supabase } = ctx;
 
-  // Load current balance + stripe account.
+  // Available balance is DERIVED from real earnings (approved referrals) minus
+  // payouts already made/pending — not a stored counter that nothing credits.
+  const available = await getAffiliateAvailableCents(input.userId);
+
   const { data: aff, error: loadError } = await supabase
     .from("affiliates")
-    .select("balance_cents, stripe_account_id")
+    .select("stripe_account_id")
     .eq("user_id", input.userId)
     .maybeSingle();
   if (loadError) return { ok: false, error: loadError.message };
   if (!aff) return { ok: false, error: "Affiliate nicht gefunden." };
 
-  const balance = (aff.balance_cents as number) ?? 0;
-  if (input.amountCents > balance) {
+  if (input.amountCents > available) {
     return { ok: false, error: "Betrag übersteigt das verfügbare Guthaben." };
   }
 
@@ -299,12 +302,8 @@ export async function createPayout(input: {
     .single();
   if (insertError) return { ok: false, error: insertError.message };
 
-  // Decrement the balance.
-  const { error: balError } = await supabase
-    .from("affiliates")
-    .update({ balance_cents: balance - input.amountCents, updated_at: now })
-    .eq("user_id", input.userId);
-  if (balError) return { ok: false, error: balError.message };
+  // No manual balance bookkeeping: the recorded payout row above reduces the
+  // derived available balance automatically (earned − payouts).
 
   await logAudit({
     actorEmail: user.email,

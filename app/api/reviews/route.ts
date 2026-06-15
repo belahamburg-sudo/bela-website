@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 type ReviewRow = {
   id: string;
@@ -71,6 +72,14 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.json({ message: "Bitte melde dich an, um zu bewerten." }, { status: 401 });
   }
+
+  const rl = await checkRateLimit({
+    bucket: "reviews",
+    identifier: user.id,
+    limit: 10,
+    windowSeconds: 3600,
+  });
+  if (!rl.allowed) return rateLimitResponse(rl.retryAfterSeconds ?? 3600);
 
   // Only buyers may review (verified reviews).
   const { data: purchase } = await supabase

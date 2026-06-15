@@ -1,4 +1,23 @@
+import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
+
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com"
+).replace(/\/$/, "");
+
+export const metadata: Metadata = {
+  title: "Income Disclaimer: Keine Einkommensgarantie · AI Goldmining",
+  description:
+    "Ehrlichkeit zuerst: AI Goldmining gibt keine Einkommensgarantie. Alle Zahlen sind Zielrahmen, keine Versprechen. Deine Ergebnisse variieren stark.",
+  openGraph: {
+    title: "Income Disclaimer: Keine Einkommensgarantie · AI Goldmining",
+    description:
+      "Ehrlichkeit zuerst: AI Goldmining gibt keine Einkommensgarantie. Alle Zahlen sind Zielrahmen, keine Versprechen. Deine Ergebnisse variieren stark.",
+    url: `${BASE_URL}/income-disclaimer`,
+    type: "website",
+  },
+  alternates: { canonical: `${BASE_URL}/income-disclaimer` },
+};
 
 export default function IncomeDisclaimerPage() {
   return (

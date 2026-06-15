@@ -36,426 +36,110 @@ export type Course = {
   }>;
 };
 
-const sharedResources = [
-  {
-    label: "Arbeitsblatt zur Lektion",
-    type: "PDF" as const,
-    href: "/downloads/demo-workbook.pdf"
-  },
-  {
-    label: "Prompt-Sammlung",
-    type: "Prompt" as const,
-    href: "/downloads/demo-prompts.txt"
-  }
-];
-
+/**
+ * Static catalog. This is ONLY a safety FALLBACK: the live site reads courses
+ * DB-first via lib/courses.ts and only falls back here if Supabase is entirely
+ * unreachable. It mirrors the real, active catalog (metadata only — modules and
+ * lessons live in the DB) so a DB outage never surfaces stale or removed
+ * products. Keep it in sync with the active courses in Supabase.
+ */
 export const courses: Course[] = [
   {
-    slug: "ai-goldmining-starter",
-    format: "video",
-    title: "AI Goldmining Starter",
-    tagline: "Dein erstes digitales Produkt mit AI",
+    slug: "51-ai-business-ideen",
+    title: "51 AI Business Ideen",
+    tagline: "Die Karte zum Goldfeld",
     description:
-      "Von der vagen Idee zum klaren Angebot. Kein Theorie-Marathon: du gehst mit einem verkaufsfertigen Produkt raus.",
-    priceCents: 2900,
-    image: "/assets/generated/course-starter.svg",
+      "Einundfünfzig reale Wege, mit Künstlicher Intelligenz Geld zu verdienen. Jede Idee mit Verdienst-Range, Erfahrungslevel, Kategorie und Zukunftsprognose. Du sollst nicht alles machen — du sollst eine wählen.",
+    priceCents: 1900,
+    image:
+      "https://hshkumoipyfocqnhqbql.supabase.co/storage/v1/object/public/media/courses/51-ai-business-ideen/cover.jpg",
     level: "Start",
-    audience: "Einsteiger ohne eigenes Business",
-    outcome:
-      "Produktidee, Struktur, Name, Nutzenversprechen und erste Verkaufsseite. Alles real, alles deins.",
-    featured: true,
-    includes: [
-      "Produktideen-Framework",
-      "AI-Prompt-System für Produktstruktur",
-      "Verkaufsseiten-Checkliste",
-      "Starter-Workbooks als PDF"
-    ],
-    modules: [
-      {
-        id: "m1",
-        title: "Von Idee zu Goldmine",
-        lessons: [
-          {
-            id: "l1",
-            title: "Warum digitale Produkte der schlankste Einstieg sind",
-            duration: "12 Min.",
-            summary:
-              "Der Vergleich zu Dropshipping, Agenturen und SaaS: und warum digitale Produkte die höchste Marge pro eingesetzter Stunde haben.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          },
-          {
-            id: "l2",
-            title: "Deine erste Produktidee finden",
-            duration: "18 Min.",
-            summary:
-              "Skills × Interessen × Zielgruppenproblem. Das Mapping-Framework, mit dem du aus drei Rohinputs eine kaufbare Idee ableitest.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      },
-      {
-        id: "m2",
-        title: "Packaging mit AI",
-        lessons: [
-          {
-            id: "l3",
-            title: "Name, Promise und Inhaltsstruktur",
-            duration: "21 Min.",
-            summary:
-              "Aus rohen Gedanken wird ein Angebot: Titel, Ergebnis, Module, Kaufmotivation. Alles in einem Prompt-Loop.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      }
-    ]
-  },
-  {
-    slug: "template-goldmine",
     format: "pdf",
-    title: "Template Goldmine",
-    tagline: "Vorlagen bauen und verkaufen",
-    description:
-      "Notion, Canva, Sheets, Framer. Templates, die einen echten Workflow lösen: keine schicken Dateien ohne Zweck.",
-    priceCents: 3900,
-    image: "/assets/generated/course-template.svg",
-    level: "Aufbau",
-    audience: "Creator und Umsetzer mit ersten Skills",
+    audience: "Einsteiger, die eine konkrete, profitable AI-Idee suchen",
     outcome:
-      "Template-Konzept, klare Produktlogik und Store-ready Beschreibung in deinem Portfolio.",
+      "51 geprüfte AI-Geschäftsideen mit Verdienst-Range, Level und Zukunftsprognose — als sofort nutzbarer PDF-Katalog.",
+    featured: true,
+    sortOrder: 0,
     includes: [
-      "Template-Ideenmatrix",
-      "Canva/Notion/Sheets Produktlogik",
-      "AI-Copy-Prompts",
-      "Quality-Check vor Launch"
+      "51 reale AI-Geschäftsideen",
+      "Verdienst-Range pro Idee",
+      "Erfahrungslevel & Kategorie-Tag",
+      "Zukunftsprognose pro Markt",
     ],
-    modules: [
-      {
-        id: "m1",
-        title: "Template-Produkt bauen",
-        lessons: [
-          {
-            id: "l1",
-            title: "Was ein Template kaufbar macht",
-            duration: "15 Min.",
-            summary:
-              "Unterschied zwischen hübscher Datei und echtem Prozessgewinn. Käufer bezahlen für gesparte Stunden, nicht für Ästhetik allein.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          },
-          {
-            id: "l2",
-            title: "Aus einem Workflow ein Produkt machen",
-            duration: "24 Min.",
-            summary:
-              "Wiederholbare Abläufe zerlegen und in eine Template-Struktur gießen, die auch ohne dich funktioniert.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      }
-    ]
+    bundledCourses: ["stan-store-masterclass"],
+    modules: [],
   },
   {
-    slug: "mini-kurs-maschine",
-    format: "video",
-    title: "Mini-Kurs Maschine",
-    tagline: "Kursidee bis Verkaufsseite",
+    slug: "stan-store-masterclass",
+    title: "Stan Store Masterclass",
+    tagline: "Dein Stan Store, der verkauft",
     description:
-      "Ein schlanker Kurs mit einem klaren Ergebnis: nicht 100 Lektionen Content-Friedhof.",
+      "Von Setup bis Verkauf: wie du deinen Stan Store sauber aufbaust, Produkte und Checkout einrichtest, das Design auf Conversion trimmst und die Produktübergabe automatisierst.",
     priceCents: 4900,
-    image: "/assets/generated/course-minikurs.svg",
+    image:
+      "https://hshkumoipyfocqnhqbql.supabase.co/storage/v1/object/public/media/courses/stan-store-masterclass/cover.png",
     level: "System",
-    audience: "Menschen mit Wissen, das produktisiert werden soll",
-    outcome:
-      "Kurskonzept mit Modulen, Lektionen, Ressourcen und Verkaufsargumenten in einem kohärenten Angebot.",
-    includes: [
-      "Mini-Kurs-Struktur",
-      "Lektionsskript mit AI",
-      "Bonus- und Workbook-System",
-      "Salespage-Rohfassung"
-    ],
-    modules: [
-      {
-        id: "m1",
-        title: "Der schlanke Kurs",
-        lessons: [
-          {
-            id: "l1",
-            title: "Ein Ergebnis, nicht 100 Lektionen",
-            duration: "17 Min.",
-            summary:
-              "Fokus schlägt Umfang. Wie du das eine Ergebnis definierst und alles entfernst, was den Kauf blockiert.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          },
-          {
-            id: "l2",
-            title: "Module und Skripte mit AI bauen",
-            duration: "27 Min.",
-            summary:
-              "AI als Strukturhilfe: nicht als Content-Generator. Der Prompt-Workflow vom Outline bis zur fertigen Lektion.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      }
-    ]
-  },
-  {
-    slug: "funnel-store-system",
-    format: "video",
-    title: "Funnel & Store System",
-    tagline: "Automatisiert verkaufen",
-    description:
-      "Store, Lead-Magnet, Webinar und Community als ein kohärentes System, das ohne dich arbeitet.",
-    priceCents: 5900,
-    image: "/assets/generated/course-funnel.svg",
-    level: "System",
-    audience: "Alle, die nicht nur bauen, sondern verkaufen wollen",
-    outcome:
-      "Eine Funnel-Map: du weißt, welche Seite welchen Job macht und wo die Metriken hängen.",
-    includes: [
-      "Funnel-Map",
-      "Lead-Formel",
-      "Checkout-Checkliste",
-      "E-Mail-Sequenz für den Start"
-    ],
-    modules: [
-      {
-        id: "m1",
-        title: "Vom Klick zum Kauf",
-        lessons: [
-          {
-            id: "l1",
-            title: "Die 5 Seiten im System",
-            duration: "20 Min.",
-            summary:
-              "Landingpage, Webinar, Store, Kursdetailseite, Dashboard: jede mit einem einzigen klaren Job.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          },
-          {
-            id: "l2",
-            title: "Newsletter und Community als Verkaufsmotor",
-            duration: "22 Min.",
-            summary:
-              "Vertrauen vor Verkauf. Der Follow-up-Prozess ohne aggressive Push-Mechanik.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      }
-    ]
-  },
-  {
-    slug: "ai-content-factory",
-    format: "video",
-    title: "AI Content Factory",
-    tagline: "Content-System mit AI aufbauen",
-    description:
-      "Von einer Idee zu 30 Tagen geplanten Content: ohne täglich neu nachdenken zu müssen. Dein AI-getriebenes Content-System.",
-    priceCents: 3400,
-    image: "/assets/generated/course-starter.svg",
-    level: "Aufbau",
-    audience: "Creator, die konsistent publizieren wollen",
-    outcome:
-      "Ein vollständiges Content-System: Themenplanung, Formate, Distribution und AI-Prompts für 30 Tage.",
-    includes: [
-      "Content-Planung Framework",
-      "AI-Prompt-System für Texte und Skripte",
-      "Redaktionskalender Vorlage",
-      "Multi-Format-Recycling-System"
-    ],
-    modules: [
-      {
-        id: "m1",
-        title: "Das Content-System bauen",
-        lessons: [
-          {
-            id: "l1",
-            title: "Warum die meisten Content-Pläne scheitern",
-            duration: "14 Min.",
-            summary:
-              "Der Unterschied zwischen einem Content-Plan und einem Content-System. Systeme produzieren sich halb selbst.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          },
-          {
-            id: "l2",
-            title: "Themen-Mining mit AI",
-            duration: "19 Min.",
-            summary:
-              "Wie du aus deinem Wissen 90 Themen in 20 Minuten ableitest: und welche davon wirklich geklickt werden.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      },
-      {
-        id: "m2",
-        title: "Produktion und Recycling",
-        lessons: [
-          {
-            id: "l3",
-            title: "Ein Asset, fünf Formate",
-            duration: "22 Min.",
-            summary:
-              "Newsletter → LinkedIn Post → Reel → Thread → Carousel. Der Multiplikationsworkflow mit einem AI-Prompt-Loop.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      }
-    ]
-  },
-  {
-    slug: "prompt-engineering-pro",
     format: "pdf",
-    title: "Prompt Engineering Pro",
-    tagline: "AI wirklich steuern lernen",
-    description:
-      "Nicht die nächste Prompt-Sammlung: sondern das mentale Modell dahinter. Wie du AI-Outputs reproduzierbar gut machst.",
-    priceCents: 2900,
-    image: "/assets/generated/course-minikurs.svg",
-    level: "Start",
-    audience: "Alle, die mit AI arbeiten und besser werden wollen",
+    audience:
+      "Creator, die einen Store zum Verkaufen digitaler Produkte aufbauen wollen",
     outcome:
-      "Ein eigenes Prompt-Framework, das auf deine Use Cases passt: übertragbar auf jedes AI-Tool.",
-    includes: [
-      "Prompt-Struktur Mastersheet",
-      "50 bewährte Basis-Prompts",
-      "Role-Prompting-System",
-      "Output-Debugging-Guide"
-    ],
-    modules: [
-      {
-        id: "m1",
-        title: "Wie AI wirklich funktioniert",
-        lessons: [
-          {
-            id: "l1",
-            title: "Das mentale Modell hinter Prompts",
-            duration: "16 Min.",
-            summary:
-              "AI ist kein Suchmaschinen-Ersatz. Das richtige Framing macht den Unterschied zwischen mittelmäßigem und exzellentem Output.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          },
-          {
-            id: "l2",
-            title: "Struktur, Kontext und Constraints",
-            duration: "21 Min.",
-            summary:
-              "Die drei Hebel jedes starken Prompts: und warum die meisten nur einen benutzen.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      }
-    ]
-  },
-  {
-    slug: "digital-product-launch",
-    format: "pdf",
-    title: "Digital Product Launch",
-    tagline: "Launch-System in 14 Tagen",
-    description:
-      "Kein Launch ohne Plan. Die 14-Tage-Launch-Sequenz: Warm-up, Presale, Launch, Follow-up: alles strukturiert mit AI.",
-    priceCents: 4400,
-    image: "/assets/generated/course-funnel.svg",
-    level: "System",
-    audience: "Alle, die ein fertiges Produkt endlich launchen wollen",
-    outcome:
-      "Eine vollständige Launch-Sequenz in 14 Tagen: mit AI-generierten Texten für jeden Schritt.",
-    includes: [
-      "14-Tage Launch-Kalender",
-      "E-Mail-Sequenz (7 Mails)",
-      "Social-Media-Launch-Texte",
-      "Checkout-Optimierungs-Checkliste"
-    ],
-    modules: [
-      {
-        id: "m1",
-        title: "Launch-Vorbereitung",
-        lessons: [
-          {
-            id: "l1",
-            title: "Die Psychologie eines erfolgreichen Launch",
-            duration: "18 Min.",
-            summary:
-              "Warum Launches scheitern: und wie du Dringlichkeit aufbaust, ohne unecht zu wirken.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          },
-          {
-            id: "l2",
-            title: "Presale und Warm-up aufbauen",
-            duration: "25 Min.",
-            summary:
-              "Die ersten 7 Tage entscheiden. Der Warm-up-Prozess, der echtes Interesse erzeugt bevor das Produkt live geht.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      },
-      {
-        id: "m2",
-        title: "Launch und Follow-up",
-        lessons: [
-          {
-            id: "l3",
-            title: "Launch-Tag: Was wirklich passiert",
-            duration: "20 Min.",
-            summary:
-              "Stunde für Stunde am Launch-Tag: worauf du achtest, was du sendest und wie du auf Einwände reagierst.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      }
-    ]
-  },
-  {
-    slug: "ai-goldmining-starter-pack",
-    format: "video",
-    title: "AI Goldmining Starter Pack",
-    tagline: "Alle Startkurse im Bundle",
-    description:
-      "Der kompakte Komplettstart: Produktidee, Template, Mini-Kurs und Funnel-System als eine zusammenhängende Roadmap.",
-    priceCents: 9700,
-    image: "/assets/generated/course-bundle.svg",
-    level: "Bundle",
-    audience: "Ernsthafte Starter, die direkt das ganze System sehen wollen",
-    outcome:
-      "Die komplette Produktleiter: von Idee bis Verkaufsprozess in einer Umgebung.",
+      "Ein fertig eingerichteter, verkaufsoptimierter Stan Store mit Produkten, Checkout und automatischer Auslieferung.",
     featured: true,
+    sortOrder: 40,
     includes: [
-      "Alle vier Mini-Kurse",
-      "Bundle-Workbook",
-      "90-Tage Umsetzungsplan",
-      "Launch-Checkliste"
+      "Stan Store Foundations",
+      "Produkte & Checkout aufsetzen",
+      "Storedesign & Promotion",
+      "Produktübergabe & Speicherung",
     ],
-    modules: [
-      {
-        id: "m1",
-        title: "Starter Pack Roadmap",
-        lessons: [
-          {
-            id: "l1",
-            title: "Deine 90-Tage AI-Goldmining-Roadmap",
-            duration: "31 Min.",
-            summary:
-              "Kurs-Reihenfolge, Meilensteine, was in den ersten 30, 60 und 90 Tagen gebaut wird.",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            resources: sharedResources
-          }
-        ]
-      }
-    ]
-  }
+    modules: [],
+  },
+  {
+    slug: "rechtliches-digitale-produkte",
+    title: "Rechtliches für digitale Produkte",
+    tagline: "Rechtssicher verkaufen",
+    description:
+      "Die rechtlichen Grundlagen für den Verkauf digitaler Produkte: Widerruf, Disclaimer, AGB, Impressum und Datenschutz. Mit fertigen Vorlagen zum Anpassen.",
+    priceCents: 2900,
+    image:
+      "https://hshkumoipyfocqnhqbql.supabase.co/storage/v1/object/public/media/courses/rechtliches-digitale-produkte/cover.png",
+    level: "Start",
+    format: "pdf",
+    audience: "Alle, die digitale Produkte rechtssicher verkaufen wollen",
+    outcome:
+      "Rechtssicheres Setup mit fertigen Vorlagen für AGB, Impressum und Datenschutz.",
+    featured: false,
+    sortOrder: 41,
+    includes: [
+      "Grundlagen Recht & Widerruf",
+      "Disclaimer-Vorlagen",
+      "AGB-, Impressum- & Datenschutz-Vorlagen",
+    ],
+    modules: [],
+  },
+  {
+    slug: "stop-care-want-more",
+    title: "Stop Care Want More",
+    tagline: "Das Content-Playbook",
+    description:
+      "Das Playbook für Content, der zieht: weniger gefallen wollen, mehr Wirkung. Hooks, Haltung und ein wiederholbarer Prozess für Content, der verkauft.",
+    priceCents: 2900,
+    image:
+      "https://hshkumoipyfocqnhqbql.supabase.co/storage/v1/object/public/media/courses/stop-care-want-more/cover.png",
+    level: "Aufbau",
+    format: "pdf",
+    audience: "Creator, die mit Content sichtbar werden und verkaufen wollen",
+    outcome:
+      "Ein klares Content-Playbook mit Hooks, Haltung und wiederholbarem Prozess.",
+    featured: false,
+    sortOrder: 60,
+    includes: [
+      "Content-Playbook (PDF)",
+      "Hooks & Haltung",
+      "Wiederholbarer Content-Prozess",
+    ],
+    modules: [],
+  },
 ];
 
 export const featuredCourses = courses.filter((course) => course.featured);

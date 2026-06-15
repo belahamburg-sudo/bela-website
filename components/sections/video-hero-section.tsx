@@ -257,10 +257,11 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
             <video
               ref={videoRef}
               src="/assets/ai-goldmining.mp4"
+              poster="/assets/hero-poster.jpg"
               className="absolute inset-0 w-full h-full object-cover"
               playsInline
               muted
-              preload="metadata"
+              preload="none"
               onClick={() => started && handlePlayPause()}
               onTimeUpdate={handleTimeUpdate}
               onProgress={handleProgress}

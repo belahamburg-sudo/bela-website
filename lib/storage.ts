@@ -236,7 +236,16 @@ export function buildObjectPath(prefix: string, filename: string): string {
     .replace(/[^a-z0-9.\-_]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
+  // Sanitize the (client-supplied) prefix too: keep folder slashes but drop any
+  // parent-traversal / disallowed chars so an object can't be written outside
+  // its intended <slug>/… folder.
+  const safePrefix = prefix
+    .toLowerCase()
+    .replace(/\.\.+/g, "")
+    .replace(/[^a-z0-9/_-]+/g, "-")
+    .replace(/\/{2,}/g, "/")
+    .replace(/^\/+|\/+$/g, "");
   const stamp = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 8);
-  return `${prefix.replace(/\/$/, "")}/${stamp}-${rand}-${clean}`;
+  return `${safePrefix}/${stamp}-${rand}-${clean}`;
 }

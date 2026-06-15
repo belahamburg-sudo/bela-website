@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getTelegramSubscription } from "@/lib/telegram";
 import { buildTelegramBotLink, isTelegramBotConfigured } from "@/lib/telegram-bot";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function GET() {
   if (!isTelegramBotConfigured()) {
@@ -20,6 +21,14 @@ export async function GET() {
   if (!user) {
     return NextResponse.json({ message: "Bitte einloggen." }, { status: 401 });
   }
+
+  const rl = await checkRateLimit({
+    bucket: "telegram-link",
+    identifier: user.id,
+    limit: 30,
+    windowSeconds: 900,
+  });
+  if (!rl.allowed) return rateLimitResponse(rl.retryAfterSeconds ?? 900);
 
   const sub = await getTelegramSubscription(supabase, user.id);
   if (!sub?.active) {

@@ -177,6 +177,35 @@ export async function getAffiliateStats(userId: string): Promise<AffiliateStats>
 }
 
 /**
+ * Withdrawable cents for an affiliate, derived from the source of truth:
+ * approved/paid referral commissions minus payouts already made or pending.
+ * This is what payout requests gate on (the stored `balance_cents` column is no
+ * longer authoritative — earnings live in the `referrals` table).
+ */
+export async function getAffiliateAvailableCents(userId: string): Promise<number> {
+  const admin = getSupabaseAdminClient();
+  if (!admin || !userId) return 0;
+  try {
+    const [refsRes, paysRes] = await Promise.all([
+      admin.from("referrals").select("commission_cents, status").eq("referrer_user_id", userId),
+      admin
+        .from("affiliate_payouts")
+        .select("amount_cents, status")
+        .eq("affiliate_user_id", userId),
+    ]);
+    const earned = ((refsRes.data ?? []) as { commission_cents: number | null; status: string | null }[])
+      .filter((r) => r.status === "approved" || r.status === "paid")
+      .reduce((s, r) => s + (r.commission_cents ?? 0), 0);
+    const reserved = ((paysRes.data ?? []) as { amount_cents: number | null; status: string | null }[])
+      .filter((p) => p.status !== "rejected" && p.status !== "failed")
+      .reduce((s, p) => s + (p.amount_cents ?? 0), 0);
+    return Math.max(0, earned - reserved);
+  } catch {
+    return 0;
+  }
+}
+
+/**
  * Who signed up via this affiliate's link/code. Reads `referrals` for the
  * affiliate, then joins `profiles` (by referred_user_id) for name/email.
  * Tolerates missing tables/columns by returning [].
@@ -286,12 +315,20 @@ export async function listAffiliatesAdmin(): Promise<AdminAffiliateRow[]> {
     }
 
     const rows = await Promise.all(
-      affiliates.map(async (a) => ({
-        ...a,
-        email: byId.get(a.userId)?.email ?? null,
-        fullName: byId.get(a.userId)?.full_name ?? null,
-        stats: await getAffiliateStats(a.userId),
-      }))
+      affiliates.map(async (a) => {
+        const [stats, availableCents] = await Promise.all([
+          getAffiliateStats(a.userId),
+          getAffiliateAvailableCents(a.userId),
+        ]);
+        return {
+          ...a,
+          // balanceCents is derived (earned − paid out), not the stored counter.
+          balanceCents: availableCents,
+          email: byId.get(a.userId)?.email ?? null,
+          fullName: byId.get(a.userId)?.full_name ?? null,
+          stats,
+        };
+      })
     );
     return rows;
   } catch {

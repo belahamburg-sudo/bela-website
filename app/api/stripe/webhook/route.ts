@@ -87,15 +87,20 @@ async function recordReferral(
   const amountTotal = session.amount_total ?? 0;
   const commissionCents = Math.round((amountTotal * (codeRow.commission_percent ?? 20)) / 100);
 
-  await supabase.from("referrals").insert({
+  // Record as approved: the referral is tied to a confirmed paid purchase, so it
+  // counts toward the affiliate's withdrawable earnings immediately. A unique
+  // index on purchase_id makes a replayed/concurrent webhook a no-op (the error
+  // is logged, never thrown, so the rest of the handler continues).
+  const { error: refErr } = await supabase.from("referrals").insert({
     code,
     referrer_user_id: codeRow.user_id,
     referred_user_id: referredUserId,
     purchase_id: purchaseId,
     amount_total: amountTotal,
     commission_cents: commissionCents,
-    status: "pending",
+    status: "approved",
   });
+  if (refErr) console.error("recordReferral insert skipped:", refErr.message);
 }
 
 async function handleCoursePurchase(
@@ -107,6 +112,12 @@ async function handleCoursePurchase(
     .map((s) => s.trim())
     .filter(Boolean);
   if (slugs.length === 0) return;
+
+  // Don't grant access / credit referrals for sessions that aren't actually paid
+  // (e.g. async/delayed payment methods that complete as 'unpaid'). A 100%-off
+  // coupon completes as 'no_payment_required' and stays valid, so only reject
+  // 'unpaid'.
+  if (session.payment_status === "unpaid") return;
 
   // Idempotency: if this session's purchases already exist, skip the email +
   // referral on webhook retries (the upsert itself stays safe either way).

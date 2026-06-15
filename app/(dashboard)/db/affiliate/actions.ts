@@ -6,6 +6,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase";
 import {
   getAffiliateForUser,
   getAffiliateSignups,
+  getAffiliateAvailableCents,
   type Affiliate,
   type AffiliateSignup,
 } from "@/lib/affiliate";
@@ -92,7 +93,7 @@ export async function requestPayout(): Promise<ActionResult> {
   const ctx = await requireAffiliate();
   if (!ctx.ok) return { ok: false, error: ctx.error };
 
-  const amountCents = ctx.affiliate.balanceCents;
+  const amountCents = await getAffiliateAvailableCents(ctx.userId);
   if (amountCents <= 0) {
     return { ok: false, error: "Kein auszahlbares Guthaben." };
   }

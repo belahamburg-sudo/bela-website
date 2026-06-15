@@ -36,11 +36,21 @@ export default async function AffiliatePage() {
     getAffiliatePayouts(user.id),
   ]);
 
+  // Withdrawable balance is derived (earned − payouts already made/pending), so
+  // the displayed balance + payout button always match real earnings.
+  const reservedCents = payouts
+    .filter((p) => p.status !== "rejected" && p.status !== "failed")
+    .reduce((s, p) => s + p.amountCents, 0);
+  const affiliateView = {
+    ...affiliate,
+    balanceCents: Math.max(0, stats.earnedCents - reservedCents),
+  };
+
   const shareLink = absoluteUrl(`/signup?ref=${affiliate.code ?? ""}`);
 
   return (
     <AffiliateDashboard
-      affiliate={affiliate}
+      affiliate={affiliateView}
       stats={stats}
       tiers={tiers}
       payouts={payouts}

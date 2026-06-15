@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { VideoHeroSection } from "@/components/sections/video-hero-section";
 import { AiJobsSection } from "@/components/sections/ai-jobs-section";
 import { ProblemSection } from "@/components/sections/problem-section";
@@ -15,6 +16,24 @@ import { CtaFooterSection } from "@/components/sections/cta-footer-section";
 import { getFeaturedCourses } from "@/lib/courses";
 import { getActiveWebinar } from "@/lib/webinar";
 import { getEffectiveSocials } from "@/lib/settings";
+
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com"
+).replace(/\/$/, "");
+
+export const metadata: Metadata = {
+  title: "AI Goldmining: Digitale Produkte mit AI bauen & verkaufen",
+  description:
+    "Lerne, mit AI digitale Produkte zu bauen und zu verkaufen. Kurse, Webinar und Community für deinen Start ortsunabhängig. Klarheit statt Hype, mit Bela.",
+  openGraph: {
+    title: "AI Goldmining: Digitale Produkte mit AI bauen & verkaufen",
+    description:
+      "Lerne, mit AI digitale Produkte zu bauen und zu verkaufen. Kurse, Webinar und Community für deinen Start ortsunabhängig. Klarheit statt Hype, mit Bela.",
+    url: BASE_URL,
+    type: "website",
+  },
+  alternates: { canonical: BASE_URL },
+};
 
 // Re-read featured courses from the DB at most every 60s so catalog changes
 // (new/edited courses, hidden demos) show up without a redeploy.

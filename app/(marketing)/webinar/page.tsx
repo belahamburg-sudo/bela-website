@@ -1,9 +1,28 @@
+import type { Metadata } from "next";
 import { CheckCircle2, CalendarClock } from "lucide-react";
 import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
 import { getActiveWebinar } from "@/lib/webinar";
 
 export const dynamic = "force-dynamic";
+
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com"
+).replace(/\/$/, "");
+
+export const metadata: Metadata = {
+  title: "Gratis Webinar: Digitale Produkte mit AI · AI Goldmining",
+  description:
+    "Kostenloses Webinar: Wie du mit AI digitale Produkte baust und verkaufst. Unter 60 Minuten, kein Tech-Vorwissen nötig, sofort verfügbar. Jetzt ansehen.",
+  openGraph: {
+    title: "Gratis Webinar: Digitale Produkte mit AI · AI Goldmining",
+    description:
+      "Kostenloses Webinar: Wie du mit AI digitale Produkte baust und verkaufst. Unter 60 Minuten, kein Tech-Vorwissen nötig, sofort verfügbar. Jetzt ansehen.",
+    url: `${BASE_URL}/webinar`,
+    type: "website",
+  },
+  alternates: { canonical: `${BASE_URL}/webinar` },
+};
 
 const BULLETS = [
   { num: "01", text: "Warum digitale Produkte für den Einstieg schlanker sind als viele klassische Modelle" },

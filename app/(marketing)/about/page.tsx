@@ -1,8 +1,31 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import { telegramUrl } from "@/lib/env";
 import { getSiteImages } from "@/lib/site-images";
+
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com"
+).replace(/\/$/, "");
+
+export const metadata: Metadata = {
+  title: "Über Bela: Mein Weg zu digitalen Produkten · AI Goldmining",
+  description:
+    "Wer ist Bela? Vom Notizbuch voller Geschäftsideen zu digitalen Produkten mit AI. Meine Geschichte, meine Haltung und warum Klarheit vor Hype kommt.",
+  openGraph: {
+    title: "Über Bela: Mein Weg zu digitalen Produkten · AI Goldmining",
+    description:
+      "Wer ist Bela? Vom Notizbuch voller Geschäftsideen zu digitalen Produkten mit AI. Meine Geschichte, meine Haltung und warum Klarheit vor Hype kommt.",
+    url: `${BASE_URL}/about`,
+    type: "website",
+  },
+  alternates: { canonical: `${BASE_URL}/about` },
+};
+
+// Re-read Supabase image overrides via ISR instead of baking them in at build
+// time (also silences the build-time fetch warning for this page).
+export const revalidate = 60;
 
 const profileFacts = [
   { label: "Positionierung", value: "AI Goldmining" },

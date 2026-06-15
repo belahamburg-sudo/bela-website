@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseServerClient } from "./supabase-server";
 import { courses as staticCourses, getCourse as getStaticCourse, type Course } from "./content";
 import { mapDbCourseToCourse } from "./courses";
@@ -9,7 +10,15 @@ export async function getUnifiedMemberData() {
   const supabase = await getSupabaseServerClient();
   
   if (!supabase) return getDemoData();
+  try {
+    return await loadMemberData(supabase);
+  } catch {
+    // A transient Supabase/network failure must NEVER crash the member dashboard.
+    return getDemoData();
+  }
+}
 
+async function loadMemberData(supabase: SupabaseClient) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return getDemoData();
 

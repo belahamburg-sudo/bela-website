@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { absoluteUrl } from "@/lib/utils";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 type TelegramPlan = {
   key: "monthly" | "yearly";
@@ -71,6 +72,14 @@ export async function POST(request: Request) {
     if (!userId) {
       return NextResponse.json({ message: "Bitte zuerst einloggen." }, { status: 401 });
     }
+
+    const rl = await checkRateLimit({
+      bucket: "telegram-checkout",
+      identifier: userId,
+      limit: 15,
+      windowSeconds: 900,
+    });
+    if (!rl.allowed) return rateLimitResponse(rl.retryAfterSeconds ?? 900);
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",

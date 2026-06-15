@@ -2,8 +2,13 @@ import crypto from "crypto";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const PAID_CHAT_ID = process.env.TELEGRAM_PAID_CHAT_ID;
+// Never fall back to a well-known literal secret in production — that would make
+// link tokens forgeable. Prefer the dedicated secret, else the bot token; only
+// use a static dev secret outside production. verify/build fail safe if empty.
 const LINK_SECRET =
-  process.env.TELEGRAM_LINK_SECRET || process.env.TELEGRAM_BOT_TOKEN || "dev-link-secret";
+  process.env.TELEGRAM_LINK_SECRET ||
+  process.env.TELEGRAM_BOT_TOKEN ||
+  (process.env.NODE_ENV === "production" ? "" : "dev-link-secret");
 
 type TelegramApiResult<T> = { ok: true; result: T } | { ok: false; description?: string };
 
@@ -49,6 +54,7 @@ export function createTelegramLinkToken(userId: string): string {
 }
 
 export function verifyTelegramLinkToken(token: string): string | null {
+  if (!LINK_SECRET) return null;
   const dot = token.indexOf(".");
   if (dot <= 0) return null;
   const userId = token.slice(0, dot);
@@ -63,6 +69,7 @@ export function verifyTelegramLinkToken(token: string): string | null {
 }
 
 export function buildTelegramBotLink(userId: string): string | null {
+  if (!LINK_SECRET) return null;
   const username = getTelegramBotUsername();
   if (!username) return null;
   const token = createTelegramLinkToken(userId);
