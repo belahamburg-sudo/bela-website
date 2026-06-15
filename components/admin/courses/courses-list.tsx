@@ -8,13 +8,9 @@ import {
   Plus,
   Pencil,
   Trash2,
-  DownloadCloud,
   Star,
   PlayCircle,
   FileText,
-  CheckCircle2,
-  MinusCircle,
-  FolderInput,
 } from "lucide-react";
 import { Panel, AdminBadge } from "@/components/admin/ui";
 import { DataTable, type Column } from "@/components/admin/data-table";
@@ -26,10 +22,7 @@ import {
   createCourse,
   deleteCourse,
   toggleCourseActive,
-  seedStarterCatalog,
-  type SeedResult,
 } from "@/app/admin/kurse/actions";
-import { IMPORT_SOURCE_LABEL } from "@/lib/course-includes";
 
 export type CourseRow = {
   id: string;
@@ -55,8 +48,6 @@ export function CoursesList({ rows }: { rows: CourseRow[] }) {
   const [creating, setCreating] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [toDelete, setToDelete] = useState<CourseRow | null>(null);
-  const [seeding, setSeeding] = useState(false);
-  const [seedResult, setSeedResult] = useState<SeedResult | null>(null);
 
   function handleCreate() {
     if (!newTitle.trim()) {
@@ -99,19 +90,6 @@ export function CoursesList({ rows }: { rows: CourseRow[] }) {
         router.refresh();
       } else {
         error(res.error ?? "Löschen fehlgeschlagen.");
-      }
-    });
-  }
-
-  function handleSeed() {
-    startTransition(async () => {
-      const res = await seedStarterCatalog();
-      if (res.ok) {
-        setSeeding(false);
-        setSeedResult(res);
-        router.refresh();
-      } else {
-        error(res.error ?? "Import fehlgeschlagen.");
       }
     });
   }
@@ -205,19 +183,9 @@ export function CoursesList({ rows }: { rows: CourseRow[] }) {
         description={`${rows.length} ${rows.length === 1 ? "Kurs" : "Kurse"}`}
         noPadding
         actions={
-          <div className="flex items-center gap-2">
-            <AdminButton
-              variant="secondary"
-              size="sm"
-              icon={DownloadCloud}
-              onClick={() => setSeeding(true)}
-            >
-              Starter-Katalog
-            </AdminButton>
-            <AdminButton variant="primary" size="sm" icon={Plus} onClick={() => setCreating(true)}>
-              Neuer Kurs
-            </AdminButton>
-          </div>
+          <AdminButton variant="primary" size="sm" icon={Plus} onClick={() => setCreating(true)}>
+            Neuer Kurs
+          </AdminButton>
         }
       >
         <DataTable
@@ -226,7 +194,7 @@ export function CoursesList({ rows }: { rows: CourseRow[] }) {
           getRowKey={(r) => r.id}
           emptyIcon={BookOpen}
           emptyTitle="Noch keine Kurse"
-          emptyDescription="Lege deinen ersten Kurs an oder importiere den Starter-Katalog."
+          emptyDescription="Lege deinen ersten Kurs an."
         />
       </Panel>
 
@@ -262,128 +230,6 @@ export function CoursesList({ rows }: { rows: CourseRow[] }) {
             className={inputClass}
           />
         </label>
-      </Modal>
-
-      {/* Seed confirm */}
-      <Modal
-        open={seeding}
-        onClose={() => setSeeding(false)}
-        title="Starter-Katalog importieren?"
-        description="Die mitgelieferten Beispielkurse werden in die Datenbank geschrieben."
-        size="sm"
-        footer={
-          <>
-            <AdminButton variant="ghost" size="sm" onClick={() => setSeeding(false)} disabled={pending}>
-              Abbrechen
-            </AdminButton>
-            <AdminButton variant="primary" size="sm" icon={DownloadCloud} onClick={handleSeed} loading={pending}>
-              Importieren
-            </AdminButton>
-          </>
-        }
-      >
-        <div className="space-y-3 text-sm text-cream/70">
-          <div className="flex items-start gap-2.5 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2.5">
-            <FolderInput className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-300/70" />
-            <div className="min-w-0">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-cream/40">
-                Quelle
-              </div>
-              <code className="mt-0.5 block break-all font-mono text-xs text-cream/80">
-                {IMPORT_SOURCE_LABEL}
-              </code>
-            </div>
-          </div>
-          <p>
-            Bereits vorhandene Kurse (gleicher Slug) werden{" "}
-            <span className="font-bold text-cream">übersprungen</span> — der Import ist
-            gefahrlos wiederholbar.
-          </p>
-        </div>
-      </Modal>
-
-      {/* Seed result summary */}
-      <Modal
-        open={Boolean(seedResult)}
-        onClose={() => setSeedResult(null)}
-        title="Import-Zusammenfassung"
-        description={
-          seedResult
-            ? `${seedResult.created ?? 0} importiert · ${seedResult.skipped ?? 0} übersprungen`
-            : undefined
-        }
-        size="md"
-        footer={
-          <AdminButton variant="primary" size="sm" onClick={() => setSeedResult(null)}>
-            Schließen
-          </AdminButton>
-        }
-      >
-        {seedResult && (
-          <div className="space-y-4 text-sm">
-            <div className="flex items-start gap-2.5 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2.5">
-              <FolderInput className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-300/70" />
-              <div className="min-w-0">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-cream/40">
-                  Quelle
-                </div>
-                <code className="mt-0.5 block break-all font-mono text-xs text-cream/80">
-                  {seedResult.source ?? IMPORT_SOURCE_LABEL}
-                </code>
-              </div>
-            </div>
-
-            {(seedResult.created ?? 0) > 0 ? (
-              <div>
-                <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-300/80">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  {seedResult.created} {seedResult.created === 1 ? "Kurs" : "Kurse"} importiert
-                  {" · "}
-                  {seedResult.modulesImported ?? 0} Module · {seedResult.lessonsImported ?? 0} Lektionen
-                </div>
-                <ul className="divide-y divide-white/5 rounded-lg border border-white/10">
-                  {seedResult.importedCourses?.map((c) => (
-                    <li
-                      key={c.slug}
-                      className="flex items-center justify-between gap-3 px-3 py-2"
-                    >
-                      <span className="flex min-w-0 items-center gap-2">
-                        <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-400/70" />
-                        <span className="truncate font-medium text-cream/90">{c.title}</span>
-                      </span>
-                      <span className="flex-shrink-0 text-xs text-cream/50">
-                        {c.moduleCount} Mod. · {c.lessonCount} Lekt.
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <p className="rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2.5 text-cream/60">
-                Keine neuen Kurse importiert — alle waren bereits vorhanden.
-              </p>
-            )}
-
-            {(seedResult.skipped ?? 0) > 0 && (
-              <div>
-                <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-cream/40">
-                  <MinusCircle className="h-3.5 w-3.5" />
-                  {seedResult.skipped} übersprungen (bereits vorhanden)
-                </div>
-                <ul className="flex flex-wrap gap-1.5">
-                  {seedResult.skippedCourses?.map((c) => (
-                    <li
-                      key={c.slug}
-                      className="rounded-md border border-white/10 bg-obsidian/40 px-2 py-1 text-xs text-cream/50"
-                    >
-                      {c.title}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
       </Modal>
 
       {/* Delete confirm */}
