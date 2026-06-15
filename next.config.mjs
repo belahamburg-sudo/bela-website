@@ -68,6 +68,7 @@ const nextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
+              "media-src 'self' blob: data: https://*.supabase.co",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://region1.google-analytics.com",
               "frame-src 'self' https://www.youtube.com https://player.vimeo.com",
