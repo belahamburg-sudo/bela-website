@@ -18,7 +18,14 @@ export async function createConnectAccount(
     const account = await stripe.accounts.create({
       type: "express",
       email: email ?? undefined,
-      capabilities: { transfers: { requested: true } },
+      // transfers = receive payouts. card_payments is requested alongside it
+      // because Stripe gates "transfers without card_payments" behind a special
+      // platform approval; requesting both is the standard Express setup and
+      // works without that approval. (Verified live against the platform.)
+      capabilities: {
+        transfers: { requested: true },
+        card_payments: { requested: true },
+      },
       business_type: "individual",
       metadata: { purpose: "aigoldmining_affiliate" },
     });
