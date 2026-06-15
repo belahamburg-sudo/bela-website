@@ -29,6 +29,15 @@ function formatBytes(bytes: number): string {
   return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }
 
+function formatDuration(seconds: number): string {
+  if (!isFinite(seconds) || seconds < 0) return "—";
+  const s = Math.round(seconds);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return r ? `${m} Min ${r}s` : `${m} Min`;
+}
+
 export function FileUpload({
   bucket,
   prefix,
@@ -50,6 +59,8 @@ export function FileUpload({
   const [dragging, setDragging] = useState(false);
   const [current, setCurrent] = useState<{ name: string; size: number } | null>(null);
   const [percent, setPercent] = useState<number | null>(null);
+  const [eta, setEta] = useState<string | null>(null);
+  const sampleRef = useRef<{ t: number; sent: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -132,6 +143,16 @@ export function FileUpload({
           onError: (err) => reject(err),
           onProgress: (sent, total) => {
             setPercent(total > 0 ? Math.round((sent / total) * 100) : 0);
+            // Live speed + ETA over a ~1.5s sliding window.
+            const now = Date.now();
+            const prev = sampleRef.current;
+            if (prev && now > prev.t) {
+              const bps = ((sent - prev.sent) / (now - prev.t)) * 1000;
+              if (bps > 0) {
+                setEta(`${formatBytes(bps)}/s · noch ${formatDuration((total - sent) / bps)}`);
+              }
+            }
+            if (!prev || now - prev.t > 1500) sampleRef.current = { t: now, sent };
           },
           onSuccess: () => resolve(),
         });
@@ -152,6 +173,8 @@ export function FileUpload({
       setError(null);
       setCurrent({ name: file.name, size: file.size });
       setPercent(file.size > LARGE_FILE_BYTES ? 0 : null);
+      setEta(null);
+      sampleRef.current = null;
       setStatus("uploading");
 
       try {
@@ -159,6 +182,7 @@ export function FileUpload({
           file.size > LARGE_FILE_BYTES ? await uploadLarge(file) : await uploadSmall(file);
         setStatus("done");
         setPercent(null);
+        setEta(null);
         onUploaded({
           ref,
           name: file.name,
@@ -168,6 +192,7 @@ export function FileUpload({
       } catch (err) {
         setStatus("error");
         setPercent(null);
+        setEta(null);
         setError(err instanceof Error ? err.message : "Upload fehlgeschlagen");
       }
     },
@@ -216,7 +241,7 @@ export function FileUpload({
               {current ? formatBytes(current.size) : ""}
               {status === "uploading"
                 ? percent !== null
-                  ? ` · ${percent}% hochgeladen`
+                  ? ` · ${percent}%${eta ? ` · ${eta}` : ""}`
                   : " · wird hochgeladen…"
                 : " · fertig"}
             </p>
