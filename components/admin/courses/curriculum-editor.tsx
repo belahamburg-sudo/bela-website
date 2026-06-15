@@ -2,9 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   ChevronUp,
+  Download,
   FileText,
   GripVertical,
   Layers,
@@ -49,6 +51,11 @@ export function CurriculumEditor({
   const [renameValue, setRenameValue] = useState("");
   const [deletingModule, setDeletingModule] = useState<EditorModule | null>(null);
 
+  // Accordion open-state: first module open by default.
+  const [openModules, setOpenModules] = useState<Record<string, boolean>>(() =>
+    modules.length > 0 ? { [modules[0].id]: true } : {}
+  );
+
   const [lessonModal, setLessonModal] = useState<{
     moduleId: string;
     lesson: EditorLesson | null;
@@ -56,6 +63,10 @@ export function CurriculumEditor({
   const [deletingLesson, setDeletingLesson] = useState<{
     lesson: EditorLesson;
   } | null>(null);
+
+  function toggleModule(id: string) {
+    setOpenModules((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
 
   function run(action: () => Promise<{ ok: boolean; error?: string }>, okMsg?: string) {
     startTransition(async () => {
@@ -78,6 +89,7 @@ export function CurriculumEditor({
       const res = await createModule({ courseId, title: newModuleTitle });
       if (res.ok) {
         success("Modul erstellt.");
+        if (res.id) setOpenModules((prev) => ({ ...prev, [res.id as string]: true }));
         setAddingModule(false);
         setNewModuleTitle("");
         router.refresh();
@@ -130,132 +142,246 @@ export function CurriculumEditor({
             icon={Layers}
             title="Noch kein Lehrplan"
             description="Lege ein erstes Modul an, um Lektionen hinzuzufügen."
+            action={
+              <AdminButton
+                variant="secondary"
+                size="sm"
+                icon={Plus}
+                onClick={() => setAddingModule(true)}
+              >
+                Erstes Modul
+              </AdminButton>
+            }
           />
         ) : (
-          <div className="divide-y divide-white/5">
-            {modules.map((mod, mi) => (
-              <div key={mod.id} className="p-4 sm:p-5">
-                {/* Module header */}
-                <div className="mb-3 flex items-center gap-2">
-                  <div className="flex flex-col">
-                    <button
-                      onClick={() => moveModule(mi, "up")}
-                      disabled={pending || mi === 0}
-                      className="text-cream/30 transition-colors hover:text-gold-300 disabled:opacity-20"
-                      aria-label="Modul nach oben"
-                    >
-                      <ChevronUp className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                      onClick={() => moveModule(mi, "down")}
-                      disabled={pending || mi === modules.length - 1}
-                      className="text-cream/30 transition-colors hover:text-gold-300 disabled:opacity-20"
-                      aria-label="Modul nach unten"
-                    >
-                      <ChevronDown className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md border border-gold-300/20 bg-gold-300/[0.06] text-[11px] font-bold text-gold-300">
-                    {mi + 1}
-                  </span>
-                  <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-cream/90">
-                    {mod.title}
-                  </h3>
-                  <AdminBadge tone="neutral">
-                    {mod.lessons.length} {mod.lessons.length === 1 ? "Lektion" : "Lektionen"}
-                  </AdminBadge>
-                  <AdminButton
-                    variant="ghost"
-                    size="sm"
-                    icon={Pencil}
-                    onClick={() => {
-                      setRenaming(mod);
-                      setRenameValue(mod.title);
-                    }}
-                  >
-                    Umbenennen
-                  </AdminButton>
-                  <AdminButton
-                    variant="ghost"
-                    size="sm"
-                    icon={Trash2}
-                    onClick={() => setDeletingModule(mod)}
-                  >
-                    Löschen
-                  </AdminButton>
-                </div>
-
-                {/* Lessons */}
-                <div className="ml-8 flex flex-col gap-2">
-                  {mod.lessons.map((lesson, li) => (
-                    <div
-                      key={lesson.id}
-                      className="flex items-center gap-3 rounded-lg border border-white/8 bg-obsidian/40 px-3 py-2.5"
-                    >
-                      <GripVertical className="h-4 w-4 flex-shrink-0 text-cream/15" />
-                      {lesson.videoUrl ? (
-                        <PlayCircle className="h-4 w-4 flex-shrink-0 text-gold-300/70" />
-                      ) : (
-                        <Video className="h-4 w-4 flex-shrink-0 text-cream/25" />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm text-cream/85">{lesson.title}</p>
-                        <p className="flex items-center gap-2 text-[11px] text-cream/35">
-                          {lesson.duration || "—"}
-                          {lesson.resources.length > 0 && (
-                            <span className="inline-flex items-center gap-1">
-                              <FileText className="h-3 w-3" />
-                              {lesson.resources.length}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="flex flex-shrink-0 items-center gap-1">
-                        <button
-                          onClick={() => moveLesson(mod, li, "up")}
-                          disabled={pending || li === 0}
-                          className="text-cream/30 transition-colors hover:text-gold-300 disabled:opacity-20"
-                          aria-label="Lektion nach oben"
-                        >
-                          <ChevronUp className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => moveLesson(mod, li, "down")}
-                          disabled={pending || li === mod.lessons.length - 1}
-                          className="text-cream/30 transition-colors hover:text-gold-300 disabled:opacity-20"
-                          aria-label="Lektion nach unten"
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </button>
-                        <AdminButton
-                          variant="ghost"
-                          size="sm"
-                          icon={Pencil}
-                          onClick={() => setLessonModal({ moduleId: mod.id, lesson })}
-                        >
-                          Bearbeiten
-                        </AdminButton>
-                        <button
-                          onClick={() => setDeletingLesson({ lesson })}
-                          className="flex h-7 w-7 items-center justify-center rounded-md text-cream/30 transition-colors hover:bg-red-500/10 hover:text-red-300"
-                          aria-label="Lektion löschen"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+          <div className="flex flex-col gap-3 p-4 sm:p-5">
+            {modules.map((mod, mi) => {
+              const isOpen = Boolean(openModules[mod.id]);
+              const totalResources = mod.lessons.reduce(
+                (sum, l) => sum + l.resources.length,
+                0
+              );
+              return (
+                <div
+                  key={mod.id}
+                  className={`overflow-hidden rounded-xl border bg-obsidian/30 transition-colors ${
+                    isOpen ? "border-gold-300/25" : "border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  {/* ── Module header (accordion trigger) ── */}
+                  <div className="flex items-center gap-2 px-3 py-3 sm:px-4">
+                    {/* Reorder controls */}
+                    <div className="flex flex-shrink-0 flex-col">
+                      <button
+                        onClick={() => moveModule(mi, "up")}
+                        disabled={pending || mi === 0}
+                        className="text-cream/30 transition-colors hover:text-gold-300 disabled:opacity-20"
+                        aria-label="Modul nach oben"
+                      >
+                        <ChevronUp className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => moveModule(mi, "down")}
+                        disabled={pending || mi === modules.length - 1}
+                        className="text-cream/30 transition-colors hover:text-gold-300 disabled:opacity-20"
+                        aria-label="Modul nach unten"
+                      >
+                        <ChevronDown className="h-3.5 w-3.5" />
+                      </button>
                     </div>
-                  ))}
 
-                  <button
-                    onClick={() => setLessonModal({ moduleId: mod.id, lesson: null })}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-white/10 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-cream/40 transition-colors hover:border-gold-300/30 hover:text-gold-300"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Lektion hinzufügen
-                  </button>
+                    {/* Clickable header area */}
+                    <button
+                      type="button"
+                      onClick={() => toggleModule(mod.id)}
+                      aria-expanded={isOpen}
+                      className="group flex min-w-0 flex-1 items-center gap-3 text-left"
+                    >
+                      <motion.span
+                        animate={{ rotate: isOpen ? 0 : -90 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-cream/40 transition-colors group-hover:text-gold-300"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </motion.span>
+                      <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md border border-gold-300/20 bg-gold-300/[0.06] text-[11px] font-bold text-gold-300">
+                        {mi + 1}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-bold text-cream/90 group-hover:text-cream">
+                          {mod.title}
+                        </span>
+                        <span className="mt-0.5 block text-[10px] font-bold uppercase tracking-wider text-cream/30">
+                          Modul {mi + 1}
+                        </span>
+                      </span>
+                    </button>
+
+                    {/* Badges */}
+                    <div className="hidden flex-shrink-0 items-center gap-1.5 sm:flex">
+                      <AdminBadge tone={mod.lessons.length > 0 ? "gold" : "neutral"}>
+                        {mod.lessons.length}{" "}
+                        {mod.lessons.length === 1 ? "Lektion" : "Lektionen"}
+                      </AdminBadge>
+                      {totalResources > 0 && (
+                        <AdminBadge tone="neutral">
+                          <Download className="h-3 w-3" />
+                          {totalResources}
+                        </AdminBadge>
+                      )}
+                    </div>
+
+                    {/* Module actions */}
+                    <div className="flex flex-shrink-0 items-center gap-1">
+                      <button
+                        onClick={() => {
+                          setRenaming(mod);
+                          setRenameValue(mod.title);
+                        }}
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-cream/30 transition-colors hover:bg-white/5 hover:text-gold-300"
+                        aria-label="Modul umbenennen"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setDeletingModule(mod)}
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-cream/30 transition-colors hover:bg-red-500/10 hover:text-red-300"
+                        aria-label="Modul löschen"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ── Accordion body ── */}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key="body"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="border-t border-white/5 px-3 py-3 sm:px-4">
+                          <div className="flex flex-col gap-2">
+                            {mod.lessons.length === 0 ? (
+                              <p className="rounded-lg border border-dashed border-white/10 px-3 py-4 text-center text-xs text-cream/30">
+                                Noch keine Lektionen in diesem Modul.
+                              </p>
+                            ) : (
+                              mod.lessons.map((lesson, li) => (
+                                <div
+                                  key={lesson.id}
+                                  className="rounded-lg border border-white/8 bg-obsidian/50 px-3 py-2.5 transition-colors hover:border-white/15"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <GripVertical className="h-4 w-4 flex-shrink-0 text-cream/15" />
+                                    {lesson.videoUrl ? (
+                                      <PlayCircle className="h-4 w-4 flex-shrink-0 text-gold-300/70" />
+                                    ) : (
+                                      <Video className="h-4 w-4 flex-shrink-0 text-cream/25" />
+                                    )}
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <p className="truncate text-sm text-cream/85">
+                                          {lesson.title}
+                                        </p>
+                                        {lesson.videoUrl && (
+                                          <AdminBadge tone="gold">Video</AdminBadge>
+                                        )}
+                                      </div>
+                                      <p className="mt-0.5 flex items-center gap-2 text-[11px] text-cream/35">
+                                        <span>{lesson.duration || "—"}</span>
+                                        {lesson.resources.length > 0 && (
+                                          <span className="inline-flex items-center gap-1">
+                                            <FileText className="h-3 w-3" />
+                                            {lesson.resources.length}{" "}
+                                            {lesson.resources.length === 1
+                                              ? "Download"
+                                              : "Downloads"}
+                                          </span>
+                                        )}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-shrink-0 items-center gap-1">
+                                      <button
+                                        onClick={() => moveLesson(mod, li, "up")}
+                                        disabled={pending || li === 0}
+                                        className="text-cream/30 transition-colors hover:text-gold-300 disabled:opacity-20"
+                                        aria-label="Lektion nach oben"
+                                      >
+                                        <ChevronUp className="h-4 w-4" />
+                                      </button>
+                                      <button
+                                        onClick={() => moveLesson(mod, li, "down")}
+                                        disabled={pending || li === mod.lessons.length - 1}
+                                        className="text-cream/30 transition-colors hover:text-gold-300 disabled:opacity-20"
+                                        aria-label="Lektion nach unten"
+                                      >
+                                        <ChevronDown className="h-4 w-4" />
+                                      </button>
+                                      <AdminButton
+                                        variant="ghost"
+                                        size="sm"
+                                        icon={Pencil}
+                                        onClick={() =>
+                                          setLessonModal({ moduleId: mod.id, lesson })
+                                        }
+                                      >
+                                        Bearbeiten
+                                      </AdminButton>
+                                      <button
+                                        onClick={() => setDeletingLesson({ lesson })}
+                                        className="flex h-7 w-7 items-center justify-center rounded-md text-cream/30 transition-colors hover:bg-red-500/10 hover:text-red-300"
+                                        aria-label="Lektion löschen"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  {/* Resources list */}
+                                  {lesson.resources.length > 0 && (
+                                    <div className="mt-2.5 ml-7 flex flex-wrap gap-1.5 border-t border-white/5 pt-2.5">
+                                      {lesson.resources.map((r, ri) => (
+                                        <span
+                                          key={ri}
+                                          className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-obsidian/60 px-2 py-1 text-[11px] text-cream/60"
+                                        >
+                                          <FileText className="h-3 w-3 flex-shrink-0 text-gold-300/60" />
+                                          <span className="max-w-[180px] truncate">
+                                            {r.label}
+                                          </span>
+                                          <span className="rounded-sm bg-white/5 px-1 text-[9px] font-bold uppercase tracking-wider text-cream/35">
+                                            {r.type}
+                                          </span>
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ))
+                            )}
+
+                            <button
+                              onClick={() =>
+                                setLessonModal({ moduleId: mod.id, lesson: null })
+                              }
+                              className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-white/10 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-cream/40 transition-colors hover:border-gold-300/30 hover:text-gold-300"
+                            >
+                              <Plus className="h-3.5 w-3.5" />
+                              Lektion hinzufügen
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </Panel>

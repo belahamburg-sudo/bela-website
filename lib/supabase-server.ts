@@ -16,9 +16,16 @@ export async function getSupabaseServerClient() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          } catch {
+            // Called from a Server Component render, where cookies are
+            // read-only. The middleware refreshes the session, so this is safe
+            // to ignore — without the guard, a token refresh during render
+            // throws and crashes the whole route segment (e.g. /admin/*).
+          }
         },
       },
     }

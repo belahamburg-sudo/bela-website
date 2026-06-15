@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { sendTemplateEmail, type EmailTemplate } from "@/lib/email";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
+import { readReferralFromCookieHeader } from "@/lib/referral";
 
 const sources = new Set(["newsletter", "webinar", "community"]);
 
@@ -27,11 +28,33 @@ export async function POST(request: Request) {
       name?: string;
       email?: string;
       source?: string;
+      utm_source?: string;
+      utm_medium?: string;
+      utm_campaign?: string;
+      utm_term?: string;
+      utm_content?: string;
+      landing_path?: string;
     };
 
     const email = body.email?.trim().toLowerCase();
     const name = body.name?.trim() || null;
     const source = body.source || "newsletter";
+
+    // Optional attribution/tracking fields (all nullable). Trim and cap length
+    // defensively so a malformed client payload can never bloat the row.
+    const clean = (value: string | undefined, max = 512) =>
+      value?.trim().slice(0, max) || null;
+
+    const utmSource = clean(body.utm_source);
+    const utmMedium = clean(body.utm_medium);
+    const utmCampaign = clean(body.utm_campaign);
+    const utmTerm = clean(body.utm_term);
+    const utmContent = clean(body.utm_content);
+    const landingPath = clean(body.landing_path, 1024);
+    const referrer = clean(request.headers.get("referer") ?? undefined, 1024);
+    const userAgent = clean(request.headers.get("user-agent") ?? undefined, 1024);
+    const ip = clientIp(request);
+    const refCode = readReferralFromCookieHeader(request.headers.get("cookie"));
 
     if (!email || !email.includes("@")) {
       return NextResponse.json({ message: "Bitte gib eine gültige E-Mail ein." }, { status: 400 });
@@ -53,7 +76,17 @@ export async function POST(request: Request) {
       name,
       email,
       source,
-      status: "new"
+      status: "new",
+      utm_source: utmSource,
+      utm_medium: utmMedium,
+      utm_campaign: utmCampaign,
+      utm_term: utmTerm,
+      utm_content: utmContent,
+      landing_path: landingPath,
+      referrer,
+      ip,
+      user_agent: userAgent,
+      ref_code: refCode,
     });
 
     if (error) {

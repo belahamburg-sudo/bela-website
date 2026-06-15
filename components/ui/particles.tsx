@@ -84,6 +84,7 @@ export function Particles({
       circles.current.length = 0;
       for (let i = 0; i < quantity; i++) circles.current.push(circleParams());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dpr, quantity]);
 
   const circleParams = (): Circle => {
@@ -160,6 +161,7 @@ export function Particles({
       }
     });
     rafID.current = window.requestAnimationFrame(animate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ease, staticity, vx, vy]);
 
   const initCanvas = useCallback(() => resizeCanvas(), [resizeCanvas]);

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin, logAudit } from "@/lib/admin";
+import { getAdminContext, logAudit } from "@/lib/admin";
 
 type ActionResult = { ok: boolean; error?: string };
 
@@ -13,7 +13,9 @@ export async function grantCourseAccess(input: {
   if (!input.userId) return { ok: false, error: "Kein Kunde angegeben." };
   if (!input.courseSlug) return { ok: false, error: "Kein Kurs ausgewählt." };
 
-  const { user, supabase } = await requireAdmin();
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
+  const { user, supabase } = ctx;
 
   // Avoid duplicate grants for the same user + course.
   const { data: existing } = await supabase
@@ -60,7 +62,9 @@ export async function revokeCourseAccess(input: {
 }): Promise<ActionResult> {
   if (!input.purchaseId) return { ok: false, error: "Kein Eintrag angegeben." };
 
-  const { user, supabase } = await requireAdmin();
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
+  const { user, supabase } = ctx;
 
   const { error } = await supabase
     .from("purchases")

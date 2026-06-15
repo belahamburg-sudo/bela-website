@@ -1,20 +1,10 @@
 import { Image as ImageIcon, HardDrive, Film } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/admin/ui";
-import { listBucket, publicUrl, toStorageRef, BUCKETS } from "@/lib/storage";
+import { listBucketRecursive, publicUrl, toStorageRef, BUCKETS } from "@/lib/storage";
 import { MediaUploader } from "@/components/admin/system/media-uploader";
 import { MediaGrid, type MediaItem } from "@/components/admin/system/media-grid";
 
 export const dynamic = "force-dynamic";
-
-const PREFIX = "library";
-
-type StorageObject = {
-  name: string;
-  id?: string;
-  created_at?: string;
-  updated_at?: string;
-  metadata?: { size?: number; mimetype?: string } | null;
-};
 
 const VIDEO_EXT = ["mp4", "webm", "mov", "m4v", "ogv"];
 
@@ -33,22 +23,18 @@ function formatBytes(bytes: number): string {
 }
 
 export default async function MedienPage() {
-  const objects = (await listBucket(BUCKETS.media, PREFIX)) as StorageObject[];
+  // Walk the whole public media bucket so nested files (covers under
+  // courses/<slug>/…) show up — not just the bucket root.
+  const files = await listBucketRecursive(BUCKETS.media);
 
-  // Storage list can include a folder placeholder row with no metadata/id; skip it.
-  const files = objects.filter((o) => o.name && o.id);
-
-  const items: MediaItem[] = files.map((o) => {
-    const path = `${PREFIX}/${o.name}`;
-    return {
-      name: o.name,
-      path,
-      ref: toStorageRef(BUCKETS.media, path),
-      url: publicUrl(BUCKETS.media, path),
-      size: o.metadata?.size ?? 0,
-      createdAt: o.created_at ?? null,
-    };
-  });
+  const items: MediaItem[] = files.map((f) => ({
+    name: f.path,
+    path: f.path,
+    ref: toStorageRef(BUCKETS.media, f.path),
+    url: publicUrl(BUCKETS.media, f.path),
+    size: f.size,
+    createdAt: f.createdAt,
+  }));
 
   const totalBytes = items.reduce((sum, i) => sum + i.size, 0);
   const videoCount = items.filter((i) => isVideoName(i.name)).length;

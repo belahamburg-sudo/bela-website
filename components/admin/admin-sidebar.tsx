@@ -20,6 +20,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  Gift,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,6 +58,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/verkaeufe", label: "Verkäufe", icon: ShoppingCart },
       { href: "/admin/kunden", label: "Kunden", icon: Users },
       { href: "/admin/leads", label: "Leads", icon: UserPlus },
+      { href: "/admin/affiliate", label: "Affiliate", icon: Gift },
     ],
   },
   {

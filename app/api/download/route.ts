@@ -12,6 +12,8 @@ import {
 } from "@/lib/storage";
 import { stampPdf, isPdfPath } from "@/lib/watermark";
 import { absoluteUrl, formatDate } from "@/lib/utils";
+import { getCourseResourceRefs } from "@/lib/courses";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -87,6 +89,25 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (!purchase) {
     return NextResponse.json({ message: "Kein Zugriff auf diese Datei." }, { status: 403 });
+  }
+
+  // Authorization: the ref must actually be a resource of THIS course. Without
+  // this check, owning any one course would grant a signed URL to every file in
+  // the private bucket (the buyer controls `ref`).
+  const allowedRefs = await getCourseResourceRefs(courseSlug);
+  if (!allowedRefs.has(ref)) {
+    return NextResponse.json({ message: "Kein Zugriff auf diese Datei." }, { status: 403 });
+  }
+
+  // Rate limit: each call re-stamps a PDF and writes a new storage object.
+  const limited = await checkRateLimit({
+    bucket: "download",
+    identifier: user.id,
+    limit: 60,
+    windowSeconds: 10 * 60,
+  });
+  if (!limited.allowed) {
+    return rateLimitResponse(limited.retryAfterSeconds ?? 600);
   }
 
   const admin = getSupabaseAdminClient();

@@ -21,6 +21,23 @@ export type LeadRow = {
   source: string;
   status: string;
   createdAt: string;
+  // Attribution / tracking (migration_013) — null until live data exists.
+  utmSource: string | null;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmTerm: string | null;
+  utmContent: string | null;
+  referrer: string | null;
+  landingPath: string | null;
+  ip: string | null;
+  userAgent: string | null;
+  refCode: string | null;
+  // Joined profile data (by email).
+  profileCity: string | null;
+  profileGoal: string | null;
+  profileFullName: string | null;
+  profileOnboardingComplete: boolean | null;
+  profileCreatedAt: string | null;
 };
 
 const STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -53,10 +70,57 @@ function formatDate(iso: string): string {
 }
 
 function downloadCsv(rows: LeadRow[]) {
-  const header = ["E-Mail", "Name", "Quelle", "Status", "Datum"];
+  const header = [
+    "E-Mail",
+    "Name",
+    "Quelle",
+    "Status",
+    "Stadt",
+    "Ziel",
+    "Onboarding",
+    "UTM Source",
+    "UTM Medium",
+    "UTM Campaign",
+    "UTM Term",
+    "UTM Content",
+    "Ref-Code",
+    "Referrer",
+    "Landing-Page",
+    "IP",
+    "User-Agent",
+    "Registriert",
+    "Datum",
+  ];
   const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
+  const nz = (value: string | null | undefined) => value ?? "";
   const lines = rows.map((r) =>
-    [r.email, r.name ?? "", sourceLabel(r.source), statusLabel(r.status), r.createdAt]
+    [
+      r.email,
+      // Prefer the lead name, fall back to the joined profile name.
+      nz(r.name) || nz(r.profileFullName),
+      sourceLabel(r.source),
+      statusLabel(r.status),
+      nz(r.profileCity),
+      nz(r.profileGoal),
+      r.profileOnboardingComplete == null
+        ? ""
+        : r.profileOnboardingComplete
+          ? "ja"
+          : "nein",
+      nz(r.utmSource),
+      nz(r.utmMedium),
+      nz(r.utmCampaign),
+      nz(r.utmTerm),
+      nz(r.utmContent),
+      nz(r.refCode),
+      nz(r.referrer),
+      nz(r.landingPath),
+      nz(r.ip),
+      nz(r.userAgent),
+      // "Registriert" = profile.created_at if the lead became a member.
+      nz(r.profileCreatedAt),
+      r.createdAt,
+    ]
       .map((cell) => escape(String(cell)))
       .join(",")
   );
@@ -117,7 +181,9 @@ export function LeadsManager({ rows }: { rows: LeadRow[] }) {
     return rows.filter(
       (r) =>
         r.email.toLowerCase().includes(q) ||
-        (r.name ?? "").toLowerCase().includes(q)
+        (r.name ?? "").toLowerCase().includes(q) ||
+        (r.profileCity ?? "").toLowerCase().includes(q) ||
+        (r.utmSource ?? "").toLowerCase().includes(q)
     );
   }, [rows, query]);
 
@@ -178,7 +244,22 @@ export function LeadsManager({ rows }: { rows: LeadRow[] }) {
     {
       key: "source",
       header: "Quelle",
-      render: (r) => <AdminBadge tone="blue">{sourceLabel(r.source)}</AdminBadge>,
+      render: (r) => (
+        <div className="flex flex-col gap-1">
+          <AdminBadge tone="blue">{sourceLabel(r.source)}</AdminBadge>
+          {r.utmSource && (
+            <span className="text-[11px] text-cream/40">
+              UTM: {r.utmSource}
+              {r.utmCampaign ? ` / ${r.utmCampaign}` : ""}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "city",
+      header: "Stadt",
+      render: (r) => <span className="text-cream/70">{r.profileCity ?? "—"}</span>,
     },
     {
       key: "status",
@@ -244,7 +325,7 @@ export function LeadsManager({ rows }: { rows: LeadRow[] }) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="E-Mail oder Name suchen…"
+              placeholder="E-Mail, Name, Stadt oder Quelle suchen…"
               className="w-full rounded-lg border border-white/10 bg-obsidian/60 py-2 pl-9 pr-3 text-sm text-cream placeholder:text-cream/30 focus:border-gold-300/40 focus:outline-none"
             />
           </div>

@@ -8,12 +8,15 @@ import {
   Pickaxe,
   User,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Gift
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { CartButton } from "@/components/cart-button";
+import { CartDrawer } from "@/components/cart-drawer";
 
 type NavLinkConfig = {
   href: string;
@@ -25,6 +28,7 @@ type NavLinkConfig = {
 const NAV_LINKS: NavLinkConfig[] = [
   { href: "/db", label: "Übersicht", icon: LayoutDashboard, exact: true },
   { href: "/db/kurse", label: "Goldmine", icon: Pickaxe, exact: false },
+  { href: "/db/affiliate", label: "Affiliate", icon: Gift, exact: false },
   { href: "/db/profil", label: "Mein Profil", icon: User, exact: false },
 ];
 
@@ -202,6 +206,12 @@ export function DashboardSidebar() {
       {/* Desktop spacer */}
       <div className="hidden lg:block lg:w-64 lg:flex-shrink-0" aria-hidden />
 
+      {/* Desktop floating cart — the member area has no marketing header, so the
+          cart lives here so members can keep shopping inside /db. */}
+      <div className="fixed right-6 top-6 z-40 hidden lg:block">
+        <CartButton />
+      </div>
+
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-gold-300/10 bg-ink/95 px-4 backdrop-blur-md lg:hidden">
         <Link href="/db" className="flex items-center">
@@ -215,14 +225,17 @@ export function DashboardSidebar() {
             priority
           />
         </Link>
-        
-        <button
-          onClick={handleLogout}
-          className="flex h-9 w-9 items-center justify-center border border-white/5 bg-white/[0.03] text-cream/40 transition-colors hover:text-gold-300"
-          aria-label="Terminate Session"
-        >
-          <LogOut className="h-4 w-4" />
-        </button>
+
+        <div className="flex items-center gap-1">
+          <CartButton />
+          <button
+            onClick={handleLogout}
+            className="flex h-9 w-9 items-center justify-center border border-white/5 bg-white/[0.03] text-cream/40 transition-colors hover:text-gold-300"
+            aria-label="Terminate Session"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {/* Mobile top bar spacer */}
@@ -233,6 +246,9 @@ export function DashboardSidebar() {
 
       {/* Spacing for bottom nav on mobile */}
       <div className="h-20 lg:hidden" aria-hidden />
+
+      {/* Shared cart drawer for the member area */}
+      <CartDrawer />
     </>
   );
 }

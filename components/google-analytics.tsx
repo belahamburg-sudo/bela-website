@@ -7,9 +7,15 @@ export const GA_MEASUREMENT_ID = "G-PL6Y3XBCE3";
 export function GoogleAnalytics() {
   return (
     <>
-      {/* Consent Mode default — denied until the user opts in */}
-      <Script id="ga-consent-default" strategy="beforeInteractive">
-        {`
+      {/*
+        Consent Mode default — denied until the user opts in. This MUST run
+        before gtag.js loads, so it's a plain synchronous inline script (runs in
+        document order, ahead of the afterInteractive scripts below) rather than
+        next/script's beforeInteractive, which only works in the root document.
+      */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
@@ -30,8 +36,9 @@ export function GoogleAnalytics() {
               });
             }
           } catch (e) {}
-        `}
-      </Script>
+        `,
+        }}
+      />
 
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

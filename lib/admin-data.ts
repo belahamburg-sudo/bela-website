@@ -35,47 +35,79 @@ export type AdminProfile = {
 
 export type AdminStats = {
   revenueCents: number;
+  revenueTodayCents: number;
+  revenue30dCents: number;
+  aovCents: number;
   paidCount: number;
   pendingCount: number;
   leadCount: number;
   memberCount: number;
   courseCount: number;
   telegramActive: number;
+  /** paid customers / members, as a 0–100 percentage. */
+  conversionRate: number;
 };
 
 export async function getAdminStats(): Promise<AdminStats> {
   const empty: AdminStats = {
     revenueCents: 0,
+    revenueTodayCents: 0,
+    revenue30dCents: 0,
+    aovCents: 0,
     paidCount: 0,
     pendingCount: 0,
     leadCount: 0,
     memberCount: 0,
     courseCount: 0,
     telegramActive: 0,
+    conversionRate: 0,
   };
   const admin = getSupabaseAdminClient();
   if (!admin) return empty;
 
   const [purchases, leads, members, courses, telegram] = await Promise.all([
-    admin.from("purchases").select("amount_total, status"),
+    admin.from("purchases").select("amount_total, status, created_at"),
     admin.from("leads").select("id", { count: "exact", head: true }),
     admin.from("profiles").select("id", { count: "exact", head: true }),
     admin.from("courses").select("id", { count: "exact", head: true }),
     admin.from("telegram_subscriptions").select("status").eq("status", "active"),
   ]);
 
-  const rows = (purchases.data ?? []) as { amount_total: number | null; status: string }[];
+  const rows = (purchases.data ?? []) as {
+    amount_total: number | null;
+    status: string;
+    created_at: string;
+  }[];
   const paid = rows.filter((r) => r.status === "paid");
   const revenueCents = paid.reduce((sum, r) => sum + (r.amount_total ?? 0), 0);
 
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const since30 = new Date();
+  since30.setDate(since30.getDate() - 30);
+
+  const revenueTodayCents = paid
+    .filter((r) => new Date(r.created_at) >= startOfToday)
+    .reduce((s, r) => s + (r.amount_total ?? 0), 0);
+  const revenue30dCents = paid
+    .filter((r) => new Date(r.created_at) >= since30)
+    .reduce((s, r) => s + (r.amount_total ?? 0), 0);
+
+  const memberCount = members.count ?? 0;
+  const paidCount = paid.length;
+
   return {
     revenueCents,
-    paidCount: paid.length,
-    pendingCount: rows.length - paid.length,
+    revenueTodayCents,
+    revenue30dCents,
+    aovCents: paidCount > 0 ? Math.round(revenueCents / paidCount) : 0,
+    paidCount,
+    pendingCount: rows.length - paidCount,
     leadCount: leads.count ?? 0,
-    memberCount: members.count ?? 0,
+    memberCount,
     courseCount: courses.count ?? 0,
     telegramActive: (telegram.data ?? []).length,
+    conversionRate: memberCount > 0 ? Math.round((paidCount / memberCount) * 1000) / 10 : 0,
   };
 }
 

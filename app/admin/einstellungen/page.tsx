@@ -2,6 +2,7 @@ import { ScrollText } from "lucide-react";
 import { PageHeader, Panel, AdminBadge } from "@/components/admin/ui";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import { getSiteSettings } from "@/lib/settings";
 import { SettingsEditor } from "@/components/admin/system/settings-editor";
 import {
   SettingsRawEditor,
@@ -56,14 +57,32 @@ export default async function EinstellungenPage() {
     auditRows = (auditRes.data ?? []) as AuditDbRow[];
   }
 
-  const settingsMap: Record<string, Record<string, unknown>> = {};
-  for (const row of settings) {
-    if (row.value && typeof row.value === "object" && !Array.isArray(row.value)) {
-      settingsMap[row.key] = row.value as Record<string, unknown>;
-    } else {
-      settingsMap[row.key] = {};
-    }
-  }
+  // Resolved, typed settings (with defaults + legacy-key fallbacks) mapped back
+  // into the raw jsonb shapes the editor consumes, so the form always shows the
+  // values the public site actually uses.
+  const site = await getSiteSettings();
+  const settingsMap: Record<string, Record<string, unknown>> = {
+    announcement_bar: {
+      enabled: site.announcement.enabled,
+      text: site.announcement.text,
+      href: site.announcement.href,
+    },
+    promo_banner: {
+      enabled: site.promoBanner.enabled,
+      text: site.promoBanner.text,
+      href: site.promoBanner.href,
+    },
+    featured_course: { slug: site.featuredCourseSlug ?? "" },
+    telegram: {
+      free_url: site.telegramFreeUrl ?? "",
+      paid_url: site.telegramPaidUrl ?? "",
+    },
+    contact: { email: site.contactEmail ?? "" },
+    hero: {
+      headline: site.heroHeadline ?? "",
+      subline: site.heroSubline ?? "",
+    },
+  };
 
   const rawRows: RawSettingRow[] = settings.map((s) => ({
     key: s.key,

@@ -6,8 +6,9 @@ import { Menu, X, LogIn, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { telegramUrl } from "@/lib/env";
+import { telegramUrl, hasSupabasePublicEnv } from "@/lib/env";
 import { navItems } from "@/lib/content";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { Button } from "@/components/button";
 import { CartButton } from "@/components/cart-button";
 import { CartDrawer } from "@/components/cart-drawer";
@@ -26,10 +27,42 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Reflect the REAL Supabase session (not a phantom localStorage flag), so
+  // navigating from /db back to a marketing page keeps the logged-in state.
   useEffect(() => {
-    const loggedIn = localStorage.getItem("auth_token") !== null;
-    setIsLoggedIn(loggedIn);
+    if (!hasSupabasePublicEnv()) {
+      // Demo mode fallback.
+      setIsLoggedIn(
+        typeof window !== "undefined" &&
+          localStorage.getItem("ai-goldmining-demo-user") !== null
+      );
+      return;
+    }
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    let active = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (active) setIsLoggedIn(Boolean(data.user));
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(Boolean(session?.user));
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
+
+  async function handleLogout() {
+    if (hasSupabasePublicEnv()) {
+      const supabase = getSupabaseBrowserClient();
+      if (supabase) await supabase.auth.signOut();
+    }
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("ai-goldmining-demo-user");
+    }
+    setIsLoggedIn(false);
+  }
 
   useEffect(() => {
     if (open) {
@@ -103,10 +136,7 @@ export function SiteHeader() {
                     Dashboard
                   </Link>
                   <button
-                    onClick={() => {
-                      localStorage.removeItem("auth_token");
-                      setIsLoggedIn(false);
-                    }}
+                    onClick={handleLogout}
                     className="focus-ring flex items-center gap-1.5 rounded-full border border-gold-300/30 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-cream/60 transition-all hover:border-gold-300/60 hover:text-cream hover:bg-gold-300/5"
                   >
                     <LogOut className="h-3.5 w-3.5" />
@@ -210,8 +240,7 @@ export function SiteHeader() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.5 }}
                       onClick={() => {
-                        localStorage.removeItem("auth_token");
-                        setIsLoggedIn(false);
+                        void handleLogout();
                         setOpen(false);
                       }}
                       className="rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"

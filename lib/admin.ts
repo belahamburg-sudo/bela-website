@@ -36,6 +36,24 @@ export async function getAdminSession(): Promise<{
 }
 
 /**
+ * Non-redirecting admin guard for use inside SERVER ACTIONS. Returns null when
+ * the caller is not an authenticated admin (or the service-role key is missing)
+ * instead of throwing a redirect — a redirect thrown from an action would eject
+ * the admin out of the panel on a transient auth blip. Pair with an `{ ok:
+ * false }` result so the UI can show an error toast and stay put.
+ */
+export async function getAdminContext(): Promise<{
+  user: User;
+  supabase: SupabaseClient;
+} | null> {
+  const { user, isAdmin } = await getAdminSession();
+  if (!user || !isAdmin) return null;
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return null;
+  return { user, supabase };
+}
+
+/**
  * Gate for admin server components / actions. Redirects non-admins away and
  * returns the authenticated user plus a service-role client that bypasses RLS.
  */

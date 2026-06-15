@@ -104,6 +104,58 @@ export async function listBucket(bucket: BucketName, prefix = "") {
   return data ?? [];
 }
 
+export type StorageFile = {
+  /** Full path within the bucket, e.g. "courses/slug/cover.png". */
+  path: string;
+  /** Just the file name. */
+  name: string;
+  size: number;
+  createdAt: string | null;
+  mimetype: string | null;
+};
+
+/**
+ * Recursively walk a bucket and return every actual file (Supabase `list()` is
+ * non-recursive and returns folder placeholders with a null id). Used by the
+ * media manager so images nested under courses/<slug>/… show up, not just the
+ * bucket root.
+ */
+export async function listBucketRecursive(
+  bucket: BucketName,
+  prefix = "",
+  depth = 0
+): Promise<StorageFile[]> {
+  const admin = getSupabaseAdminClient();
+  if (!admin || depth > 6) return [];
+
+  const { data, error } = await admin.storage.from(bucket).list(prefix, {
+    sortBy: { column: "name", order: "asc" },
+    limit: 1000,
+  });
+  if (error || !data) return [];
+
+  const out: StorageFile[] = [];
+  for (const entry of data) {
+    if (!entry.name) continue;
+    const full = prefix ? `${prefix}/${entry.name}` : entry.name;
+    // A real file has an id + metadata; a folder placeholder does not.
+    const isFile = Boolean(entry.id);
+    if (isFile) {
+      out.push({
+        path: full,
+        name: entry.name,
+        size: entry.metadata?.size ?? 0,
+        createdAt: entry.created_at ?? null,
+        mimetype: entry.metadata?.mimetype ?? null,
+      });
+    } else {
+      const nested = await listBucketRecursive(bucket, full, depth + 1);
+      out.push(...nested);
+    }
+  }
+  return out;
+}
+
 export function toStorageRef(bucket: BucketName, path: string): string {
   return `${STORAGE_SCHEME}${bucket}/${path}`;
 }

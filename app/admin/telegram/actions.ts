@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin, logAudit } from "@/lib/admin";
+import { getAdminContext, logAudit } from "@/lib/admin";
 
 type ActionResult = { ok: boolean; error?: string };
 
@@ -10,7 +10,9 @@ export async function updateTelegramStatus(input: {
   userId: string;
   status: "active" | "inactive";
 }): Promise<ActionResult> {
-  const { user, supabase } = await requireAdmin();
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
+  const { user, supabase } = ctx;
 
   if (!input.userId) return { ok: false, error: "Keine Benutzer-ID angegeben" };
 

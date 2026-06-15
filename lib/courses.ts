@@ -272,6 +272,25 @@ export async function getPublicCourse(slug: string): Promise<Course | undefined>
   }
 }
 
+/**
+ * All downloadable resource refs that belong to a course (across every lesson).
+ * Used to authorize downloads: a buyer may only fetch files that are actually
+ * part of the course they purchased — not arbitrary paths in the private bucket.
+ */
+export async function getCourseResourceRefs(slug: string): Promise<Set<string>> {
+  const course = await getPublicCourse(slug);
+  const refs = new Set<string>();
+  if (!course) return refs;
+  for (const mod of course.modules) {
+    for (const lesson of mod.lessons) {
+      for (const resource of lesson.resources) {
+        if (resource.href) refs.add(resource.href.trim());
+      }
+    }
+  }
+  return refs;
+}
+
 /** Featured courses for the homepage, DB-first with static fallback. */
 export async function getFeaturedCourses(): Promise<Course[]> {
   const all = await getPublicCourses();

@@ -1,8 +1,20 @@
 import { NextResponse } from "next/server";
 import { calculateDiscountCents, resolvePromoCode } from "@/lib/promo";
+import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try {
+    // Throttle to stop brute-force enumeration of valid promo codes.
+    const limited = await checkRateLimit({
+      bucket: "promo-validate",
+      identifier: clientIp(request),
+      limit: 30,
+      windowSeconds: 10 * 60,
+    });
+    if (!limited.allowed) {
+      return rateLimitResponse(limited.retryAfterSeconds ?? 600);
+    }
+
     const body = (await request.json()) as { code?: string; amountCents?: number };
     const code = body.code?.trim();
     if (!code) {

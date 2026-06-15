@@ -1,11 +1,9 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { animate, onScroll, stagger } from "animejs";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, CalendarClock } from "lucide-react";
 import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
+import { getActiveWebinar } from "@/lib/webinar";
+
+export const dynamic = "force-dynamic";
 
 const BULLETS = [
   { num: "01", text: "Warum digitale Produkte für den Einstieg schlanker sind als viele klassische Modelle" },
@@ -20,16 +18,33 @@ const PERKS = [
   "Unter 60 Minuten",
 ];
 
-export default function WebinarPage() {
-  const bulletsRef = useRef<HTMLUListElement>(null);
+/** Formats an ISO date as e.g. "Mittwoch, 18. Juni 2026, 19:00 Uhr". */
+function formatWebinarDate(startsAt: string | null): string | null {
+  if (!startsAt) return null;
+  const date = new Date(startsAt);
+  if (Number.isNaN(date.getTime())) return null;
+  const formatted = date.toLocaleString("de-DE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return `${formatted} Uhr`;
+}
 
-  useEffect(() => {
-    if (!bulletsRef.current) return;
-    const items = bulletsRef.current.querySelectorAll<HTMLElement>("li");
-    const anim = animate(items, { opacity: [0, 1], translateY: [20, 0], delay: stagger(100), duration: 600, ease: "outExpo", autoplay: false });
-    const obs = onScroll({ target: bulletsRef.current, enter: "bottom-=10% top", onEnter: () => anim.play() });
-    return () => { anim.revert(); obs.revert(); };
-  }, []);
+export default async function WebinarPage() {
+  const webinar = await getActiveWebinar();
+
+  const eyebrow = "Kostenloses Training";
+  const title = webinar?.title ?? "Wie du mit AI dein erstes digitales Produkt baust und automatisiert verkaufst.";
+  const subtitle =
+    webinar?.subtitle ??
+    "Ohne Lager, ohne Retouren, ohne monatelange Produktentwicklung. Der AI-Goldmining-Prozess von Idee bis Verkaufssystem.";
+  const description = webinar?.description ?? null;
+  const formattedDate = formatWebinarDate(webinar?.startsAt ?? null);
+  const joinUrl = webinar?.url ?? null;
 
   return (
     <>
@@ -45,44 +60,48 @@ export default function WebinarPage() {
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold-300/30 to-transparent" aria-hidden />
 
         <div className="relative mx-auto max-w-4xl px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
+          <p className="eyebrow mb-6 mx-auto">{eyebrow}</p>
+          <h1
+            className="font-heading font-extrabold tracking-gta leading-[1.02] text-cream mb-5"
+            style={{ fontSize: "clamp(2.4rem, 5.5vw, 5.5rem)" }}
           >
-            <p className="eyebrow mb-6 mx-auto">Kostenloses Training</p>
-            <h1
-              className="font-heading font-extrabold tracking-gta leading-[1.02] text-cream mb-5"
-              style={{ fontSize: "clamp(2.4rem, 5.5vw, 5.5rem)" }}
-            >
-              Wie du mit AI dein erstes digitales Produkt baust und{" "}
-              <span className="gold-text">automatisiert verkaufst.</span>
-            </h1>
-            <p className="text-base sm:text-lg text-cream/50 max-w-2xl mx-auto leading-relaxed mb-8">
-              Ohne Lager, ohne Retouren, ohne monatelange Produktentwicklung. Der AI-Goldmining-Prozess von Idee bis Verkaufssystem.
-            </p>
+            {title}
+          </h1>
+          <p className="text-base sm:text-lg text-cream/50 max-w-2xl mx-auto leading-relaxed mb-8">
+            {subtitle}
+          </p>
 
-            {/* Perks row */}
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-10">
-              {PERKS.map((p) => (
-                <span key={p} className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-cream/35">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-gold-300/60 shrink-0" />
-                  {p}
-                </span>
-              ))}
+          {/* Date badge (only when scheduled) */}
+          {formattedDate && (
+            <div className="mb-8 flex justify-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-gold-300/30 bg-gold-300/[0.06] px-5 py-2 text-sm font-semibold text-gold-100 backdrop-blur-md">
+                <CalendarClock className="h-4 w-4 text-gold-300/80 shrink-0" />
+                {formattedDate}
+              </span>
             </div>
-          </motion.div>
+          )}
+
+          {/* Perks row */}
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-10">
+            {PERKS.map((p) => (
+              <span key={p} className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-cream/35">
+                <CheckCircle2 className="h-3.5 w-3.5 text-gold-300/60 shrink-0" />
+                {p}
+              </span>
+            ))}
+          </div>
 
           {/* CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3"
-          >
-            <Button href="#anmeldung">Gratis Zugang sichern →</Button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            {joinUrl ? (
+              <Button href={joinUrl} target="_blank" rel="noopener noreferrer">
+                Jetzt teilnehmen →
+              </Button>
+            ) : (
+              <Button href="#anmeldung">Gratis Zugang sichern →</Button>
+            )}
             <Button href="/kurse" variant="secondary">Kurse ansehen</Button>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -100,16 +119,15 @@ export default function WebinarPage() {
                 <span className="gold-text">AI-Chaos.</span>
               </h2>
               <p className="mt-4 text-sm text-cream/40 leading-relaxed">
-                Das Webinar verkauft keinen Traum. Es zeigt die Bausteine, die du wirklich brauchst.
+                {description ?? "Das Webinar verkauft keinen Traum. Es zeigt die Bausteine, die du wirklich brauchst."}
               </p>
             </div>
 
-            <ul ref={bulletsRef} className="space-y-0">
+            <ul className="space-y-0">
               {BULLETS.map((bullet) => (
                 <li
                   key={bullet.num}
                   className="flex gap-5 items-start py-6 border-t border-gold-300/10"
-                  style={{ opacity: 0 }}
                 >
                   <span className="font-heading font-extrabold tracking-gta text-3xl text-gold-300/25 leading-none select-none shrink-0 w-10 text-right">
                     {bullet.num}
@@ -135,7 +153,9 @@ export default function WebinarPage() {
               <span className="gold-text">kostenlosen Zugang.</span>
             </h2>
             <p className="mt-4 text-sm text-cream/40 leading-relaxed max-w-xs">
-              Kein Spam. Sofort nach Anmeldung erhältst du den Zugangslink.
+              {formattedDate
+                ? `Live am ${formattedDate}. Kein Spam — sofort nach Anmeldung erhältst du den Zugangslink.`
+                : "Kein Spam. Sofort nach Anmeldung erhältst du den Zugangslink."}
             </p>
             <div className="mt-8 space-y-3">
               {PERKS.map((p) => (
@@ -147,7 +167,24 @@ export default function WebinarPage() {
             </div>
           </div>
           <div className="panel-surface p-8">
-            <LeadForm source="webinar" />
+            {joinUrl ? (
+              <div className="flex flex-col items-start gap-5">
+                <p className="text-base text-cream/70 leading-relaxed">
+                  Die Anmeldung läuft direkt über unsere Webinar-Plattform. Mit einem Klick bist du dabei.
+                </p>
+                <Button href={joinUrl} target="_blank" rel="noopener noreferrer">
+                  Jetzt teilnehmen →
+                </Button>
+                {formattedDate && (
+                  <span className="flex items-center gap-2 text-sm text-cream/40">
+                    <CalendarClock className="h-4 w-4 text-gold-300/60 shrink-0" />
+                    {formattedDate}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <LeadForm source="webinar" />
+            )}
           </div>
         </div>
       </section>
