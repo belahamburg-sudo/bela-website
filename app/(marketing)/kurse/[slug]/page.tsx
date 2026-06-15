@@ -7,8 +7,10 @@ import { AddToCartButton } from "@/components/add-to-cart-button";
 import { CourseLevelBadge } from "@/components/course-level-badge";
 import { CourseReviews } from "@/components/course-reviews";
 import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
-import { getPublicCourse } from "@/lib/courses";
+import { getPublicCourse, getPublicCourses } from "@/lib/courses";
+import { parseIncludeLine } from "@/lib/course-includes";
 import { formatEuro } from "@/lib/utils";
+import { Boxes } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +36,17 @@ export default async function CourseDetailPage({
 
   const autoBuy = buy === "1";
 
+  // Resolve bundled/linked courses (slugs → titles) for the "included" display.
+  const bundledSlugs = course.bundledCourses ?? [];
+  let bundledCourses: { slug: string; title: string }[] = [];
+  if (bundledSlugs.length > 0) {
+    const all = await getPublicCourses();
+    bundledCourses = bundledSlugs
+      .map((s) => all.find((c) => c.slug === s))
+      .filter((c): c is NonNullable<typeof c> => Boolean(c))
+      .map((c) => ({ slug: c.slug, title: c.title }));
+  }
+
   return (
     <>
       <section className="relative py-32 bg-obsidian overflow-hidden">
@@ -58,6 +71,32 @@ export default async function CourseDetailPage({
             </h1>
             <p className="mt-4 text-xl font-semibold text-gold-100">{course.tagline}</p>
             <p className="mt-6 max-w-2xl text-lg leading-9 text-white/50">{course.description}</p>
+
+            {bundledCourses.length > 0 && (
+              <div className="mt-8 rounded-2xl border border-gold-500/20 bg-gold-500/[0.05] p-5">
+                <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
+                  <Boxes aria-hidden className="h-4 w-4 text-gold-300" />
+                  Enthält {bundledCourses.length} weitere{bundledCourses.length === 1 ? "n" : ""} Kurs{bundledCourses.length === 1 ? "" : "e"}
+                </div>
+                <p className="mt-1 text-sm text-white/45">
+                  Beim Kauf werden diese Kurse automatisch mit freigeschaltet:
+                </p>
+                <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {bundledCourses.map((c) => (
+                    <li key={c.slug}>
+                      <Link
+                        href={`/kurse/${c.slug}`}
+                        className="flex items-center gap-2 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2 text-sm text-white/80 transition-colors hover:border-gold-300/40 hover:text-gold-100"
+                      >
+                        <CheckCircle2 aria-hidden className="h-4 w-4 flex-none text-gold-300" />
+                        <span className="truncate">{c.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className="mt-8 grid grid-cols-2 gap-0 divide-x divide-white/[0.06] border-t border-white/[0.06] pt-6">
               <div className="pr-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/30 mb-1">Preis</p>
@@ -103,12 +142,29 @@ export default async function CourseDetailPage({
             </h2>
             <p className="mt-5 text-lg leading-9 text-white/50">{course.outcome}</p>
             <div className="mt-8 grid gap-3">
-              {course.includes.map((item) => (
-                <div key={item} className="flex items-start gap-3 text-white/70">
-                  <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none text-gold-300" />
-                  <span className="leading-7">{item}</span>
-                </div>
-              ))}
+              {course.includes.map((item) => {
+                const parsed = parseIncludeLine(item);
+                const label = parsed?.label ?? item;
+                const href = parsed?.href ?? null;
+                return (
+                  <div key={item} className="flex items-start gap-3 text-white/70">
+                    <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none text-gold-300" />
+                    {href ? (
+                      <Link
+                        href={href}
+                        className="leading-7 text-gold-100 underline decoration-gold-300/40 underline-offset-2 transition-colors hover:text-gold-200"
+                        {...(href.startsWith("http")
+                          ? { target: "_blank", rel: "noopener noreferrer" }
+                          : {})}
+                      >
+                        {label}
+                      </Link>
+                    ) : (
+                      <span className="leading-7">{label}</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
           <div>

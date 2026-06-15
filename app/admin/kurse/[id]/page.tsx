@@ -14,14 +14,20 @@ export default async function AdminCourseEditorPage({
   const admin = getSupabaseAdminClient();
   if (!admin) notFound();
 
-  const { data } = await admin
-    .from("courses")
-    .select("*, modules(*, lessons(*))")
-    .eq("id", id)
-    .maybeSingle();
+  const [{ data }, { data: allRows }] = await Promise.all([
+    admin
+      .from("courses")
+      .select("*, modules(*, lessons(*))")
+      .eq("id", id)
+      .maybeSingle(),
+    admin.from("courses").select("slug, title").order("title"),
+  ]);
 
   if (!data) notFound();
   const course = data as DbCourse;
+  const allCourses = ((allRows ?? []) as { slug: string; title: string }[]).map(
+    (c) => ({ slug: c.slug, title: c.title })
+  );
 
   const modules = [...(course.modules ?? [])]
     .sort((a, b) => a.position - b.position)
@@ -56,8 +62,9 @@ export default async function AdminCourseEditorPage({
     isActive: course.is_active,
     sortOrder: course.sort_order ?? 0,
     includes: Array.isArray(course.includes) ? course.includes : [],
+    bundledCourses: Array.isArray(course.bundled_courses) ? course.bundled_courses : [],
     modules,
   };
 
-  return <CourseEditor course={editorCourse} />;
+  return <CourseEditor course={editorCourse} allCourses={allCourses} />;
 }

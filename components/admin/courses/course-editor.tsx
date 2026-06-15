@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, ImageIcon, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, ImageIcon, Save, Trash2, Boxes } from "lucide-react";
 import { Panel } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
 import { FileUpload } from "@/components/admin/file-upload";
@@ -44,8 +44,12 @@ export type EditorCourse = {
   isActive: boolean;
   sortOrder: number;
   includes: string[];
+  /** Slugs of other courses unlocked when THIS course is bought (bundle / bonus). */
+  bundledCourses: string[];
   modules: EditorModule[];
 };
+
+export type CoursePickOption = { slug: string; title: string };
 
 const LEVELS = ["Start", "Aufbau", "System", "Bundle"];
 
@@ -61,7 +65,13 @@ function toPreview(value: string | null): string | null {
   return `${base}/storage/v1/object/public/${value.slice("storage://".length)}`;
 }
 
-export function CourseEditor({ course }: { course: EditorCourse }) {
+export function CourseEditor({
+  course,
+  allCourses = [],
+}: {
+  course: EditorCourse;
+  allCourses?: CoursePickOption[];
+}) {
   const router = useRouter();
   const { success, error } = useToast();
   const [pending, startTransition] = useTransition();
@@ -82,6 +92,15 @@ export function CourseEditor({ course }: { course: EditorCourse }) {
   const [isActive, setIsActive] = useState(course.isActive);
   const [sortOrder, setSortOrder] = useState(course.sortOrder);
   const [includesText, setIncludesText] = useState(course.includes.join("\n"));
+  const [bundled, setBundled] = useState<string[]>(course.bundledCourses ?? []);
+
+  const otherCourses = allCourses.filter((c) => c.slug !== course.slug);
+
+  function toggleBundled(slug: string) {
+    setBundled((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
+    );
+  }
 
   function handleSave() {
     if (!title.trim()) {
@@ -111,6 +130,7 @@ export function CourseEditor({ course }: { course: EditorCourse }) {
           .split("\n")
           .map((s) => s.trim())
           .filter(Boolean),
+        bundledCourses: bundled,
       });
       if (res.ok) {
         success("Kurs gespeichert.");
@@ -345,6 +365,64 @@ export function CourseEditor({ course }: { course: EditorCourse }) {
               >
                 Bild entfernen
               </AdminButton>
+            )}
+          </div>
+        </Panel>
+      </div>
+
+      {/* Bundle / linked courses */}
+      <div className="mt-6">
+        <Panel title="Bundle / verknüpfte Kurse">
+          <div className="space-y-4">
+            <p className="text-sm text-cream/50">
+              Wähle Kurse, die beim Kauf <span className="font-semibold text-cream/80">dieses</span>{" "}
+              Kurses <span className="font-semibold text-cream/80">automatisch mit freigeschaltet</span>{" "}
+              werden. So baust du ein <span className="text-gold-200">Bundle</span> (mehrere Kurse in
+              einem) oder gibst einen <span className="text-gold-200">Bonus-Kurs</span> dazu. Das gilt
+              einseitig: Käufer dieses Kurses bekommen die ausgewählten — nicht umgekehrt.
+            </p>
+
+            {otherCourses.length === 0 ? (
+              <p className="rounded-lg border border-white/10 bg-obsidian/40 px-3 py-3 text-sm text-cream/40">
+                Es gibt noch keine anderen Kurse zum Verknüpfen.
+              </p>
+            ) : (
+              <>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {otherCourses.map((c) => {
+                    const checked = bundled.includes(c.slug);
+                    return (
+                      <label
+                        key={c.slug}
+                        className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                          checked
+                            ? "border-gold-300/40 bg-gold-300/[0.06]"
+                            : "border-white/10 bg-obsidian/40 hover:border-white/20"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleBundled(c.slug)}
+                          className="h-4 w-4 rounded border-white/20 bg-obsidian accent-gold-300"
+                        />
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm text-cream/90">{c.title}</span>
+                          <span className="block truncate font-mono text-[10px] uppercase tracking-wider text-cream/30">
+                            {c.slug}
+                          </span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-cream/50">
+                  <Boxes className="h-3.5 w-3.5 text-gold-300/60" />
+                  {bundled.length === 0
+                    ? "Keine Kurse verknüpft."
+                    : `${bundled.length} Kurs${bundled.length === 1 ? "" : "e"} werden mit freigeschaltet. Zum Übernehmen oben „Speichern".`}
+                </div>
+              </>
             )}
           </div>
         </Panel>

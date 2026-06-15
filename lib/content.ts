@@ -27,6 +27,8 @@ export type Course = {
   comingSoon?: boolean;
   sortOrder?: number;
   includes: string[];
+  /** Slugs of other courses unlocked when this course is purchased (bundle / cross-grant). */
+  bundledCourses?: string[];
   modules: Array<{
     id: string;
     title: string;

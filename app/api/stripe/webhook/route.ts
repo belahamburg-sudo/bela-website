@@ -141,6 +141,56 @@ async function handleCoursePurchase(
     return;
   }
 
+  // Bundles / cross-grants: unlock any courses the purchased course(s) include.
+  // One-directional. Skips courses the buyer already owns to avoid duplicate
+  // purchase rows. Best-effort — never blocks the main purchase flow.
+  if (userId) {
+    try {
+      const { data: boughtCourses } = await supabase
+        .from("courses")
+        .select("slug, bundled_courses")
+        .in("slug", slugs);
+
+      const bundledSlugs = new Set<string>();
+      for (const c of (boughtCourses ?? []) as {
+        slug: string;
+        bundled_courses: string[] | null;
+      }[]) {
+        const list = Array.isArray(c.bundled_courses) ? c.bundled_courses : [];
+        for (const s of list) if (s && !slugs.includes(s)) bundledSlugs.add(s);
+      }
+
+      if (bundledSlugs.size > 0) {
+        const { data: owned } = await supabase
+          .from("purchases")
+          .select("course_slug")
+          .eq("user_id", userId)
+          .in("course_slug", Array.from(bundledSlugs));
+        const ownedSet = new Set(
+          ((owned ?? []) as { course_slug: string }[]).map((r) => r.course_slug)
+        );
+        const toGrant = Array.from(bundledSlugs).filter((s) => !ownedSet.has(s));
+
+        if (toGrant.length > 0) {
+          await supabase.from("purchases").upsert(
+            toGrant.map((slug) => ({
+              user_id: userId,
+              course_slug: slug,
+              stripe_session_id: session.id,
+              stripe_customer_id: stripeCustomerId,
+              amount_total: 0,
+              currency: session.currency,
+              status: "paid",
+            })),
+            { onConflict: "stripe_session_id,course_slug", ignoreDuplicates: true }
+          );
+        }
+      }
+    } catch (e) {
+      console.error("Bundle expansion failed:", e instanceof Error ? e.message : e);
+    }
+  }
+
   if (alreadyRecorded) return; // webhook retry — don't resend / double-credit
 
   await recordReferral(supabase, session, userId, upserted?.[0]?.id ?? null);

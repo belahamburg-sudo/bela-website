@@ -41,6 +41,8 @@ export type DbCourse = {
   outcome?: string | null;
   featured?: boolean | null;
   includes?: string[] | null;
+  /** Slugs of other courses unlocked when this course is purchased (migration_014). */
+  bundled_courses?: string[] | null;
   sort_order?: number | null;
   updated_at?: string | null;
   created_at?: string | null;

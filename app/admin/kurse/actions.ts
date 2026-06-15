@@ -141,6 +141,8 @@ export type CourseInput = {
   isActive?: boolean;
   sortOrder?: number;
   includes?: string[];
+  /** Slugs of other courses unlocked when this course is purchased. */
+  bundledCourses?: string[];
 };
 
 export async function updateCourse(input: CourseInput): Promise<ActionResult> {
@@ -182,6 +184,23 @@ export async function updateCourse(input: CourseInput): Promise<ActionResult> {
     .eq("id", input.id);
 
   if (error) return { ok: false, error: duplicateMessage(error.message) };
+
+  // Bundled courses (cross-grants) — best-effort + separate so the main update
+  // still works on a DB where migration_014 hasn't run yet (missing column just
+  // returns an error we ignore). Never include the course's own slug.
+  if (Array.isArray(input.bundledCourses)) {
+    const bundled = Array.from(
+      new Set(
+        input.bundledCourses
+          .map((s) => slugify(s))
+          .filter((s) => s && s !== slug)
+      )
+    );
+    await supabase
+      .from("courses")
+      .update({ bundled_courses: bundled })
+      .eq("id", input.id);
+  }
 
   await logAudit({
     actorEmail: user.email,

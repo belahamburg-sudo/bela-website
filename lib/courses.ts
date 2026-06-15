@@ -68,6 +68,7 @@ export function mapDbCourseToCourse(db: DbCourse): Course {
     comingSoon: db.is_active === false,
     sortOrder: db.sort_order ?? 0,
     includes: Array.isArray(db.includes) ? db.includes : [],
+    bundledCourses: Array.isArray(db.bundled_courses) ? db.bundled_courses : [],
     modules,
   };
 }
