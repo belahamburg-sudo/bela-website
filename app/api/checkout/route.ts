@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getPublicCourse } from "@/lib/courses";
 import { readReferralFromCookieHeader } from "@/lib/referral";
+import { buildCheckoutDiscount, resolvePromoCode } from "@/lib/promo";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
@@ -135,20 +136,17 @@ export async function POST(request: Request) {
       });
     }
 
-    // Promotion code: if the customer typed one and it resolves to an active
-    // Stripe promotion code, apply it directly. Otherwise let Stripe collect one
-    // on its hosted page (the two options are mutually exclusive).
     let appliedDiscount: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
     const typedCode = body.promoCode?.trim();
     if (typedCode) {
-      try {
-        const promos = await stripe.promotionCodes.list({ code: typedCode, active: true, limit: 1 });
-        if (promos.data.length > 0) {
-          appliedDiscount = [{ promotion_code: promos.data[0].id }];
-        }
-      } catch {
-        // ignore lookup failures — fall back to hosted promo entry
+      const promo = await resolvePromoCode(typedCode);
+      if (!promo) {
+        return NextResponse.json(
+          { message: "Dieser Rabattcode ist ungültig." },
+          { status: 400 }
+        );
       }
+      appliedDiscount = await buildCheckoutDiscount(stripe, promo);
     }
 
     // Refer-a-friend: a valid referral code gives the friend a % discount.
@@ -189,6 +187,7 @@ export async function POST(request: Request) {
       ...(userId ? { user_id: userId } : {}),
       ...(resolvedEmail ? { user_email: resolvedEmail } : {}),
       ...(referralCode ? { referral_code: referralCode } : {}),
+      ...(typedCode ? { promo_code: typedCode.toUpperCase() } : {}),
     };
 
     const enableTax = process.env.STRIPE_AUTOMATIC_TAX === "1";

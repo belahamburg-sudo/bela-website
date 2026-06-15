@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ShoppingBag, Trash2, Loader2, AlertCircle, Lock, Tag, Gift } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ShoppingBag, Trash2, Loader2, AlertCircle, Lock, Tag, Gift, Check } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatEuro } from "@/lib/utils";
 import { ORDER_BUMP, formatBumpPrice } from "@/lib/offers";
@@ -18,11 +18,64 @@ export default function CartPage() {
 
   const [bump, setBump] = useState(false);
   const [promo, setPromo] = useState("");
+  const [promoState, setPromoState] = useState<
+    "idle" | "checking" | "valid" | "invalid"
+  >("idle");
+  const [promoMessage, setPromoMessage] = useState<string | null>(null);
+  const [discountCents, setDiscountCents] = useState(0);
   const [agb, setAgb] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const totalCents = subtotalCents + (bump ? ORDER_BUMP.priceCents : 0);
+  const subtotalWithBump = subtotalCents + (bump ? ORDER_BUMP.priceCents : 0);
+  const totalCents = Math.max(0, subtotalWithBump - discountCents);
+
+  useEffect(() => {
+    const code = promo.trim();
+    if (!code) {
+      setPromoState("idle");
+      setPromoMessage(null);
+      setDiscountCents(0);
+      return;
+    }
+
+    setPromoState("checking");
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch("/api/promo/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, amountCents: subtotalWithBump }),
+        });
+        const result = (await response.json()) as {
+          valid?: boolean;
+          message?: string;
+          discountCents?: number;
+          percentOff?: number | null;
+        };
+
+        if (result.valid) {
+          setPromoState("valid");
+          setDiscountCents(result.discountCents ?? 0);
+          setPromoMessage(
+            result.percentOff
+              ? `Code aktiv · ${result.percentOff}% Rabatt`
+              : "Code aktiv"
+          );
+        } else {
+          setPromoState("invalid");
+          setDiscountCents(0);
+          setPromoMessage(result.message ?? "Dieser Rabattcode ist ungültig.");
+        }
+      } catch {
+        setPromoState("invalid");
+        setDiscountCents(0);
+        setPromoMessage("Code konnte nicht geprüft werden.");
+      }
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [promo, subtotalWithBump]);
 
   async function checkout() {
     setError(null);
@@ -31,6 +84,10 @@ export default function CartPage() {
       return;
     }
     if (items.length === 0) return;
+    if (promo.trim() && promoState !== "valid") {
+      setError(promoMessage ?? "Bitte einen gültigen Rabattcode eingeben.");
+      return;
+    }
 
     // Resolve the buyer (login required to bind the purchase to the account).
     let userEmail: string | null = null;
@@ -169,7 +226,21 @@ export default function CartPage() {
                   placeholder="Rabattcode"
                   className="w-full bg-transparent py-2.5 text-sm text-cream placeholder:text-cream/25 focus:outline-none"
                 />
+                {promoState === "checking" ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-cream/40" />
+                ) : promoState === "valid" ? (
+                  <Check className="h-4 w-4 text-emerald-300" />
+                ) : null}
               </div>
+              {promoMessage ? (
+                <p
+                  className={`-mt-3 mb-5 text-xs ${
+                    promoState === "valid" ? "text-emerald-300/80" : "text-red-400"
+                  }`}
+                >
+                  {promoMessage}
+                </p>
+              ) : null}
 
               <div className="space-y-2 border-t border-white/8 pt-4 text-sm">
                 <div className="flex justify-between text-cream/60">
@@ -182,11 +253,17 @@ export default function CartPage() {
                     <span>{formatEuro(ORDER_BUMP.priceCents)}</span>
                   </div>
                 )}
+                {discountCents > 0 && (
+                  <div className="flex justify-between text-emerald-300/80">
+                    <span>Rabatt ({promo.trim().toUpperCase()})</span>
+                    <span>-{formatEuro(discountCents)}</span>
+                  </div>
+                )}
                 <div className="flex items-end justify-between pt-2">
                   <span className="font-heading text-base text-cream">Gesamt</span>
                   <span className="gold-text font-heading text-3xl leading-none">{formatEuro(totalCents)}</span>
                 </div>
-                <p className="text-[11px] text-cream/30">inkl. ggf. anfallender USt. · Rabatte werden im Zahlungsfenster verrechnet</p>
+                <p className="text-[11px] text-cream/30">inkl. ggf. anfallender USt.</p>
               </div>
 
               {/* AGB consent */}

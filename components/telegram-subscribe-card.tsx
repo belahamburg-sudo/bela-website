@@ -23,18 +23,23 @@ type CheckoutResult = {
 
 type PlanKey = "monthly" | "yearly";
 
-const PLANS: Record<PlanKey, { label: string; price: string; cadence: string; badge: string }> = {
+const PLANS: Record<
+  PlanKey,
+  { label: string; price: string; compareAt: string; cadence: string; badge: string }
+> = {
   monthly: {
     label: "Monatlich",
     price: "9€",
+    compareAt: "19€",
     cadence: "/ Monat",
     badge: "Flexibel",
   },
   yearly: {
     label: "Jährlich",
     price: "79€",
+    compareAt: "167€",
     cadence: "/ Jahr",
-    badge: "2 Monate sparen",
+    badge: "3 Monate sparen",
   },
 };
 
@@ -197,7 +202,10 @@ export function TelegramSubscribeCard() {
                 <span className="block text-[8px] font-mono uppercase tracking-[0.2em] text-cream/30">
                   Mitgliedschaft
                 </span>
-                <span className="flex items-end gap-1.5">
+                <span className="flex flex-wrap items-end gap-x-2 gap-y-1">
+                  <span className="font-heading text-2xl leading-none text-cream/35 line-through decoration-cream/25">
+                    {PLANS[plan].compareAt}
+                  </span>
                   <span className="gold-text font-heading text-5xl leading-none">{PLANS[plan].price}</span>
                   <span className="mb-1 font-mono text-[11px] uppercase tracking-[0.16em] text-cream/40">
                     {PLANS[plan].cadence}

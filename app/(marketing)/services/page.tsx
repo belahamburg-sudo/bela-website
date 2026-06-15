@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight, MessageCircle, Building2, Briefcase, Check, Users } from "lucide-react";
-import { belaPrivateTelegram, paidTelegramUrl } from "@/lib/env";
+import { belaPrivateTelegram } from "@/lib/env";
 
 export const metadata: Metadata = {
   title: "Services | 1:1 Coaching & Auslandsfirmen-Setup · AI Goldmining",
@@ -225,8 +225,8 @@ export default function ServicesPage() {
               title="Gruppencoaching"
               copy="Gemeinsam umsetzen statt allein: Gruppen-Calls, Feedback und Austausch direkt in meiner Telegram-Gruppe."
               points={GROUP_POINTS}
-              ctaLabel="Zur Telegram-Gruppe"
-              ctaHref={paidTelegramUrl}
+              ctaLabel="Coaching anfragen"
+              ctaHref={belaPrivateTelegram}
             />
             <ServiceCard
               icon={Building2}
