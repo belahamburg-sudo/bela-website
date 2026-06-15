@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk } from "next/font/google";
+import { SITE_LOGO_PATH } from "@/lib/brand";
 import "./globals.css";
 import { AuthHashHandler } from "@/components/auth-hash-handler";
 import { PickaxeCursor } from "@/components/pickaxe-cursor";
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     title: "Bela Goldmann | AI Goldmining",
     description:
       "Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen.",
-    images: ["/assets/logo-ai-goldmining-3d.png"],
+    images: [SITE_LOGO_PATH],
   },
 };
 

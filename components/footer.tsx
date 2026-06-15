@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { navItems } from "@/lib/content";
 import { socialLinks } from "@/lib/env";
+import { SITE_LOGO_PATH } from "@/lib/brand";
 
 export function Footer() {
   const legal = [
@@ -29,7 +30,7 @@ export function Footer() {
             <div className="mb-5">
               <Link href="/">
                 <Image
-                  src="/assets/logo-ai-goldmining-3d.png"
+                  src={SITE_LOGO_PATH}
                   alt="AI Goldmining"
                   width={1200}
                   height={204}

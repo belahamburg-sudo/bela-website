@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { ArrowLeft, CheckCircle2, LogIn } from "lucide-react";
 import { AuthForm } from "@/components/auth-form";
 import { SpatialBackground } from "@/components/spatial-background";
+import { SITE_LOGO_PATH } from "@/lib/brand";
 
 const REASONS = [
   "Zugriff auf deine freigeschalteten Kurse",
@@ -20,7 +21,7 @@ export default function LoginPage() {
       <header className="relative z-20 border-b border-gold-300/10">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-10">
           <Image
-            src="/assets/logo-ai-goldmining-3d.png"
+            src={SITE_LOGO_PATH}
             alt="AI Goldmining"
             width={1200}
             height={204}

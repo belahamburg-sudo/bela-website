@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { resolveSiteLogoUrl } from "./brand";
 
 export type EmailTemplate =
   | "change-email" | "checkout-abandoned" | "course-completed" | "course-unlocked"
@@ -59,7 +60,7 @@ export async function sendTemplateEmail(opts: {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com").replace(/\/$/, "");
   const merged: EmailVars = {
     siteUrl,
-    logoUrl: `${siteUrl}/assets/logo-ai-goldmining-3d.png`,
+    logoUrl: resolveSiteLogoUrl(siteUrl),
     dashboardUrl: `${siteUrl}/db`,
     courseUrl: `${siteUrl}/db/kurse`,
     checkoutUrl: `${siteUrl}/db/kurse`,

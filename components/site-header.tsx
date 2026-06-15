@@ -10,6 +10,7 @@ import { telegramUrl, hasSupabasePublicEnv } from "@/lib/env";
 import { navItems } from "@/lib/content";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { Button } from "@/components/button";
+import { SITE_LOGO_PATH } from "@/lib/brand";
 import { CartButton } from "@/components/cart-button";
 import { CartDrawer } from "@/components/cart-drawer";
 
@@ -88,7 +89,7 @@ export function SiteHeader() {
             {/* Logo */}
             <Link href="/" className="focus-ring group flex items-center shrink-0 transition-opacity hover:opacity-90" onClick={() => setOpen(false)}>
               <Image
-                src="/assets/logo-ai-goldmining-3d.png"
+                src={SITE_LOGO_PATH}
                 alt="AI Goldmining"
                 width={1200}
                 height={204}

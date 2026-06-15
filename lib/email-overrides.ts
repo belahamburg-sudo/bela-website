@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { getSupabaseAdminClient } from "./supabase";
 import type { EmailTemplate, EmailVars } from "./email";
+import { resolveSiteLogoUrl } from "./brand";
 
 /**
  * Per-template content overrides. The default email content lives in
@@ -110,7 +111,7 @@ export async function sendRawEmail(opts: {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com").replace(/\/$/, "");
   const merged: EmailVars = {
     siteUrl,
-    logoUrl: `${siteUrl}/assets/logo-ai-goldmining-3d.png`,
+    logoUrl: resolveSiteLogoUrl(siteUrl),
     dashboardUrl: `${siteUrl}/db`,
     courseUrl: `${siteUrl}/db/kurse`,
     checkoutUrl: `${siteUrl}/db/kurse`,

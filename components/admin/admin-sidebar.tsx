@@ -25,6 +25,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { hasSupabasePublicEnv } from "@/lib/env";
+import { SITE_LOGO_PATH } from "@/lib/brand";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 type NavLinkConfig = {
@@ -144,7 +145,7 @@ function SidebarContent({
       <div className="p-6">
         <Link href="/admin" onClick={onNavClick} className="group flex flex-col gap-2">
           <Image
-            src="/assets/logo-ai-goldmining-3d.png"
+            src={SITE_LOGO_PATH}
             alt="AI Goldmining"
             width={1200}
             height={204}
@@ -221,7 +222,7 @@ export function AdminSidebar({ email }: { email: string }) {
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-gold-300/10 bg-ink/95 px-4 backdrop-blur-md lg:hidden">
         <Link href="/admin" className="flex items-center">
           <Image
-            src="/assets/logo-ai-goldmining-3d.png"
+            src={SITE_LOGO_PATH}
             alt="AI Goldmining"
             width={1200}
             height={204}

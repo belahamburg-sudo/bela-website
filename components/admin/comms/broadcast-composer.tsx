@@ -602,12 +602,12 @@ export function BroadcastComposer() {
                   Vorschau wird geladen …
                 </div>
               ) : (
-                <div className="min-h-[75vh] flex-1 overflow-hidden rounded-lg border border-white/10 bg-white">
+                <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-white/10 bg-white">
                   <iframe
                     srcDoc={preview.html}
                     title="E-Mail-Vorschau"
                     sandbox=""
-                    className="h-full min-h-[75vh] w-full border-0"
+                    className="h-full w-full border-0"
                     scrolling="yes"
                   />
                 </div>

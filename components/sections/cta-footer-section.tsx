@@ -8,6 +8,7 @@ import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
 import { navItems } from "@/lib/content";
 import { telegramUrl, socialLinks } from "@/lib/env";
+import { SITE_LOGO_PATH } from "@/lib/brand";
 import { Meteors } from "@/components/ui/meteors";
 
 const LEGAL = [
@@ -120,7 +121,7 @@ export function CtaFooterSection({
               <div className="mb-5">
                 <Link href="/">
                   <Image
-                    src="/assets/logo-ai-goldmining-3d.png"
+                    src={SITE_LOGO_PATH}
                     alt="AI Goldmining"
                     width={1200}
                     height={204}

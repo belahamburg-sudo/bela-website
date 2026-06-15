@@ -15,6 +15,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { hasSupabasePublicEnv } from "@/lib/env";
+import { SITE_LOGO_PATH } from "@/lib/brand";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { CartButton } from "@/components/cart-button";
 import { CartDrawer } from "@/components/cart-drawer";
@@ -100,7 +101,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           className="group flex flex-col gap-2"
         >
           <Image
-            src="/assets/logo-ai-goldmining-3d.png"
+            src={SITE_LOGO_PATH}
             alt="AI Goldmining"
             width={1200}
             height={204}
@@ -226,7 +227,7 @@ export function DashboardSidebar() {
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-gold-300/10 bg-ink/95 px-4 backdrop-blur-md lg:hidden">
         <Link href="/db" className="flex items-center">
           <Image
-            src="/assets/logo-ai-goldmining-3d.png"
+            src={SITE_LOGO_PATH}
             alt="AI Goldmining"
             width={1200}
             height={204}
