@@ -1,4 +1,4 @@
-import { Send, CircleCheck, CircleOff, Hash, ExternalLink, TriangleAlert } from "lucide-react";
+import { Send, CircleCheck, CircleOff, ExternalLink, TriangleAlert } from "lucide-react";
 import { PageHeader, StatCard, Panel, KeyValue } from "@/components/admin/ui";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { telegramUrl, paidTelegramUrl } from "@/lib/env";
@@ -160,7 +160,7 @@ export default async function TelegramPage() {
 
       <div className="mt-6">
         <Panel title="Abonnenten" noPadding>
-          <TelegramTable rows={rows} emptyIcon={Hash} />
+          <TelegramTable rows={rows} />
         </Panel>
       </div>
     </div>

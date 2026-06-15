@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, Power, type LucideIcon } from "lucide-react";
+import { ExternalLink, Power, Hash } from "lucide-react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { AdminBadge } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
@@ -105,13 +105,7 @@ function RowActions({ row }: { row: TelegramRow }) {
   );
 }
 
-export function TelegramTable({
-  rows,
-  emptyIcon,
-}: {
-  rows: TelegramRow[];
-  emptyIcon?: LucideIcon;
-}) {
+export function TelegramTable({ rows }: { rows: TelegramRow[] }) {
   const safeRows = Array.isArray(rows) ? rows.filter(Boolean) : [];
 
   const [columns] = useState<Column<TelegramRow>[]>(() => [
@@ -168,7 +162,7 @@ export function TelegramTable({
       columns={columns}
       rows={safeRows}
       getRowKey={(r, i) => r?.userId ?? `row-${i}`}
-      emptyIcon={emptyIcon}
+      emptyIcon={Hash}
       emptyTitle="Noch keine Abonnenten"
       emptyDescription="Sobald jemand ein Telegram-Abo abschließt, erscheint er hier."
     />
