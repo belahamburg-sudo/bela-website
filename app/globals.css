@@ -152,6 +152,27 @@ select {
   cursor: not-allowed !important;
 }
 
+/* Support chat sits above the pickaxe cursor layer, so the JS cursor is hidden
+   behind it — restore native cursors inside the chat. */
+.chat-root,
+.chat-root * {
+  cursor: auto !important;
+}
+.chat-root a,
+.chat-root button,
+.chat-root label,
+.chat-root [role="button"] {
+  cursor: pointer !important;
+}
+.chat-root input:not([type="checkbox"]):not([type="radio"]),
+.chat-root textarea {
+  cursor: text !important;
+}
+.chat-root button:disabled,
+.chat-root [aria-disabled="true"] {
+  cursor: not-allowed !important;
+}
+
 ::selection {
   background: rgba(201, 169, 97, 0.38);
   color: #fff4c9;
