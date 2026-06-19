@@ -6,6 +6,7 @@ import { buildCheckoutDiscount, resolvePromoCode } from "@/lib/promo";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import { resolveMediaUrl } from "@/lib/storage";
 import { absoluteUrl } from "@/lib/utils";
 import { ORDER_BUMP, OTO } from "@/lib/offers";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
@@ -23,6 +24,15 @@ type CheckoutBody = {
   promoCode?: string;
   referralCode?: string;
 };
+
+async function stripeImageUrl(image: string | null | undefined): Promise<string | undefined> {
+  if (!image) return undefined;
+  const resolved = await resolveMediaUrl(image);
+  if (!resolved) return undefined;
+  if (/^https?:\/\//i.test(resolved)) return resolved;
+  if (resolved.startsWith("/")) return absoluteUrl(resolved);
+  return absoluteUrl(`/${resolved}`);
+}
 
 export async function POST(request: Request) {
   try {
@@ -108,21 +118,23 @@ export async function POST(request: Request) {
     }
     const resolvedEmail = userEmail ?? body.userEmail ?? null;
 
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = valid.map(({ item, course }) => ({
-      quantity: 1,
-      price_data: {
-        currency: "eur",
-        unit_amount: course!.priceCents,
-        product_data: {
-          name: course!.title,
-          ...(course!.tagline ? { description: course!.tagline } : {}),
-          images:
-            course!.image && !course!.image.startsWith("storage://")
-              ? [absoluteUrl(course!.image)]
-              : [],
-        },
-      },
-    }));
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = await Promise.all(
+      valid.map(async ({ course }) => {
+        const imageUrl = await stripeImageUrl(course!.image);
+        return {
+          quantity: 1,
+          price_data: {
+            currency: "eur",
+            unit_amount: course!.priceCents,
+            product_data: {
+              name: course!.title,
+              ...(course!.tagline ? { description: course!.tagline } : {}),
+              ...(imageUrl ? { images: [imageUrl] } : {}),
+            },
+          },
+        };
+      })
+    );
 
     // Order bump as an extra line item.
     if (body.orderBump) {
