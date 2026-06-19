@@ -11,11 +11,16 @@ function range(start: number, end: number) {
   return items;
 }
 
+// Images that were removed from the set — skipped so the carousel never points
+// at a missing file (which would render as a broken image).
+const MISSING = new Set<number>([86]);
+const keep = (n: number) => !MISSING.has(n);
+
 // 112 images split across three rows that scroll in alternating directions.
 const ROWS = [
-  { items: range(1, 38), anim: "animate-collage-l", dur: "72s" },
-  { items: range(39, 75), anim: "animate-collage-r", dur: "90s" },
-  { items: range(76, 112), anim: "animate-collage-l", dur: "108s" },
+  { items: range(1, 38).filter(keep), anim: "animate-collage-l", dur: "72s" },
+  { items: range(39, 75).filter(keep), anim: "animate-collage-r", dur: "90s" },
+  { items: range(76, 112).filter(keep), anim: "animate-collage-l", dur: "108s" },
 ];
 
 export function AboutCollage() {

@@ -30,24 +30,9 @@ export function CourseCard({ course, progress, status }: CourseCardProps) {
           style={{ background: "radial-gradient(ellipse at center, rgba(201, 169, 97,0.18) 0%, transparent 70%)" }}
         />
 
-        {/* Level + price */}
-        <div className="absolute inset-x-5 top-5 flex items-start justify-between">
+        {/* Level badge */}
+        <div className="absolute inset-x-5 top-5">
           <CourseLevelBadge level={course.level} />
-          <div className="flex flex-col items-end gap-1.5">
-            {discount > 0 && (
-              <span className="rounded-sm bg-gold-300 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-obsidian shadow-[0_2px_10px_rgba(201,169,97,0.4)]">
-                -{discount}% OFF
-              </span>
-            )}
-            <span className="flex items-center gap-1.5 rounded-sm border border-gold-300/35 bg-obsidian/85 px-3 py-1 font-heading tracking-gta text-[0.9rem] text-gold-200 backdrop-blur-md">
-              {discount > 0 && course.compareAtPriceCents && (
-                <span className="text-[0.72rem] text-cream/35 line-through decoration-cream/30">
-                  {formatEuro(course.compareAtPriceCents)}
-                </span>
-              )}
-              {formatEuro(course.priceCents)}
-            </span>
-          </div>
         </div>
       </div>
 
@@ -85,18 +70,36 @@ export function CourseCard({ course, progress, status }: CourseCardProps) {
           </div>
         )}
 
-        <a
-          href={`/kurse/${course.slug}`}
-          className="focus-ring mt-auto inline-flex items-center gap-2 pt-6 text-sm font-bold uppercase tracking-[0.1em] text-cream transition-colors hover:text-gold-300"
-        >
-          <span>Kurs ansehen</span>
-          <span className="relative flex h-7 w-7 items-center justify-center overflow-hidden rounded-sm border border-gold-300/35 bg-gold-300/[0.08] transition-all duration-300 group-hover:border-gold-300/70 group-hover:bg-gold-300/15">
-            <ArrowRight
-              className="h-3.5 w-3.5 text-gold-200 transition-transform duration-300 group-hover:translate-x-0.5"
-              aria-hidden
-            />
-          </span>
-        </a>
+        {/* Price + CTA — part of the card body, not overlaid on the cover */}
+        <div className="mt-auto flex items-end justify-between gap-3 pt-6">
+          <div className="flex flex-col gap-1.5">
+            {discount > 0 && (
+              <span className="w-fit rounded-sm bg-gold-300 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-obsidian">
+                -{discount}% OFF
+              </span>
+            )}
+            <span className="flex items-baseline gap-2 font-heading tracking-gta text-2xl leading-none text-gold-200">
+              {formatEuro(course.priceCents)}
+              {discount > 0 && course.compareAtPriceCents && (
+                <span className="text-sm text-cream/35 line-through decoration-cream/30">
+                  {formatEuro(course.compareAtPriceCents)}
+                </span>
+              )}
+            </span>
+          </div>
+          <a
+            href={`/kurse/${course.slug}`}
+            className="focus-ring inline-flex flex-none items-center gap-2 text-sm font-bold uppercase tracking-[0.1em] text-cream transition-colors hover:text-gold-300"
+          >
+            <span>Kurs ansehen</span>
+            <span className="relative flex h-7 w-7 items-center justify-center overflow-hidden rounded-sm border border-gold-300/35 bg-gold-300/[0.08] transition-all duration-300 group-hover:border-gold-300/70 group-hover:bg-gold-300/15">
+              <ArrowRight
+                className="h-3.5 w-3.5 text-gold-200 transition-transform duration-300 group-hover:translate-x-0.5"
+                aria-hidden
+              />
+            </span>
+          </a>
+        </div>
       </div>
 
       {/* Stretched link overlay */}
