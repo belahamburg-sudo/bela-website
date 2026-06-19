@@ -9,10 +9,10 @@ import { RetroGrid } from "@/components/ui/retro-grid";
 const STEPS = [
   {
     num: "01",
-    title: "Idee finden",
+    title: "Nische finden",
     copy: "Aus Skill, Interesse oder Problem wird ein konkretes digitales Produkt: eine klare Entscheidung.",
     detail: "Framework + AI-Validierungsprompts",
-    href: "/kurse/ai-goldmining-starter",
+    href: "/kurse/ai-goldmining-method",
     Icon: Lightbulb,
   },
   {
@@ -20,7 +20,7 @@ const STEPS = [
     title: "Mit AI bauen",
     copy: "AI übernimmt Struktur, Copy, Workbook und Assets. Du bleibst im Driver-Seat für Qualität.",
     detail: "Prompt-Packs für jede Phase",
-    href: "/kurse/prompt-engineering-pro",
+    href: "/kurse/ai-goldmining-method",
     Icon: Bot,
   },
   {
@@ -28,7 +28,7 @@ const STEPS = [
     title: "Sauber verpacken",
     copy: "Name, Promise, Module, Verkaufsseite. Aus einem Draft wird ein kaufbares Angebot.",
     detail: "Template-System für Sales-Pages",
-    href: "/kurse/template-goldmine",
+    href: "/kurse/ai-goldmining-method",
     Icon: Package,
   },
   {
@@ -36,7 +36,7 @@ const STEPS = [
     title: "Automatisiert verkaufen",
     copy: "Store, Webinar, Newsletter, Community als System. Du baust einmal: es läuft.",
     detail: "Funnel-Map + Launch-Playbook",
-    href: "/kurse/funnel-store-system",
+    href: "/kurse/ai-goldmining-method",
     Icon: Rocket,
   },
 ];

@@ -8,11 +8,12 @@ import { Button } from "@/components/button";
 import { CourseLevelBadge } from "@/components/course-level-badge";
 import { CourseReviews } from "@/components/course-reviews";
 import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
+import { ProductPageSections } from "@/components/product-page-sections";
 import { getPublicCourse, getPublicCourses } from "@/lib/courses";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { parseIncludeLine } from "@/lib/course-includes";
-import { formatEuro } from "@/lib/utils";
-import { Boxes } from "lucide-react";
+import { formatEuro, discountPercent } from "@/lib/utils";
+import { Boxes, Package } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,7 @@ export default async function CourseDetailPage({
   const { buy } = await searchParams;
   const course = await getPublicCourse(slug);
   if (!course) notFound();
+  if (course.isUnlisted) notFound();
 
   const autoBuy = buy === "1";
 
@@ -54,7 +56,7 @@ export default async function CourseDetailPage({
           .select("id")
           .eq("user_id", user.id)
           .eq("course_slug", slug)
-          .eq("status", "paid")
+          .in("status", ["paid", "free"])
           .maybeSingle();
         owned = Boolean(purchase);
       }
@@ -63,16 +65,21 @@ export default async function CourseDetailPage({
     }
   }
 
-  // Resolve bundled/linked courses (slugs → titles) for the "included" display.
+  // Bundle relationships, resolved from the full catalog (fetched once).
+  const allCourses = await getPublicCourses();
   const bundledSlugs = course.bundledCourses ?? [];
-  let bundledCourses: { slug: string; title: string }[] = [];
-  if (bundledSlugs.length > 0) {
-    const all = await getPublicCourses();
-    bundledCourses = bundledSlugs
-      .map((s) => all.find((c) => c.slug === s))
-      .filter((c): c is NonNullable<typeof c> => Boolean(c))
-      .map((c) => ({ slug: c.slug, title: c.title }));
-  }
+  const bundledCourses = bundledSlugs
+    .map((s) => allCourses.find((c) => c.slug === s))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+    .map((c) => ({ slug: c.slug, title: c.title }));
+
+  // Reverse lookup: other courses (bundles) that INCLUDE this one — so we can
+  // nudge "get the whole bundle instead" on the product page (#28).
+  const partOfBundles = allCourses
+    .filter((c) => c.slug !== course.slug && (c.bundledCourses ?? []).includes(course.slug))
+    .map((c) => ({ slug: c.slug, title: c.title, priceCents: c.priceCents }));
+
+  const discount = discountPercent(course.priceCents, course.compareAtPriceCents);
 
   return (
     <>
@@ -97,6 +104,16 @@ export default async function CourseDetailPage({
               {course.title}
             </h1>
             <p className="mt-4 text-xl font-semibold text-gold-100">{course.tagline}</p>
+            {course.productPage?.outcomeHeadline && (
+              <p className="mt-5 font-heading text-2xl leading-snug text-white sm:text-3xl">
+                {course.productPage.outcomeHeadline}
+              </p>
+            )}
+            {course.productPage?.subline && (
+              <p className="mt-3 max-w-2xl text-base leading-7 text-gold-100/80">
+                {course.productPage.subline}
+              </p>
+            )}
             <p className="mt-6 max-w-2xl text-lg leading-9 text-white/50">{course.description}</p>
 
             {bundledCourses.length > 0 && (
@@ -124,10 +141,51 @@ export default async function CourseDetailPage({
               </div>
             )}
 
+            {!owned && partOfBundles.length > 0 && (
+              <div className="mt-8 rounded-2xl border border-gold-300/30 bg-gold-300/[0.06] p-5">
+                <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
+                  <Package aria-hidden className="h-4 w-4 text-gold-300" />
+                  Im Bundle günstiger
+                </div>
+                <p className="mt-1 text-sm text-white/50">
+                  Dieser Kurs ist Teil {partOfBundles.length === 1 ? "eines Bundles" : "von Bundles"}.
+                  Hol dir gleich das ganze Paket und schalte mehrere Kurse auf einmal frei:
+                </p>
+                <ul className="mt-3 grid gap-2">
+                  {partOfBundles.map((b) => (
+                    <li key={b.slug}>
+                      <Link
+                        href={`/kurse/${b.slug}`}
+                        className="flex items-center justify-between gap-2 rounded-lg border border-gold-300/20 bg-obsidian/40 px-3 py-2.5 text-sm text-white/85 transition-colors hover:border-gold-300/50 hover:text-gold-100"
+                      >
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Boxes aria-hidden className="h-4 w-4 flex-none text-gold-300" />
+                          <span className="truncate">{b.title}</span>
+                        </span>
+                        <span className="flex-none font-heading text-gold-200">{formatEuro(b.priceCents)}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className="mt-8 grid grid-cols-2 gap-0 divide-x divide-white/[0.06] border-t border-white/[0.06] pt-6">
               <div className="pr-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/30 mb-1">Preis</p>
-                <p className="font-heading text-3xl text-gold-300">{formatEuro(course.priceCents)}</p>
+                <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                  <p className="font-heading text-3xl text-gold-300">{formatEuro(course.priceCents)}</p>
+                  {discount > 0 && course.compareAtPriceCents && (
+                    <span className="text-lg text-white/35 line-through decoration-white/30">
+                      {formatEuro(course.compareAtPriceCents)}
+                    </span>
+                  )}
+                </div>
+                {discount > 0 && (
+                  <span className="mt-2 inline-block rounded-sm bg-gold-300 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-obsidian">
+                    -{discount}% OFF
+                  </span>
+                )}
               </div>
               <div className="pl-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/30 mb-1">Für wen</p>
@@ -175,6 +233,28 @@ export default async function CourseDetailPage({
         </div>
       </section>
 
+      {course.promoVideoUrl && (
+        <section className="bg-obsidian border-t border-white/[0.04] py-16 sm:py-24">
+          <div className="mx-auto max-w-4xl px-6">
+            <p className="eyebrow mb-6">Vorschau</p>
+            <h2 className="mb-8 font-heading text-3xl leading-tight text-white sm:text-4xl">
+              Schau rein, was dich erwartet.
+            </h2>
+            <div className="overflow-hidden rounded-2xl border border-gold-500/20 shadow-gold">
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video
+                src={course.promoVideoUrl}
+                controls
+                playsInline
+                className="aspect-video w-full bg-black"
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <ProductPageSections pp={course.productPage} />
+
       <section className="py-32 bg-obsidian border-t border-white/[0.04]">
         <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
@@ -218,7 +298,7 @@ export default async function CourseDetailPage({
             {owned ? (
               <div className="mt-5 flex items-start gap-3 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4 text-sm leading-7 text-emerald-100">
                 <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none" />
-                Du hast diesen Kurs freigeschaltet — Videos und Downloads findest du im Dashboard.
+                Du hast diesen Kurs freigeschaltet. Videos und Downloads findest du im Dashboard.
               </div>
             ) : (
               <div className="mt-5 flex items-start gap-3 rounded-2xl border border-gold-500/15 bg-gold-500/[0.07] p-4 text-sm leading-7 text-gold-100">

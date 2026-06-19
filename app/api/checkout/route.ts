@@ -7,7 +7,7 @@ import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { absoluteUrl } from "@/lib/utils";
-import { ORDER_BUMP } from "@/lib/offers";
+import { ORDER_BUMP, OTO } from "@/lib/offers";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 type CheckoutItem = { slug: string; qty?: number };
@@ -199,11 +199,16 @@ export async function POST(request: Request) {
       ...(resolvedEmail ? { customer_email: resolvedEmail } : {}),
       ...(userId ? { client_reference_id: userId } : {}),
       line_items: lineItems,
-      // Proper invoices with mandatory fields (brief section 1).
+      // Proper invoices with mandatory fields (brief section 1). This also makes
+      // Stripe always create a Customer, which the OTO charge reuses.
       invoice_creation: { enabled: true },
       billing_address_collection: "required",
       tax_id_collection: { enabled: true },
       ...(enableTax ? { automatic_tax: { enabled: true } } : {}),
+      // Save the card for the post-purchase 1-Click OTO (only when OTO is live).
+      ...(OTO.enabled
+        ? { payment_intent_data: { setup_future_usage: "off_session" as const } }
+        : {}),
       // Discounts vs. hosted promo entry are mutually exclusive.
       ...(appliedDiscount ? { discounts: appliedDiscount } : { allow_promotion_codes: true }),
       ...(process.env.STRIPE_TOS_CONSENT === "1"

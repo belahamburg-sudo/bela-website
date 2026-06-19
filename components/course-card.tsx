@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import type { Course } from "@/lib/content";
-import { formatEuro } from "@/lib/utils";
+import { formatEuro, discountPercent } from "@/lib/utils";
 import { CourseLevelBadge } from "@/components/course-level-badge";
 
 type CourseCardProps = {
@@ -11,6 +11,7 @@ type CourseCardProps = {
 };
 
 export function CourseCard({ course, progress, status }: CourseCardProps) {
+  const discount = discountPercent(course.priceCents, course.compareAtPriceCents);
   return (
     <article className="card-glow panel-surface group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gold-300/15">
       {/* Image */}
@@ -30,11 +31,23 @@ export function CourseCard({ course, progress, status }: CourseCardProps) {
         />
 
         {/* Level + price */}
-        <div className="absolute inset-x-5 top-5 flex items-center justify-between">
+        <div className="absolute inset-x-5 top-5 flex items-start justify-between">
           <CourseLevelBadge level={course.level} />
-          <span className="rounded-sm border border-gold-300/35 bg-obsidian/85 px-3 py-1 font-heading tracking-gta text-[0.9rem] text-gold-200 backdrop-blur-md">
-            {formatEuro(course.priceCents)}
-          </span>
+          <div className="flex flex-col items-end gap-1.5">
+            {discount > 0 && (
+              <span className="rounded-sm bg-gold-300 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-obsidian shadow-[0_2px_10px_rgba(201,169,97,0.4)]">
+                -{discount}% OFF
+              </span>
+            )}
+            <span className="flex items-center gap-1.5 rounded-sm border border-gold-300/35 bg-obsidian/85 px-3 py-1 font-heading tracking-gta text-[0.9rem] text-gold-200 backdrop-blur-md">
+              {discount > 0 && course.compareAtPriceCents && (
+                <span className="text-[0.72rem] text-cream/35 line-through decoration-cream/30">
+                  {formatEuro(course.compareAtPriceCents)}
+                </span>
+              )}
+              {formatEuro(course.priceCents)}
+            </span>
+          </div>
         </div>
       </div>
 

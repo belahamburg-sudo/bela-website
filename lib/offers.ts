@@ -19,3 +19,20 @@ export function formatBumpPrice(): string {
     minimumFractionDigits: ORDER_BUMP.priceCents % 100 === 0 ? 0 : 2,
   })} €`;
 }
+
+/**
+ * Post-purchase 1-Click upsell (OTO). After a successful checkout we charge the
+ * card that was just saved (setup_future_usage) for a discounted course — no
+ * second card entry. REAL money moves here, so it's OFF until `OTO_ENABLED=1`
+ * is set (test it in Stripe test mode first, then flip it on live).
+ */
+export const OTO = {
+  enabled: process.env.OTO_ENABLED === "1",
+  courseSlug: process.env.OTO_COURSE_SLUG || "ai-goldmining-method",
+  discountPercent: Math.min(95, Math.max(1, Number(process.env.OTO_DISCOUNT_PERCENT || 50))),
+} as const;
+
+/** Discounted OTO price for a given full price, in cents. */
+export function otoPriceCents(fullPriceCents: number): number {
+  return Math.round(fullPriceCents * (1 - OTO.discountPercent / 100));
+}

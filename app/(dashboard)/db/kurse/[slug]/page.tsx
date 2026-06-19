@@ -6,9 +6,13 @@ import { CoursePlayer } from "@/components/course-player";
 import { PaywallScreen } from "@/components/paywall-screen";
 import { ComingSoonScreen } from "@/components/coming-soon-screen";
 import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
+import { CourseReviews } from "@/components/course-reviews";
+import { CourseCrossSell, type CrossSellItem } from "@/components/course-cross-sell";
+import { getPublicCourses } from "@/lib/courses";
 import type { DbCourse, DbModule } from "@/lib/db-types";
 import type { Course } from "@/lib/content";
 import { hasSupabasePublicEnv } from "@/lib/env";
+import { getSupabaseAdminClient } from "@/lib/supabase";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { resolveMediaUrl } from "@/lib/storage";
 import { getCourse } from "@/lib/content";
@@ -96,13 +100,14 @@ async function fetchCourseAndAccess(
 
   const supabase = await getSupabaseServerClient();
   if (!supabase) return { course: null, hasPurchase: false, completedLessonIds: [] };
+  const admin = getSupabaseAdminClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const [courseResult, purchaseResult, progressResult] = await Promise.all([
-    supabase
+    (admin ?? supabase)
       .from("courses")
       .select("*, modules(*, lessons(*))")
       .eq("slug", slug)
@@ -113,7 +118,7 @@ async function fetchCourseAndAccess(
           .select("id")
           .eq("user_id", user.id)
           .eq("course_slug", slug)
-          .eq("status", "paid")
+          .in("status", ["paid", "free"])
           .maybeSingle()
       : Promise.resolve({ data: null }),
     user
@@ -158,6 +163,18 @@ export default async function DashboardCoursePage({
   if (dbCourse) {
     if (hasPurchase && dbCourse.is_active) {
       const playableCourse = await resolveCourseMedia(dbCourse);
+
+      // Cross-sell pool: resolve the hand-picked slugs to live course cards.
+      const crossSlugs = Array.isArray(dbCourse.cross_sell_slugs) ? dbCourse.cross_sell_slugs : [];
+      let crossSellItems: CrossSellItem[] = [];
+      if (crossSlugs.length > 0) {
+        const all = await getPublicCourses();
+        crossSellItems = crossSlugs
+          .map((s) => all.find((c) => c.slug === s))
+          .filter((c): c is NonNullable<typeof c> => Boolean(c))
+          .map((c) => ({ slug: c.slug, title: c.title, image: c.image, priceCents: c.priceCents }));
+      }
+
       return (
         <AuthGate>
           <section className="py-10 sm:py-14">
@@ -170,6 +187,14 @@ export default async function DashboardCoursePage({
                 Zurück zur Übersicht
               </Link>
               <CoursePlayer course={playableCourse} initialCompleted={completedLessonIds} />
+
+              {/* Affiliate text + cross-sell pool under the videos (#54). */}
+              <CourseCrossSell affiliateText={dbCourse.affiliate_text} items={crossSellItems} />
+
+              {/* Buyers can rate the course right where they learn (#17). */}
+              <div className="mt-14 border-t border-white/[0.06] pt-12">
+                <CourseReviews courseSlug={slug} />
+              </div>
             </div>
           </section>
         </AuthGate>

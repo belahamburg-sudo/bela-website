@@ -144,7 +144,7 @@ export function CtaFooterSection({
           <div className="mt-6 flex flex-col items-start justify-between gap-3 text-xs text-cream/25 sm:flex-row sm:items-center">
             <p>© {new Date().getFullYear()} Bela Goldmann · AI Goldmining. Alle Rechte vorbehalten.</p>
             <p className="gta-label opacity-50">
-              Gebaut für Umsetzer: nicht für Zuschauer.
+              Gebaut für Umsetzer. Nicht für Zuschauer.
             </p>
           </div>
         </div>

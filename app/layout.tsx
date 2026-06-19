@@ -6,6 +6,8 @@ import { AuthHashHandler } from "@/components/auth-hash-handler";
 import { PickaxeCursor } from "@/components/pickaxe-cursor";
 import { CookieConsent } from "@/components/cookie-consent";
 import { GoogleAnalytics } from "@/components/google-analytics";
+import { MicrosoftClarity } from "@/components/microsoft-clarity";
+import { SupportChatbot } from "@/components/support-chatbot";
 import { CartProvider } from "@/lib/cart";
 import { ReferralCapture } from "@/components/referral-capture";
 
@@ -50,16 +52,12 @@ export default function RootLayout({
     <html lang="de" className={`dark scroll-smooth ${hanken.variable}`}>
       <body className="bg-obsidian font-body text-cream antialiased">
         <GoogleAnalytics />
-        <a
-          href="#main"
-          className="focus-ring fixed left-4 top-4 z-[100] -translate-y-20 rounded-sm bg-gold-300 px-4 py-3 text-sm font-bold text-obsidian transition focus:translate-y-0"
-        >
-          Zum Inhalt springen
-        </a>
+        <MicrosoftClarity />
         <PickaxeCursor />
         <AuthHashHandler />
         <ReferralCapture />
         <CartProvider>{children}</CartProvider>
+        <SupportChatbot />
         <CookieConsent />
       </body>
     </html>

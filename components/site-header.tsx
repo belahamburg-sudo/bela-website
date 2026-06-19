@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, LogIn, LogOut } from "lucide-react";
+import { Menu, X, LogIn, LogOut, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { telegramUrl, hasSupabasePublicEnv } from "@/lib/env";
+import { hasSupabasePublicEnv } from "@/lib/env";
 import { navItems } from "@/lib/content";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { Button } from "@/components/button";
@@ -124,9 +124,11 @@ export function SiteHeader() {
                 <>
                   <Link
                     href="/db/profil"
-                    className="focus-ring text-xs font-bold uppercase tracking-[0.12em] text-cream/50 transition-colors hover:text-cream"
+                    aria-label="Mein Profil"
+                    title="Mein Profil"
+                    className="focus-ring flex h-9 w-9 items-center justify-center rounded-full border border-gold-300/30 text-cream/60 transition-all hover:border-gold-300/60 hover:text-cream hover:bg-gold-300/5"
                   >
-                    Mein Profil
+                    <User className="h-4 w-4" />
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -137,15 +139,23 @@ export function SiteHeader() {
                   </button>
                 </>
               ) : (
-                <Button
-                  href="/login"
-                  size="sm"
-                  variant="outline"
-                  className="flex items-center gap-1.5 rounded-full px-4"
-                >
-                  <LogIn className="h-3.5 w-3.5" />
-                  Login
-                </Button>
+                <>
+                  <Link
+                    href="/signup"
+                    className="focus-ring text-xs font-bold uppercase tracking-[0.12em] text-cream/50 transition-colors hover:text-cream"
+                  >
+                    Registrieren
+                  </Link>
+                  <Button
+                    href="/login"
+                    size="sm"
+                    variant="outline"
+                    className="flex items-center gap-1.5 rounded-full px-4"
+                  >
+                    <LogIn className="h-3.5 w-3.5" />
+                    Login
+                  </Button>
+                </>
               )}
             </div>
 
@@ -198,21 +208,6 @@ export function SiteHeader() {
               </nav>
 
               <div className="mt-8 flex flex-col gap-3">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Link
-                    href={telegramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
-                    onClick={() => setOpen(false)}
-                  >
-                    Community
-                  </Link>
-                </motion.div>
                 {isLoggedIn ? (
                   <>
                     <motion.div
@@ -246,10 +241,18 @@ export function SiteHeader() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
+                    className="flex flex-col gap-3"
                   >
                     <Button href="/login" size="lg" variant="outline" className="w-full rounded-full" onClick={() => setOpen(false)}>
                       Login
                     </Button>
+                    <Link
+                      href="/signup"
+                      className="block rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
+                      onClick={() => setOpen(false)}
+                    >
+                      Registrieren
+                    </Link>
                   </motion.div>
                 )}
               </div>

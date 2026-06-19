@@ -34,6 +34,8 @@ export type DbCourse = {
   price_cents: number;
   image_url: string | null;
   is_active: boolean;
+  /** Hidden lead magnet courses (migration_019). */
+  is_unlisted?: boolean | null;
   // Marketing-fidelity columns (migration_007).
   level?: string | null;
   format?: string | null;
@@ -43,6 +45,17 @@ export type DbCourse = {
   includes?: string[] | null;
   /** Slugs of other courses unlocked when this course is purchased (migration_014). */
   bundled_courses?: string[] | null;
+  // Rich product page / pricing columns (migration_017).
+  /** Strikethrough "anchor" price; a "-X% OFF" badge is derived when price is lower. */
+  compare_at_price_cents?: number | null;
+  /** Promo video shown on the product page, separate from the cover. */
+  promo_video_url?: string | null;
+  /** Hand-picked cross-sell course slugs shown under the lesson videos. */
+  cross_sell_slugs?: string[] | null;
+  /** Per-course affiliate / tools text shown under the lesson videos. */
+  affiliate_text?: string | null;
+  /** Editable sales-page sections; empty keys hide their section. */
+  product_page?: Record<string, unknown> | null;
   sort_order?: number | null;
   updated_at?: string | null;
   created_at?: string | null;

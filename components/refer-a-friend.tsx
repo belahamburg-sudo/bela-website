@@ -58,7 +58,7 @@ export function ReferAFriend() {
         </h2>
         <p className="mt-3 max-w-md text-sm leading-relaxed text-cream/55">
           Teil deinen Link: Dein Freund bekommt 20% auf seinen ersten Kauf, du bekommst 20%
-          Provision auf deinen nächsten.
+          Rabatt auf deinen nächsten Kauf.
         </p>
 
         {/* Share link */}

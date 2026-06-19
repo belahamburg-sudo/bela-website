@@ -212,7 +212,7 @@ export function ProfileForm({
           <div className="space-y-1">
             <p className="tac-label tracking-widest text-gold-300/50">Deine Reise</p>
             <h3 className="font-heading text-3xl uppercase tracking-tight text-cream">
-              Roadmap zum <span className="text-gold-300">Gipfel.</span>
+              Roadmap zum <span className="text-gold-300">Gold.</span>
             </h3>
           </div>
           <p className="max-w-xs font-mono text-[11px] uppercase leading-relaxed tracking-[0.14em] text-cream/30">

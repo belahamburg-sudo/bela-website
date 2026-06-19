@@ -17,7 +17,7 @@ import {
 import { AddToCartButton } from "./add-to-cart-button";
 import { Button } from "./button";
 import { CourseLevelBadge } from "@/components/course-level-badge";
-import { formatEuro, cn } from "@/lib/utils";
+import { formatEuro, cn, discountPercent } from "@/lib/utils";
 import type { Course } from "@/lib/content";
 
 const VALID_LEVELS: Course["level"][] = ["Start", "Aufbau", "System", "Bundle"];
@@ -28,6 +28,7 @@ export type StoreCardCourse = {
   tagline: string;
   image: string;
   price_cents: number;
+  compare_at_price_cents?: number | null;
   level: string;
   format: "video" | "pdf";
   totalLessons: number;
@@ -52,6 +53,7 @@ export function StoreProductCard({
     : "Start") as Course["level"];
   const comingSoon = Boolean(course.comingSoon);
   const isFlagship = Boolean(course.isFlagship);
+  const discount = discountPercent(course.price_cents, course.compare_at_price_cents);
 
   return (
     <div
@@ -249,9 +251,21 @@ export function StoreProductCard({
                 <span className="block text-[8px] font-mono uppercase tracking-[0.2em] text-cream/30">
                   Einmalig
                 </span>
-                <span className="gold-text font-heading text-2xl leading-none">
-                  {formatEuro(course.price_cents)}
+                <span className="flex items-center gap-2">
+                  <span className="gold-text font-heading text-2xl leading-none">
+                    {formatEuro(course.price_cents)}
+                  </span>
+                  {discount > 0 && course.compare_at_price_cents && (
+                    <span className="text-sm leading-none text-cream/35 line-through decoration-cream/30">
+                      {formatEuro(course.compare_at_price_cents)}
+                    </span>
+                  )}
                 </span>
+                {discount > 0 && (
+                  <span className="mt-1.5 inline-block rounded-sm bg-gold-300 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-obsidian">
+                    -{discount}% OFF
+                  </span>
+                )}
               </div>
               <Button
                 href={`/db/kurse/${course.slug}`}

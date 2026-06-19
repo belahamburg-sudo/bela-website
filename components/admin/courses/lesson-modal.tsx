@@ -264,6 +264,7 @@ export function LessonModal({
                           prefix={`${courseSlug}/downloads`}
                           kind="pdf"
                           label="Datei hochladen oder unten URL eintragen"
+                          hint="PDF, TXT, HTML, ZIP — beliebige Datei"
                           onUploaded={(f) => {
                             updateResource(i, { href: f.ref });
                             success("Datei hochgeladen.");

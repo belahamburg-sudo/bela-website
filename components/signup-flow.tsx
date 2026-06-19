@@ -72,6 +72,7 @@ export function SignupFlow() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
+  const [newsletter, setNewsletter] = useState(false);
 
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -115,7 +116,7 @@ export function SignupFlow() {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name, city, email, password }),
+        body: JSON.stringify({ name, city, email, password, newsletter }),
       });
       const payload = (await response.json().catch(() => null)) as { error?: string } | null;
       if (!response.ok) throw new Error(payload?.error || "Registrierung fehlgeschlagen.");
@@ -386,6 +387,20 @@ export function SignupFlow() {
                   </p>
                 )}
               </div>
+
+              {/* Newsletter opt-in — unchecked, optional, double-opt-in. */}
+              <label className="flex cursor-pointer items-start gap-3 border border-gold-300/12 bg-white/[0.02] px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={newsletter}
+                  onChange={(e) => setNewsletter(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 flex-none rounded border-white/20 bg-obsidian accent-gold-300"
+                />
+                <span className="text-[12px] leading-snug text-cream/55">
+                  Ja, schick mir Tipps & Angebote per Newsletter. Du bekommst eine Bestätigungs-Mail;
+                  abbestellen jederzeit über den Link in jeder Mail. (Optional)
+                </span>
+              </label>
             </motion.div>
           )}
         </AnimatePresence>

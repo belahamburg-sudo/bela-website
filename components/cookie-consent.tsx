@@ -41,6 +41,7 @@ export function CookieConsent() {
       localStorage.setItem(STORAGE_KEY, value);
     } catch {}
     applyConsent(value);
+    window.dispatchEvent(new Event("cookie-consent-updated"));
     setVisible(false);
   }
 
@@ -71,7 +72,7 @@ export function CookieConsent() {
             </span>
             <p className="max-w-3xl text-xs leading-relaxed text-cream/55 sm:text-[0.8rem]">
               Wir nutzen notwendige Cookies für den Betrieb und – mit deiner Zustimmung – Analyse-Cookies
-              (Google Analytics). Mehr in der{" "}
+              (Google Analytics und Microsoft Clarity). Mehr in der{" "}
               <Link href="/datenschutz" className="text-gold-300 underline-offset-2 hover:underline">
                 Datenschutzerklärung
               </Link>

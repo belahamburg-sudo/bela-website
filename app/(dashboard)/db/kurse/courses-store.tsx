@@ -22,7 +22,11 @@ import { formatEuro } from "@/lib/utils";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
-type StoreItem = StoreCardCourse & { featured: boolean; isPurchased: boolean };
+type StoreItem = StoreCardCourse & {
+  featured: boolean;
+  isPurchased: boolean;
+  isUnlisted: boolean;
+};
 
 type Filter = "all" | "video" | "pdf";
 
@@ -56,7 +60,11 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
             } = await supabase.auth.getUser();
             if (user) {
               const [pRes, prRes] = await Promise.all([
-                supabase.from("purchases").select("course_slug").eq("user_id", user.id).eq("status", "paid"),
+                supabase
+                  .from("purchases")
+                  .select("course_slug")
+                  .eq("user_id", user.id)
+                  .in("status", ["paid", "free"]),
                 supabase.from("lesson_progress").select("lesson_id").eq("user_id", user.id),
               ]);
               purchasedSlugs = new Set((pRes.data ?? []).map((p: { course_slug: string }) => p.course_slug));
@@ -80,6 +88,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
             tagline: c.tagline,
             image: c.image,
             price_cents: c.priceCents,
+            compare_at_price_cents: c.compareAtPriceCents ?? null,
             level: c.level,
             format: c.format,
             totalLessons,
@@ -88,6 +97,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
             isBundle: c.level === "Bundle",
             featured: Boolean(c.featured),
             isPurchased: purchasedSlugs.has(c.slug),
+            isUnlisted: Boolean(c.isUnlisted),
             comingSoon: Boolean(c.comingSoon),
             isFlagship: c.slug === "ai-goldmining-method",
             sortOrder: c.sortOrder ?? 999,
@@ -115,7 +125,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
   }
 
   const purchased = items.filter((i) => i.isPurchased);
-  const available = items.filter((i) => !i.isPurchased);
+  const available = items.filter((i) => !i.isPurchased && !i.isUnlisted);
   const bundle = available.find((i) => i.isBundle && !i.comingSoon);
   const bundleStatic = bundle ? courses.find((c) => c.slug === bundle.slug) : undefined;
   const catalog = available.filter((i) => !i.isBundle);

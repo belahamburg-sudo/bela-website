@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     .select("id")
     .eq("user_id", user.id)
     .eq("course_slug", courseSlug)
-    .eq("status", "paid")
+    .in("status", ["paid", "free"])
     .maybeSingle();
   if (!purchase) {
     return NextResponse.json({ message: "Kein Zugriff auf diese Datei." }, { status: 403 });

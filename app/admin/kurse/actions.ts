@@ -80,6 +80,39 @@ function resolvePublicImage(value?: string | null): string | null {
  *   with link  → "Label | href"
  *   plain      → "Label"
  */
+/**
+ * Clean the editable product-page sections: trim strings, drop empty array
+ * items, keep only non-empty fields. An empty/missing field hides its section
+ * on the product page, so Bela controls each page from the dashboard.
+ */
+function sanitizeProductPage(raw?: Record<string, unknown> | null): Record<string, unknown> {
+  if (!raw || typeof raw !== "object") return {};
+  const out: Record<string, unknown> = {};
+  const str = (k: string) => {
+    const v = clean(raw[k] as string | null | undefined);
+    if (v) out[k] = v;
+  };
+  const list = (k: string) => {
+    const arr = Array.isArray(raw[k]) ? (raw[k] as unknown[]) : [];
+    const cleaned = arr.map((x) => clean(String(x))).filter((x): x is string => Boolean(x));
+    if (cleaned.length > 0) out[k] = cleaned;
+  };
+  ["outcomeHeadline", "subline", "problem", "bonus", "ctaHeadline"].forEach(str);
+  ["vision", "needs", "whoFor", "whoNotFor", "afterOutcomes", "proofImages"].forEach(list);
+  // mechanism: array of { title, copy } — keep rows where both are present.
+  const mech = Array.isArray(raw.mechanism) ? (raw.mechanism as unknown[]) : [];
+  const mechCleaned = mech
+    .map((m) => {
+      const row = (m ?? {}) as { title?: string; copy?: string };
+      const title = clean(row.title);
+      const copy = clean(row.copy);
+      return title && copy ? { title, copy } : null;
+    })
+    .filter((m): m is { title: string; copy: string } => Boolean(m));
+  if (mechCleaned.length > 0) out.mechanism = mechCleaned;
+  return out;
+}
+
 function normalizeResources(resources?: ResourceItem[]): ResourceItem[] {
   if (!Array.isArray(resources)) return [];
   return resources
@@ -194,10 +227,22 @@ export type CourseInput = {
   outcome?: string | null;
   featured?: boolean;
   isActive?: boolean;
+  /** Hidden from public/member catalogs unless claimed through /freebie/[slug]. */
+  isUnlisted?: boolean;
   sortOrder?: number;
   includes?: string[];
   /** Slugs of other courses unlocked when this course is purchased. */
   bundledCourses?: string[];
+  /** Strikethrough anchor price in cents (migration_017). */
+  compareAtPriceCents?: number | null;
+  /** Promo video ref/URL shown on the product page (migration_017). */
+  promoVideoUrl?: string | null;
+  /** Hand-picked cross-sell course slugs shown under the lesson videos. */
+  crossSellSlugs?: string[];
+  /** Per-course affiliate / tools text shown under the lesson videos. */
+  affiliateText?: string | null;
+  /** Editable product-page sections (empty fields hide their section). */
+  productPage?: Record<string, unknown> | null;
 };
 
 export async function updateCourse(input: CourseInput): Promise<ActionResult> {
@@ -255,6 +300,44 @@ export async function updateCourse(input: CourseInput): Promise<ActionResult> {
       .from("courses")
       .update({ bundled_courses: bundled })
       .eq("id", input.id);
+  }
+
+  // Rich product-page columns (migration_017) — isolated + best-effort so the
+  // main save still works on a DB where 017 hasn't run yet (a missing column
+  // just makes this secondary update error, which we ignore).
+  try {
+    const compareAt =
+      typeof input.compareAtPriceCents === "number" &&
+      Number.isFinite(input.compareAtPriceCents) &&
+      input.compareAtPriceCents > 0
+        ? Math.round(input.compareAtPriceCents)
+        : null;
+    const crossSell = Array.isArray(input.crossSellSlugs)
+      ? Array.from(new Set(input.crossSellSlugs.map((s) => slugify(s)).filter((s) => s && s !== slug)))
+      : [];
+    await supabase
+      .from("courses")
+      .update({
+        compare_at_price_cents: compareAt,
+        promo_video_url: resolvePublicImage(input.promoVideoUrl),
+        cross_sell_slugs: crossSell,
+        affiliate_text: clean(input.affiliateText),
+        product_page: sanitizeProductPage(input.productPage),
+      })
+      .eq("id", input.id);
+  } catch {
+    // migration_017 not applied yet — these product fields are optional.
+  }
+
+  // Freebie / lead-magnet flag (migration_019). Isolated so older DBs can still
+  // save ordinary course edits before the migration is applied.
+  try {
+    await supabase
+      .from("courses")
+      .update({ is_unlisted: Boolean(input.isUnlisted) })
+      .eq("id", input.id);
+  } catch {
+    // migration_019 not applied yet.
   }
 
   await logAudit({

@@ -2,22 +2,93 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/button";
 import { SpatialBackground } from "@/components/spatial-background";
+import { OtoOffer } from "@/components/oto-offer";
 import { getPublicCourse } from "@/lib/courses";
+import { getStripeClient } from "@/lib/stripe";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { OTO, otoPriceCents } from "@/lib/offers";
+
+type OtoData = {
+  sessionId: string;
+  slug: string;
+  title: string;
+  tagline: string;
+  image: string;
+  fullPriceCents: number;
+  otoPriceCents: number;
+  discountPercent: number;
+};
+
+/**
+ * Decide whether to show the post-purchase 1-Click OTO. Only when the feature is
+ * on, the flagship is live, it wasn't already in this order, and the buyer
+ * doesn't already own it.
+ */
+async function resolveOto(sessionId: string | undefined): Promise<OtoData | null> {
+  if (!OTO.enabled || !sessionId) return null;
+  const stripe = getStripeClient();
+  if (!stripe) return null;
+  try {
+    const course = await getPublicCourse(OTO.courseSlug);
+    if (!course || course.comingSoon) return null;
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (session.payment_status !== "paid") return null;
+
+    const purchased = (session.metadata?.course_slugs ?? session.metadata?.course_slug ?? "")
+      .split(",")
+      .map((s) => s.trim());
+    if (purchased.includes(OTO.courseSlug)) return null;
+
+    // Skip if the buyer already owns the flagship.
+    const supabase = await getSupabaseServerClient();
+    if (supabase) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { data: owned } = await supabase
+          .from("purchases")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("course_slug", OTO.courseSlug)
+          .eq("status", "paid")
+          .maybeSingle();
+        if (owned) return null;
+      }
+    }
+
+    return {
+      sessionId,
+      slug: course.slug,
+      title: course.title,
+      tagline: course.tagline,
+      image: course.image,
+      fullPriceCents: course.priceCents,
+      otoPriceCents: otoPriceCents(course.priceCents),
+      discountPercent: OTO.discountPercent,
+    };
+  } catch {
+    return null;
+  }
+}
 
 export default async function CheckoutSuccessPage({
   searchParams
 }: {
   searchParams: Promise<{ session_id?: string; course?: string; demo?: string }>;
 }) {
-  const { course: courseSlug, demo } = await searchParams;
+  const { session_id: sessionId, course: courseSlug, demo } = await searchParams;
   const course = courseSlug ? await getPublicCourse(courseSlug) : undefined;
   const isDemo = demo === "1";
+  const oto = isDemo ? null : await resolveOto(sessionId);
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian py-16 sm:py-24">
       <SpatialBackground />
 
       <div className="container-shell relative z-10">
+        {oto && <OtoOffer {...oto} />}
         <div className="mx-auto max-w-2xl">
           <div className="tac-panel tac-corners tac-scanline px-6 py-12 text-center sm:px-12 sm:py-16">
             {/* Status badge */}

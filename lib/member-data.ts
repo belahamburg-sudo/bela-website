@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseAdminClient } from "./supabase";
 import { getSupabaseServerClient } from "./supabase-server";
 import { courses as staticCourses, getCourse as getStaticCourse, type Course } from "./content";
 import { mapDbCourseToCourse } from "./courses";
@@ -22,9 +23,16 @@ async function loadMemberData(supabase: SupabaseClient) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return getDemoData();
 
+  const admin = getSupabaseAdminClient();
+  const courseClient = admin ?? supabase;
+
   const [coursesResult, purchasesResult, progressResult, profileResult] = await Promise.all([
-    supabase.from("courses").select("*, modules(*, lessons(*))").eq("is_active", true),
-    supabase.from("purchases").select("course_slug").eq("user_id", user.id).eq("status", "paid"),
+    courseClient.from("courses").select("*, modules(*, lessons(*))").eq("is_active", true),
+    supabase
+      .from("purchases")
+      .select("course_slug")
+      .eq("user_id", user.id)
+      .in("status", ["paid", "free"]),
     supabase.from("lesson_progress").select("lesson_id").eq("user_id", user.id),
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
   ]);
@@ -57,7 +65,7 @@ async function loadMemberData(supabase: SupabaseClient) {
     };
   }).filter(Boolean);
 
-  const availableCourses = catalog.filter((c) => !purchasedSlugs.has(c.slug));
+  const availableCourses = catalog.filter((c) => !purchasedSlugs.has(c.slug) && !c.isUnlisted);
 
   const totalLessonsCompleted = completedLessonIds.size;
   const completedCoursesCount = purchasedCourses.filter((c) => c?.progress === 100).length;

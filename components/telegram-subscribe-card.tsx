@@ -47,6 +47,8 @@ const BENEFITS = [
   "Direktes Feedback auf deine Produkte",
   "Exklusive Inhalte & Calls",
   "Umsetzung in der Gruppe",
+  "Monatlich neue Kurse",
+  "Direkter Chatkontakt zu mir",
   "Jederzeit kündbar"
 ];
 

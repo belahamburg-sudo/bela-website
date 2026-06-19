@@ -56,7 +56,11 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
             } = await supabase.auth.getUser();
             if (user) {
               const [pRes, prRes] = await Promise.all([
-                supabase.from("purchases").select("course_slug").eq("user_id", user.id).eq("status", "paid"),
+                supabase
+                  .from("purchases")
+                  .select("course_slug")
+                  .eq("user_id", user.id)
+                  .in("status", ["paid", "free"]),
                 supabase.from("lesson_progress").select("lesson_id").eq("user_id", user.id),
               ]);
               purchasedSlugs = new Set((pRes.data ?? []).map((p: { course_slug: string }) => p.course_slug));
@@ -79,6 +83,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
           tagline: c.tagline,
           image: c.image,
           price_cents: c.priceCents,
+          compare_at_price_cents: c.compareAtPriceCents ?? null,
           level: c.level,
           format: c.format,
           totalLessons,

@@ -14,6 +14,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const defaultRedirect = mode === "signup" ? "/db/onboarding" : "/db";
   const redirect = searchParams.get("redirect") || defaultRedirect;
 
+  // Password-reset request flow (login screen only).
+  const [view, setView] = useState<"auth" | "reset">("auth");
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetSent, setResetSent] = useState(false);
+
   function friendlyErrorMessage(error: unknown) {
     if (!(error instanceof Error)) {
       return mode === "login" ? "Login fehlgeschlagen." : "Registrierung fehlgeschlagen.";
@@ -90,6 +95,105 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     }
   }
 
+  async function sendReset(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("loading");
+    setMessage("");
+    try {
+      if (!hasSupabasePublicEnv()) {
+        setResetSent(true);
+        setStatus("idle");
+        return;
+      }
+      const supabase = getSupabaseBrowserClient();
+      if (!supabase) throw new Error("Supabase ist noch nicht konfiguriert.");
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setResetSent(true);
+      setStatus("idle");
+    } catch (error) {
+      setStatus("error");
+      setMessage(friendlyErrorMessage(error));
+    }
+  }
+
+  if (mode === "login" && view === "reset") {
+    if (resetSent) {
+      return (
+        <div className="grid gap-5">
+          <div className="flex h-12 w-12 items-center justify-center border border-gold-300/30 bg-gold-300/10">
+            <Mail aria-hidden className="h-5 w-5 text-gold-300" />
+          </div>
+          <div>
+            <p className="mb-2 font-heading text-xl uppercase tracking-gta text-cream">Check deine Inbox</p>
+            <p className="text-sm font-mono leading-relaxed text-cream/50">
+              Falls es zu dieser E-Mail einen Account gibt, haben wir dir einen Link zum Zurücksetzen geschickt.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setView("auth");
+              setResetSent(false);
+            }}
+            className="justify-self-start text-[10px] font-bold uppercase tracking-[0.18em] text-gold-300/70 transition-colors hover:text-gold-200"
+          >
+            Zurück zum Login
+          </button>
+        </div>
+      );
+    }
+    return (
+      <form onSubmit={sendReset} className="grid gap-4">
+        <p className="text-sm font-mono leading-relaxed text-cream/50">
+          Gib deine E-Mail ein, wir schicken dir einen Link zum Zurücksetzen.
+        </p>
+        <div>
+          <label htmlFor="reset-email" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-gold-300/70">
+            E-Mail
+          </label>
+          <input
+            id="reset-email"
+            name="reset-email"
+            type="email"
+            required
+            autoComplete="email"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+            className="focus-ring min-h-12 w-full border border-gold-300/15 bg-black/40 px-4 text-cream placeholder:text-cream/20 outline-none transition-colors focus:border-gold-300/50 focus:bg-black/60"
+            placeholder="du@mail.com"
+          />
+        </div>
+        {status === "error" && message ? (
+          <div className="border border-red-400/20 bg-red-400/5 px-4 py-3">
+            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-red-300">{message}</p>
+          </div>
+        ) : null}
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="btn-shimmer relative mt-1 flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-6 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {status === "loading" ? <Loader2 aria-hidden className="h-4 w-4 animate-spin" /> : <Mail aria-hidden className="h-4 w-4" />}
+          Reset-Link senden
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setView("auth");
+            setStatus("idle");
+            setMessage("");
+          }}
+          className="justify-self-center text-[10px] font-bold uppercase tracking-[0.18em] text-cream/40 transition-colors hover:text-cream/70"
+        >
+          Zurück zum Login
+        </button>
+      </form>
+    );
+  }
+
   if (status === "confirm_email") {
     return (
       <div className="grid gap-5">
@@ -160,6 +264,19 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           className="focus-ring min-h-12 w-full border border-gold-300/15 bg-black/40 px-4 text-cream placeholder:text-cream/20 transition-colors focus:border-gold-300/50 focus:bg-black/60 outline-none"
           placeholder="Mindestens 6 Zeichen"
         />
+        {mode === "login" ? (
+          <button
+            type="button"
+            onClick={() => {
+              setView("reset");
+              setStatus("idle");
+              setMessage("");
+            }}
+            className="mt-2 ml-auto block text-[10px] font-bold uppercase tracking-[0.18em] text-gold-300/70 transition-colors hover:text-gold-200"
+          >
+            Passwort vergessen?
+          </button>
+        ) : null}
       </div>
 
       {status === "error" && message ? (

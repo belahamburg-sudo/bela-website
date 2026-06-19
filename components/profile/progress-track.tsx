@@ -97,42 +97,8 @@ export function ProgressTrack({ points }: Props) {
         </div>
       </div>
 
-      {/* ─── Horizontal track (md+) ─── */}
-      <div className="relative z-10 hidden md:block">
-        {/* base rail */}
-        <div className="absolute left-0 right-0 top-7 h-[3px] -translate-y-1/2 bg-white/[0.06]" />
-        {/* filled rail */}
-        <motion.div
-          className="absolute left-0 top-7 h-[3px] -translate-y-1/2 bg-gradient-to-r from-gold-600 via-gold-200 to-gold-50 shadow-[0_0_14px_rgba(201, 169, 97,0.5)]"
-          initial={{ width: 0 }}
-          whileInView={{ width: `${fillPercent}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-        />
-
-        <div
-          className="relative grid gap-2"
-          style={{ gridTemplateColumns: `repeat(${MILESTONES.length}, minmax(0, 1fr))` }}
-        >
-          {MILESTONES.map((m, i) => {
-            const reached = points >= m.threshold;
-            const isCurrent = i === currentIndex;
-            return (
-              <motion.div
-                key={m.key}
-                variants={node}
-                className="flex flex-col items-center text-center"
-              >
-                <MilestoneNode milestone={m} reached={reached} isCurrent={isCurrent} />
-                <MilestoneLabel milestone={m} reached={reached} isCurrent={isCurrent} />
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ─── Vertical track (mobile) ─── */}
-      <div className="relative z-10 md:hidden">
+      {/* ─── Vertical track: top-to-bottom, the "runter zum Gold" descent ─── */}
+      <div className="relative z-10 mx-auto max-w-xl">
         {/* base rail */}
         <div className="absolute bottom-0 left-7 top-0 w-[3px] -translate-x-1/2 bg-white/[0.06]" />
         {/* filled rail */}

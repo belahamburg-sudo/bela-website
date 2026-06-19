@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import { telegramUrl } from "@/lib/env";
 import { getSiteImages } from "@/lib/site-images";
+import { AboutCollage } from "@/components/about-collage";
 
 const BASE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com"
@@ -84,13 +85,6 @@ const principles = [
   "AI als Umsetzungsvorteil, nicht als magischer Geldautomat.",
   "Digitale Produkte vor komplizierten Geschäftsmodellen.",
   "Erstes Ziel: realistisch starten, dann sauber skalieren.",
-];
-
-const lifestyle = [
-  { slot: "about_lifestyle_1", label: "Golf" },
-  { slot: "about_lifestyle_2", label: "Seoul" },
-  { slot: "about_lifestyle_3", label: "Istanbul" },
-  { slot: "about_lifestyle_4", label: "Hamburg" },
 ];
 
 const ctas = [
@@ -278,24 +272,7 @@ export default async function AboutPage() {
 
           </div>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4">
-          {lifestyle.map((photo) => (
-            <div key={photo.slot} className="group relative aspect-[3/4] overflow-hidden">
-              <Image
-                src={siteImages[photo.slot]}
-                alt={photo.label}
-                fill
-                className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-obsidian/25" />
-              <div className="absolute inset-0 bg-gradient-to-t from-obsidian/80 via-transparent to-transparent" />
-              <span className="absolute bottom-4 left-4 text-[0.58rem] font-bold uppercase tracking-[0.28em] text-cream/40">
-                {photo.label}
-              </span>
-            </div>
-          ))}
-        </div>
+        <AboutCollage />
       </section>
 
       {/* ── Final CTA ── */}

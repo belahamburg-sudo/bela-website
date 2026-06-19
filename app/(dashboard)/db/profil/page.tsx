@@ -4,6 +4,8 @@ import { SpatialBackground } from "@/components/spatial-background";
 import { getUnifiedMemberData } from "@/lib/member-data";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getTelegramSubscription } from "@/lib/telegram";
+import { getNewsletterStatus } from "@/lib/newsletter";
+import { NewsletterSettings } from "@/components/newsletter-settings";
 
 async function fetchProfile() {
   const data = await getUnifiedMemberData();
@@ -16,6 +18,8 @@ async function fetchProfile() {
 export default async function ProfilePage() {
   const { profile, businessSnapshot, user, purchasedCourses, totalLessonsCompleted, completedCourses, points, rewardCount } =
     await fetchProfile();
+
+  const newsletterStatus = user.email ? await getNewsletterStatus(user.email) : "none";
 
   let telegram: { active: boolean; currentPeriodEnd: string | null } = { active: false, currentPeriodEnd: null };
   try {
@@ -65,6 +69,10 @@ export default async function ProfilePage() {
             rewardCount={rewardCount}
             telegram={telegram}
           />
+
+          <div className="mt-8">
+            <NewsletterSettings initialStatus={newsletterStatus} />
+          </div>
         </div>
       </section>
     </AuthGate>

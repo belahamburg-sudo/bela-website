@@ -638,6 +638,24 @@ select {
   }
 }
 
+/* About lifestyle collage — horizontal auto-scroll rows (duration set inline). */
+@keyframes collage-scroll-l {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes collage-scroll-r {
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+.animate-collage-l {
+  animation: collage-scroll-l linear infinite;
+  will-change: transform;
+}
+.animate-collage-r {
+  animation: collage-scroll-r linear infinite;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

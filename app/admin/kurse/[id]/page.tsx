@@ -60,9 +60,19 @@ export default async function AdminCourseEditorPage({
     outcome: course.outcome ?? "",
     featured: Boolean(course.featured),
     isActive: course.is_active,
+    isUnlisted: Boolean(course.is_unlisted),
     sortOrder: course.sort_order ?? 0,
     includes: Array.isArray(course.includes) ? course.includes : [],
     bundledCourses: Array.isArray(course.bundled_courses) ? course.bundled_courses : [],
+    compareAtPriceCents:
+      typeof course.compare_at_price_cents === "number" ? course.compare_at_price_cents : null,
+    promoVideoUrl: course.promo_video_url ?? null,
+    crossSellSlugs: Array.isArray(course.cross_sell_slugs) ? course.cross_sell_slugs : [],
+    affiliateText: course.affiliate_text ?? "",
+    productPage:
+      course.product_page && typeof course.product_page === "object"
+        ? (course.product_page as Record<string, unknown>)
+        : {},
     modules,
   };
 

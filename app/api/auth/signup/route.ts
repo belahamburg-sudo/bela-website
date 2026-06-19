@@ -3,6 +3,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase";
 import { DEFAULT_AVATAR_ID } from "@/lib/avatar-system";
 import { validatePassword } from "@/lib/password";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
+import { subscribeNewsletter } from "@/lib/newsletter";
 
 function badRequest(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
@@ -24,6 +25,7 @@ export async function POST(request: NextRequest) {
   const password = String(body?.password ?? "");
   const name = String(body?.name ?? "").trim();
   const city = String(body?.city ?? "").trim();
+  const newsletter = Boolean(body?.newsletter);
 
   if (!email || !password || !city) {
     return badRequest("Bitte E-Mail, Passwort und Stadt angeben.");
@@ -96,6 +98,11 @@ export async function POST(request: NextRequest) {
 
   if (memberStateError && memberStateError.code !== "42P01") {
     return badRequest("Account wurde erstellt, aber der Member-State konnte nicht angelegt werden.", 500);
+  }
+
+  // Optional newsletter opt-in via double-opt-in (sends a confirmation email).
+  if (newsletter) {
+    await subscribeNewsletter(email, { userId: data.user.id, source: "signup", name });
   }
 
   return NextResponse.json({ ok: true, mode: "login" });

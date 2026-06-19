@@ -174,7 +174,7 @@ export default async function WebinarPage() {
             </h2>
             <p className="mt-4 text-sm text-cream/40 leading-relaxed max-w-xs">
               {formattedDate
-                ? `Live am ${formattedDate}. Kein Spam — sofort nach Anmeldung erhältst du den Zugangslink.`
+                ? `Live am ${formattedDate}. Kein Spam. Sofort nach Anmeldung erhältst du den Zugangslink.`
                 : "Kein Spam. Sofort nach Anmeldung erhältst du den Zugangslink."}
             </p>
             <div className="mt-8 space-y-3">

@@ -33,15 +33,17 @@ export function SolutionBannerSection() {
         >
           <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201,169,97,0.07), transparent 55%)" }} aria-hidden />
 
-          <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative flex flex-col items-start gap-8">
             <div>
-              <p className="eyebrow mb-3">
+              <p className="eyebrow mb-5">
                 <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold-300 shadow-[0_0_6px_rgba(201,169,97,0.55)]" aria-hidden />
                 Die Lösung
               </p>
-              <p className="max-w-md text-base leading-relaxed text-cream/65 sm:text-lg">
-                Digitale Produkte einmal bauen, dauerhaft verkaufen. Fast reine Marge, mit AI in Tagen.
-              </p>
+              <h2 className="max-w-3xl font-heading text-3xl leading-[1.05] tracking-gta text-cream sm:text-4xl lg:text-5xl">
+                Digitale Produkte: einmal bauen,{" "}
+                <span className="gold-text italic">dauerhaft verkaufen.</span> Fast reine Marge.
+                Mit AI in Tagen.
+              </h2>
             </div>
 
             <a

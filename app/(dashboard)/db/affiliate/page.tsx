@@ -81,7 +81,7 @@ function InviteScreen() {
         href={belaPrivateTelegram}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-8 inline-flex items-center gap-2 rounded-full bg-gold-300 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-obsidian transition hover:bg-gold-200"
+        className="btn-shimmer mt-8 inline-flex items-center gap-2 rounded-full bg-gold-gradient px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-obsidian shadow-[0_10px_40px_-10px_rgba(201,169,97,0.5)] transition hover:brightness-110"
       >
         <Send className="h-4 w-4" />
         Bela auf Telegram schreiben

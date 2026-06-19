@@ -44,7 +44,7 @@ export const SITE_IMAGE_SLOTS: SiteImageSlot[] = [
   {
     key: "about_timeline_5",
     label: "Über mich · Timeline 05 (Wendepunkt AI)",
-    defaultSrc: "/assets/bela-with-dad.jpeg",
+    defaultSrc: "/assets/about-timeline-05-ai-moment.jpeg",
   },
   {
     key: "about_timeline_6",

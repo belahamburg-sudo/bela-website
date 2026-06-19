@@ -10,11 +10,13 @@ import {
   LogOut,
   ChevronRight,
   Gift,
-  Globe
+  Globe,
+  Crown,
+  LifeBuoy
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
-import { hasSupabasePublicEnv } from "@/lib/env";
+import { hasSupabasePublicEnv, belaPrivateTelegram } from "@/lib/env";
 import { SITE_LOGO_PATH } from "@/lib/brand";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { CartButton } from "@/components/cart-button";
@@ -25,13 +27,16 @@ type NavLinkConfig = {
   label: string;
   icon: LucideIcon;
   exact: boolean;
+  external?: boolean;
 };
 
 const NAV_LINKS: NavLinkConfig[] = [
   { href: "/db", label: "Übersicht", icon: LayoutDashboard, exact: true },
   { href: "/db/kurse", label: "Goldmine", icon: Pickaxe, exact: false },
   { href: "/db/affiliate", label: "Affiliate", icon: Gift, exact: false },
+  { href: "/db/vip", label: "VIP Member", icon: Crown, exact: false },
   { href: "/db/profil", label: "Mein Profil", icon: User, exact: false },
+  { href: belaPrivateTelegram, label: "Support", icon: LifeBuoy, exact: false, external: true },
 ];
 
 function NavLink({
@@ -39,16 +44,34 @@ function NavLink({
   label,
   icon: Icon,
   exact,
+  external,
   onClick,
 }: {
   href: string;
   label: string;
   icon: LucideIcon;
   exact: boolean;
+  external?: boolean;
   onClick?: () => void;
 }) {
   const pathname = usePathname();
-  const isActive = exact ? pathname === href : pathname.startsWith(href);
+  const isActive = !external && (exact ? pathname === href : pathname.startsWith(href));
+
+  if (external) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onClick}
+        className="group relative flex items-center gap-3 px-4 py-4 text-[11px] font-bold uppercase tracking-[0.15em] text-cream/30 transition-all duration-300 hover:text-cream/80 hover:bg-white/[0.02]"
+      >
+        <Icon className="h-4 w-4 flex-shrink-0 text-cream/20 transition-colors group-hover:text-cream/40" />
+        <span className="flex-1">{label}</span>
+        <ChevronRight className="h-3 w-3 opacity-0 -translate-x-2 transition-all group-hover:opacity-20 group-hover:translate-x-0" />
+      </a>
+    );
+  }
 
   return (
     <Link
@@ -164,28 +187,36 @@ function MobileBottomNav() {
     <nav className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-white/10 bg-ink/80 px-2 pb-[safe-area-inset-bottom] pt-2 backdrop-blur-2xl lg:hidden">
       {NAV_LINKS.map((link) => {
         const Icon = link.icon;
-        const isActive = link.exact ? pathname === link.href : pathname.startsWith(link.href);
+        const isActive = !link.external && (link.exact ? pathname === link.href : pathname.startsWith(link.href));
 
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`flex flex-col items-center gap-1.5 px-3 py-1.5 transition-all duration-300 ${
-              isActive ? "text-gold-300" : "text-cream/40"
-            }`}
-          >
-            <div className={`relative flex h-9 w-14 items-center justify-center transition-all ${
+        const inner = (
+          <>
+            <div className={`relative flex h-9 w-12 items-center justify-center transition-all ${
               isActive ? "bg-gold-300/10 rounded-full" : "bg-transparent"
             }`}>
               {isActive && (
-                <motion.div 
+                <motion.div
                   layoutId="activeMobileNav"
-                  className="absolute inset-0 border border-gold-300/30 rounded-full" 
+                  className="absolute inset-0 border border-gold-300/30 rounded-full"
                 />
               )}
               <Icon className="h-5 w-5" />
             </div>
-            <span className="text-[9px] font-bold uppercase tracking-widest leading-none">{link.label}</span>
+            <span className="text-center text-[8px] font-bold uppercase tracking-[0.12em] leading-none">{link.label}</span>
+          </>
+        );
+
+        const cls = `flex flex-col items-center gap-1.5 px-2 py-1.5 transition-all duration-300 ${
+          isActive ? "text-gold-300" : "text-cream/40"
+        }`;
+
+        return link.external ? (
+          <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className={cls}>
+            {inner}
+          </a>
+        ) : (
+          <Link key={link.href} href={link.href} className={cls}>
+            {inner}
           </Link>
         );
       })}

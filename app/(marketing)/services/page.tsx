@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, MessageCircle, Building2, Briefcase, Check, Users } from "lucide-react";
+import { ArrowRight, MessageCircle, Building2, Briefcase, Check, Users, Bot } from "lucide-react";
 import { belaPrivateTelegram } from "@/lib/env";
 
 export const metadata: Metadata = {
@@ -24,6 +24,12 @@ const GROUP_POINTS = [
   "Wöchentliche Gruppen-Calls mit Bela und der Community",
   "Feedback auf deine Produkte, Funnels und Verkaufstexte",
   "Austausch mit anderen Umsetzern in meiner Telegram-Gruppe",
+];
+
+const DONE_FOR_YOU_POINTS = [
+  "Done-for-you: AI-Systeme, Automationen und Einrichtungen",
+  "Funnels, Tools und Workflows fertig für dich aufgesetzt",
+  "Du sagst, was du brauchst, ich setze es für dich um",
 ];
 
 /** Realistic gold Dubai-skyline silhouette — recognizable Burj Khalifa centerpiece,
@@ -150,26 +156,28 @@ function ServiceCard({
   ctaHref: string;
 }) {
   return (
-    <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-gold-300/20 bg-gradient-to-b from-white/[0.04] to-obsidian/70 p-7 lg:p-9">
+    <div className="relative flex h-full min-h-[560px] flex-col overflow-hidden rounded-xl border border-gold-300/20 bg-gradient-to-b from-white/[0.04] to-obsidian/70 p-6 xl:p-7">
       <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(201,169,97,0.06), transparent 55%)" }} aria-hidden />
       <div className="relative flex flex-1 flex-col">
         <div className="mb-5 flex items-center gap-3">
-          <span className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/[0.06]">
-            <Icon className="h-5 w-5 text-gold-300" />
+          <span className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-sm border border-gold-300/30 bg-gold-300/[0.06]">
+            <Icon className="h-4 w-4 text-gold-300" />
           </span>
-          <span className="gta-label text-gold-300/70">{tag}</span>
+          <span className="gta-label min-w-0 break-words text-[0.62rem] leading-relaxed text-gold-300/70">
+            {tag}
+          </span>
         </div>
 
-        <h2 className="font-heading tracking-gta text-3xl lg:text-4xl text-cream leading-[1.02]">{title}</h2>
-        {/* min-height keeps the checkmark lists aligned across cards of varying copy length */}
-        <p className="mt-4 leading-relaxed text-cream/55 sm:min-h-[5.5rem]">{copy}</p>
+        <h2 className="min-h-[4.5rem] break-words font-heading text-[1.85rem] leading-[1.08] tracking-normal text-cream hyphens-auto">
+          {title}
+        </h2>
+        <p className="mt-4 min-h-[8.5rem] text-[0.95rem] leading-7 text-cream/55">{copy}</p>
 
-        {/* min-height + bottom padding keep an equal gap above the CTA across all cards */}
-        <ul className="mt-6 grid gap-3 pb-8 sm:min-h-[7.5rem]">
+        <ul className="mt-5 grid gap-3 pb-7">
           {points.map((p) => (
-            <li key={p} className="flex items-start gap-3 text-sm leading-relaxed text-cream/70">
-              <Check className="mt-0.5 h-4 w-4 flex-none text-gold-300" />
-              {p}
+            <li key={p} className="flex items-start gap-3 text-[0.86rem] leading-6 text-cream/70">
+              <Check className="mt-1 h-4 w-4 flex-none text-gold-300" />
+              <span className="min-w-0 break-words hyphens-auto">{p}</span>
             </li>
           ))}
         </ul>
@@ -178,11 +186,11 @@ function ServiceCard({
           href={ctaHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-shimmer group mt-auto flex h-14 w-full items-center justify-center gap-2 rounded-full bg-gold-gradient px-7 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
+          className="btn-shimmer group mt-auto flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-gold-gradient px-5 py-3 text-center text-[0.72rem] font-bold uppercase leading-tight tracking-[0.12em] text-obsidian transition-all hover:brightness-110"
         >
-          <span className="relative z-[2] inline-flex items-center gap-2">
-            {ctaLabel}
-            <ArrowRight className="h-4 w-4" aria-hidden />
+          <span className="relative z-[2] inline-flex min-w-0 items-center justify-center gap-2">
+            <span className="min-w-0 break-words">{ctaLabel}</span>
+            <ArrowRight className="h-4 w-4 flex-none" aria-hidden />
           </span>
         </a>
       </div>
@@ -226,8 +234,8 @@ export default function ServicesPage() {
 
       {/* ── Service blocks ── */}
       <section className="relative z-10 pb-28">
-        <div className="container-shell mx-auto max-w-6xl">
-          <div className="grid items-stretch gap-6 lg:grid-cols-3">
+        <div className="container-shell mx-auto max-w-7xl">
+          <div className="grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-4">
             <ServiceCard
               icon={MessageCircle}
               tag="Persönlich"
@@ -253,6 +261,15 @@ export default function ServicesPage() {
               copy="Firmengründung im Ausland (z.B. Dubai / VAE): Struktur, Konten und Steuern sauber aufgesetzt, vollständig begleitet."
               points={COMPANY_POINTS}
               ctaLabel="Setup anfragen"
+              ctaHref={belaPrivateTelegram}
+            />
+            <ServiceCard
+              icon={Bot}
+              tag="Done for you"
+              title="AI & Automations"
+              copy="Services rund um Done-for-you, AI, Automations und Einrichtungen: ich baue dir Systeme, Funnels und Setups, die für dich laufen."
+              points={DONE_FOR_YOU_POINTS}
+              ctaLabel="Service anfragen"
               ctaHref={belaPrivateTelegram}
             />
           </div>

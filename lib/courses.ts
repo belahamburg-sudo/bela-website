@@ -3,6 +3,7 @@ import {
   courses as staticCourses,
   getCourse as getStaticCourse,
   type Course,
+  type ProductPage,
 } from "./content";
 import type { DbCourse, DbLesson, DbModule } from "./db-types";
 
@@ -59,16 +60,28 @@ export function mapDbCourseToCourse(db: DbCourse): Course {
     tagline: db.tagline ?? "",
     description: db.description ?? "",
     priceCents: db.price_cents,
+    compareAtPriceCents:
+      typeof db.compare_at_price_cents === "number" && db.compare_at_price_cents > 0
+        ? db.compare_at_price_cents
+        : undefined,
     image: db.image_url ?? FALLBACK_IMAGE,
+    promoVideoUrl: db.promo_video_url ?? undefined,
     level: normalizeLevel(db.level),
     format: normalizeFormat(db.format),
     audience: db.audience ?? "",
     outcome: db.outcome ?? "",
     featured: db.featured ?? false,
     comingSoon: db.is_active === false,
+    isUnlisted: Boolean(db.is_unlisted),
     sortOrder: db.sort_order ?? 0,
     includes: Array.isArray(db.includes) ? db.includes : [],
     bundledCourses: Array.isArray(db.bundled_courses) ? db.bundled_courses : [],
+    crossSellSlugs: Array.isArray(db.cross_sell_slugs) ? db.cross_sell_slugs : [],
+    affiliateText: db.affiliate_text ?? undefined,
+    productPage:
+      db.product_page && typeof db.product_page === "object"
+        ? (db.product_page as ProductPage)
+        : undefined,
     modules,
   };
 }
@@ -90,7 +103,7 @@ function mergeStaticStoreCatalog(): Course[] {
 const COURSE_SELECT =
   "*, modules(*, lessons(*))";
 
-/** All active courses, DB-first with static fallback. Ordered by sort_order. */
+/** All active, listed courses, DB-first with static fallback. Ordered by sort_order. */
 export async function getPublicCourses(): Promise<Course[]> {
   const admin = getSupabaseAdminClient();
   if (!admin) return staticCourses;
@@ -100,6 +113,7 @@ export async function getPublicCourses(): Promise<Course[]> {
       .from("courses")
       .select(COURSE_SELECT)
       .eq("is_active", true)
+      .eq("is_unlisted", false)
       .order("sort_order", { ascending: true });
 
     if (error || !data || data.length === 0) return staticCourses;

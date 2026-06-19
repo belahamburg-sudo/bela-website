@@ -100,7 +100,7 @@ export function AffiliateDashboard({
         </div>
         <p className="mt-1 text-sm text-cream/50">
           Führt direkt zur Anmeldung. Freunde bekommen deinen persönlichen
-          Vorteil – du verdienst an jedem Kauf.
+          Vorteil. Du verdienst an jedem Kauf.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
           <CopyField label="Link teilen" value={shareLink} />

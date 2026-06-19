@@ -51,7 +51,7 @@ export function TrustSection() {
             <span className="gold-text">Echte Ergebnisse.</span>
           </h2>
           <p className="mt-6 text-cream/50 text-base lg:text-lg max-w-xl mx-auto leading-relaxed">
-            Echte Bewertungen von Trustpilot — TrustScore, Sterne und die neuesten Stimmen. Keine Screenshots, kein Fake-Social-Proof.
+            Echte Bewertungen von Trustpilot. TrustScore, Sterne und die neuesten Stimmen. Keine Screenshots, kein Fake-Social-Proof.
           </p>
         </div>
 
