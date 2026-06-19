@@ -365,12 +365,27 @@ async function handlePaymentFailed(
 }
 
 export async function POST(request: Request) {
-  // Demo short-circuit when keys are missing.
-  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+  // Demo short-circuit ONLY when Stripe isn't configured at all (local/demo,
+  // no secret key) — there, returning 200 is correct.
+  if (!process.env.STRIPE_SECRET_KEY) {
     return NextResponse.json({
       demo: true,
       message: "Stripe Webhook ist im Demo-Modus nicht aktiv.",
     });
+  }
+
+  // Live Stripe key present but no webhook signing secret = misconfiguration.
+  // Fail LOUDLY (500) instead of silently swallowing real payments: Stripe will
+  // mark the delivery failed (visible in the dashboard) and keep retrying, so a
+  // paid checkout never disappears without a trace again.
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error(
+      "STRIPE_WEBHOOK_SECRET is not set while STRIPE_SECRET_KEY is — Stripe events cannot be verified and are being dropped. Set STRIPE_WEBHOOK_SECRET to the endpoint's signing secret."
+    );
+    return NextResponse.json(
+      { message: "Webhook signing secret not configured." },
+      { status: 500 }
+    );
   }
 
   const stripe = getStripeClient();
