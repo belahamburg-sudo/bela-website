@@ -91,7 +91,7 @@ export default async function CourseDetailPage({
           <div>
             <Link
               href="/kurse"
-              className="group mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white/40 transition-colors hover:text-gold-200"
+              className="group mb-6 flex w-fit items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white/40 transition-colors hover:text-gold-200"
             >
               <ArrowLeft
                 aria-hidden

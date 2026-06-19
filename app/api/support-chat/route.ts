@@ -1,8 +1,36 @@
 import { NextResponse } from "next/server";
 import { getPublicCourses } from "@/lib/courses";
-import { belaPrivateTelegram, paidTelegramUrl, telegramUrl, webinarUrl } from "@/lib/env";
+import { belaPrivateTelegram, paidTelegramUrl, telegramUrl } from "@/lib/env";
+import { getSupabaseAdminClient } from "@/lib/supabase";
 import { formatEuro } from "@/lib/utils";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
+
+/** Next upcoming webinar as a context line (real date or "no date yet"). */
+async function nextWebinarLine(): Promise<string> {
+  try {
+    const admin = getSupabaseAdminClient();
+    if (!admin) return "- Webinar: Seite /webinar";
+    const { data } = await admin
+      .from("webinars")
+      .select("title, starts_at")
+      .eq("is_active", true)
+      .gte("starts_at", new Date().toISOString())
+      .order("starts_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (!data?.starts_at) {
+      return "- Webinar: aktuell ist KEIN Termin angekündigt. Verweise auf die Seite /webinar.";
+    }
+    const when = new Date(data.starts_at).toLocaleString("de-DE", {
+      timeZone: "Europe/Berlin",
+      dateStyle: "full",
+      timeStyle: "short",
+    });
+    return `- Nächstes Webinar: „${data.title ?? "Live-Webinar"}" am ${when} Uhr (Europe/Berlin). Anmeldung/Details: /webinar`;
+  } catch {
+    return "- Webinar: Seite /webinar";
+  }
+}
 
 export const runtime = "nodejs";
 
@@ -41,6 +69,7 @@ function cleanReply(input: string): string {
 
 async function offerContext() {
   const courses = await getPublicCourses();
+  const webinar = await nextWebinarLine();
   const courseLines = courses.slice(0, 24).map((course) => {
     const includes = course.includes.slice(0, 5).join("; ");
     return [
@@ -70,7 +99,7 @@ Website-Kontext:
 - Kostenloser Telegram-Kanal: ${telegramUrl}
 - VIP/Elite Telegram: ${paidTelegramUrl}
 - Direkter Support/Bela Telegram: ${belaPrivateTelegram}
-- Webinar: ${webinarUrl}
+${webinar}
 
 Angebote:
 ${courseLines.join("\n")}
@@ -118,6 +147,7 @@ Aufgabe:
 - Formatiere mit kurzen Absätzen, 1-3 Bulletpoints und **fett** für die wichtigsten Begriffe.
 - Verlinke IMMER als Markdown-Link [Klartext-Label](URL), nie als nackte URL im Fließtext. Beispiele: einen Kurs als [Kursname](/kurse/slug), den Warenkorb als [Warenkorb](/warenkorb), Telegram als [Telegram beitreten](<telegram-url>). Diese Links werden dem Nutzer als anklickbare Buttons angezeigt.
 - Wenn du einen Kurs, Telegram, das Webinar oder eine Seite empfiehlst, hänge den passenden Markdown-Link an, statt den Nutzer nur "im Katalog klicken" zu lassen.
+- Erfinde NIEMALS URLs, Domains oder Termine. Nutze ausschließlich die Links/Pfade und das Webinar-Datum aus dem Website-Kontext unten. Für das Webinar verlinke immer [Webinar](/webinar) — niemals eine andere oder erfundene Domain (kein example.com o. Ä.). Nenne das Webinar-Datum nur, wenn es unten steht.
 
 ${context}
 `.trim();
