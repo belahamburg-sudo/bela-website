@@ -1,12 +1,11 @@
 "use client";
 
-import { CreditCard, Loader2, AlertCircle, Gift } from "lucide-react";
+import { CreditCard, Loader2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { ORDER_BUMP, formatBumpPrice } from "@/lib/offers";
 import { getStoredReferral } from "@/components/referral-capture";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
@@ -59,7 +58,6 @@ export function CheckoutButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agb, setAgb] = useState(autoBuy);
-  const [bump, setBump] = useState(false);
   const router = useRouter();
   const autoBuyHandled = useRef(false);
 
@@ -88,7 +86,6 @@ export function CheckoutButton({
           courseSlug,
           userEmail,
           agbAccepted: agb,
-          orderBump: bump,
           referralCode: getStoredReferral() || undefined,
         }),
       });
@@ -110,7 +107,7 @@ export function CheckoutButton({
     } finally {
       setLoading(false);
     }
-  }, [agb, bump, courseSlug, router]);
+  }, [agb, courseSlug, router]);
 
   // Resume the purchase automatically after login (page loaded with ?buy=1).
   useEffect(() => {
@@ -124,31 +121,6 @@ export function CheckoutButton({
 
   return (
     <div className="space-y-3">
-      {/* Order bump */}
-      <label
-        className={cn(
-          "flex cursor-pointer items-start gap-3 rounded-sm border p-3 text-left transition-colors",
-          bump
-            ? "border-gold-300/60 bg-gold-300/[0.06]"
-            : "border-dashed border-gold-300/30 bg-gold-300/[0.02] hover:border-gold-300/50"
-        )}
-      >
-        <input
-          type="checkbox"
-          checked={bump}
-          onChange={(e) => setBump(e.target.checked)}
-          className="mt-0.5 h-4 w-4 flex-none accent-gold-300"
-        />
-        <span className="text-sm leading-snug text-cream/70">
-          <span className="inline-flex items-center gap-1.5 font-semibold text-cream">
-            <Gift className="h-3.5 w-3.5 text-gold-300" />
-            {ORDER_BUMP.label}
-          </span>{" "}
-          <span className="gold-text font-semibold">{formatBumpPrice()}</span>
-          <span className="mt-0.5 block text-xs text-cream/45">{ORDER_BUMP.description}</span>
-        </span>
-      </label>
-
       {/* AGB consent (required) */}
       <label className="flex cursor-pointer items-start gap-2.5 text-left text-xs leading-relaxed text-cream/60">
         <input

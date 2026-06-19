@@ -8,7 +8,7 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { resolveMediaUrl } from "@/lib/storage";
 import { absoluteUrl } from "@/lib/utils";
-import { ORDER_BUMP, OTO } from "@/lib/offers";
+import { OTO } from "@/lib/offers";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 type CheckoutItem = { slug: string; qty?: number };
@@ -20,7 +20,6 @@ type CheckoutBody = {
   userEmail?: string;
   // Funnel options collected in our checkout step.
   agbAccepted?: boolean;
-  orderBump?: boolean;
   promoCode?: string;
   referralCode?: string;
 };
@@ -160,18 +159,6 @@ export async function POST(request: Request) {
       })
     );
 
-    // Order bump as an extra line item.
-    if (body.orderBump) {
-      lineItems.push({
-        quantity: 1,
-        price_data: {
-          currency: "eur",
-          unit_amount: ORDER_BUMP.priceCents,
-          product_data: { name: ORDER_BUMP.label, description: ORDER_BUMP.description },
-        },
-      });
-    }
-
     let appliedDiscount: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
     const typedCode = body.promoCode?.trim();
     if (typedCode) {
@@ -219,7 +206,6 @@ export async function POST(request: Request) {
       course_slug: courseSlugs[0],
       course_slugs: courseSlugs.join(","),
       agb_accepted: "true",
-      order_bump: body.orderBump ? "true" : "false",
       ...(userId ? { user_id: userId } : {}),
       ...(resolvedEmail ? { user_email: resolvedEmail } : {}),
       ...(referralCode ? { referral_code: referralCode } : {}),

@@ -4,10 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ShoppingBag, Trash2, Loader2, AlertCircle, Lock, Tag, Gift, Check, Plus } from "lucide-react";
+import { ShoppingBag, Trash2, Loader2, AlertCircle, Lock, Tag, Check, Plus } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatEuro } from "@/lib/utils";
-import { ORDER_BUMP, formatBumpPrice } from "@/lib/offers";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { getStoredReferral } from "@/components/referral-capture";
@@ -22,7 +21,6 @@ export default function CartPage() {
   // Suggested courses (not already in the cart) — like the drawer's upsells.
   const suggestions = featuredCourses.filter((c) => !has(c.slug)).slice(0, 3);
 
-  const [bump, setBump] = useState(false);
   const [promo, setPromo] = useState("");
   const [promoState, setPromoState] = useState<
     "idle" | "checking" | "valid" | "invalid"
@@ -43,8 +41,7 @@ export default function CartPage() {
     }
   }, []);
 
-  const subtotalWithBump = subtotalCents + (bump ? ORDER_BUMP.priceCents : 0);
-  const totalCents = Math.max(0, subtotalWithBump - discountCents);
+  const totalCents = Math.max(0, subtotalCents - discountCents);
 
   useEffect(() => {
     const code = promo.trim();
@@ -61,7 +58,7 @@ export default function CartPage() {
         const response = await fetch("/api/promo/validate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, amountCents: subtotalWithBump }),
+          body: JSON.stringify({ code, amountCents: subtotalCents }),
         });
         const result = (await response.json()) as {
           valid?: boolean;
@@ -91,7 +88,7 @@ export default function CartPage() {
     }, 350);
 
     return () => window.clearTimeout(timer);
-  }, [promo, subtotalWithBump]);
+  }, [promo, subtotalCents]);
 
   async function checkout() {
     setError(null);
@@ -126,7 +123,6 @@ export default function CartPage() {
           items: items.map((i) => ({ slug: i.slug, qty: 1 })),
           userEmail,
           agbAccepted: agb,
-          orderBump: bump,
           promoCode: promo.trim() || undefined,
           referralCode: getStoredReferral() || undefined,
         }),
@@ -204,27 +200,6 @@ export default function CartPage() {
                 </div>
               ))}
 
-              {/* Order bump */}
-              <label
-                className={`group flex cursor-pointer gap-4 rounded-sm border p-4 transition-colors ${
-                  bump ? "border-gold-300/60 bg-gold-300/[0.06]" : "border-dashed border-gold-300/30 bg-gold-300/[0.02] hover:border-gold-300/50"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={bump}
-                  onChange={(e) => setBump(e.target.checked)}
-                  className="mt-1 h-5 w-5 flex-none accent-gold-300"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <Gift className="h-4 w-4 text-gold-300" />
-                    <span className="font-heading text-base text-cream">{ORDER_BUMP.label}</span>
-                    <span className="gold-text font-heading text-base">{formatBumpPrice()}</span>
-                  </div>
-                  <p className="mt-1.5 text-sm leading-relaxed text-cream/50">{ORDER_BUMP.description}</p>
-                </div>
-              </label>
             </div>
 
             {/* Summary */}
@@ -264,12 +239,6 @@ export default function CartPage() {
                   <span>Zwischensumme</span>
                   <span>{formatEuro(subtotalCents)}</span>
                 </div>
-                {bump && (
-                  <div className="flex justify-between text-cream/60">
-                    <span>{ORDER_BUMP.label}</span>
-                    <span>{formatEuro(ORDER_BUMP.priceCents)}</span>
-                  </div>
-                )}
                 {discountCents > 0 && (
                   <div className="flex justify-between text-emerald-300/80">
                     <span>Rabatt ({promo.trim().toUpperCase()})</span>
