@@ -14,10 +14,10 @@ import {
   getAdminOverview,
   getRecentPurchases,
   getRecentLeads,
-  getRevenueSeries,
   type AdminPurchase,
   type AdminLead,
 } from "@/lib/admin-data";
+import { getStripeRevenue } from "@/lib/stripe-revenue";
 import { checkAllHealth, type HealthStatus } from "@/lib/health";
 import { formatEuro, cn } from "@/lib/utils";
 
@@ -122,17 +122,19 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 /* ---------------------------------------------------------------- */
 
 export default async function AdminOverviewPage() {
-  const [o, purchases, leads, revenue, health] = await Promise.all([
+  const [o, rev, purchases, leads, health] = await Promise.all([
     getAdminOverview(),
+    getStripeRevenue(30),
     getRecentPurchases(6),
     getRecentLeads(6),
-    getRevenueSeries(30),
     checkAllHealth(),
   ]);
 
-  const revenueTotal = revenue.reduce((s, d) => s + d.cents, 0);
-  const revenueAvg = revenue.length > 0 ? Math.round(revenueTotal / revenue.length) : 0;
-  const revenuePeak = revenue.reduce((m, d) => Math.max(m, d.cents), 0);
+  const seriesSum = rev.series.reduce((s, d) => s + d.cents, 0);
+  const revenueAvg = rev.series.length > 0 ? Math.round(seriesSum / rev.series.length) : 0;
+  const revenuePeak = rev.series.reduce((m, d) => Math.max(m, d.cents), 0);
+  const convRate =
+    o.memberCount > 0 ? Math.round((rev.payingCustomers / o.memberCount) * 1000) / 10 : 0;
 
   const purchaseColumns: Column<AdminPurchase>[] = [
     {
@@ -167,18 +169,18 @@ export default async function AdminOverviewPage() {
         description="Echtzeit-Überblick über Umsatz, Mitglieder, Community und Leads deiner Goldmine."
       />
 
-      {/* ── Hero KPIs ── */}
+      {/* ── Hero KPIs (Umsatz aus Stripe) ── */}
       <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="Umsatz gesamt"
-          value={formatEuro(o.revenueCents)}
+          value={formatEuro(rev.totalCents)}
           icon={Banknote}
-          hint={`${o.paidCount} Verkäufe`}
+          hint={rev.configured ? `${rev.paymentCount} Zahlungen` : "Stripe nicht verbunden"}
           href="/admin/verkaeufe"
         />
         <StatCard
           label="Umsatz 30 Tage"
-          value={formatEuro(o.revenue30dCents)}
+          value={formatEuro(rev.last30dCents)}
           icon={CalendarRange}
           hint="rollierend"
         />
@@ -193,7 +195,7 @@ export default async function AdminOverviewPage() {
           label="Mitglieder"
           value={o.memberCount}
           icon={Users}
-          hint={`${o.conversionRate}% Conversion`}
+          hint={`${convRate}% Conversion`}
           href="/admin/kunden"
         />
       </div>
@@ -202,12 +204,12 @@ export default async function AdminOverviewPage() {
       <SectionLabel>Umsatz</SectionLabel>
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Panel title="Umsatzverlauf" description="Bezahlte Bestellungen pro Tag (30 Tage)">
+          <Panel title="Umsatzverlauf" description="Echte Stripe-Zahlungen pro Tag (30 Tage)">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
               <div>
                 <span className="tac-label">Summe 30 Tage</span>
                 <p className="mt-1 text-2xl font-extrabold tracking-tight text-cream">
-                  {formatEuro(revenueTotal)}
+                  {formatEuro(seriesSum)}
                 </p>
               </div>
               <div className="flex items-center gap-6 text-right">
@@ -221,13 +223,13 @@ export default async function AdminOverviewPage() {
                 </div>
               </div>
             </div>
-            <AreaTrend data={revenue} formatDay={formatDay} />
+            <AreaTrend data={rev.series} formatDay={formatDay} />
           </Panel>
         </div>
-        <Panel title="Umsatz nach Kurs">
+        <Panel title="Umsatz nach Quelle" description="Kurse & Telegram-VIP">
           <DonutChart
-            data={o.revenueByCourse.map((c) => ({ label: c.title, value: c.cents }))}
-            centerValue={formatEuro(o.revenueCents)}
+            data={rev.bySource.map((s) => ({ label: s.label, value: s.cents }))}
+            centerValue={formatEuro(rev.totalCents)}
             centerLabel="gesamt"
             formatValue={formatEuro}
           />
@@ -238,18 +240,14 @@ export default async function AdminOverviewPage() {
       <SectionLabel>Akquise & Community</SectionLabel>
       <div className="grid gap-6 lg:grid-cols-3">
         <Panel title="Leads nach Quelle">
-          <DonutChart
-            data={o.leadsBySource}
-            centerValue={String(o.leadCount)}
-            centerLabel="Leads"
-          />
+          <DonutChart data={o.leadsBySource} centerValue={String(o.leadCount)} centerLabel="Leads" />
         </Panel>
         <Panel title="Conversion-Funnel" description="Vom Lead zum VIP">
           <FunnelBars
             data={[
               { label: "Leads", value: o.leadCount },
               { label: "Mitglieder", value: o.memberCount },
-              { label: "Käufer", value: o.paidCount },
+              { label: "Käufer", value: rev.payingCustomers },
               { label: "VIP-Abos", value: o.telegramActive },
             ]}
           />
@@ -262,18 +260,14 @@ export default async function AdminOverviewPage() {
       {/* ── Weitere Kennzahlen ── */}
       <SectionLabel>Weitere Kennzahlen</SectionLabel>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <MiniStat label="Umsatz heute" value={formatEuro(o.revenueTodayCents)} sub="seit Mitternacht" />
-        <MiniStat label="Ø Bestellwert" value={formatEuro(o.aovCents)} sub="pro Verkauf" />
+        <MiniStat label="Umsatz heute" value={formatEuro(rev.todayCents)} sub="seit Mitternacht" />
+        <MiniStat label="Ø Bestellwert" value={formatEuro(rev.aovCents)} sub="pro Zahlung" />
         <MiniStat
           label="Onboarding"
           value={`${o.onboardingRate}%`}
           sub={`${o.onboardingComplete}/${o.memberCount} abgeschlossen`}
         />
-        <MiniStat
-          label="Newsletter"
-          value={o.newsletterConfirmed}
-          sub={`${o.newsletterPending} offen`}
-        />
+        <MiniStat label="Newsletter" value={o.newsletterConfirmed} sub={`${o.newsletterPending} offen`} />
         <MiniStat
           label="Ø Bewertung"
           value={o.reviewCount > 0 ? `${o.reviewAvg.toFixed(1)} ★` : "–"}
