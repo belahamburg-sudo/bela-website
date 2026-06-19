@@ -4,17 +4,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ShoppingBag, Trash2, Loader2, AlertCircle, Lock, Tag, Gift, Check } from "lucide-react";
+import { ShoppingBag, Trash2, Loader2, AlertCircle, Lock, Tag, Gift, Check, Plus } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatEuro } from "@/lib/utils";
 import { ORDER_BUMP, formatBumpPrice } from "@/lib/offers";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { getStoredReferral } from "@/components/referral-capture";
+import { featuredCourses } from "@/lib/content";
+
+const PROMO_KEY = "ai-goldmining-promo";
 
 export default function CartPage() {
-  const { items, remove, subtotalCents, clear } = useCart();
+  const { items, remove, subtotalCents, clear, add, has } = useCart();
   const router = useRouter();
+
+  // Suggested courses (not already in the cart) — like the drawer's upsells.
+  const suggestions = featuredCourses.filter((c) => !has(c.slug)).slice(0, 3);
 
   const [bump, setBump] = useState(false);
   const [promo, setPromo] = useState("");
@@ -26,6 +32,16 @@ export default function CartPage() {
   const [agb, setAgb] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pick up a promo code that was entered in the cart drawer.
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(PROMO_KEY);
+      if (stored) setPromo(stored);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const subtotalWithBump = subtotalCents + (bump ? ORDER_BUMP.priceCents : 0);
   const totalCents = Math.max(0, subtotalWithBump - discountCents);
@@ -156,6 +172,7 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
+          <>
           <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
             {/* Items */}
             <div className="grid gap-4">
@@ -170,7 +187,7 @@ export default function CartPage() {
                     ) : null}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-heading text-lg text-cream">{item.title}</p>
+                    <p className="line-clamp-2 break-words font-heading text-lg text-cream">{item.title}</p>
                     <p className="mt-0.5 gold-text font-heading text-xl leading-none">
                       {formatEuro(item.priceCents)}
                     </p>
@@ -311,6 +328,52 @@ export default function CartPage() {
               </p>
             </div>
           </div>
+
+          {suggestions.length > 0 && (
+            <div className="mt-12">
+              <div className="mb-5 flex items-center gap-3">
+                <Plus className="h-4 w-4 text-gold-300" />
+                <h2 className="font-heading tracking-gta text-xl text-cream">Das wird oft dazu gekauft</h2>
+                <span className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {suggestions.map((c) => (
+                  <div
+                    key={c.slug}
+                    className="flex items-center gap-3 rounded-sm border border-gold-300/15 bg-white/[0.02] p-3"
+                  >
+                    <div className="relative h-14 w-14 flex-none overflow-hidden rounded-sm border border-white/10 bg-ink">
+                      {c.image && !c.image.startsWith("storage://") ? (
+                        <Image src={c.image} alt="" fill sizes="56px" className="object-cover" />
+                      ) : null}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 break-words text-sm font-semibold text-cream">{c.title}</p>
+                      <p className="gold-text font-heading text-base leading-none">
+                        {formatEuro(c.priceCents)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() =>
+                        add({
+                          slug: c.slug,
+                          title: c.title,
+                          priceCents: c.priceCents,
+                          image: c.image,
+                          format: c.format,
+                        })
+                      }
+                      aria-label={`${c.title} hinzufügen`}
+                      className="flex h-9 w-9 flex-none items-center justify-center rounded-md border border-gold-300/30 bg-gold-300/[0.08] text-gold-300 transition-colors hover:border-gold-300/60 hover:bg-gold-300/15"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          </>
         )}
       </div>
     </div>

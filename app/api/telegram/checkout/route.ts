@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type Stripe from "stripe";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { absoluteUrl } from "@/lib/utils";
@@ -10,6 +11,46 @@ type TelegramPlan = {
   interval: "month" | "year";
   label: string;
 };
+
+/**
+ * Resolve the recurring Stripe Price for a VIP plan — find-or-create so the VIP
+ * subscription shows up as ONE proper product in Stripe (not an ad-hoc product
+ * per checkout). Idempotent across cold starts via the price `lookup_key`.
+ */
+async function getVipPriceId(stripe: Stripe, plan: TelegramPlan): Promise<string> {
+  const lookupKey = `vip_telegram_${plan.key}`;
+  const existing = await stripe.prices.list({ lookup_keys: [lookupKey], active: true, limit: 1 });
+  if (existing.data[0]?.id) return existing.data[0].id;
+
+  // First time for this plan: reuse the single VIP product if it exists, else create it.
+  let productId: string | undefined;
+  try {
+    const found = await stripe.products.search({
+      query: "metadata['kind']:'telegram_vip'",
+      limit: 1,
+    });
+    productId = found.data[0]?.id;
+  } catch {
+    /* search API unavailable — fall through to create */
+  }
+  if (!productId) {
+    const product = await stripe.products.create({
+      name: "VIP Telegram Gruppe",
+      description: "Exklusive Paid Community — jederzeit kündbar.",
+      metadata: { kind: "telegram_vip" },
+    });
+    productId = product.id;
+  }
+
+  const price = await stripe.prices.create({
+    product: productId,
+    currency: "eur",
+    unit_amount: plan.amount,
+    recurring: { interval: plan.interval },
+    lookup_key: lookupKey,
+  });
+  return price.id;
+}
 
 const TELEGRAM_PLANS: Record<TelegramPlan["key"], TelegramPlan> = {
   monthly: {
@@ -81,26 +122,17 @@ export async function POST(request: Request) {
     });
     if (!rl.allowed) return rateLimitResponse(rl.retryAfterSeconds ?? 900);
 
+    // Reuse the real VIP Stripe product/price so it appears in the Stripe catalog
+    // and per-product reporting (instead of an ad-hoc product per subscription).
+    const vipPriceId = await getVipPriceId(stripe, plan);
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       success_url: absoluteUrl("/profil?vip=success"),
       cancel_url: absoluteUrl("/bibliothek?vip=cancel"),
       ...(userEmail ? { customer_email: userEmail } : {}),
       client_reference_id: userId,
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: "eur",
-            unit_amount: plan.amount,
-            recurring: { interval: plan.interval },
-            product_data: {
-              name: "VIP Telegram Gruppe",
-              description: `Exklusive Paid Community — ${plan.label}, jederzeit kündbar.`
-            }
-          }
-        }
-      ],
+      line_items: [{ price: vipPriceId, quantity: 1 }],
       metadata: {
         kind: "telegram",
         telegram_plan: plan.key,

@@ -2,14 +2,37 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
+import { X, Plus, Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatEuro } from "@/lib/utils";
 import { featuredCourses } from "@/lib/content";
 
+const PROMO_KEY = "ai-goldmining-promo";
+
 export function CartDrawer() {
   const { items, isOpen, close, remove, subtotalCents, count, add, has } = useCart();
+
+  // Promo code entered here is carried over to the cart/checkout page.
+  const [promo, setPromo] = useState("");
+  useEffect(() => {
+    if (!isOpen) return;
+    try {
+      setPromo(localStorage.getItem(PROMO_KEY) ?? "");
+    } catch {
+      /* ignore */
+    }
+  }, [isOpen]);
+  function onPromoChange(value: string) {
+    const up = value.toUpperCase();
+    setPromo(up);
+    try {
+      localStorage.setItem(PROMO_KEY, up);
+    } catch {
+      /* ignore */
+    }
+  }
 
   // Upsell suggestions: featured courses the customer hasn't added yet.
   const upsells = featuredCourses.filter((c) => !has(c.slug)).slice(0, 2);
@@ -32,7 +55,7 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", ease: [0.25, 0.46, 0.45, 0.94], duration: 0.35 }}
-            className="fixed right-0 top-0 z-[71] flex h-full w-full max-w-md flex-col border-l border-gold-300/20 bg-obsidian/95 backdrop-blur-xl"
+            className="fixed right-0 top-0 z-[71] flex h-full w-full max-w-md flex-col overflow-x-hidden border-l border-gold-300/20 bg-obsidian/95 backdrop-blur-xl"
             role="dialog"
             aria-label="Warenkorb"
           >
@@ -82,7 +105,7 @@ export function CartDrawer() {
                         ) : null}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-heading text-sm text-cream">{item.title}</p>
+                        <p className="line-clamp-2 break-words font-heading text-sm text-cream">{item.title}</p>
                         <p className="mt-0.5 gold-text font-heading text-base leading-none">
                           {formatEuro(item.priceCents)}
                         </p>
@@ -149,6 +172,23 @@ export function CartDrawer() {
                     </ul>
                   </div>
                 )}
+
+                {/* Promo code — carried over to the checkout page */}
+                <div className="mb-4">
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-cream/40">
+                    Rabattcode
+                  </label>
+                  <div className="flex items-center gap-2 border border-white/10 bg-obsidian/60 px-3">
+                    <Tag className="h-3.5 w-3.5 flex-none text-gold-300/60" />
+                    <input
+                      value={promo}
+                      onChange={(e) => onPromoChange(e.target.value)}
+                      placeholder="Code eingeben"
+                      className="w-full bg-transparent py-2.5 text-sm text-cream placeholder:text-cream/25 focus:outline-none"
+                    />
+                  </div>
+                  <p className="mt-1 text-[10px] text-cream/30">Wird an der Kasse automatisch übernommen.</p>
+                </div>
 
                 <div className="mb-4 flex items-center justify-between">
                   <span className="text-sm uppercase tracking-[0.14em] text-cream/50">Zwischensumme</span>
