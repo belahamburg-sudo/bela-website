@@ -29,7 +29,7 @@ export function SiteHeader() {
   }, []);
 
   // Reflect the REAL Supabase session (not a phantom localStorage flag), so
-  // navigating from /db back to a marketing page keeps the logged-in state.
+  // navigating from /dashboard back to a marketing page keeps the logged-in state.
   useEffect(() => {
     if (!hasSupabasePublicEnv()) {
       // Demo mode fallback.
@@ -123,7 +123,7 @@ export function SiteHeader() {
               {isLoggedIn ? (
                 <>
                   <Link
-                    href="/db/profil"
+                    href="/profil"
                     aria-label="Mein Profil"
                     title="Mein Profil"
                     className="focus-ring flex h-9 w-9 items-center justify-center rounded-full border border-gold-300/30 text-cream/60 transition-all hover:border-gold-300/60 hover:text-cream hover:bg-gold-300/5"
@@ -216,7 +216,7 @@ export function SiteHeader() {
                       transition={{ delay: 0.4 }}
                     >
                       <Link
-                        href="/db/profil"
+                        href="/profil"
                         className="block rounded-full border border-gold-300/20 bg-white/[0.02] py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/40 hover:text-cream hover:bg-gold-300/5"
                         onClick={() => setOpen(false)}
                       >

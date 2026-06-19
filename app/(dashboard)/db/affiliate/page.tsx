@@ -23,7 +23,7 @@ export default async function AffiliatePage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login?redirect=/db/affiliate");
+  if (!user) redirect("/login?redirect=/affiliate");
 
   const affiliate = await getAffiliateForUser(user.id);
   if (!affiliate) {

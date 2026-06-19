@@ -40,7 +40,7 @@ export function PaywallScreen({ course }: PaywallScreenProps) {
 
       <div className="container-shell relative">
         <Link
-          href="/db/kurse"
+          href="/bibliothek"
           className="mb-8 inline-flex items-center gap-2 text-sm text-cream/35 transition-colors hover:text-cream/70"
         >
           <ArrowLeft className="h-4 w-4" />

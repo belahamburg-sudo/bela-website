@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       return NextResponse.redirect(
         absoluteUrl(
           granted
-            ? `/db/kurse/${slug}?freebie=claimed`
+            ? `/bibliothek/${slug}?freebie=claimed`
             : `/freebie/${slug}?status=confirmed&error=grant`
         )
       );

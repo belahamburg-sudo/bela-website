@@ -57,7 +57,7 @@ export function ComingSoonScreen({ course, isFlagship }: ComingSoonScreenProps) 
         </div>
 
         <Link
-          href="/db/kurse"
+          href="/bibliothek"
           className="mt-6 inline-block text-sm text-cream/30 transition-colors hover:text-cream/60"
         >
           ← Zurück zur Goldmine

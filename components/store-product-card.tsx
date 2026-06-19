@@ -70,7 +70,7 @@ export function StoreProductCard({
       )}
 
       <Link
-        href={`/db/kurse/${course.slug}`}
+        href={`/bibliothek/${course.slug}`}
         className="relative block h-40 overflow-hidden border-b border-white/5"
         aria-label={`${course.title} ansehen`}
       >
@@ -144,7 +144,7 @@ export function StoreProductCard({
 
       <div className="relative z-10 flex flex-1 flex-col p-5">
         <div className="min-h-[5.5rem]">
-          <Link href={`/db/kurse/${course.slug}`}>
+          <Link href={`/bibliothek/${course.slug}`}>
             <h3
               className={cn(
                 "line-clamp-2 font-heading text-xl leading-tight transition-colors duration-300",
@@ -204,7 +204,7 @@ export function StoreProductCard({
               </div>
             )}
             <Button
-              href={`/db/kurse/${course.slug}`}
+              href={`/bibliothek/${course.slug}`}
               variant="secondary"
               size="sm"
               className="w-full rounded-lg"
@@ -225,7 +225,7 @@ export function StoreProductCard({
                 </span>
               </div>
               <Button
-                href={`/db/kurse/${course.slug}`}
+                href={`/bibliothek/${course.slug}`}
                 variant="secondary"
                 size="sm"
                 className="rounded-lg px-5"
@@ -268,7 +268,7 @@ export function StoreProductCard({
                 )}
               </div>
               <Button
-                href={`/db/kurse/${course.slug}`}
+                href={`/bibliothek/${course.slug}`}
                 variant="secondary"
                 size="sm"
                 className="rounded-lg px-5"

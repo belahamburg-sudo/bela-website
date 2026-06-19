@@ -11,7 +11,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [message, setMessage] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const defaultRedirect = mode === "signup" ? "/db/onboarding" : "/db";
+  const defaultRedirect = mode === "signup" ? "/onboarding" : "/dashboard";
   const redirect = searchParams.get("redirect") || defaultRedirect;
 
   // Password-reset request flow (login screen only).

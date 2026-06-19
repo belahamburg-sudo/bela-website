@@ -180,7 +180,7 @@ export default async function DashboardCoursePage({
           <section className="py-10 sm:py-14">
             <div className="container-shell">
               <Link
-                href="/db/kurse"
+                href="/bibliothek"
                 className="focus-ring mb-7 inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-transparent px-4 py-2 text-sm font-semibold text-white/70 transition hover:border-gold-300/50 hover:text-cream"
               >
                 <ArrowLeft aria-hidden className="h-4 w-4" />

@@ -47,8 +47,8 @@ export async function createOnboardingLink(
   try {
     const link = await stripe.accountLinks.create({
       account: accountId,
-      refresh_url: absoluteUrl("/db/affiliate?stripe=refresh"),
-      return_url: absoluteUrl("/db/affiliate?stripe=done"),
+      refresh_url: absoluteUrl("/affiliate?stripe=refresh"),
+      return_url: absoluteUrl("/affiliate?stripe=done"),
       type: "account_onboarding",
     });
     return { ok: true, url: link.url };

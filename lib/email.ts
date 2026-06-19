@@ -61,9 +61,9 @@ export async function sendTemplateEmail(opts: {
   const merged: EmailVars = {
     siteUrl,
     logoUrl: resolveSiteLogoUrl(siteUrl),
-    dashboardUrl: `${siteUrl}/db`,
-    courseUrl: `${siteUrl}/db/kurse`,
-    checkoutUrl: `${siteUrl}/db/kurse`,
+    dashboardUrl: `${siteUrl}/dashboard`,
+    courseUrl: `${siteUrl}/bibliothek`,
+    checkoutUrl: `${siteUrl}/bibliothek`,
     paidTelegramUrl: process.env.NEXT_PUBLIC_TELEGRAM_PAID_URL || "https://t.me/+mjD_JqSrbO83MjAy",
     telegramUrl: process.env.NEXT_PUBLIC_TELEGRAM_URL || "https://t.me/aigoldminingfreeminers",
     year: new Date().getFullYear(),

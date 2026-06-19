@@ -48,7 +48,7 @@ export default function ResetPasswordPage() {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       setStatus("done");
-      setTimeout(() => router.push("/db"), 1600);
+      setTimeout(() => router.push("/dashboard"), 1600);
     } catch (err) {
       setStatus("error");
       setMessage(err instanceof Error ? err.message : "Passwort konnte nicht geändert werden.");

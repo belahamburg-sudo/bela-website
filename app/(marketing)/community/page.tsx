@@ -118,10 +118,10 @@ export default function CommunityPage() {
               </div>
             ))}
             <div className="sm:col-span-2 flex flex-col gap-3 sm:flex-row pt-2">
-              <Button href="/login?redirect=/db" variant="secondary">
+              <Button href="/login?redirect=/dashboard" variant="secondary">
                 Einloggen
               </Button>
-              <Button href="/db">
+              <Button href="/dashboard">
                 Zum Dashboard
               </Button>
             </div>

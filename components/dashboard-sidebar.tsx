@@ -31,11 +31,11 @@ type NavLinkConfig = {
 };
 
 const NAV_LINKS: NavLinkConfig[] = [
-  { href: "/db", label: "Übersicht", icon: LayoutDashboard, exact: true },
-  { href: "/db/kurse", label: "Goldmine", icon: Pickaxe, exact: false },
-  { href: "/db/affiliate", label: "Affiliate", icon: Gift, exact: false },
-  { href: "/db/vip", label: "VIP Member", icon: Crown, exact: false },
-  { href: "/db/profil", label: "Mein Profil", icon: User, exact: false },
+  { href: "/dashboard", label: "Übersicht", icon: LayoutDashboard, exact: true },
+  { href: "/bibliothek", label: "Goldmine", icon: Pickaxe, exact: false },
+  { href: "/affiliate", label: "Affiliate", icon: Gift, exact: false },
+  { href: "/vip", label: "VIP Member", icon: Crown, exact: false },
+  { href: "/profil", label: "Mein Profil", icon: User, exact: false },
   { href: belaPrivateTelegram, label: "Support", icon: LifeBuoy, exact: false, external: true },
 ];
 
@@ -119,7 +119,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
       {/* Brand / Logo Section */}
       <div className="p-6">
         <Link
-          href="/db"
+          href="/dashboard"
           onClick={onNavClick}
           className="group flex flex-col gap-2"
         >
@@ -249,14 +249,14 @@ export function DashboardSidebar() {
       <div className="hidden lg:block lg:w-64 lg:flex-shrink-0" aria-hidden />
 
       {/* Desktop floating cart — the member area has no marketing header, so the
-          cart lives here so members can keep shopping inside /db. */}
+          cart lives here so members can keep shopping inside /dashboard. */}
       <div className="fixed right-6 top-6 z-40 hidden lg:block">
         <CartButton />
       </div>
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-gold-300/10 bg-ink/95 px-4 backdrop-blur-md lg:hidden">
-        <Link href="/db" className="flex items-center">
+        <Link href="/dashboard" className="flex items-center">
           <Image
             src={SITE_LOGO_PATH}
             alt="AI Goldmining"

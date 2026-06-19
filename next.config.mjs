@@ -47,6 +47,28 @@ const nextConfig = {
     }
     return config;
   },
+  async redirects() {
+    return [
+      { source: "/db", destination: "/dashboard", permanent: true },
+      { source: "/db/kurse", destination: "/bibliothek", permanent: true },
+      { source: "/db/kurse/:slug", destination: "/bibliothek/:slug", permanent: true },
+      { source: "/db/profil", destination: "/profil", permanent: true },
+      { source: "/db/affiliate", destination: "/affiliate", permanent: true },
+      { source: "/db/vip", destination: "/vip", permanent: true },
+      { source: "/db/onboarding", destination: "/onboarding", permanent: true },
+    ];
+  },
+  async rewrites() {
+    return [
+      { source: "/dashboard", destination: "/db" },
+      { source: "/bibliothek", destination: "/db/kurse" },
+      { source: "/bibliothek/:slug", destination: "/db/kurse/:slug" },
+      { source: "/profil", destination: "/db/profil" },
+      { source: "/affiliate", destination: "/db/affiliate" },
+      { source: "/vip", destination: "/db/vip" },
+      { source: "/onboarding", destination: "/db/onboarding" },
+    ];
+  },
   async headers() {
     return [
       {

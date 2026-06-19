@@ -37,7 +37,7 @@ export function CourseCrossSell({
             {items.map((c) => (
               <Link
                 key={c.slug}
-                href={`/db/kurse/${c.slug}`}
+                href={`/bibliothek/${c.slug}`}
                 className="group flex items-center gap-3 rounded-xl border border-white/10 bg-ink/40 p-3 transition hover:border-gold-300/30"
               >
                 <div className="relative h-14 w-14 flex-none overflow-hidden rounded-lg">

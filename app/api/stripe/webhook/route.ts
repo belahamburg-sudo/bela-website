@@ -225,7 +225,7 @@ async function handleCoursePurchase(
         name,
         email,
         courseName,
-        courseUrl: absoluteUrl(`/db/kurse/${slugs[0]}`),
+        courseUrl: absoluteUrl(`/bibliothek/${slugs[0]}`),
         amount:
           typeof session.amount_total === "number"
             ? formatEuro(session.amount_total)
@@ -359,7 +359,7 @@ async function handlePaymentFailed(
       name: profile?.full_name ?? email.split("@")[0],
       email,
       courseName: invoice.subscription ? "VIP Telegram Gruppe" : "deine Bestellung",
-      checkoutUrl: absoluteUrl("/db/kurse"),
+      checkoutUrl: absoluteUrl("/bibliothek"),
     },
   });
 }

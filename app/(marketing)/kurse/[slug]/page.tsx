@@ -199,7 +199,7 @@ export default async function CourseDetailPage({
                     <CheckCircle2 aria-hidden className="h-4 w-4" />
                     Du besitzt diesen Kurs bereits
                   </span>
-                  <Button href={`/db/kurse/${course.slug}`} size="lg" className="w-full sm:w-auto">
+                  <Button href={`/bibliothek/${course.slug}`} size="lg" className="w-full sm:w-auto">
                     <PlayCircle aria-hidden className="h-5 w-5" />
                     Jetzt im Dashboard ansehen
                   </Button>

@@ -53,7 +53,7 @@ async function claimFreebie(formData: FormData) {
   const newsletterStatus = await getNewsletterStatus(user.email);
   if (newsletterStatus === "confirmed") {
     const granted = await grantFreebieCourse(user.id, slug);
-    redirect(granted ? `/db/kurse/${slug}?freebie=claimed` : `/freebie/${slug}?error=grant`);
+    redirect(granted ? `/bibliothek/${slug}?freebie=claimed` : `/freebie/${slug}?error=grant`);
   }
 
   await subscribeNewsletter(user.email, {

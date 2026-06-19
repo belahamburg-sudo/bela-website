@@ -7,12 +7,12 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type");
-  const next = searchParams.get("next") ?? "/db";
+  const next = searchParams.get("next") ?? "/dashboard";
 
   const supabase = await getSupabaseServerClient();
 
   if (!supabase) {
-    return NextResponse.redirect(`${origin}/db`);
+    return NextResponse.redirect(`${origin}/dashboard`);
   }
 
   if (token_hash && type) {

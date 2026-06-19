@@ -61,7 +61,7 @@ const labelClass =
 export function SignupFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/db/onboarding";
+  const redirect = searchParams.get("redirect") || "/onboarding";
 
   const [step, setStep] = useState<Step>(1);
   const [direction, setDirection] = useState(1);

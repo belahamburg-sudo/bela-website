@@ -113,7 +113,7 @@ export function TelegramSubscribeCard() {
 
   async function startCheckout() {
     if (!loggedIn) {
-      router.push("/login?redirect=/db/kurse");
+      router.push("/login?redirect=/bibliothek");
       return;
     }
 

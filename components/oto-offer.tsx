@@ -71,7 +71,7 @@ export function OtoOffer({
           Dein Bonus-Kurs ist deinem Account gutgeschrieben.
         </p>
         <Link
-          href={`/db/kurse/${slug}`}
+          href={`/bibliothek/${slug}`}
           className="mt-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gold-300 hover:text-gold-200"
         >
           Jetzt öffnen <ArrowRight className="h-4 w-4" />

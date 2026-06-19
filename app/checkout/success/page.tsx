@@ -139,12 +139,12 @@ export default async function CheckoutSuccessPage({
 
             {/* CTAs */}
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button href="/db/kurse" size="md">
+              <Button href="/bibliothek" size="md">
                 Zu meinen Kursen
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Button>
               {course ? (
-                <Button href={`/db/kurse/${course.slug}`} variant="secondary" size="md">
+                <Button href={`/bibliothek/${course.slug}`} variant="secondary" size="md">
                   Kurs öffnen
                 </Button>
               ) : null}
@@ -152,7 +152,7 @@ export default async function CheckoutSuccessPage({
 
             <div className="mt-8">
               <Link
-                href="/db"
+                href="/dashboard"
                 className="focus-ring text-[10px] font-mono uppercase tracking-[0.2em] text-cream/35 transition-colors hover:text-gold-300/70"
               >
                 Zur Übersicht
