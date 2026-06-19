@@ -1,19 +1,17 @@
 import {
-  Banknote,
-  CalendarDays,
-  CalendarRange,
-  Receipt,
-  ShoppingCart,
-  Users,
-  UserPlus,
-  Send,
-  TrendingUp,
   ArrowUpRight,
+  Banknote,
+  CalendarRange,
+  Send,
+  ShoppingCart,
+  UserPlus,
+  Users,
 } from "lucide-react";
 import { PageHeader, StatCard, Panel, AdminBadge, EmptyState } from "@/components/admin/ui";
 import { DataTable, type Column } from "@/components/admin/data-table";
+import { DonutChart, AreaTrend, FunnelBars } from "@/components/admin/charts";
 import {
-  getAdminStats,
+  getAdminOverview,
   getRecentPurchases,
   getRecentLeads,
   getRevenueSeries,
@@ -35,20 +33,14 @@ function formatDate(iso: string): string {
 }
 
 function formatDay(iso: string): string {
-  return new Date(iso).toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-  });
+  return new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
 }
 
 /* ---------------------------------------------------------------- */
 /* System status                                                    */
 /* ---------------------------------------------------------------- */
 
-const HEALTH_META: Record<
-  HealthStatus,
-  { dot: string; glow: string; label: string; text: string }
-> = {
+const HEALTH_META: Record<HealthStatus, { dot: string; glow: string; label: string; text: string }> = {
   ok: {
     dot: "bg-emerald-400",
     glow: "shadow-[0_0_8px_2px_rgba(52,211,153,0.5)]",
@@ -84,28 +76,15 @@ function SystemStatus({
             className="flex items-center justify-between gap-4 px-5 py-3.5 first:pt-4 last:pb-4"
           >
             <div className="flex min-w-0 items-center gap-3">
-              <span
-                className={cn(
-                  "h-2.5 w-2.5 flex-shrink-0 rounded-full",
-                  meta.dot,
-                  meta.glow
-                )}
-              />
+              <span className={cn("h-2.5 w-2.5 flex-shrink-0 rounded-full", meta.dot, meta.glow)} />
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-cream/90">
-                  {h.service}
-                </p>
+                <p className="truncate text-sm font-semibold text-cream/90">{h.service}</p>
                 {h.status === "down" && h.detail && (
                   <p className="truncate text-[11px] text-red-300/60">{h.detail}</p>
                 )}
               </div>
             </div>
-            <span
-              className={cn(
-                "flex-shrink-0 text-xs font-bold uppercase tracking-wide",
-                meta.text
-              )}
-            >
+            <span className={cn("flex-shrink-0 text-xs font-bold uppercase tracking-wide", meta.text)}>
               {meta.label}
             </span>
           </li>
@@ -116,63 +95,24 @@ function SystemStatus({
 }
 
 /* ---------------------------------------------------------------- */
-/* Revenue sparkline                                                */
+/* Compact secondary metric tile                                    */
 /* ---------------------------------------------------------------- */
 
-function RevenueChart({ data }: { data: { date: string; cents: number }[] }) {
-  const max = Math.max(1, ...data.map((d) => d.cents));
-  const total = data.reduce((s, d) => s + d.cents, 0);
-  const avg = data.length > 0 ? Math.round(total / data.length) : 0;
-  const peak = data.reduce(
-    (best, d) => (d.cents > best.cents ? d : best),
-    data[0] ?? { date: "", cents: 0 }
-  );
-
+function MiniStat({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div>
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <span className="tac-label">Summe {data.length} Tage</span>
-          <p className="mt-1 text-2xl font-extrabold tracking-tight text-cream">
-            {formatEuro(total)}
-          </p>
-        </div>
-        <div className="flex items-center gap-5 text-right">
-          <div>
-            <span className="tac-label">Ø / Tag</span>
-            <p className="mt-1 text-sm font-bold text-cream/80">{formatEuro(avg)}</p>
-          </div>
-          <div>
-            <span className="tac-label">Bester Tag</span>
-            <p className="mt-1 text-sm font-bold text-cream/80">
-              {formatEuro(peak.cents)}
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3">
+      <p className="tac-label">{label}</p>
+      <p className="mt-1.5 text-lg font-extrabold tracking-tight text-cream">{value}</p>
+      {sub && <p className="mt-0.5 text-[11px] text-cream/35">{sub}</p>}
+    </div>
+  );
+}
 
-      <div className="flex h-36 items-end gap-1.5">
-        {data.map((d) => (
-          <div
-            key={d.date}
-            className="group relative flex flex-1 flex-col justify-end"
-          >
-            <div
-              className="w-full rounded-t bg-gradient-to-t from-gold-600/30 to-gold-300/80 transition-all group-hover:from-gold-500/50 group-hover:to-gold-200"
-              style={{ height: `${Math.max(2, (d.cents / max) * 100)}%` }}
-            />
-            <div className="pointer-events-none absolute -top-9 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border border-white/10 bg-ink px-2 py-1 text-[10px] text-cream/80 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-              <span className="font-bold text-gold-200">{formatEuro(d.cents)}</span>
-              <span className="ml-1 text-cream/40">{formatDay(d.date)}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-2 flex justify-between text-[10px] text-cream/30">
-        <span>{data.length > 0 ? formatDay(data[0].date) : ""}</span>
-        <span>{data.length > 0 ? formatDay(data[data.length - 1].date) : ""}</span>
-      </div>
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-4 mt-10 flex items-center gap-3">
+      <span className="text-xs font-bold uppercase tracking-[0.18em] text-gold-300/70">{children}</span>
+      <span className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
     </div>
   );
 }
@@ -182,13 +122,17 @@ function RevenueChart({ data }: { data: { date: string; cents: number }[] }) {
 /* ---------------------------------------------------------------- */
 
 export default async function AdminOverviewPage() {
-  const [stats, purchases, leads, revenue, health] = await Promise.all([
-    getAdminStats(),
+  const [o, purchases, leads, revenue, health] = await Promise.all([
+    getAdminOverview(),
     getRecentPurchases(6),
     getRecentLeads(6),
-    getRevenueSeries(14),
+    getRevenueSeries(30),
     checkAllHealth(),
   ]);
+
+  const revenueTotal = revenue.reduce((s, d) => s + d.cents, 0);
+  const revenueAvg = revenue.length > 0 ? Math.round(revenueTotal / revenue.length) : 0;
+  const revenuePeak = revenue.reduce((m, d) => Math.max(m, d.cents), 0);
 
   const purchaseColumns: Column<AdminPurchase>[] = [
     {
@@ -196,25 +140,13 @@ export default async function AdminOverviewPage() {
       header: "Kurs",
       render: (r) => <span className="font-medium text-cream/90">{r.course_slug}</span>,
     },
-    {
-      key: "amount_total",
-      header: "Betrag",
-      align: "right",
-      render: (r) => formatEuro(r.amount_total ?? 0),
-    },
+    { key: "amount_total", header: "Betrag", align: "right", render: (r) => formatEuro(r.amount_total ?? 0) },
     {
       key: "status",
       header: "Status",
-      render: (r) => (
-        <AdminBadge tone={r.status === "paid" ? "green" : "amber"}>{r.status}</AdminBadge>
-      ),
+      render: (r) => <AdminBadge tone={r.status === "paid" ? "green" : "amber"}>{r.status}</AdminBadge>,
     },
-    {
-      key: "created_at",
-      header: "Datum",
-      align: "right",
-      render: (r) => formatDate(r.created_at),
-    },
+    { key: "created_at", header: "Datum", align: "right", render: (r) => formatDate(r.created_at) },
   ];
 
   const leadColumns: Column<AdminLead>[] = [
@@ -223,17 +155,8 @@ export default async function AdminOverviewPage() {
       header: "E-Mail",
       render: (r) => <span className="font-medium text-cream/90">{r.email}</span>,
     },
-    {
-      key: "source",
-      header: "Quelle",
-      render: (r) => <AdminBadge tone="blue">{r.source}</AdminBadge>,
-    },
-    {
-      key: "created_at",
-      header: "Datum",
-      align: "right",
-      render: (r) => formatDate(r.created_at),
-    },
+    { key: "source", header: "Quelle", render: (r) => <AdminBadge tone="blue">{r.source}</AdminBadge> },
+    { key: "created_at", header: "Datum", align: "right", render: (r) => formatDate(r.created_at) },
   ];
 
   return (
@@ -241,88 +164,137 @@ export default async function AdminOverviewPage() {
       <PageHeader
         eyebrow="Kontrollzentrale"
         title="Übersicht"
-        description="Echtzeit-Überblick über Umsatz, Mitglieder und Leads deiner Goldmine."
+        description="Echtzeit-Überblick über Umsatz, Mitglieder, Community und Leads deiner Goldmine."
       />
 
-      {/* KPI cockpit */}
-      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+      {/* ── Hero KPIs ── */}
+      <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="Umsatz gesamt"
-          value={formatEuro(stats.revenueCents)}
+          value={formatEuro(o.revenueCents)}
           icon={Banknote}
-          hint={`${stats.paidCount} Verkäufe`}
+          hint={`${o.paidCount} Verkäufe`}
           href="/admin/verkaeufe"
         />
         <StatCard
-          label="Umsatz heute"
-          value={formatEuro(stats.revenueTodayCents)}
-          icon={CalendarDays}
-          hint="seit Mitternacht"
-        />
-        <StatCard
           label="Umsatz 30 Tage"
-          value={formatEuro(stats.revenue30dCents)}
+          value={formatEuro(o.revenue30dCents)}
           icon={CalendarRange}
           hint="rollierend"
         />
         <StatCard
-          label="Ø Bestellwert"
-          value={formatEuro(stats.aovCents)}
-          icon={Receipt}
-          hint="pro Verkauf"
-        />
-        <StatCard
-          label="Conversion"
-          value={`${stats.conversionRate}%`}
-          icon={TrendingUp}
-          hint="bezahlt / Mitglieder"
-        />
-        <StatCard
-          label="Verkäufe"
-          value={stats.paidCount}
-          icon={ShoppingCart}
-          hint={`${stats.pendingCount} offen`}
-          href="/admin/verkaeufe"
+          label="VIP aktiv"
+          value={o.telegramActive}
+          icon={Send}
+          hint={`≈ ${formatEuro(o.vipMrrCentsEst)}/Mo`}
+          href="/admin/telegram"
         />
         <StatCard
           label="Mitglieder"
-          value={stats.memberCount}
+          value={o.memberCount}
           icon={Users}
+          hint={`${o.conversionRate}% Conversion`}
           href="/admin/kunden"
-        />
-        <StatCard
-          label="Leads"
-          value={stats.leadCount}
-          icon={UserPlus}
-          href="/admin/leads"
-        />
-        <StatCard
-          label="VIP aktiv"
-          value={stats.telegramActive}
-          icon={Send}
-          hint="Telegram"
-          href="/admin/telegram"
         />
       </div>
 
-      {/* Revenue + system status */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+      {/* ── Umsatz ── */}
+      <SectionLabel>Umsatz</SectionLabel>
+      <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Panel title="Umsatzverlauf" description="Bezahlte Bestellungen pro Tag">
-            <RevenueChart data={revenue} />
+          <Panel title="Umsatzverlauf" description="Bezahlte Bestellungen pro Tag (30 Tage)">
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <span className="tac-label">Summe 30 Tage</span>
+                <p className="mt-1 text-2xl font-extrabold tracking-tight text-cream">
+                  {formatEuro(revenueTotal)}
+                </p>
+              </div>
+              <div className="flex items-center gap-6 text-right">
+                <div>
+                  <span className="tac-label">Ø / Tag</span>
+                  <p className="mt-1 text-sm font-bold text-cream/80">{formatEuro(revenueAvg)}</p>
+                </div>
+                <div>
+                  <span className="tac-label">Bester Tag</span>
+                  <p className="mt-1 text-sm font-bold text-cream/80">{formatEuro(revenuePeak)}</p>
+                </div>
+              </div>
+            </div>
+            <AreaTrend data={revenue} formatDay={formatDay} />
           </Panel>
         </div>
-        <Panel
-          title="System-Status"
-          description="Live-Integrationen"
-          noPadding
-        >
+        <Panel title="Umsatz nach Kurs">
+          <DonutChart
+            data={o.revenueByCourse.map((c) => ({ label: c.title, value: c.cents }))}
+            centerValue={formatEuro(o.revenueCents)}
+            centerLabel="gesamt"
+            formatValue={formatEuro}
+          />
+        </Panel>
+      </div>
+
+      {/* ── Akquise & Community ── */}
+      <SectionLabel>Akquise & Community</SectionLabel>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Panel title="Leads nach Quelle">
+          <DonutChart
+            data={o.leadsBySource}
+            centerValue={String(o.leadCount)}
+            centerLabel="Leads"
+          />
+        </Panel>
+        <Panel title="Conversion-Funnel" description="Vom Lead zum VIP">
+          <FunnelBars
+            data={[
+              { label: "Leads", value: o.leadCount },
+              { label: "Mitglieder", value: o.memberCount },
+              { label: "Käufer", value: o.paidCount },
+              { label: "VIP-Abos", value: o.telegramActive },
+            ]}
+          />
+        </Panel>
+        <Panel title="System-Status" description="Live-Integrationen" noPadding>
           <SystemStatus health={health} />
         </Panel>
       </div>
 
-      {/* Recent activity */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      {/* ── Weitere Kennzahlen ── */}
+      <SectionLabel>Weitere Kennzahlen</SectionLabel>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <MiniStat label="Umsatz heute" value={formatEuro(o.revenueTodayCents)} sub="seit Mitternacht" />
+        <MiniStat label="Ø Bestellwert" value={formatEuro(o.aovCents)} sub="pro Verkauf" />
+        <MiniStat
+          label="Onboarding"
+          value={`${o.onboardingRate}%`}
+          sub={`${o.onboardingComplete}/${o.memberCount} abgeschlossen`}
+        />
+        <MiniStat
+          label="Newsletter"
+          value={o.newsletterConfirmed}
+          sub={`${o.newsletterPending} offen`}
+        />
+        <MiniStat
+          label="Ø Bewertung"
+          value={o.reviewCount > 0 ? `${o.reviewAvg.toFixed(1)} ★` : "–"}
+          sub={`${o.reviewCount} Reviews`}
+        />
+        <MiniStat
+          label="Lektionen erledigt"
+          value={o.completedLessons}
+          sub={`${o.activeLearners} aktive Lerner`}
+        />
+        <MiniStat
+          label="Affiliate-Provision"
+          value={formatEuro(o.affiliateEarnedCents)}
+          sub={`${formatEuro(o.affiliatePaidCents)} ausgezahlt`}
+        />
+        <MiniStat label="Kurse" value={o.courseCount} sub="im Katalog" />
+      </div>
+
+      {/* ── Letzte Aktivität ── */}
+      <SectionLabel>Letzte Aktivität</SectionLabel>
+      <div className="grid gap-6 lg:grid-cols-2">
         <Panel
           title="Neueste Verkäufe"
           noPadding

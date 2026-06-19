@@ -113,6 +113,206 @@ export async function getAdminStats(): Promise<AdminStats> {
   };
 }
 
+export type CategoryDatum = { label: string; value: number };
+
+export type AdminOverview = {
+  // Revenue (course sales — paid rows with amount > 0)
+  revenueCents: number;
+  revenueTodayCents: number;
+  revenue30dCents: number;
+  aovCents: number;
+  paidCount: number;
+  pendingCount: number;
+  // Audience
+  memberCount: number;
+  leadCount: number;
+  courseCount: number;
+  conversionRate: number;
+  onboardingComplete: number;
+  onboardingRate: number;
+  // VIP / Telegram (MRR is an estimate: active × 9€/mo, since the plan price
+  // isn't stored per row — labelled as such in the UI).
+  telegramActive: number;
+  vipMrrCentsEst: number;
+  // Community / engagement
+  newsletterConfirmed: number;
+  newsletterPending: number;
+  reviewCount: number;
+  reviewAvg: number;
+  completedLessons: number;
+  activeLearners: number;
+  affiliateEarnedCents: number;
+  affiliatePaidCents: number;
+  // Breakdowns for charts
+  revenueByCourse: { slug: string; title: string; cents: number }[];
+  leadsBySource: CategoryDatum[];
+};
+
+/** One comprehensive read for the admin overview dashboard. */
+export async function getAdminOverview(): Promise<AdminOverview> {
+  const empty: AdminOverview = {
+    revenueCents: 0,
+    revenueTodayCents: 0,
+    revenue30dCents: 0,
+    aovCents: 0,
+    paidCount: 0,
+    pendingCount: 0,
+    memberCount: 0,
+    leadCount: 0,
+    courseCount: 0,
+    conversionRate: 0,
+    onboardingComplete: 0,
+    onboardingRate: 0,
+    telegramActive: 0,
+    vipMrrCentsEst: 0,
+    newsletterConfirmed: 0,
+    newsletterPending: 0,
+    reviewCount: 0,
+    reviewAvg: 0,
+    completedLessons: 0,
+    activeLearners: 0,
+    affiliateEarnedCents: 0,
+    affiliatePaidCents: 0,
+    revenueByCourse: [],
+    leadsBySource: [],
+  };
+  const admin = getSupabaseAdminClient();
+  if (!admin) return empty;
+
+  const [
+    purchases,
+    leads,
+    members,
+    onboarded,
+    courses,
+    telegram,
+    newsConfirmed,
+    newsPending,
+    reviews,
+    referrals,
+    progress,
+  ] = await Promise.all([
+    admin.from("purchases").select("amount_total, status, created_at, course_slug"),
+    admin.from("leads").select("source"),
+    admin.from("profiles").select("id", { count: "exact", head: true }),
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("onboarding_complete", true),
+    admin.from("courses").select("slug, title"),
+    admin.from("telegram_subscriptions").select("status").eq("status", "active"),
+    admin
+      .from("newsletter_subscribers")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "confirmed"),
+    admin
+      .from("newsletter_subscribers")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending"),
+    admin.from("course_reviews").select("rating").eq("is_published", true),
+    admin.from("referrals").select("commission_cents, status"),
+    admin.from("lesson_progress").select("user_id"),
+  ]);
+
+  const rows = (purchases.data ?? []) as {
+    amount_total: number | null;
+    status: string;
+    created_at: string;
+    course_slug: string;
+  }[];
+  const paid = rows.filter((r) => r.status === "paid" && (r.amount_total ?? 0) > 0);
+  const revenueCents = paid.reduce((s, r) => s + (r.amount_total ?? 0), 0);
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const since30 = new Date();
+  since30.setDate(since30.getDate() - 30);
+  const revenueTodayCents = paid
+    .filter((r) => new Date(r.created_at) >= startOfToday)
+    .reduce((s, r) => s + (r.amount_total ?? 0), 0);
+  const revenue30dCents = paid
+    .filter((r) => new Date(r.created_at) >= since30)
+    .reduce((s, r) => s + (r.amount_total ?? 0), 0);
+
+  // Revenue by course (top 6, rest folded into "Weitere").
+  const titleBySlug = new Map(
+    ((courses.data ?? []) as { slug: string; title: string }[]).map((c) => [c.slug, c.title])
+  );
+  const byCourse = new Map<string, number>();
+  for (const r of paid) byCourse.set(r.course_slug, (byCourse.get(r.course_slug) ?? 0) + (r.amount_total ?? 0));
+  const sortedCourses = [...byCourse.entries()].sort((a, b) => b[1] - a[1]);
+  const topCourses = sortedCourses.slice(0, 6).map(([slug, cents]) => ({
+    slug,
+    title: titleBySlug.get(slug) ?? slug,
+    cents,
+  }));
+  const restCents = sortedCourses.slice(6).reduce((s, [, c]) => s + c, 0);
+  if (restCents > 0) topCourses.push({ slug: "__rest__", title: "Weitere", cents: restCents });
+
+  // Leads by source.
+  const sourceCounts = new Map<string, number>();
+  for (const l of (leads.data ?? []) as { source: string }[]) {
+    sourceCounts.set(l.source, (sourceCounts.get(l.source) ?? 0) + 1);
+  }
+  const SOURCE_LABELS: Record<string, string> = {
+    newsletter: "Newsletter",
+    webinar: "Webinar",
+    community: "Community",
+  };
+  const leadsBySource = [...sourceCounts.entries()]
+    .map(([source, count]) => ({ label: SOURCE_LABELS[source] ?? source, value: count }))
+    .sort((a, b) => b.value - a.value);
+
+  const ratings = ((reviews.data ?? []) as { rating: number }[]).map((r) => r.rating);
+  const reviewAvg =
+    ratings.length > 0 ? Math.round((ratings.reduce((s, r) => s + r, 0) / ratings.length) * 10) / 10 : 0;
+
+  let affiliateEarnedCents = 0;
+  let affiliatePaidCents = 0;
+  for (const ref of (referrals.data ?? []) as { commission_cents: number | null; status: string }[]) {
+    const c = ref.commission_cents ?? 0;
+    if (ref.status === "approved" || ref.status === "paid") affiliateEarnedCents += c;
+    if (ref.status === "paid") affiliatePaidCents += c;
+  }
+
+  const learnerSet = new Set(
+    ((progress.data ?? []) as { user_id: string }[]).map((p) => p.user_id)
+  );
+
+  const memberCount = members.count ?? 0;
+  const onboardingComplete = onboarded.count ?? 0;
+  const paidCount = paid.length;
+  const telegramActive = (telegram.data ?? []).length;
+  const leadCount = (leads.data ?? []).length;
+
+  return {
+    revenueCents,
+    revenueTodayCents,
+    revenue30dCents,
+    aovCents: paidCount > 0 ? Math.round(revenueCents / paidCount) : 0,
+    paidCount,
+    pendingCount: rows.length - paidCount,
+    memberCount,
+    leadCount,
+    courseCount: (courses.data ?? []).length,
+    conversionRate: memberCount > 0 ? Math.round((paidCount / memberCount) * 1000) / 10 : 0,
+    onboardingComplete,
+    onboardingRate: memberCount > 0 ? Math.round((onboardingComplete / memberCount) * 100) : 0,
+    telegramActive,
+    vipMrrCentsEst: telegramActive * 900,
+    newsletterConfirmed: newsConfirmed.count ?? 0,
+    newsletterPending: newsPending.count ?? 0,
+    reviewCount: ratings.length,
+    reviewAvg,
+    completedLessons: (progress.data ?? []).length,
+    activeLearners: learnerSet.size,
+    affiliateEarnedCents,
+    affiliatePaidCents,
+    revenueByCourse: topCourses,
+    leadsBySource,
+  };
+}
+
 export async function getRecentPurchases(limit = 8): Promise<AdminPurchase[]> {
   const admin = getSupabaseAdminClient();
   if (!admin) return [];
