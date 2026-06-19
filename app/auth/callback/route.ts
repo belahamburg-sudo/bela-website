@@ -1,5 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getSupabaseAdminClient } from "@/lib/supabase";
+import { DEFAULT_AVATAR_ID } from "@/lib/avatar-system";
+
+/**
+ * First sign-in via Google/Apple has no profile row yet (those are created by the
+ * e-mail signup API). Create a minimal one so the user shows up in the admin and
+ * the onboarding update has a row to write to. Best-effort: never blocks login.
+ * Phone-only users (no e-mail) are skipped — profiles.email is NOT NULL.
+ */
+async function ensureProfile(supabase: SupabaseClient): Promise<void> {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user?.email) return;
+
+    const admin = getSupabaseAdminClient();
+    if (!admin) return;
+
+    const { data: existing } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (existing) return;
+
+    const meta = user.user_metadata ?? {};
+    await admin.from("profiles").insert({
+      id: user.id,
+      email: user.email,
+      full_name: meta.full_name ?? meta.name ?? null,
+      onboarding_complete: false,
+    });
+    await admin.from("member_state").upsert(
+      {
+        user_id: user.id,
+        selected_avatar: meta.avatar_id ?? DEFAULT_AVATAR_ID,
+        points: 0,
+        level: 1,
+        purchased_courses: 0,
+        completed_lessons: 0,
+        completed_courses: 0,
+      },
+      { onConflict: "user_id" }
+    );
+  } catch {
+    // Never let profile bootstrapping break the auth redirect.
+  }
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -25,6 +75,7 @@ export async function GET(request: NextRequest) {
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      await ensureProfile(supabase);
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

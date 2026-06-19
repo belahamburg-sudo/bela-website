@@ -515,6 +515,38 @@ export async function reorderModules(input: {
   return { ok: true };
 }
 
+export async function updateModuleRecommendation(input: {
+  id: string;
+  courseId: string;
+  courseSlug?: string;
+  recommendedCourseSlug: string | null;
+  note: string | null;
+}): Promise<ActionResult> {
+  if (!input.id) return { ok: false, error: "Keine Modul-ID angegeben." };
+  const { user, supabase } = await requireAdmin();
+
+  const slug = clean(input.recommendedCourseSlug ?? "") || null;
+  const note = clean(input.note ?? "") || null;
+
+  const { error } = await supabase
+    .from("modules")
+    .update({ recommended_course_slug: slug, recommendation_note: note })
+    .eq("id", input.id);
+  if (error) return { ok: false, error: error.message };
+
+  await logAudit({
+    actorEmail: user.email,
+    action: "module.recommendation",
+    entity: "modules",
+    entityId: input.id,
+    meta: { recommendedCourseSlug: slug, hasNote: Boolean(note) },
+  });
+
+  revalidatePath(`/admin/kurse/${input.courseId}`);
+  if (input.courseSlug) revalidatePath(`/db/kurse/${input.courseSlug}`);
+  return { ok: true };
+}
+
 // ─────────────────────────────────────── Lessons ───────────────────────────────────────
 
 export type LessonInput = {

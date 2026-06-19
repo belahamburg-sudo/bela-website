@@ -34,6 +34,8 @@ export default async function AdminCourseEditorPage({
     .map((m) => ({
       id: m.id,
       title: m.title,
+      recommendedCourseSlug: m.recommended_course_slug ?? "",
+      recommendationNote: m.recommendation_note ?? "",
       lessons: [...(m.lessons ?? [])]
         .sort((a, b) => a.position - b.position)
         .map((l) => ({

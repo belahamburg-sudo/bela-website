@@ -1,12 +1,23 @@
 "use client";
 
-import { CheckCircle2, Clock, FileText, Lock, PlayCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, FileText, Lock, PlayCircle } from "lucide-react";
 import { useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import type { DbCourse, DbLesson } from "@/lib/db-types";
 import { cn } from "@/lib/utils";
 import { toggleLessonProgress } from "@/app/(dashboard)/db/kurse/[slug]/actions";
 import { Button } from "./button";
 import { DownloadButton } from "./download-button";
+
+/** A course recommended after a module, resolved to a renderable card. */
+export type RecommendedCourseCard = {
+  slug: string;
+  title: string;
+  image: string;
+  priceCents: number;
+  comingSoon: boolean;
+};
 
 const VIDEO_FILE_EXTENSIONS = /\.(mp4|webm|ogg|ogv|mov|m4v)$/i;
 
@@ -22,9 +33,12 @@ function isDirectVideoFile(url: string): boolean {
 export function CoursePlayer({
   course,
   initialCompleted = [],
+  recommendedCourses = {},
 }: {
   course: DbCourse;
   initialCompleted?: string[];
+  /** Resolved recommendation cards, keyed by course slug. */
+  recommendedCourses?: Record<string, RecommendedCourseCard>;
 }) {
   const lessons = useMemo(
     () => course.modules.flatMap((module) => module.lessons.map((lesson) => ({ ...lesson, moduleTitle: module.title }))),
@@ -74,6 +88,17 @@ export function CoursePlayer({
   const resources = activeLesson?.resources ?? [];
   const hasResources = resources.length > 0;
 
+  // Module-level "next course" recommendation (admin-set). Shown prominently when
+  // the viewer reaches the last lesson of a module that has one.
+  const activeModule = course.modules.find((m) => m.lessons.some((l) => l.id === activeId));
+  const onLastLessonOfModule = Boolean(
+    activeModule && activeModule.lessons[activeModule.lessons.length - 1]?.id === activeId
+  );
+  const activeModuleRec = activeModule?.recommended_course_slug
+    ? recommendedCourses[activeModule.recommended_course_slug]
+    : undefined;
+  const activeModuleRecNote = activeModule?.recommendation_note ?? "";
+
   return (
     <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[360px_1fr]">
       <aside className="order-last panel-surface rounded-[1.35rem] p-5 lg:order-none lg:col-start-1 lg:row-start-1 lg:sticky lg:top-28 lg:self-start">
@@ -85,7 +110,11 @@ export function CoursePlayer({
           <p className="mt-2 text-sm font-semibold text-muted">{progress}% abgeschlossen</p>
         </div>
         <div className="grid gap-5">
-          {course.modules.map((module) => (
+          {course.modules.map((module) => {
+            const modRec = module.recommended_course_slug
+              ? recommendedCourses[module.recommended_course_slug]
+              : undefined;
+            return (
             <section key={module.id}>
               <h2 className="mb-3 text-sm font-bold text-gold-100">{module.title}</h2>
               <div className="grid gap-2">
@@ -117,8 +146,25 @@ export function CoursePlayer({
                   );
                 })}
               </div>
+              {modRec ? (
+                <Link
+                  href={`/bibliothek/${modRec.slug}`}
+                  className="focus-ring mt-2 flex items-center gap-2.5 rounded-2xl border border-gold-300/30 bg-gold-500/[0.07] px-3 py-2.5 transition hover:border-gold-300/60"
+                >
+                  <ArrowRight aria-hidden className="h-4 w-4 flex-none text-gold-300" />
+                  <span className="min-w-0">
+                    <span className="block text-[10px] font-bold uppercase tracking-gta text-gold-200/80">
+                      Empfohlen als Nächstes
+                    </span>
+                    <span className="block truncate text-sm font-semibold text-cream">
+                      {modRec.title}
+                    </span>
+                  </span>
+                </Link>
+              ) : null}
             </section>
-          ))}
+            );
+          })}
         </div>
       </aside>
 
@@ -250,6 +296,37 @@ export function CoursePlayer({
                 Downloads sind personalisiert (sichtbares + unsichtbares Wasserzeichen). Videos sind
                 nicht herunterladbar.
               </span>
+            </div>
+          ) : null}
+
+          {/* Reached the end of a module that points to another course? Nudge it. */}
+          {onLastLessonOfModule && activeModuleRec ? (
+            <div className="rounded-[1.5rem] border border-gold-300/30 bg-gold-500/[0.07] p-6 sm:p-7">
+              <p className="eyebrow text-gold-200">Geschafft — dein nächster Schritt</p>
+              <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
+                <div className="relative h-36 w-full flex-none overflow-hidden rounded-2xl sm:h-20 sm:w-32">
+                  <Image
+                    src={activeModuleRec.image}
+                    alt={activeModuleRec.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, 128px"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-heading text-xl font-black text-cream">
+                    {activeModuleRec.title}
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-7 text-cream/70">
+                    {activeModuleRecNote ||
+                      "Mach genau hier weiter, um auf dem nächsten Level dranzubleiben."}
+                  </p>
+                </div>
+                <Button href={`/bibliothek/${activeModuleRec.slug}`} className="flex-none">
+                  {activeModuleRec.comingSoon ? "Bald verfügbar" : "Kurs ansehen"}
+                  <ArrowRight aria-hidden className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           ) : null}
         </section>

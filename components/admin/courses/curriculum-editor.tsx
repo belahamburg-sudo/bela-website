@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowRightCircle,
   ChevronDown,
   ChevronUp,
   Download,
@@ -25,10 +26,11 @@ import {
   updateModule,
   deleteModule,
   reorderModules,
+  updateModuleRecommendation,
   deleteLesson,
   reorderLessons,
 } from "@/app/admin/kurse/actions";
-import type { EditorLesson, EditorModule } from "./course-editor";
+import type { CoursePickOption, EditorLesson, EditorModule } from "./course-editor";
 import { LessonModal } from "./lesson-modal";
 
 const inputClass =
@@ -38,10 +40,13 @@ export function CurriculumEditor({
   courseId,
   courseSlug,
   modules,
+  otherCourses = [],
 }: {
   courseId: string;
   courseSlug: string;
   modules: EditorModule[];
+  /** Other courses (this one excluded) that can be recommended after a module. */
+  otherCourses?: CoursePickOption[];
 }) {
   const router = useRouter();
   const { success, error } = useToast();
@@ -377,6 +382,13 @@ export function CurriculumEditor({
                               Lektion hinzufügen
                             </button>
                           </div>
+
+                          <ModuleRecommendation
+                            module={mod}
+                            courseId={courseId}
+                            courseSlug={courseSlug}
+                            otherCourses={otherCourses}
+                          />
                         </div>
                       </motion.div>
                     )}
@@ -536,5 +548,92 @@ export function CurriculumEditor({
         />
       )}
     </>
+  );
+}
+
+/**
+ * Per-module course recommendation editor. Lets the admin pick another course
+ * to point members to after they finish this module, plus an optional note.
+ * Saves only when changed; clearing the selection removes the recommendation.
+ */
+function ModuleRecommendation({
+  module,
+  courseId,
+  courseSlug,
+  otherCourses,
+}: {
+  module: EditorModule;
+  courseId: string;
+  courseSlug: string;
+  otherCourses: CoursePickOption[];
+}) {
+  const router = useRouter();
+  const { success, error } = useToast();
+  const [pending, startTransition] = useTransition();
+  const [slug, setSlug] = useState(module.recommendedCourseSlug);
+  const [note, setNote] = useState(module.recommendationNote);
+
+  const dirty = slug !== module.recommendedCourseSlug || note !== module.recommendationNote;
+
+  function save() {
+    startTransition(async () => {
+      const res = await updateModuleRecommendation({
+        id: module.id,
+        courseId,
+        courseSlug,
+        recommendedCourseSlug: slug || null,
+        note: note || null,
+      });
+      if (res.ok) {
+        success(slug ? "Empfehlung gespeichert." : "Empfehlung entfernt.");
+        router.refresh();
+      } else {
+        error(res.error ?? "Konnte Empfehlung nicht speichern.");
+      }
+    });
+  }
+
+  return (
+    <div className="mt-1 rounded-lg border border-white/8 bg-obsidian/30 px-3 py-3">
+      <div className="mb-2 flex items-center gap-2">
+        <ArrowRightCircle className="h-3.5 w-3.5 flex-shrink-0 text-gold-300/70" />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-cream/45">
+          Empfehlung nach diesem Modul
+        </span>
+      </div>
+      {otherCourses.length === 0 ? (
+        <p className="text-xs text-cream/35">Es gibt noch keine anderen Kurse zum Empfehlen.</p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <select
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">— Keine Empfehlung —</option>
+            {otherCourses.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.title}
+              </option>
+            ))}
+          </select>
+          {slug && (
+            <input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Optionaler Hinweis, z. B. „Bevor du startest, finde deine Nische.“"
+              className={inputClass}
+            />
+          )}
+          {dirty && (
+            <div className="flex justify-end">
+              <AdminButton variant="primary" size="sm" onClick={save} loading={pending}>
+                Empfehlung speichern
+              </AdminButton>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

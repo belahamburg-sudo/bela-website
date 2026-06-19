@@ -22,6 +22,10 @@ export type DbModule = {
   course_id: string;
   title: string;
   position: number;
+  /** Slug of a course recommended after this module, shown to members (migration_020). */
+  recommended_course_slug?: string | null;
+  /** Optional note shown with the recommendation ("Bevor du weitermachst …"). */
+  recommendation_note?: string | null;
   lessons: DbLesson[];
 };
 

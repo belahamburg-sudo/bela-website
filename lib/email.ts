@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { resolveSiteLogoUrl } from "./brand";
+import { belaEmail, contactEmail, noreplyEmail, resolveEmailEnvelope } from "./email-addresses";
 
 export type EmailTemplate =
   | "change-email" | "checkout-abandoned" | "course-completed" | "course-unlocked"
@@ -28,6 +29,7 @@ export async function sendTemplateEmail(opts: {
   to: string;
   vars?: EmailVars;
   subject?: string;
+  from?: string;
   replyTo?: string;
 }): Promise<{ ok: boolean; skipped?: boolean; error?: string; id?: string }> {
   // No-op in demo mode when no API key is configured.
@@ -66,6 +68,9 @@ export async function sendTemplateEmail(opts: {
     checkoutUrl: `${siteUrl}/bibliothek`,
     paidTelegramUrl: process.env.NEXT_PUBLIC_TELEGRAM_PAID_URL || "https://t.me/+mjD_JqSrbO83MjAy",
     telegramUrl: process.env.NEXT_PUBLIC_TELEGRAM_URL || "https://t.me/aigoldminingfreeminers",
+    contactEmail,
+    belaEmail,
+    noreplyEmail,
     year: new Date().getFullYear(),
     ...opts.vars,
   };
@@ -74,7 +79,10 @@ export async function sendTemplateEmail(opts: {
   subject = interpolate(subject, merged);
   html = interpolate(html, merged);
 
-  const from = process.env.EMAIL_FROM || "AI Goldmining <noreply@aigoldmining.com>";
+  const envelope = resolveEmailEnvelope(opts.template, {
+    from: opts.from,
+    replyTo: opts.replyTo,
+  });
 
   // Send via Resend REST API. Never throw — return an error object instead.
   try {
@@ -85,11 +93,11 @@ export async function sendTemplateEmail(opts: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from,
+        from: envelope.from,
         to: opts.to,
         subject,
         html,
-        ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
+        reply_to: envelope.replyTo,
       }),
     });
 

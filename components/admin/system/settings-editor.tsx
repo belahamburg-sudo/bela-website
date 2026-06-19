@@ -457,8 +457,8 @@ export function SettingsEditor({
             type="email"
             value={contactEmail}
             onChange={setContactEmail}
-            hint="Wird auf Kontakt-/Impressum-Seiten und für Rückfragen angezeigt."
-            placeholder="kontakt@beispiel.de"
+            hint="Öffentliche Support-Adresse (Footer, Impressum). Standard: contact@aigoldmining.com"
+            placeholder="contact@aigoldmining.com"
           />
         </Section>
 

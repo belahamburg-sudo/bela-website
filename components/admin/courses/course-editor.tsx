@@ -35,6 +35,10 @@ export type EditorLesson = {
 export type EditorModule = {
   id: string;
   title: string;
+  /** Slug of a course recommended to members after this module ("" = none). */
+  recommendedCourseSlug: string;
+  /** Optional note shown with the recommendation. */
+  recommendationNote: string;
   lessons: EditorLesson[];
 };
 
@@ -816,6 +820,7 @@ export function CourseEditor({
           courseId={course.id}
           courseSlug={course.slug}
           modules={course.modules}
+          otherCourses={otherCourses}
         />
       </div>
     </div>

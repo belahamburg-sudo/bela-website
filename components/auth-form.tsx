@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { SocialAuthButtons } from "@/components/social-auth-buttons";
+import { PhoneAuth } from "@/components/phone-auth";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "confirm_email">("idle");
@@ -13,9 +15,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const searchParams = useSearchParams();
   const defaultRedirect = mode === "signup" ? "/onboarding" : "/dashboard";
   const redirect = searchParams.get("redirect") || defaultRedirect;
+  // Phone users skip the e-mail onboarding (no profile row yet) and go straight in.
+  const phoneRedirect = redirect === "/onboarding" ? "/dashboard" : redirect;
 
-  // Password-reset request flow (login screen only).
-  const [view, setView] = useState<"auth" | "reset">("auth");
+  // Password-reset request flow (login screen only) + phone (SMS) sub-view.
+  const [view, setView] = useState<"auth" | "reset" | "phone">("auth");
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
 
@@ -37,6 +41,10 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
     if (lower.includes("error sending confirmation email")) {
       return "Die Bestätigungs-Mail konnte nicht versendet werden. Die Registrierung läuft jetzt ohne E-Mail-Bestätigung über unseren Server-Fallback.";
+    }
+
+    if (lower.includes("error sending recovery email")) {
+      return "Die Reset-Mail konnte nicht versendet werden. Bitte später erneut versuchen oder uns kontaktieren.";
     }
 
     return raw;
@@ -105,12 +113,15 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         setStatus("idle");
         return;
       }
-      const supabase = getSupabaseBrowserClient();
-      if (!supabase) throw new Error("Supabase ist noch nicht konfiguriert.");
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: resetEmail.trim().toLowerCase() }),
       });
-      if (error) throw error;
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      if (!response.ok) {
+        throw new Error(payload?.error || "Die Reset-Mail konnte nicht versendet werden.");
+      }
       setResetSent(true);
       setStatus("idle");
     } catch (error) {
@@ -194,6 +205,19 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     );
   }
 
+  if (view === "phone") {
+    return (
+      <PhoneAuth
+        redirect={phoneRedirect}
+        onBack={() => {
+          setView("auth");
+          setStatus("idle");
+          setMessage("");
+        }}
+      />
+    );
+  }
+
   if (status === "confirm_email") {
     return (
       <div className="grid gap-5">
@@ -215,7 +239,25 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4">
+    <div className="grid gap-5">
+      <SocialAuthButtons
+        redirect={redirect}
+        onPhone={() => {
+          setView("phone");
+          setStatus("idle");
+          setMessage("");
+        }}
+      />
+
+      <div className="flex items-center gap-3">
+        <span className="h-px flex-1 bg-white/10" />
+        <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-cream/30">
+          oder mit E-Mail
+        </span>
+        <span className="h-px flex-1 bg-white/10" />
+      </div>
+
+      <form onSubmit={onSubmit} className="grid gap-4">
       <div>
         <label htmlFor="email" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-gold-300/70">
           E-Mail
@@ -299,6 +341,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         )}
         {mode === "login" ? "Einloggen" : "Account erstellen"}
       </button>
-    </form>
+      </form>
+    </div>
   );
 }

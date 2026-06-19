@@ -1,5 +1,6 @@
 import { getSupabaseAdminClient } from "./supabase";
 import { socialLinks } from "./env";
+import { belaEmail, contactEmail } from "./email-addresses";
 
 /**
  * Typed access to the `site_settings` key/value (jsonb) store. Each setting is a
@@ -27,7 +28,8 @@ export type SiteSettings = {
   featuredCourseSlug: string | null;
   telegramFreeUrl: string | null;
   telegramPaidUrl: string | null;
-  contactEmail: string | null;
+  contactEmail: string;
+  belaEmail: string;
   promoBanner: AnnouncementSetting;
   socials: SocialLinks;
 };
@@ -85,7 +87,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     featuredCourseSlug: str(raw.featured_course?.slug),
     telegramFreeUrl: str(raw.telegram?.free_url),
     telegramPaidUrl: str(raw.telegram?.paid_url),
-    contactEmail: str(raw.contact?.email) ?? str(raw.contact_email?.value),
+    contactEmail: str(raw.contact?.email) ?? str(raw.contact_email?.value) ?? contactEmail,
+    belaEmail: str(raw.bela?.email) ?? belaEmail,
     promoBanner: announcement(raw.promo_banner),
     socials: resolveSocials(raw.socials),
   };

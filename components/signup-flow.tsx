@@ -19,6 +19,8 @@ import {
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { passwordMeetsPolicy, validatePassword } from "@/lib/password";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { SocialAuthButtons } from "@/components/social-auth-buttons";
+import { PhoneAuth } from "@/components/phone-auth";
 
 type Step = 1 | 2;
 
@@ -65,6 +67,7 @@ export function SignupFlow() {
 
   const [step, setStep] = useState<Step>(1);
   const [direction, setDirection] = useState(1);
+  const [phoneView, setPhoneView] = useState(false);
 
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
@@ -173,6 +176,10 @@ export function SignupFlow() {
 
   const loading = status === "loading";
 
+  if (phoneView) {
+    return <PhoneAuth redirect="/dashboard" onBack={() => setPhoneView(false)} />;
+  }
+
   return (
     <div>
       {/* Step rail */}
@@ -230,6 +237,14 @@ export function SignupFlow() {
               transition={{ duration: 0.26, ease: "easeOut" }}
               className="grid gap-4"
             >
+              <SocialAuthButtons redirect={redirect} onPhone={() => setPhoneView(true)} />
+              <div className="flex items-center gap-3">
+                <span className="h-px flex-1 bg-white/10" />
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-cream/30">
+                  oder mit E-Mail
+                </span>
+                <span className="h-px flex-1 bg-white/10" />
+              </div>
               <div>
                 <p className="font-heading text-lg uppercase tracking-gta text-cream">
                   Dein Profil

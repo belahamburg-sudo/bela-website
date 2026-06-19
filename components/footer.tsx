@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { navItems } from "@/lib/content";
 import { socialLinks } from "@/lib/env";
+import { contactEmail } from "@/lib/email-addresses";
 import { SITE_LOGO_PATH } from "@/lib/brand";
 
 export function Footer() {
@@ -41,6 +42,12 @@ export function Footer() {
             <p className="max-w-sm text-sm leading-7 text-cream/40">
               Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen. Kein Guru-Playbook. Eine Methode mit realistischem Zielrahmen.
             </p>
+            <a
+              href={`mailto:${contactEmail}`}
+              className="mt-4 inline-block text-sm text-gold-300/80 transition-colors hover:text-gold-200"
+            >
+              {contactEmail}
+            </a>
             <p className="mt-6 gta-label opacity-60">Based in Germany</p>
           </div>
 

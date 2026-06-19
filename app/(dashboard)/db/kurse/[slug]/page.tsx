@@ -2,13 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Layers } from "lucide-react";
 import { AuthGate } from "@/components/auth-gate";
-import { CoursePlayer } from "@/components/course-player";
+import { CoursePlayer, type RecommendedCourseCard } from "@/components/course-player";
 import { PaywallScreen } from "@/components/paywall-screen";
 import { ComingSoonScreen } from "@/components/coming-soon-screen";
 import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
 import { CourseReviews } from "@/components/course-reviews";
 import { CourseCrossSell, type CrossSellItem } from "@/components/course-cross-sell";
-import { getPublicCourses } from "@/lib/courses";
+import { getPublicCourses, getStoreCatalog } from "@/lib/courses";
 import type { DbCourse, DbModule } from "@/lib/db-types";
 import type { Course } from "@/lib/content";
 import { hasSupabasePublicEnv } from "@/lib/env";
@@ -175,6 +175,33 @@ export default async function DashboardCoursePage({
           .map((c) => ({ slug: c.slug, title: c.title, image: c.image, priceCents: c.priceCents }));
       }
 
+      // Per-module recommendations: resolve the picked slugs to live course cards.
+      // Uses the full catalog (incl. coming-soon drafts) so a recommended draft
+      // still renders, linking to its "bald verfügbar" page.
+      const recSlugs = Array.from(
+        new Set(
+          playableCourse.modules
+            .map((m) => m.recommended_course_slug)
+            .filter((s): s is string => Boolean(s))
+        )
+      );
+      const recommendedCourses: Record<string, RecommendedCourseCard> = {};
+      if (recSlugs.length > 0) {
+        const catalog = await getStoreCatalog();
+        for (const recSlug of recSlugs) {
+          const c = catalog.find((x) => x.slug === recSlug);
+          if (c) {
+            recommendedCourses[recSlug] = {
+              slug: c.slug,
+              title: c.title,
+              image: c.image,
+              priceCents: c.priceCents,
+              comingSoon: Boolean(c.comingSoon),
+            };
+          }
+        }
+      }
+
       return (
         <AuthGate>
           <section className="py-10 sm:py-14">
@@ -186,7 +213,11 @@ export default async function DashboardCoursePage({
                 <ArrowLeft aria-hidden className="h-4 w-4" />
                 Zurück zur Übersicht
               </Link>
-              <CoursePlayer course={playableCourse} initialCompleted={completedLessonIds} />
+              <CoursePlayer
+                course={playableCourse}
+                initialCompleted={completedLessonIds}
+                recommendedCourses={recommendedCourses}
+              />
 
               {/* Affiliate text + cross-sell pool under the videos (#54). */}
               <CourseCrossSell affiliateText={dbCourse.affiliate_text} items={crossSellItems} />

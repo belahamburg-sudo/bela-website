@@ -3,6 +3,7 @@ import path from "node:path";
 import { getSupabaseAdminClient } from "./supabase";
 import type { EmailTemplate, EmailVars } from "./email";
 import { resolveSiteLogoUrl } from "./brand";
+import { belaEmail, contactEmail, emailSenders, noreplyEmail } from "./email-addresses";
 
 /**
  * Per-template content overrides. The default email content lives in
@@ -100,6 +101,7 @@ export async function sendRawEmail(opts: {
   subject: string;
   html: string;
   vars?: EmailVars;
+  from?: string;
   replyTo?: string;
 }): Promise<{ ok: boolean; skipped?: boolean; error?: string; id?: string }> {
   // No-op in demo mode when no API key is configured.
@@ -117,13 +119,17 @@ export async function sendRawEmail(opts: {
     checkoutUrl: `${siteUrl}/bibliothek`,
     paidTelegramUrl: process.env.NEXT_PUBLIC_TELEGRAM_PAID_URL || "https://t.me/+mjD_JqSrbO83MjAy",
     telegramUrl: process.env.NEXT_PUBLIC_TELEGRAM_URL || "https://t.me/aigoldminingfreeminers",
+    contactEmail,
+    belaEmail,
+    noreplyEmail,
     year: new Date().getFullYear(),
     ...opts.vars,
   };
 
   const subject = interpolate(opts.subject?.trim() || "AI Goldmining", merged);
   const html = interpolate(opts.html, merged);
-  const from = process.env.EMAIL_FROM || "AI Goldmining <noreply@aigoldmining.com>";
+  const from = opts.from ?? process.env.EMAIL_FROM ?? emailSenders.brand;
+  const replyTo = opts.replyTo ?? contactEmail;
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -137,7 +143,7 @@ export async function sendRawEmail(opts: {
         to: opts.to,
         subject,
         html,
-        ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
+        reply_to: replyTo,
       }),
     });
 
