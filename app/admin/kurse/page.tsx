@@ -2,6 +2,7 @@ import { BookOpen, CheckCircle2, FileEdit } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/admin/ui";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { CoursesList, type CourseRow } from "@/components/admin/courses/courses-list";
+import { SyncAllStripeButton } from "@/components/admin/courses/sync-all-stripe-button";
 
 export const dynamic = "force-dynamic";
 
@@ -61,6 +62,7 @@ export default async function AdminCoursesPage() {
         eyebrow="Inhalte"
         title="Kurse"
         description="Lege Kurse an, bearbeite Module und Lektionen und lade Videos & PDFs hoch."
+        actions={admin ? <SyncAllStripeButton /> : undefined}
       />
 
       <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-3">

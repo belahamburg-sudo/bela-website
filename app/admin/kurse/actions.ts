@@ -12,6 +12,8 @@ import {
 } from "@/lib/storage";
 import { courses as staticCourses } from "@/lib/content";
 import { serializeIncludes, IMPORT_SOURCE_LABEL } from "@/lib/course-includes";
+import { getStripeClient } from "@/lib/stripe";
+import { absoluteUrl } from "@/lib/utils";
 
 type ActionResult = { ok: boolean; error?: string };
 type CreateResult = ActionResult & { id?: string };
@@ -354,6 +356,138 @@ export async function updateCourse(input: CourseInput): Promise<ActionResult> {
   revalidatePath(`/kurse/${slug}`);
   revalidatePath("/db/kurse");
   return { ok: true };
+}
+
+/** Build a public https image URL Stripe can fetch, or undefined to skip. */
+function courseStripeImage(imageUrl: string | null): string | undefined {
+  const v = clean(imageUrl);
+  if (!v) return undefined;
+  let url = v;
+  if (!/^https?:\/\//i.test(v)) {
+    if (v.startsWith("/")) url = absoluteUrl(v);
+    else {
+      const ref = parseStorageRef(v);
+      url = ref ? publicUrl(ref.bucket, ref.path) ?? "" : v;
+    }
+  }
+  return /^https:\/\//i.test(url) ? url : undefined;
+}
+
+/**
+ * Create or update a course as a real Stripe product (+ price). Stripe prices
+ * are immutable, so a changed price spawns a new price, sets it as default and
+ * archives the old one. Stores stripe_product_id / stripe_price_id on the course.
+ */
+export async function syncCourseToStripe(
+  input: { id: string }
+): Promise<ActionResult & { productId?: string }> {
+  if (!input.id) return { ok: false, error: "Keine Kurs-ID angegeben." };
+  const stripe = getStripeClient();
+  if (!stripe) return { ok: false, error: "Stripe ist nicht konfiguriert (STRIPE_SECRET_KEY fehlt)." };
+  const { user, supabase } = await requireAdmin();
+
+  const { data: c, error: loadErr } = await supabase
+    .from("courses")
+    .select(
+      "id, slug, title, tagline, description, price_cents, image_url, stripe_product_id, stripe_price_id"
+    )
+    .eq("id", input.id)
+    .maybeSingle();
+  if (loadErr || !c) return { ok: false, error: "Kurs nicht gefunden." };
+
+  const name = clean(c.title) || c.slug;
+  const description = clean(c.tagline) || clean(c.description) || undefined;
+  const image = courseStripeImage(c.image_url);
+  const priceCents = Math.max(0, Math.round(c.price_cents ?? 0));
+
+  try {
+    const productPayload = {
+      name,
+      ...(description ? { description } : {}),
+      images: image ? [image] : [],
+      metadata: { course_id: c.id, slug: c.slug },
+    };
+    let productId = c.stripe_product_id as string | null;
+    if (productId) {
+      await stripe.products.update(productId, productPayload);
+    } else {
+      const created = await stripe.products.create(productPayload);
+      productId = created.id;
+    }
+
+    let priceId = c.stripe_price_id as string | null;
+    if (priceCents > 0) {
+      let needNew = !priceId;
+      if (priceId) {
+        try {
+          const existing = await stripe.prices.retrieve(priceId);
+          if (!existing.active || existing.currency !== "eur" || existing.unit_amount !== priceCents) {
+            needNew = true;
+          }
+        } catch {
+          needNew = true;
+        }
+      }
+      if (needNew) {
+        const newPrice = await stripe.prices.create({
+          product: productId,
+          currency: "eur",
+          unit_amount: priceCents,
+        });
+        await stripe.products.update(productId, { default_price: newPrice.id });
+        if (priceId) {
+          try {
+            await stripe.prices.update(priceId, { active: false });
+          } catch {
+            /* old price already gone */
+          }
+        }
+        priceId = newPrice.id;
+      }
+    }
+
+    const { error: saveErr } = await supabase
+      .from("courses")
+      .update({ stripe_product_id: productId, stripe_price_id: priceId })
+      .eq("id", c.id);
+    if (saveErr) {
+      return { ok: false, error: `Stripe-Produkt erstellt, aber Verknüpfung speichern fehlgeschlagen: ${saveErr.message}` };
+    }
+
+    await logAudit({
+      actorEmail: user.email,
+      action: "course.stripe_sync",
+      entity: "courses",
+      entityId: c.id,
+      meta: { productId, priceId },
+    });
+    revalidatePath(`/admin/kurse/${c.id}`);
+    revalidatePath("/admin/kurse");
+    return { ok: true, productId: productId ?? undefined };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Stripe-Sync fehlgeschlagen." };
+  }
+}
+
+/** Sync every course to Stripe (sequential, to stay within rate limits). */
+export async function syncAllCoursesToStripe(): Promise<
+  ActionResult & { synced?: number; failed?: number }
+> {
+  const stripe = getStripeClient();
+  if (!stripe) return { ok: false, error: "Stripe ist nicht konfiguriert." };
+  const { supabase } = await requireAdmin();
+  const { data: rows } = await supabase.from("courses").select("id");
+  const ids = ((rows ?? []) as { id: string }[]).map((r) => r.id);
+
+  let synced = 0;
+  let failed = 0;
+  for (const id of ids) {
+    const res = await syncCourseToStripe({ id });
+    if (res.ok) synced += 1;
+    else failed += 1;
+  }
+  revalidatePath("/admin/kurse");
+  return { ok: true, synced, failed };
 }
 
 export async function toggleCourseActive(input: {

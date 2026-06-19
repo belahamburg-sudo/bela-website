@@ -21,6 +21,8 @@ import {
   X,
   ChevronRight,
   Gift,
+  Activity,
+  BarChart3,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -43,7 +45,10 @@ type NavGroup = {
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "Cockpit",
-    links: [{ href: "/admin", label: "Übersicht", icon: LayoutDashboard, exact: true }],
+    links: [
+      { href: "/admin", label: "Übersicht", icon: LayoutDashboard, exact: true },
+      { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+    ],
   },
   {
     label: "Inhalte",
@@ -71,6 +76,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "System",
     links: [
+      { href: "/admin/system", label: "Datenbank", icon: Activity },
       { href: "/admin/einstellungen", label: "Einstellungen", icon: Settings },
       { href: "/admin/medien", label: "Medien", icon: ImageIcon },
     ],

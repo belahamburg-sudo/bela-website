@@ -60,6 +60,9 @@ export type DbCourse = {
   affiliate_text?: string | null;
   /** Editable sales-page sections; empty keys hide their section. */
   product_page?: Record<string, unknown> | null;
+  /** Linked Stripe product/price (migration_021) — set via the admin sync button. */
+  stripe_product_id?: string | null;
+  stripe_price_id?: string | null;
   sort_order?: number | null;
   updated_at?: string | null;
   created_at?: string | null;

@@ -13,12 +13,13 @@ import {
   Film,
   ChevronUp,
   ChevronDown,
+  CreditCard,
 } from "lucide-react";
 import { Panel } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
 import { FileUpload } from "@/components/admin/file-upload";
 import { useToast } from "@/components/admin/toast";
-import { updateCourse } from "@/app/admin/kurse/actions";
+import { updateCourse, syncCourseToStripe } from "@/app/admin/kurse/actions";
 import { CurriculumEditor } from "./curriculum-editor";
 
 export type ResourceItem = { label: string; type: "PDF" | "Template" | "Prompt"; href: string };
@@ -71,6 +72,9 @@ export type EditorCourse = {
   affiliateText: string;
   /** Editable product-page sections (empty fields hide their section). */
   productPage: Record<string, unknown>;
+  /** Linked Stripe product/price (set via the sync button). */
+  stripeProductId: string | null;
+  stripePriceId: string | null;
   modules: EditorModule[];
 };
 
@@ -127,6 +131,25 @@ export function CourseEditor({
   // Cross-sell pool + affiliate text shown under the lesson videos.
   const [crossSell, setCrossSell] = useState<string[]>(course.crossSellSlugs ?? []);
   const [affiliateText, setAffiliateText] = useState(course.affiliateText ?? "");
+
+  // Stripe product link (set via the sync button).
+  const [stripeProductId, setStripeProductId] = useState<string | null>(course.stripeProductId);
+  const [stripeSyncing, setStripeSyncing] = useState(false);
+
+  function handleStripeSync() {
+    setStripeSyncing(true);
+    void syncCourseToStripe({ id: course.id })
+      .then((res) => {
+        if (res.ok) {
+          success(stripeProductId ? "Stripe-Produkt aktualisiert." : "Stripe-Produkt erstellt.");
+          if (res.productId) setStripeProductId(res.productId);
+          router.refresh();
+        } else {
+          error(res.error ?? "Stripe-Sync fehlgeschlagen.");
+        }
+      })
+      .finally(() => setStripeSyncing(false));
+  }
 
   // Editable product-page sections (stored as a JSON blob; arrays edited as
   // one-item-per-line text).
@@ -809,6 +832,44 @@ export function CourseEditor({
                   className={inputClass}
                 />
               </label>
+            </div>
+          </div>
+        </Panel>
+      </div>
+
+      {/* Stripe product */}
+      <div className="mt-6">
+        <Panel title="Stripe-Produkt">
+          <div className="space-y-4">
+            <p className="text-sm text-cream/50">
+              Legt diesen Kurs als <span className="font-semibold text-cream/80">Produkt in Stripe</span>{" "}
+              an (oder aktualisiert ihn) — für den Stripe-Produktkatalog und die Pro-Produkt-Auswertung.
+              Der <span className="text-gold-200">Preis bleibt aus dem Feld oben maßgeblich</span>; eine
+              Preisänderung hier oben einfach erneut synchronisieren.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <AdminButton
+                variant="secondary"
+                size="sm"
+                icon={CreditCard}
+                onClick={handleStripeSync}
+                loading={stripeSyncing}
+              >
+                {stripeProductId ? "Stripe-Produkt aktualisieren" : "Als Stripe-Produkt anlegen"}
+              </AdminButton>
+              {stripeProductId ? (
+                <a
+                  href={`https://dashboard.stripe.com/products/${stripeProductId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 font-mono text-xs text-gold-300/80 transition-colors hover:text-gold-200"
+                >
+                  {stripeProductId}
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              ) : (
+                <span className="text-xs text-cream/40">Noch nicht mit Stripe verknüpft.</span>
+              )}
             </div>
           </div>
         </Panel>

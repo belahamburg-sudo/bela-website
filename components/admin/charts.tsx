@@ -125,6 +125,13 @@ export function AreaTrend({
   formatDay: (iso: string) => string;
 }) {
   const n = data.length;
+  if (n === 0) {
+    return (
+      <div className="flex h-40 items-center justify-center text-sm text-cream/30">
+        Noch keine Daten.
+      </div>
+    );
+  }
   const max = Math.max(1, ...data.map((d) => d.cents));
   const W = 100;
   const H = 42;
@@ -204,6 +211,54 @@ export function FunnelBars({
 }
 
 /* ───────────────────────────── Progress ring ───────────────────────────── */
+
+/**
+ * A KPI gauge: percentage ring with the value centred and a caption below.
+ * Colour auto-thresholds (green < 70, amber < 90, red ≥ 90) unless overridden —
+ * pass an explicit `color` for "higher is better" metrics like cache-hit.
+ */
+export function Gauge({
+  percent,
+  value,
+  label,
+  caption,
+  color,
+}: {
+  percent: number;
+  value: string;
+  label: string;
+  caption?: string;
+  color?: string;
+}) {
+  const R = 15.915;
+  const clamped = Math.max(0, Math.min(100, percent));
+  const c =
+    color ?? (clamped >= 90 ? "#FB7185" : clamped >= 70 ? "#FBBF24" : "#34D399");
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div className="relative h-[120px] w-[120px]">
+        <svg viewBox="0 0 42 42" className="h-full w-full -rotate-90">
+          <circle cx="21" cy="21" r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3.5" />
+          <circle
+            cx="21"
+            cy="21"
+            r={R}
+            fill="none"
+            stroke={c}
+            strokeWidth="3.5"
+            strokeDasharray={`${clamped} ${100 - clamped}`}
+            strokeLinecap="round"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-xl font-extrabold tracking-tight text-cream">{value}</span>
+        </div>
+      </div>
+      <p className="mt-2 text-sm font-bold text-cream/85">{label}</p>
+      {caption && <p className="mt-0.5 text-[11px] text-cream/35">{caption}</p>}
+    </div>
+  );
+}
 
 /** A single-value progress ring (e.g. onboarding rate, rating out of 5). */
 export function ProgressRing({

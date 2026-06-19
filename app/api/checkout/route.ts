@@ -118,19 +118,43 @@ export async function POST(request: Request) {
     }
     const resolvedEmail = userEmail ?? body.userEmail ?? null;
 
+    // Prefer real Stripe products (set via the admin sync button) so each sale
+    // attributes to the course's product in Stripe reporting. The DB price stays
+    // authoritative (unit_amount), so a price change can never drift.
+    const productBySlug = new Map<string, string>();
+    try {
+      const admin = getSupabaseAdminClient();
+      if (admin) {
+        const { data } = await admin
+          .from("courses")
+          .select("slug, stripe_product_id")
+          .in("slug", courseSlugs);
+        for (const r of (data ?? []) as { slug: string; stripe_product_id: string | null }[]) {
+          if (r.stripe_product_id) productBySlug.set(r.slug, r.stripe_product_id);
+        }
+      }
+    } catch {
+      // best-effort — fall back to inline product_data below
+    }
+
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = await Promise.all(
       valid.map(async ({ course }) => {
-        const imageUrl = await stripeImageUrl(course!.image);
+        const productId = productBySlug.get(course!.slug);
+        const imageUrl = productId ? undefined : await stripeImageUrl(course!.image);
         return {
           quantity: 1,
           price_data: {
             currency: "eur",
             unit_amount: course!.priceCents,
-            product_data: {
-              name: course!.title,
-              ...(course!.tagline ? { description: course!.tagline } : {}),
-              ...(imageUrl ? { images: [imageUrl] } : {}),
-            },
+            ...(productId
+              ? { product: productId }
+              : {
+                  product_data: {
+                    name: course!.title,
+                    ...(course!.tagline ? { description: course!.tagline } : {}),
+                    ...(imageUrl ? { images: [imageUrl] } : {}),
+                  },
+                }),
           },
         };
       })

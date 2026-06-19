@@ -75,6 +75,8 @@ export default async function AdminCourseEditorPage({
       course.product_page && typeof course.product_page === "object"
         ? (course.product_page as Record<string, unknown>)
         : {},
+    stripeProductId: course.stripe_product_id ?? null,
+    stripePriceId: course.stripe_price_id ?? null,
     modules,
   };
 
