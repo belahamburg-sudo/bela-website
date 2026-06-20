@@ -6,6 +6,7 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getTelegramSubscription } from "@/lib/telegram";
 import { getNewsletterStatus } from "@/lib/newsletter";
 import { NewsletterSettings } from "@/components/newsletter-settings";
+import { LoginMethods } from "@/components/login-methods";
 
 async function fetchProfile() {
   const data = await getUnifiedMemberData();
@@ -69,6 +70,10 @@ export default async function ProfilePage() {
             rewardCount={rewardCount}
             telegram={telegram}
           />
+
+          <div className="mt-8">
+            <LoginMethods />
+          </div>
 
           <div className="mt-8">
             <NewsletterSettings initialStatus={newsletterStatus} />
