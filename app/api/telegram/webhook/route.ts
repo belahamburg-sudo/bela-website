@@ -21,7 +21,7 @@ type TelegramUpdate = {
   chat_member?: {
     chat: { id: number };
     from: { id: number };
-    new_chat_member: { status: string };
+    new_chat_member: { status: string; user: { id: number } };
   };
 };
 
@@ -81,9 +81,10 @@ export async function POST(request: Request) {
       process.env.TELEGRAM_PAID_CHAT_ID &&
       String(member.chat.id) === process.env.TELEGRAM_PAID_CHAT_ID
     ) {
-      const allowed = await isTelegramUserAllowed(supabase, member.from.id);
+      const newMemberId = member.new_chat_member.user.id;
+      const allowed = await isTelegramUserAllowed(supabase, newMemberId);
       if (!allowed) {
-        await safeBanTelegramMember(member.from.id);
+        await safeBanTelegramMember(newMemberId);
       }
     }
   } catch (error) {
