@@ -6,7 +6,7 @@ import { animate, onScroll, stagger } from "animejs";
 import { MessageCircle, Crown } from "lucide-react";
 import { Button } from "@/components/button";
 import { LeadForm } from "@/components/lead-form";
-import { telegramUrl, paidTelegramUrl } from "@/lib/env";
+import { telegramUrl } from "@/lib/env";
 
 const COMMUNITY_ITEMS = [
   "Produktideen und konkrete Beispiele aus der Praxis",
@@ -59,9 +59,9 @@ export default function CommunityPage() {
                 <MessageCircle aria-hidden className="h-4 w-4" />
                 Free Telegram Gruppe
               </Button>
-              <Button href={paidTelegramUrl} variant="secondary" target="_blank" rel="noopener noreferrer">
+              <Button href="/profil" variant="secondary">
                 <Crown aria-hidden className="h-4 w-4" />
-                VIP Gruppe holen
+                VIP Mitglied werden
               </Button>
             </div>
           </motion.div>
