@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
         avatar_id: DEFAULT_AVATAR_ID,
         city,
         ...(name ? { full_name: name } : {}),
+        ...(newsletter ? { newsletter_optin: true } : {}),
       },
       redirectTo: absoluteUrl("/auth/callback?next=/onboarding"),
     },
@@ -139,10 +140,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Optional newsletter opt-in via double-opt-in (sends a confirmation email).
-  if (newsletter) {
-    await subscribeNewsletter(email, { userId: data.user.id, source: "signup", name });
-  }
+  // Newsletter opt-in is deferred to /auth/callback (after email confirmation)
+  // via user_metadata.newsletter_optin so the user doesn't receive two emails at
+  // once (signup-confirmation + newsletter-double-opt-in).
 
   return NextResponse.json({ ok: true, mode: "confirm" });
 }

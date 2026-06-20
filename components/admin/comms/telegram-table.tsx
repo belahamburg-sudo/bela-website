@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, Power, Hash, Undo2, Pause } from "lucide-react";
+import { ExternalLink, Power, Hash, Undo2, Pause, Link2, Link2Off } from "lucide-react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { AdminBadge } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
@@ -12,18 +12,17 @@ import { updateTelegramStatus, refundTelegramSubscription } from "@/app/admin/te
 export type TelegramRow = {
   userId: string;
   email: string | null;
+  name: string | null;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   status: string;
   currentPeriodEnd: string | null;
   createdAt: string | null;
+  telegramUserId: number | null;
+  telegramUsername: string | null;
+  updatedAt: string | null;
 };
 
-/**
- * Null-safe date formatter. Returns "—" for missing values and for any string
- * that does not parse into a valid date, so a malformed row can never throw
- * during (server or client) render.
- */
 function formatDate(iso: string | null | undefined): string {
   if (!iso) return "—";
   const date = new Date(iso);
@@ -35,7 +34,6 @@ function formatDate(iso: string | null | undefined): string {
       year: "numeric",
     });
   } catch {
-    // Extremely defensive: fall back to ISO date if locale formatting fails.
     return iso.slice(0, 10);
   }
 }
@@ -48,6 +46,30 @@ function truncateMiddle(
   if (!value) return "—";
   if (value.length <= head + tail + 1) return value;
   return `${value.slice(0, head)}…${value.slice(-tail)}`;
+}
+
+function TelegramLinkBadge({ row }: { row: TelegramRow }) {
+  if (row.telegramUserId) {
+    return (
+      <div className="flex flex-col gap-0.5">
+        <span className="inline-flex items-center gap-1.5 text-emerald-300">
+          <Link2 className="h-3 w-3" />
+          <span className="text-xs">
+            {row.telegramUsername ? `@${row.telegramUsername}` : `ID ${row.telegramUserId}`}
+          </span>
+        </span>
+        <span className="font-mono text-[10px] text-cream/30">{row.telegramUserId}</span>
+      </div>
+    );
+  }
+
+  const isActive = row.status === "active";
+  return (
+    <span className={`inline-flex items-center gap-1.5 text-xs ${isActive ? "text-amber-300" : "text-cream/30"}`}>
+      <Link2Off className="h-3 w-3" />
+      {isActive ? "fehlt" : "—"}
+    </span>
+  );
 }
 
 function RowActions({ row }: { row: TelegramRow }) {
@@ -136,11 +158,14 @@ export function TelegramTable({ rows }: { rows: TelegramRow[] }) {
   const [columns] = useState<Column<TelegramRow>[]>(() => [
     {
       key: "email",
-      header: "E-Mail",
+      header: "Nutzer",
       render: (r) => (
-        <span className="font-medium text-cream/90">
-          {r?.email ?? <span className="text-cream/40">unbekannt</span>}
-        </span>
+        <div className="flex flex-col">
+          <span className="font-medium text-cream/90">
+            {r?.email ?? <span className="text-cream/40">unbekannt</span>}
+          </span>
+          {r?.name && <span className="text-[11px] text-cream/40">{r.name}</span>}
+        </div>
       ),
     },
     {
@@ -154,6 +179,11 @@ export function TelegramTable({ rows }: { rows: TelegramRow[] }) {
           </AdminBadge>
         );
       },
+    },
+    {
+      key: "telegram",
+      header: "Telegram",
+      render: (r) => <TelegramLinkBadge row={r} />,
     },
     {
       key: "stripeSubscriptionId",

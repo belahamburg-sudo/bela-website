@@ -8,8 +8,9 @@ export type EmailTemplate =
   | "invite-user" | "magic-link" | "newsletter-double-opt-in"
   | "newsletter-unsubscribe-confirmed" | "newsletter-welcome" | "onboarding-complete"
   | "password-reset" | "payment-failed" | "purchase-confirmation" | "re-engagement"
-  | "reauthentication" | "signup-confirmation" | "support-ticket-received"
-  | "telegram-free-welcome" | "telegram-paid-welcome" | "webinar-registration-confirmed"
+  | "reauthentication" | "signup-confirmation"
+  | "telegram-free-welcome" | "telegram-paid-welcome" | "telegram-subscription-ended"
+  | "webinar-registration-confirmed"
   | "webinar-reminder-1h" | "webinar-reminder-24h";
 
 export type EmailVars = Record<string, string | number | null | undefined>;

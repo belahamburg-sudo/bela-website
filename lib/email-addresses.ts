@@ -33,6 +33,7 @@ const PERSONAL_TEMPLATES = new Set([
   "re-engagement",
   "telegram-free-welcome",
   "telegram-paid-welcome",
+  "telegram-subscription-ended",
 ]);
 
 /** Pure automation — from noreply@, but Reply-To stays contact@ so users aren't stuck. */

@@ -134,10 +134,18 @@ export async function unsubscribeNewsletter(rawEmail: string): Promise<void> {
   if (!admin) return;
   const email = rawEmail.trim().toLowerCase();
   if (!email) return;
-  await admin
+  const { error } = await admin
     .from("newsletter_subscribers")
     .update({ status: "unsubscribed", unsubscribed_at: new Date().toISOString() })
     .eq("email", email);
+
+  if (!error) {
+    await sendTemplateEmail({
+      template: "newsletter-unsubscribe-confirmed",
+      to: email,
+      vars: { email },
+    });
+  }
 }
 
 /** Current status for an email (for the profile settings). */

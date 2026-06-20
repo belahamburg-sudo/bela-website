@@ -150,7 +150,7 @@ export async function createSingleUseInviteLink(): Promise<string | null> {
     chat_id: PAID_CHAT_ID,
     member_limit: 1,
     expire_date: Math.floor(Date.now() / 1000) + 60 * 60,
-    creates_join_request: true,
+    creates_join_request: false,
   });
   return result?.invite_link ?? null;
 }

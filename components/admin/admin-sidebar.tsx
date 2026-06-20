@@ -24,6 +24,8 @@ import {
   Activity,
   BarChart3,
   BrainCircuit,
+  CreditCard,
+  MailCheck,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -63,6 +65,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Verkauf",
     links: [
       { href: "/admin/verkaeufe", label: "Verkäufe", icon: ShoppingCart },
+      { href: "/admin/stripe", label: "Stripe", icon: CreditCard },
       { href: "/admin/kunden", label: "Kunden", icon: Users },
       { href: "/admin/leads", label: "Leads", icon: UserPlus },
       { href: "/admin/affiliate", label: "Affiliate", icon: Gift },
@@ -72,6 +75,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Kommunikation",
     links: [
       { href: "/admin/emails", label: "E-Mails", icon: Mail },
+      { href: "/admin/resend", label: "Resend", icon: MailCheck },
       { href: "/admin/telegram", label: "Telegram", icon: Send },
     ],
   },

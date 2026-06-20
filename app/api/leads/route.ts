@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { sendTemplateEmail, type EmailTemplate } from "@/lib/email";
+import { subscribeNewsletter } from "@/lib/newsletter";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 import { readReferralFromCookieHeader } from "@/lib/referral";
 
 const sources = new Set(["newsletter", "webinar", "community"]);
 
 const leadEmailTemplates: Record<string, EmailTemplate> = {
-  newsletter: "newsletter-welcome",
   webinar: "webinar-registration-confirmed",
   community: "telegram-free-welcome",
 };
@@ -94,13 +94,17 @@ export async function POST(request: Request) {
     }
 
     // Best-effort welcome email based on the lead source. Never throws.
-    const template = leadEmailTemplates[source];
-    if (template) {
-      await sendTemplateEmail({
-        template,
-        to: email,
-        vars: { name: name ?? "", email },
-      });
+    if (source === "newsletter") {
+      await subscribeNewsletter(email, { source: "newsletter", name: name ?? undefined });
+    } else {
+      const template = leadEmailTemplates[source];
+      if (template) {
+        await sendTemplateEmail({
+          template,
+          to: email,
+          vars: { name: name ?? "", email },
+        });
+      }
     }
 
     return NextResponse.json({ message: "Du bist eingetragen. Check dein Postfach." });

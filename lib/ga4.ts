@@ -122,6 +122,18 @@ function toNameValues(report: GaReport | null): NameValue[] {
   }));
 }
 
+export type Ga4Extended = {
+  configured: boolean;
+  ok: boolean;
+  landingPages: NameValue[];
+  newVsReturning: NameValue[];
+  browsers: NameValue[];
+  operatingSystems: NameValue[];
+  referrers: NameValue[];
+  events: NameValue[];
+  sessionSeries: { date: string; sessions: number }[];
+};
+
 const EMPTY: Ga4Analytics = {
   configured: false,
   ok: false,
@@ -135,6 +147,18 @@ const EMPTY: Ga4Analytics = {
   channels: [],
   countries: [],
   devices: [],
+};
+
+const EMPTY_EXT: Ga4Extended = {
+  configured: false,
+  ok: false,
+  landingPages: [],
+  newVsReturning: [],
+  browsers: [],
+  operatingSystems: [],
+  referrers: [],
+  events: [],
+  sessionSeries: [],
 };
 
 let cache: { data: Ga4Analytics; at: number } | null = null;
@@ -219,5 +243,97 @@ export async function getGa4Analytics(): Promise<Ga4Analytics> {
     devices: toNameValues(devices),
   };
   cache = { data, at: Date.now() };
+  return data;
+}
+
+let extCache: { data: Ga4Extended; at: number } | null = null;
+
+export async function getGa4Extended(): Promise<Ga4Extended> {
+  const propertyId = process.env.GA4_PROPERTY_ID;
+  const sa = loadServiceAccount();
+  if (!propertyId || !sa) return EMPTY_EXT;
+
+  if (extCache && Date.now() - extCache.at < TTL_MS) return extCache.data;
+
+  const token = await getAccessToken(sa);
+  if (!token) return { ...EMPTY_EXT, configured: true, ok: false };
+
+  const range = [{ startDate: "30daysAgo", endDate: "today" }];
+  const [landing, newRet, browsers, os, referrers, events, sessionSeries] = await Promise.all([
+    runReport(propertyId, token, {
+      dateRanges: range,
+      dimensions: [{ name: "landingPagePlusQueryString" }],
+      metrics: [{ name: "sessions" }],
+      orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+      limit: 10,
+    }),
+    runReport(propertyId, token, {
+      dateRanges: range,
+      dimensions: [{ name: "newVsReturning" }],
+      metrics: [{ name: "activeUsers" }],
+    }),
+    runReport(propertyId, token, {
+      dateRanges: range,
+      dimensions: [{ name: "browser" }],
+      metrics: [{ name: "sessions" }],
+      orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+      limit: 8,
+    }),
+    runReport(propertyId, token, {
+      dateRanges: range,
+      dimensions: [{ name: "operatingSystem" }],
+      metrics: [{ name: "sessions" }],
+      orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+      limit: 8,
+    }),
+    runReport(propertyId, token, {
+      dateRanges: range,
+      dimensions: [{ name: "sessionSource" }],
+      metrics: [{ name: "sessions" }],
+      orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+      limit: 10,
+    }),
+    runReport(propertyId, token, {
+      dateRanges: range,
+      dimensions: [{ name: "eventName" }],
+      metrics: [{ name: "eventCount" }],
+      orderBys: [{ metric: { metricName: "eventCount" }, desc: true }],
+      limit: 12,
+    }),
+    runReport(propertyId, token, {
+      dateRanges: range,
+      dimensions: [{ name: "date" }],
+      metrics: [{ name: "sessions" }],
+      orderBys: [{ dimension: { dimensionName: "date" } }],
+    }),
+  ]);
+
+  const NEW_RET_LABELS: Record<string, string> = { new: "Neue Nutzer", returning: "Wiederkehrend" };
+
+  const data: Ga4Extended = {
+    configured: true,
+    ok: true,
+    landingPages: toNameValues(landing).map((v) => ({
+      ...v,
+      label: v.label === "(not set)" ? "(direkt)" : v.label,
+    })),
+    newVsReturning: toNameValues(newRet).map((v) => ({
+      ...v,
+      label: NEW_RET_LABELS[v.label] ?? v.label,
+    })),
+    browsers: toNameValues(browsers),
+    operatingSystems: toNameValues(os),
+    referrers: toNameValues(referrers).map((v) => ({
+      ...v,
+      label: v.label === "(direct)" ? "(direkt)" : v.label,
+    })),
+    events: toNameValues(events),
+    sessionSeries: (sessionSeries?.rows ?? []).map((r) => {
+      const d = r.dimensionValues?.[0]?.value ?? "";
+      const date = d.length === 8 ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}` : d;
+      return { date, sessions: n(r.metricValues?.[0]?.value) };
+    }),
+  };
+  extCache = { data, at: Date.now() };
   return data;
 }

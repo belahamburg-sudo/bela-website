@@ -105,7 +105,7 @@ export function CoursePlayer({
     const isDone = completedSet.has(activeId);
     const next = isDone ? completed.filter((id) => id !== activeId) : [...completed, activeId];
     setCompleted(next);
-    toggleLessonProgress(activeId, !isDone).then((r) => {
+    toggleLessonProgress(activeId, !isDone, course.slug).then((r) => {
       if (!r.ok) setCompleted(completed);
     });
     if (!isDone && hasNext) selectLesson(lessons[currentIndex + 1].id);

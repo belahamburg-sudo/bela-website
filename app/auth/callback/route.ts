@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { DEFAULT_AVATAR_ID } from "@/lib/avatar-system";
+import { subscribeNewsletter } from "@/lib/newsletter";
 
 /**
  * First sign-in via Google/Apple has no profile row yet (those are created by the
@@ -47,6 +48,14 @@ async function ensureProfile(supabase: SupabaseClient): Promise<void> {
       },
       { onConflict: "user_id" }
     );
+
+    if (meta.newsletter_optin) {
+      await subscribeNewsletter(user.email, {
+        userId: user.id,
+        source: "signup",
+        name: meta.full_name ?? meta.name ?? undefined,
+      });
+    }
   } catch {
     // Never let profile bootstrapping break the auth redirect.
   }

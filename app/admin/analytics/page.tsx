@@ -1,16 +1,11 @@
 import {
-  BarChart3,
-  Users,
-  MousePointerClick,
-  Eye,
-  Timer,
-  LogOut,
-  Activity,
-  AlertTriangle,
+  BarChart3, Users, MousePointerClick, Eye, Timer, LogOut,
+  Activity, AlertTriangle, Globe, Smartphone, Monitor, Zap,
+  ArrowRight, ExternalLink,
 } from "lucide-react";
 import { PageHeader, Panel, StatCard, EmptyState } from "@/components/admin/ui";
 import { DonutChart, AreaTrend, FunnelBars } from "@/components/admin/charts";
-import { getGa4Analytics } from "@/lib/ga4";
+import { getGa4Analytics, getGa4Extended } from "@/lib/ga4";
 import { getClarityAnalytics } from "@/lib/clarity";
 
 export const dynamic = "force-dynamic";
@@ -51,14 +46,22 @@ function SectionLabel({ children, note }: { children: React.ReactNode; note?: st
 }
 
 export default async function AdminAnalyticsPage() {
-  const [ga, clarity] = await Promise.all([getGa4Analytics(), getClarityAnalytics()]);
+  const [ga, ext, clarity] = await Promise.all([
+    getGa4Analytics(),
+    getGa4Extended(),
+    getClarityAnalytics(),
+  ]);
+
+  const newUsers = ext.newVsReturning.find((v) => v.label === "Neue Nutzer")?.value ?? 0;
+  const returningUsers = ext.newVsReturning.find((v) => v.label === "Wiederkehrend")?.value ?? 0;
+  const returnRate = ga.activeUsers > 0 ? Math.round((returningUsers / ga.activeUsers) * 100) : 0;
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
       <PageHeader
         eyebrow="Kontrollzentrale"
         title="Analytics"
-        description="Besucher, Traffic-Quellen und Nutzerverhalten — Google Analytics & Microsoft Clarity."
+        description="Traffic, Quellen, Verhalten und UX — Google Analytics & Microsoft Clarity."
         actions={
           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-300">
             <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_2px_rgba(52,211,153,0.5)]" />
@@ -88,6 +91,7 @@ export default async function AdminAnalyticsPage() {
         </Panel>
       ) : (
         <>
+          {/* KPIs */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
             <StatCard label="Nutzer" value={fmtInt(ga.activeUsers)} icon={Users} hint="aktive Nutzer" />
             <StatCard label="Sitzungen" value={fmtInt(ga.sessions)} icon={MousePointerClick} />
@@ -100,6 +104,15 @@ export default async function AdminAnalyticsPage() {
             <StatCard label="Absprungrate" value={`${Math.round(ga.bounceRatePct)}%`} icon={LogOut} />
           </div>
 
+          {/* Nutzer-Kennzahlen */}
+          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Stat label="Neue Nutzer" value={fmtInt(newUsers)} sub={`${100 - returnRate}% der Nutzer`} />
+            <Stat label="Wiederkehrend" value={fmtInt(returningUsers)} sub={`${returnRate}% der Nutzer`} />
+            <Stat label="Seiten/Sitzung" value={ga.sessions > 0 ? (ga.pageViews / ga.sessions).toFixed(1) : "—"} sub="Ø Seitenaufrufe" />
+            <Stat label="Ø pro Tag" value={ga.series.length > 0 ? fmtInt(ga.activeUsers / ga.series.length) : "—"} sub="Nutzer/Tag" />
+          </div>
+
+          {/* Charts Row 1: Trend + Sources */}
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <Panel title="Nutzer-Verlauf" description="Aktive Nutzer pro Tag (30 Tage)">
@@ -118,12 +131,39 @@ export default async function AdminAnalyticsPage() {
             </Panel>
           </div>
 
+          {/* Charts Row 2: Sessions Trend + New vs Returning */}
+          <div className="mt-6 grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <Panel title="Sitzungen-Verlauf" description="Sitzungen pro Tag (30 Tage)">
+                <AreaTrend
+                  data={ext.sessionSeries.map((d) => ({ date: d.date, cents: d.sessions }))}
+                  formatDay={fmtDay}
+                />
+              </Panel>
+            </div>
+            <Panel title="Neu vs. Wiederkehrend">
+              <DonutChart
+                data={ext.newVsReturning.map((v) => ({ label: v.label, value: v.value }))}
+                centerValue={fmtInt(ga.activeUsers)}
+                centerLabel="Nutzer"
+              />
+            </Panel>
+          </div>
+
+          {/* Charts Row 3: Pages + Landing Pages + Countries */}
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             <Panel title="Top-Seiten">
               {ga.topPages.length === 0 ? (
                 <p className="text-sm text-cream/35">Noch keine Daten.</p>
               ) : (
                 <FunnelBars data={ga.topPages.map((p) => ({ label: p.label, value: p.value }))} />
+              )}
+            </Panel>
+            <Panel title="Landing Pages" description="Einstiegsseiten der Besucher">
+              {ext.landingPages.length === 0 ? (
+                <p className="text-sm text-cream/35">Noch keine Daten.</p>
+              ) : (
+                <FunnelBars data={ext.landingPages.map((p) => ({ label: p.label, value: p.value }))} />
               )}
             </Panel>
             <Panel title="Länder">
@@ -133,12 +173,52 @@ export default async function AdminAnalyticsPage() {
                 <FunnelBars data={ga.countries.map((c) => ({ label: c.label, value: c.value }))} />
               )}
             </Panel>
+          </div>
+
+          {/* Charts Row 4: Referrers + Devices + Browsers */}
+          <div className="mt-6 grid gap-6 lg:grid-cols-3">
+            <Panel title="Referrer-Quellen" description="Woher kommen die Besucher?">
+              {ext.referrers.length === 0 ? (
+                <p className="text-sm text-cream/35">Noch keine Daten.</p>
+              ) : (
+                <FunnelBars data={ext.referrers.map((r) => ({ label: r.label, value: r.value }))} />
+              )}
+            </Panel>
             <Panel title="Geräte">
               <DonutChart
                 data={ga.devices.map((d) => ({ label: d.label, value: d.value }))}
                 centerValue={fmtInt(ga.devices.reduce((s, d) => s + d.value, 0))}
                 centerLabel="Sitzungen"
               />
+            </Panel>
+            <Panel title="Browser">
+              {ext.browsers.length === 0 ? (
+                <p className="text-sm text-cream/35">Noch keine Daten.</p>
+              ) : (
+                <FunnelBars data={ext.browsers.map((b) => ({ label: b.label, value: b.value }))} />
+              )}
+            </Panel>
+          </div>
+
+          {/* Charts Row 5: OS + Events */}
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            <Panel title="Betriebssysteme">
+              {ext.operatingSystems.length === 0 ? (
+                <p className="text-sm text-cream/35">Noch keine Daten.</p>
+              ) : (
+                <DonutChart
+                  data={ext.operatingSystems.map((o) => ({ label: o.label, value: o.value }))}
+                  centerValue={fmtInt(ext.operatingSystems.reduce((s, o) => s + o.value, 0))}
+                  centerLabel="Sitzungen"
+                />
+              )}
+            </Panel>
+            <Panel title="Top-Events" description="Meistgetriggerte GA4-Events">
+              {ext.events.length === 0 ? (
+                <p className="text-sm text-cream/35">Noch keine Daten.</p>
+              ) : (
+                <FunnelBars data={ext.events.map((e) => ({ label: e.label, value: e.value }))} />
+              )}
             </Panel>
           </div>
         </>
@@ -162,11 +242,7 @@ export default async function AdminAnalyticsPage() {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
             <StatCard label="Sessions" value={fmtInt(clarity.sessions)} icon={MousePointerClick} />
             <StatCard label="Distinct Users" value={fmtInt(clarity.distinctUsers)} icon={Users} />
-            <StatCard
-              label="Bot-Sessions"
-              value={fmtInt(clarity.botSessions)}
-              icon={Activity}
-            />
+            <StatCard label="Bot-Sessions" value={fmtInt(clarity.botSessions)} icon={Activity} />
             <StatCard
               label="Seiten / Sitzung"
               value={clarity.pagesPerSession.toFixed(1)}
@@ -179,7 +255,7 @@ export default async function AdminAnalyticsPage() {
             />
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
             <Panel
               title="UX-Frustrationssignale"
               description="Anteil der Sitzungen mit Reibung — je niedriger, desto besser"
@@ -197,6 +273,30 @@ export default async function AdminAnalyticsPage() {
                   }))}
                 />
               )}
+            </Panel>
+            <Panel title="Engagement-Metriken" description="Wie aktiv sind die Nutzer?">
+              <div className="grid grid-cols-2 gap-3">
+                <Stat
+                  label="Gesamtzeit"
+                  value={clarity.totalTime > 0 ? `${Math.round(clarity.totalTime / 60)}m` : "—"}
+                  sub="aller Sessions"
+                />
+                <Stat
+                  label="Aktive Zeit"
+                  value={clarity.activeTime > 0 ? `${Math.round(clarity.activeTime / 60)}m` : "—"}
+                  sub="aktiv interagiert"
+                />
+                <Stat
+                  label="Bot-Anteil"
+                  value={clarity.sessions > 0 ? `${Math.round((clarity.botSessions / clarity.sessions) * 100)}%` : "0%"}
+                  sub="Bot-Traffic"
+                />
+                <Stat
+                  label="Scroll-Tiefe"
+                  value={`${Math.round(clarity.avgScrollDepth)}%`}
+                  sub="Ø über alle Seiten"
+                />
+              </div>
             </Panel>
           </div>
         </>

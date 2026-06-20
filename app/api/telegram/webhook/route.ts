@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
-import { verifyTelegramLinkToken, sendTelegramMessage, safeBanTelegramMember } from "@/lib/telegram-bot";
+import {
+  verifyTelegramLinkToken,
+  sendTelegramMessage,
+  safeBanTelegramMember,
+  createSingleUseInviteLink,
+  buildTelegramBotLink,
+} from "@/lib/telegram-bot";
 import {
   handleJoinRequest,
   handleTelegramLinkStart,
@@ -24,6 +30,69 @@ type TelegramUpdate = {
     new_chat_member: { status: string; user: { id: number } };
   };
 };
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { absoluteUrl } from "@/lib/utils";
+
+async function handlePlainStart(
+  supabase: SupabaseClient,
+  telegramUserId: number,
+  telegramUsername: string | null
+) {
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com").replace(/\/$/, "");
+
+  // 1. Check if this Telegram user is already linked to an account.
+  const { data: sub } = await supabase
+    .from("telegram_subscriptions")
+    .select("user_id, status, telegram_user_id")
+    .eq("telegram_user_id", telegramUserId)
+    .maybeSingle();
+
+  if (sub) {
+    const active = ["active", "trialing"].includes(sub.status as string);
+    if (active) {
+      // Already linked + active: give them an invite link directly.
+      if (telegramUsername) {
+        await supabase
+          .from("telegram_subscriptions")
+          .update({ telegram_username: telegramUsername, updated_at: new Date().toISOString() })
+          .eq("user_id", sub.user_id);
+      }
+      const invite = await createSingleUseInviteLink();
+      if (invite) {
+        await sendTelegramMessage(
+          telegramUserId,
+          `Willkommen zurück! 🎉\n\nDein VIP-Zugang ist aktiv. Tritt hier der Gruppe bei:\n${invite}\n\nDer Link ist 1 Stunde gültig und nur für dich.`
+        );
+      } else {
+        await sendTelegramMessage(
+          telegramUserId,
+          `Dein VIP-Zugang ist aktiv! ✅\n\nDer Einladungslink konnte gerade nicht erstellt werden. Stelle einen Beitrittsantrag in der VIP-Gruppe — dein Zugang wird automatisch freigegeben.`
+        );
+      }
+      return;
+    } else {
+      // Linked but inactive (cancelled/expired).
+      await sendTelegramMessage(
+        telegramUserId,
+        `Hey! Dein VIP-Abo ist leider nicht mehr aktiv.\n\nHier kannst du es erneuern:\n${siteUrl}/vip`
+      );
+      return;
+    }
+  }
+
+  // 2. Not linked — check if there's an active subscription WITHOUT a telegram_user_id
+  //    that belongs to someone. We can't auto-link without the website flow (security),
+  //    but we can give them a more helpful message.
+  await sendTelegramMessage(
+    telegramUserId,
+    `Willkommen bei AI Goldmining! 👋\n\nUm der VIP-Gruppe beizutreten:\n\n` +
+    `1️⃣ Einloggen auf ${siteUrl}/vip\n` +
+    `2️⃣ Klick auf „Telegram verbinden"\n` +
+    `3️⃣ Du wirst hierher zurückgeleitet und bekommst sofort deinen Einladungslink\n\n` +
+    `Noch kein VIP-Abo? → ${siteUrl}/vip`
+  );
+}
 
 export async function POST(request: Request) {
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
@@ -78,11 +147,7 @@ export async function POST(request: Request) {
           await sendTelegramMessage(from.id, reply);
         }
       } else {
-        // Plain /start (no link payload) — guide the user to the proper flow.
-        await sendTelegramMessage(
-          from.id,
-          "Willkommen bei AI Goldmining! 👋\n\nUm deinen VIP-Zugang zu verbinden, öffne deinen persönlichen Link im Member-Bereich: aigoldmining.com/vip → „Telegram verbinden“. Der Link verknüpft dieses Konto automatisch."
-        );
+        await handlePlainStart(supabase, from.id, from.username ?? null);
       }
     }
 

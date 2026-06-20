@@ -119,5 +119,8 @@ export async function handleTelegramLinkStart(
     return `Verbunden! Tritt der VIP-Gruppe bei:\n${invite}\n\nDer Link ist 1 Stunde gültig und nur für dich.`;
   }
 
-  return "Verbunden! Stelle jetzt einen Beitrittsantrag in der VIP-Gruppe — dein Zugang wird automatisch freigegeben.";
+  const paidUrl = process.env.NEXT_PUBLIC_TELEGRAM_PAID_URL || "";
+  return paidUrl
+    ? `Verbunden! ✅ Tritt der VIP-Gruppe hier bei:\n${paidUrl}`
+    : "Verbunden! ✅ Tritt jetzt der VIP-Gruppe bei — dein Zugang wird automatisch freigegeben.";
 }

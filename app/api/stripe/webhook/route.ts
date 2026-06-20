@@ -379,6 +379,25 @@ async function handleSubscriptionChange(
 
   const { enforceTelegramAccessForSubscription } = await import("@/lib/telegram-access");
   await enforceTelegramAccessForSubscription(supabase, subscription.id, subscription.status);
+
+  const ENDED_STATUSES = new Set(["canceled", "past_due", "unpaid"]);
+  if (ENDED_STATUSES.has(subscription.status)) {
+    const { data: sub } = await supabase
+      .from("telegram_subscriptions")
+      .select("user_id")
+      .eq("stripe_subscription_id", subscription.id)
+      .maybeSingle();
+    if (sub?.user_id) {
+      const { name, email } = await getRecipient(supabase, sub.user_id, null);
+      if (email) {
+        await sendTemplateEmail({
+          template: "telegram-subscription-ended",
+          to: email,
+          vars: { name, email },
+        });
+      }
+    }
+  }
 }
 
 async function handlePaymentFailed(
