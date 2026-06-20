@@ -681,6 +681,166 @@ export async function updateModuleRecommendation(input: {
   return { ok: true };
 }
 
+/**
+ * Save a module's sales bullets ("Kursinhalt im Detail" on the product page).
+ * Isolated/best-effort so older DBs without migration_022 still save other edits.
+ */
+export async function updateModuleHighlights(input: {
+  id: string;
+  courseId: string;
+  courseSlug?: string;
+  highlights: string[];
+}): Promise<ActionResult> {
+  if (!input.id) return { ok: false, error: "Keine Modul-ID angegeben." };
+  const { user, supabase } = await requireAdmin();
+
+  const highlights = Array.isArray(input.highlights)
+    ? input.highlights.map((h) => clean(h)).filter((h): h is string => Boolean(h))
+    : [];
+
+  const { error } = await supabase
+    .from("modules")
+    .update({ highlights })
+    .eq("id", input.id);
+  if (error) return { ok: false, error: error.message };
+
+  await logAudit({
+    actorEmail: user.email,
+    action: "module.highlights",
+    entity: "modules",
+    entityId: input.id,
+    meta: { count: highlights.length },
+  });
+
+  revalidatePath(`/admin/kurse/${input.courseId}`);
+  if (input.courseSlug) revalidatePath(`/kurse/${input.courseSlug}`);
+  return { ok: true };
+}
+
+// ────────────────────────────────────── Testimonials ──────────────────────────────────────
+
+export type AdminTestimonial = {
+  id: string;
+  authorName: string | null;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  photoUrl: string | null;
+  isVerified: boolean;
+  isPublished: boolean;
+  createdAt: string | null;
+};
+
+/** Admin-managed in-house testimonials for a course (the ones Bela enters). */
+export async function listCourseTestimonials(
+  courseSlug: string
+): Promise<{ ok: boolean; testimonials?: AdminTestimonial[]; error?: string }> {
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
+  const slug = clean(courseSlug);
+  if (!slug) return { ok: false, error: "Kein Kurs angegeben." };
+
+  // Only admin-entered rows (user_id IS NULL) are managed here; buyer reviews are
+  // tied to a user_id and managed by the buyers themselves.
+  const { data, error } = await ctx.supabase
+    .from("course_reviews")
+    .select("id, author_name, rating, title, body, photo_url, is_verified, is_published, created_at")
+    .eq("course_slug", slug)
+    .is("user_id", null)
+    .order("created_at", { ascending: false });
+  if (error) return { ok: false, error: error.message };
+
+  const testimonials = ((data ?? []) as Array<Record<string, unknown>>).map((r) => ({
+    id: r.id as string,
+    authorName: (r.author_name as string | null) ?? null,
+    rating: (r.rating as number) ?? 5,
+    title: (r.title as string | null) ?? null,
+    body: (r.body as string | null) ?? null,
+    photoUrl: (r.photo_url as string | null) ?? null,
+    isVerified: Boolean(r.is_verified),
+    isPublished: r.is_published !== false,
+    createdAt: (r.created_at as string | null) ?? null,
+  }));
+  return { ok: true, testimonials };
+}
+
+/** Create or update an admin testimonial. Photo is a storage://media/… ref. */
+export async function upsertCourseTestimonial(input: {
+  id?: string | null;
+  courseSlug: string;
+  authorName: string;
+  rating: number;
+  title?: string | null;
+  body?: string | null;
+  photoUrl?: string | null;
+  isVerified?: boolean;
+  isPublished?: boolean;
+}): Promise<ActionResult> {
+  const { user, supabase } = await requireAdmin();
+  const slug = clean(input.courseSlug);
+  if (!slug) return { ok: false, error: "Kein Kurs angegeben." };
+  const authorName = clean(input.authorName);
+  if (!authorName) return { ok: false, error: "Name ist erforderlich." };
+  const rating = Math.round(Number(input.rating));
+  if (!rating || rating < 1 || rating > 5) {
+    return { ok: false, error: "Bewertung muss zwischen 1 und 5 Sternen liegen." };
+  }
+
+  const row = {
+    course_slug: slug,
+    user_id: null,
+    author_name: authorName,
+    rating,
+    title: clean(input.title)?.slice(0, 120) ?? null,
+    body: clean(input.body)?.slice(0, 2000) ?? null,
+    photo_url: resolvePublicImage(input.photoUrl),
+    is_verified: Boolean(input.isVerified),
+    is_published: input.isPublished !== false,
+  };
+
+  const { error } = input.id
+    ? await supabase.from("course_reviews").update(row).eq("id", input.id)
+    : await supabase.from("course_reviews").insert(row);
+  if (error) return { ok: false, error: error.message };
+
+  await logAudit({
+    actorEmail: user.email,
+    action: input.id ? "testimonial.update" : "testimonial.create",
+    entity: "course_reviews",
+    entityId: input.id ?? null,
+    meta: { courseSlug: slug, authorName, rating },
+  });
+
+  revalidatePath(`/kurse/${slug}`);
+  return { ok: true };
+}
+
+export async function deleteCourseTestimonial(input: {
+  id: string;
+  courseSlug?: string;
+}): Promise<ActionResult> {
+  if (!input.id) return { ok: false, error: "Keine Testimonial-ID angegeben." };
+  const { user, supabase } = await requireAdmin();
+
+  // Guard: only delete admin-entered testimonials (never a buyer's own review).
+  const { error } = await supabase
+    .from("course_reviews")
+    .delete()
+    .eq("id", input.id)
+    .is("user_id", null);
+  if (error) return { ok: false, error: error.message };
+
+  await logAudit({
+    actorEmail: user.email,
+    action: "testimonial.delete",
+    entity: "course_reviews",
+    entityId: input.id,
+  });
+
+  if (input.courseSlug) revalidatePath(`/kurse/${input.courseSlug}`);
+  return { ok: true };
+}
+
 // ─────────────────────────────────────── Lessons ───────────────────────────────────────
 
 export type LessonInput = {

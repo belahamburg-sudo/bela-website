@@ -20,6 +20,7 @@ export function CreateAffiliate() {
   const [cashPercent, setCashPercent] = useState("20");
   const [fixedCash, setFixedCash] = useState("");
   const [selfDiscount, setSelfDiscount] = useState("10");
+  const [friendDiscount, setFriendDiscount] = useState("20");
   const [canIssueCoupons, setCanIssueCoupons] = useState(false);
 
   const showPercent = rewardType === "percent_cash" || rewardType === "both";
@@ -32,6 +33,7 @@ export function CreateAffiliate() {
     setCashPercent("20");
     setFixedCash("");
     setSelfDiscount("10");
+    setFriendDiscount("20");
     setCanIssueCoupons(false);
   }
 
@@ -49,6 +51,7 @@ export function CreateAffiliate() {
         cashPercent: showPercent ? Number(cashPercent) || 0 : 0,
         fixedCashCents: showFixed ? Math.round((Number(fixedCash) || 0) * 100) : 0,
         selfDiscountPercent: Number(selfDiscount) || 0,
+        friendDiscountPercent: Number(friendDiscount) || 0,
         canIssueCoupons,
       });
       if (res.ok) {
@@ -181,6 +184,20 @@ export function CreateAffiliate() {
                 onChange={(e) => setSelfDiscount(e.target.value)}
                 className={inputClass}
               />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="tac-label">Käufer-Rabatt (%)</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={friendDiscount}
+                onChange={(e) => setFriendDiscount(e.target.value)}
+                className={inputClass}
+              />
+              <span className="text-xs text-cream/40">
+                Rabatt, den ein Käufer mit diesem Code im Checkout bekommt.
+              </span>
             </label>
           </div>
 

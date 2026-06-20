@@ -10,6 +10,7 @@ type ReviewRow = {
   rating: number;
   title: string | null;
   body: string | null;
+  photo_url: string | null;
   is_verified: boolean;
   created_at: string;
 };
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
 
   const { data, error } = await admin
     .from("course_reviews")
-    .select("id, course_slug, author_name, rating, title, body, is_verified, created_at")
+    .select("id, course_slug, author_name, rating, title, body, photo_url, is_verified, created_at")
     .eq("course_slug", course)
     .eq("is_published", true)
     .order("created_at", { ascending: false })

@@ -11,6 +11,7 @@ type Review = {
   rating: number;
   title: string | null;
   body: string | null;
+  photo_url: string | null;
   is_verified: boolean;
   created_at: string;
 };
@@ -43,6 +44,7 @@ export function CourseReviews({ courseSlug }: { courseSlug: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   async function loadReviews() {
     try {
@@ -53,6 +55,8 @@ export function CourseReviews({ courseSlug }: { courseSlug: string }) {
       setAverage(data.average ?? 0);
     } catch {
       // ignore
+    } finally {
+      setLoaded(true);
     }
   }
 
@@ -99,6 +103,10 @@ export function CourseReviews({ courseSlug }: { courseSlug: string }) {
       setSubmitting(false);
     }
   }
+
+  // Spec: the testimonials block stays hidden until at least one review exists.
+  // A logged-in buyer still sees the form so they can leave the first one.
+  if (loaded && count === 0 && !loggedIn && !done) return null;
 
   return (
     <div>
@@ -192,25 +200,37 @@ export function CourseReviews({ courseSlug }: { courseSlug: string }) {
         ) : (
           reviews.map((r) => (
             <article key={r.id} className="rounded-sm border border-white/8 bg-white/[0.02] p-5">
-              <div className="flex items-center justify-between gap-3">
-                <Stars value={r.rating} />
-                {r.is_verified && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-gold-300/80">
-                    <BadgeCheck className="h-3.5 w-3.5" />
-                    Verifizierter Kauf
-                  </span>
+              <div className="flex items-start gap-4">
+                {r.photo_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={r.photo_url}
+                    alt={r.author_name || "Mitglied"}
+                    className="h-12 w-12 flex-none rounded-full border border-white/10 object-cover"
+                  />
                 )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <Stars value={r.rating} />
+                    {r.is_verified && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-gold-300/80">
+                        <BadgeCheck className="h-3.5 w-3.5" />
+                        Verifizierter Kauf
+                      </span>
+                    )}
+                  </div>
+                  {r.title && <p className="mt-3 font-heading text-lg text-cream">{r.title}</p>}
+                  {r.body && <p className="mt-1.5 text-sm leading-relaxed text-cream/60">{r.body}</p>}
+                  <p className="mt-3 text-[11px] uppercase tracking-[0.14em] text-cream/30">
+                    {r.author_name || "Mitglied"} ·{" "}
+                    {new Date(r.created_at).toLocaleDateString("de-DE", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
               </div>
-              {r.title && <p className="mt-3 font-heading text-lg text-cream">{r.title}</p>}
-              {r.body && <p className="mt-1.5 text-sm leading-relaxed text-cream/60">{r.body}</p>}
-              <p className="mt-3 text-[11px] uppercase tracking-[0.14em] text-cream/30">
-                {r.author_name || "Mitglied"} ·{" "}
-                {new Date(r.created_at).toLocaleDateString("de-DE", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
             </article>
           ))
         )}

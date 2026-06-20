@@ -1,12 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
 import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  FileText,
   GraduationCap,
-  Play,
   Sparkles,
   Trophy,
   Zap,
@@ -16,9 +12,37 @@ import { Button } from "@/components/button";
 import { SpatialBackground } from "@/components/spatial-background";
 import { Reveal } from "@/components/dashboard/reveal";
 import { ReferAFriend } from "@/components/refer-a-friend";
+import { StoreProductCard, type StoreCardCourse } from "@/components/store-product-card";
 import { getUnifiedMemberData } from "@/lib/member-data";
 import { getMemberLevel } from "@/lib/avatar-system";
-import { formatEuro } from "@/lib/utils";
+import type { Course } from "@/lib/content";
+
+/** Map a catalog course (+ optional progress) to the shared store-card shape. */
+function toStoreCard(
+  course: Course,
+  progress?: { totalLessons: number; completedLessons: number; progress: number }
+): StoreCardCourse {
+  const totalLessons =
+    progress?.totalLessons ??
+    course.modules.reduce((n, m) => n + m.lessons.length, 0);
+  return {
+    slug: course.slug,
+    title: course.title,
+    tagline: course.tagline,
+    image: course.image,
+    price_cents: course.priceCents,
+    compare_at_price_cents: course.compareAtPriceCents ?? null,
+    level: course.level,
+    format: course.format,
+    totalLessons,
+    completedLessons: progress?.completedLessons ?? 0,
+    progress: progress?.progress ?? 0,
+    isBundle: course.level === "Bundle",
+    comingSoon: Boolean(course.comingSoon),
+    isFlagship: course.slug === "ai-goldmining-method",
+    sortOrder: course.sortOrder ?? 999,
+  };
+}
 
 export default async function DashboardPage() {
   const {
@@ -163,75 +187,18 @@ export default async function DashboardPage() {
               />
 
               {purchasedCourses.length > 0 ? (
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {purchasedCourses.map((course) => {
-                    const started = course.progress > 0;
-                    return (
-                      <div
-                        key={course.slug}
-                        className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201, 169, 97,0.35)]"
-                      >
-                        {/* hover wash */}
-                        <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-                        {/* corner ticks */}
-                        <CornerTicks />
-
-                        {/* Cover */}
-                        <div className="relative h-40 overflow-hidden border-b border-white/5">
-                          <Image
-                            src={course.image}
-                            alt={course.title}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover opacity-80 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
-
-                          <span
-                            className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1 border px-2 py-1 text-[9px] font-bold uppercase tracking-[0.18em] backdrop-blur-md ${
-                              course.progress === 100
-                                ? "border-gold-300/40 bg-gold-300/15 text-gold-200"
-                                : "border-cream/25 bg-white/10 text-cream/85"
-                            }`}
-                          >
-                            {course.progress === 100 ? "Abgeschlossen" : course.status}
-                          </span>
-                        </div>
-
-                        {/* Body */}
-                        <div className="relative z-10 flex flex-1 flex-col p-5">
-                          <h3 className="font-heading text-xl leading-tight text-cream transition-colors duration-300 group-hover:text-gold-300">
-                            {course.title}
-                          </h3>
-
-                          <div className="mt-auto space-y-3 pt-6">
-                            <div className="flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.15em] text-cream/40">
-                              <span>{course.progress}% abgeschlossen</span>
-                              <span>
-                                {course.completedLessons}/{course.totalLessons}
-                              </span>
-                            </div>
-                            <div className="h-1 w-full overflow-hidden bg-white/[0.06]">
-                              <div
-                                className="h-full bg-gold-gradient transition-all duration-700"
-                                style={{ width: `${course.progress}%` }}
-                              />
-                            </div>
-                            <Button
-                              href={`/bibliothek/${course.slug}`}
-                              variant="secondary"
-                              size="sm"
-                              className="w-full rounded-none"
-                            >
-                              {started ? "Weiterlernen" : "Öffnen"}
-                              <ArrowRight className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                <div className="grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {purchasedCourses.map((course) => (
+                    <StoreProductCard
+                      key={course.slug}
+                      course={toStoreCard(course, {
+                        totalLessons: course.totalLessons,
+                        completedLessons: course.completedLessons,
+                        progress: course.progress,
+                      })}
+                      isPurchased
+                    />
+                  ))}
                 </div>
               ) : (
                 <div className="tac-panel tac-corners flex flex-col items-center gap-5 p-12 text-center">
@@ -276,70 +243,14 @@ export default async function DashboardPage() {
                   </Button>
                 </div>
 
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {storeTeaser.map((course) => {
-                    const isVideo = course.format === "video";
-                    return (
-                      <Link
-                        key={course.slug}
-                        href={`/bibliothek/${course.slug}`}
-                        className="group relative flex h-full flex-col overflow-hidden border border-white/10 bg-ink/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-gold-300/30 hover:shadow-[0_24px_60px_-24px_rgba(201, 169, 97,0.35)]"
-                      >
-                        <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-gold-300/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                        <CornerTicks />
-
-                        <div className="relative h-36 overflow-hidden border-b border-white/5">
-                          <Image
-                            src={course.image}
-                            alt={course.title}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover opacity-80 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
-
-                          {/* format badge */}
-                          <div
-                            className={`absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 border px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] backdrop-blur-md ${
-                              isVideo
-                                ? "border-gold-300/40 bg-gold-300/15 text-gold-200"
-                                : "border-cream/25 bg-white/10 text-cream/85"
-                            }`}
-                          >
-                            {isVideo ? (
-                              <Play className="h-3 w-3 fill-current" />
-                            ) : (
-                              <FileText className="h-3 w-3" />
-                            )}
-                            {isVideo ? "Video-Kurs" : "PDF-Guide"}
-                          </div>
-                        </div>
-
-                        <div className="relative z-10 flex flex-1 flex-col p-5">
-                          <h3 className="font-heading text-lg leading-tight text-cream transition-colors duration-300 group-hover:text-gold-300">
-                            {course.title}
-                          </h3>
-                          <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-cream/45">
-                            {course.tagline}
-                          </p>
-
-                          <div className="mt-auto flex items-end justify-between gap-3 pt-6">
-                            <div>
-                              <span className="block font-mono text-[8px] uppercase tracking-[0.2em] text-cream/30">
-                                Einmalig
-                              </span>
-                              <span className="gold-text font-heading text-xl leading-none">
-                                {formatEuro(course.priceCents)}
-                              </span>
-                            </div>
-                            <span className="inline-flex h-9 w-9 items-center justify-center border border-white/10 transition-all duration-300 group-hover:border-gold-300/40 group-hover:bg-gold-300/[0.08]">
-                              <ArrowRight className="h-3.5 w-3.5 -translate-x-0.5 text-cream/40 transition-all group-hover:translate-x-0 group-hover:text-gold-300" />
-                            </span>
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                <div className="grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {storeTeaser.map((course) => (
+                    <StoreProductCard
+                      key={course.slug}
+                      course={toStoreCard(course)}
+                      isPurchased={false}
+                    />
+                  ))}
                 </div>
               </div>
             </Reveal>
@@ -352,17 +263,6 @@ export default async function DashboardPage() {
 
 function Dot() {
   return <span className="text-gold-300/30">·</span>;
-}
-
-function CornerTicks() {
-  return (
-    <>
-      <span className="pointer-events-none absolute left-0 top-0 z-20 h-3 w-3 border-l border-t border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
-      <span className="pointer-events-none absolute right-0 top-0 z-20 h-3 w-3 border-r border-t border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
-      <span className="pointer-events-none absolute bottom-0 left-0 z-20 h-3 w-3 border-b border-l border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
-      <span className="pointer-events-none absolute bottom-0 right-0 z-20 h-3 w-3 border-b border-r border-gold-300/0 transition-colors duration-500 group-hover:border-gold-300/50" />
-    </>
-  );
 }
 
 function SectionHeading({

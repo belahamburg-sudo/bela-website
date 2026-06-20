@@ -21,6 +21,7 @@ import { FileUpload } from "@/components/admin/file-upload";
 import { useToast } from "@/components/admin/toast";
 import { updateCourse, syncCourseToStripe } from "@/app/admin/kurse/actions";
 import { CurriculumEditor } from "./curriculum-editor";
+import { CourseTestimonialsEditor } from "./testimonials-editor";
 
 export type ResourceItem = { label: string; type: "PDF" | "Template" | "Prompt"; href: string };
 
@@ -40,6 +41,8 @@ export type EditorModule = {
   recommendedCourseSlug: string;
   /** Optional note shown with the recommendation. */
   recommendationNote: string;
+  /** 3–5 sales bullets shown for this module on the product page. */
+  highlights: string[];
   lessons: EditorLesson[];
 };
 
@@ -173,6 +176,9 @@ export function CourseEditor({
   const [ppAfter, setPpAfter] = useState(ppList("afterOutcomes"));
   const [ppBonus, setPpBonus] = useState(ppStr("bonus"));
   const [ppCta, setPpCta] = useState(ppStr("ctaHeadline"));
+  const [ppProof, setPpProof] = useState<string[]>(
+    Array.isArray(pp.proofImages) ? (pp.proofImages as string[]) : []
+  );
 
   const otherCourses = allCourses.filter((c) => c.slug !== course.slug);
   const bundledTitle = (s: string) => allCourses.find((c) => c.slug === s)?.title ?? s;
@@ -226,6 +232,7 @@ export function CourseEditor({
       afterOutcomes: lines(ppAfter),
       bonus: ppBonus,
       ctaHeadline: ppCta,
+      proofImages: ppProof,
     };
 
     startTransition(async () => {
@@ -833,8 +840,63 @@ export function CourseEditor({
                 />
               </label>
             </div>
+
+            {/* Ergebnis-Proof screenshots — shown right before dem CTA. Leer = ausgeblendet. */}
+            <div className="space-y-3 border-t border-white/5 pt-4">
+              <span className="tac-label block">Ergebnis-Proof (Screenshots) — optional</span>
+              <p className="text-xs text-cream/40">
+                Echte Screenshots / Chatverläufe von Kunden. Werden direkt vor dem Kauf-Button
+                angezeigt. Ohne Bilder bleibt die Sektion unsichtbar.
+              </p>
+              {ppProof.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {ppProof.map((ref) => {
+                    const src = toPreview(ref);
+                    return (
+                      <div
+                        key={ref}
+                        className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-white/10 bg-obsidian/60"
+                      >
+                        {src ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={src} alt="Proof" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-cream/25">
+                            <ImageIcon className="h-6 w-6" />
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setPpProof((prev) => prev.filter((r) => r !== ref))}
+                          className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-md bg-obsidian/80 text-cream/70 opacity-0 transition-opacity hover:text-red-300 group-hover:opacity-100"
+                          aria-label="Bild entfernen"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <FileUpload
+                bucket="media"
+                prefix="proof"
+                kind="image"
+                accept="image/*"
+                hint="Screenshot hochladen — danach oben „Speichern“"
+                onUploaded={(f) => {
+                  setPpProof((prev) => (prev.includes(f.ref) ? prev : [...prev, f.ref]));
+                  success("Screenshot hinzugefügt — zum Übernehmen speichern.");
+                }}
+              />
+            </div>
           </div>
         </Panel>
+      </div>
+
+      {/* Testimonials (In-House-Bewertungen) */}
+      <div className="mt-6">
+        <CourseTestimonialsEditor courseSlug={course.slug} />
       </div>
 
       {/* Stripe product */}

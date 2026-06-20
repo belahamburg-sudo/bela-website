@@ -159,43 +159,86 @@ export async function POST(request: Request) {
       })
     );
 
-    let appliedDiscount: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
-    const typedCode = body.promoCode?.trim();
-    if (typedCode) {
-      const promo = await resolvePromoCode(typedCode);
-      if (!promo) {
-        return NextResponse.json(
-          { message: "Dieser Rabattcode ist ungültig." },
-          { status: 400 }
-        );
-      }
-      appliedDiscount = await buildCheckoutDiscount(stripe, promo);
+    const adminClient = getSupabaseAdminClient();
+
+    // The code typed into our checkout field, plus any referral code carried via
+    // the ?ref= link / cookie. A typed affiliate code wins: it both discounts the
+    // buyer AND attributes the commission (metadata.referral_code → webhook).
+    const typedCode = body.promoCode?.trim().toUpperCase() || "";
+    let attributedReferralCode =
+      body.referralCode?.trim().toUpperCase() ||
+      readReferralFromCookieHeader(request.headers.get("cookie")) ||
+      "";
+
+    type ReferralRow = {
+      code: string;
+      user_id: string | null;
+      discount_percent: number | null;
+      is_active: boolean;
+      stripe_promotion_code_id: string | null;
+    };
+
+    async function findReferralCode(code: string): Promise<ReferralRow | null> {
+      if (!adminClient || !code) return null;
+      const { data } = await adminClient
+        .from("referral_codes")
+        .select("code, user_id, discount_percent, is_active, stripe_promotion_code_id")
+        .eq("code", code)
+        .maybeSingle();
+      return (data as ReferralRow | null) ?? null;
     }
 
-    // Refer-a-friend: a valid referral code gives the friend a % discount.
-    // (Skipped if a typed promo already applied, or the buyer owns the code.)
-    const referralCode =
-      body.referralCode?.trim().toUpperCase() ||
-      readReferralFromCookieHeader(request.headers.get("cookie"));
-    if (!appliedDiscount && referralCode) {
+    // Prefer the persistent Stripe promotion code; fall back to an ad-hoc coupon
+    // (e.g. before the code was synced to Stripe).
+    async function referralDiscount(
+      row: ReferralRow
+    ): Promise<Stripe.Checkout.SessionCreateParams.Discount[]> {
+      if (row.stripe_promotion_code_id) {
+        return [{ promotion_code: row.stripe_promotion_code_id }];
+      }
+      const coupon = await stripe!.coupons.create({
+        percent_off: row.discount_percent ?? 0,
+        duration: "once",
+        name: `Rabatt ${row.code} (${row.discount_percent ?? 0}%)`,
+        max_redemptions: 1,
+      });
+      return [{ coupon: coupon.id }];
+    }
+
+    function isUsable(row: ReferralRow): boolean {
+      const own = Boolean(row.user_id && row.user_id === userId);
+      return row.is_active && !own && (row.discount_percent ?? 0) > 0;
+    }
+
+    let appliedDiscount: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
+
+    if (typedCode) {
+      const refRow = await findReferralCode(typedCode);
+      if (refRow && isUsable(refRow)) {
+        attributedReferralCode = typedCode;
+        appliedDiscount = await referralDiscount(refRow);
+      } else {
+        // Not an affiliate code — try a generic Stripe / configured promo code.
+        const promo = await resolvePromoCode(typedCode);
+        if (!promo) {
+          return NextResponse.json(
+            { message: "Dieser Rabattcode ist ungültig." },
+            { status: 400 }
+          );
+        }
+        appliedDiscount = await buildCheckoutDiscount(stripe, promo);
+      }
+    }
+
+    // Refer-a-friend via ?ref= link / cookie when no typed discount applied.
+    if (!appliedDiscount && attributedReferralCode) {
       try {
-        const admin = getSupabaseAdminClient();
-        if (admin) {
-          const { data: codeRow } = await admin
-            .from("referral_codes")
-            .select("code, user_id, discount_percent, is_active")
-            .eq("code", referralCode)
-            .maybeSingle();
-          const ownPurchase = codeRow?.user_id && codeRow.user_id === userId;
-          if (codeRow && codeRow.is_active && !ownPurchase && (codeRow.discount_percent ?? 0) > 0) {
-            const coupon = await stripe.coupons.create({
-              percent_off: codeRow.discount_percent,
-              duration: "once",
-              name: `Freundschaftsrabatt ${codeRow.discount_percent}%`,
-              max_redemptions: 1,
-            });
-            appliedDiscount = [{ coupon: coupon.id }];
-          }
+        const refRow = await findReferralCode(attributedReferralCode);
+        if (refRow && isUsable(refRow)) {
+          appliedDiscount = await referralDiscount(refRow);
+        } else if (refRow?.user_id && refRow.user_id === userId) {
+          // Never attribute a referrer's own purchase.
+          attributedReferralCode = "";
         }
       } catch {
         // best-effort — proceed without the friend discount
@@ -208,8 +251,8 @@ export async function POST(request: Request) {
       agb_accepted: "true",
       ...(userId ? { user_id: userId } : {}),
       ...(resolvedEmail ? { user_email: resolvedEmail } : {}),
-      ...(referralCode ? { referral_code: referralCode } : {}),
-      ...(typedCode ? { promo_code: typedCode.toUpperCase() } : {}),
+      ...(attributedReferralCode ? { referral_code: attributedReferralCode } : {}),
+      ...(typedCode ? { promo_code: typedCode } : {}),
     };
 
     const enableTax = process.env.STRIPE_AUTOMATIC_TAX === "1";

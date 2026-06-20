@@ -36,6 +36,9 @@ export default async function AdminCourseEditorPage({
       title: m.title,
       recommendedCourseSlug: m.recommended_course_slug ?? "",
       recommendationNote: m.recommendation_note ?? "",
+      highlights: Array.isArray(m.highlights)
+        ? m.highlights.filter((h): h is string => typeof h === "string")
+        : [],
       lessons: [...(m.lessons ?? [])]
         .sort((a, b) => a.position - b.position)
         .map((l) => ({

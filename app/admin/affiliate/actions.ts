@@ -3,10 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { getAdminContext, logAudit } from "@/lib/admin";
 import { createPayoutTransfer } from "@/lib/stripe-connect";
+import { ensureAffiliateStripeCode } from "@/lib/affiliate-stripe";
 import { getAffiliateAvailableCents } from "@/lib/affiliate";
 import { absoluteUrl } from "@/lib/utils";
 
 type ActionResult = { ok: boolean; error?: string };
+
+/** Clamp a percentage into the valid 0–100 range (integer). */
+function clampPercent(value: number | undefined, fallback: number): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
+  return Math.min(100, Math.max(0, Math.round(value)));
+}
 
 /** Normalises an admin-supplied custom code: uppercased, only A-Z/0-9. */
 function normalizeCustomCode(raw: string): string {
@@ -43,6 +50,8 @@ export async function createAffiliate(input: {
   fixedCashCents?: number;
   selfDiscountPercent: number;
   canIssueCoupons: boolean;
+  /** Discount the BUYER gets when entering this code at checkout (per code). */
+  friendDiscountPercent?: number;
 }): Promise<ActionResult> {
   const email = (input.email ?? "").trim().toLowerCase();
   if (!email) return { ok: false, error: "Keine E-Mail angegeben." };
@@ -50,6 +59,7 @@ export async function createAffiliate(input: {
   const rewardType = input.rewardType ?? "percent_cash";
   const cashPercent = input.cashPercent ?? 0;
   const fixedCashCents = input.fixedCashCents ?? 0;
+  const friendDiscount = clampPercent(input.friendDiscountPercent, DEFAULT_FRIEND_DISCOUNT);
 
   const ctx = await getAdminContext();
   if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
@@ -103,13 +113,21 @@ export async function createAffiliate(input: {
       code,
       user_id: userId,
       kind: "affiliate",
-      discount_percent: DEFAULT_FRIEND_DISCOUNT,
+      discount_percent: friendDiscount,
       commission_percent: cashPercent,
       is_active: true,
     },
     { onConflict: "code" }
   );
   if (codeError) return { ok: false, error: codeError.message };
+
+  // Mint the matching Stripe coupon + promotion code so the code works as a
+  // typed discount at checkout. Best-effort — never blocks affiliate creation.
+  try {
+    await ensureAffiliateStripeCode(supabase, code, friendDiscount);
+  } catch (e) {
+    console.error("Stripe promo code sync failed:", e instanceof Error ? e.message : e);
+  }
 
   // Insert the affiliate row.
   const { error: affError } = await supabase.from("affiliates").insert({
@@ -135,6 +153,7 @@ export async function createAffiliate(input: {
       rewardType,
       cashPercent,
       fixedCashCents,
+      friendDiscountPercent: friendDiscount,
       selfDiscountPercent: input.selfDiscountPercent,
       canIssueCoupons: input.canIssueCoupons,
       link: absoluteUrl(`/signup?ref=${code}`),
@@ -156,6 +175,8 @@ export async function updateAffiliate(input: {
   rewardType?: string;
   tierId?: string | null;
   notes?: string | null;
+  /** Buyer discount % for this affiliate's code (per code). */
+  friendDiscountPercent?: number;
 }): Promise<ActionResult> {
   if (!input.userId) return { ok: false, error: "Kein Affiliate angegeben." };
 
@@ -187,6 +208,25 @@ export async function updateAffiliate(input: {
       .update({ commission_percent: input.cashPercent })
       .eq("user_id", input.userId)
       .eq("kind", "affiliate");
+  }
+
+  // Buyer discount change: update the code's discount_percent and re-mint the
+  // Stripe coupon/promotion code (coupon percent is immutable). Best-effort.
+  if (input.friendDiscountPercent !== undefined) {
+    const friendDiscount = clampPercent(input.friendDiscountPercent, 0);
+    const { data: codes } = await supabase
+      .from("referral_codes")
+      .update({ discount_percent: friendDiscount })
+      .eq("user_id", input.userId)
+      .eq("kind", "affiliate")
+      .select("code");
+    for (const row of (codes ?? []) as { code: string }[]) {
+      try {
+        await ensureAffiliateStripeCode(supabase, row.code, friendDiscount);
+      } catch (e) {
+        console.error("Stripe promo code re-sync failed:", e instanceof Error ? e.message : e);
+      }
+    }
   }
 
   await logAudit({
@@ -363,6 +403,13 @@ export async function issueCoupon(input: {
     is_active: true,
   });
   if (error) return { ok: false, error: error.message };
+
+  // Mint the matching Stripe coupon + promotion code (best-effort).
+  try {
+    await ensureAffiliateStripeCode(supabase, code, input.percentOff);
+  } catch (e) {
+    console.error("Stripe promo code sync failed:", e instanceof Error ? e.message : e);
+  }
 
   await logAudit({
     actorEmail: user.email,

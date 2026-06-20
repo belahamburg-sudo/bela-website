@@ -58,6 +58,7 @@ export function CheckoutButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agb, setAgb] = useState(autoBuy);
+  const [promoCode, setPromoCode] = useState("");
   const router = useRouter();
   const autoBuyHandled = useRef(false);
 
@@ -86,6 +87,7 @@ export function CheckoutButton({
           courseSlug,
           userEmail,
           agbAccepted: agb,
+          promoCode: promoCode.trim() || undefined,
           referralCode: getStoredReferral() || undefined,
         }),
       });
@@ -107,7 +109,7 @@ export function CheckoutButton({
     } finally {
       setLoading(false);
     }
-  }, [agb, courseSlug, router]);
+  }, [agb, courseSlug, promoCode, router]);
 
   // Resume the purchase automatically after login (page loaded with ?buy=1).
   useEffect(() => {
@@ -121,6 +123,19 @@ export function CheckoutButton({
 
   return (
     <div className="space-y-3">
+      {/* Affiliate / discount code (optional) */}
+      <label className="block">
+        <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.16em] text-cream/40">
+          Rabatt- / Affiliate-Code
+        </span>
+        <input
+          value={promoCode}
+          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+          placeholder="z. B. ELMO"
+          className="w-full rounded-lg border border-white/10 bg-obsidian/60 px-3 py-2 text-sm uppercase tracking-wide text-cream placeholder:normal-case placeholder:tracking-normal placeholder:text-cream/25 focus:border-gold-300/50 focus:outline-none"
+        />
+      </label>
+
       {/* AGB consent (required) */}
       <label className="flex cursor-pointer items-start gap-2.5 text-left text-xs leading-relaxed text-cream/60">
         <input

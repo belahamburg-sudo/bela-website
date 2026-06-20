@@ -71,19 +71,46 @@ async function recordReferral(
   referredUserId: string | null,
   purchaseId: string | null
 ) {
-  const code = session.metadata?.referral_code?.trim();
-  if (!code) return;
+  const metaCode = session.metadata?.referral_code?.trim();
 
-  const { data: codeRow } = await supabase
-    .from("referral_codes")
-    .select("code, user_id, commission_percent, is_active")
-    .eq("code", code)
-    .maybeSingle();
+  // Primary path: our checkout field / ?ref= link set the code in metadata.
+  let codeRow: {
+    code: string;
+    user_id: string | null;
+    commission_percent: number | null;
+    is_active: boolean;
+  } | null = null;
+
+  if (metaCode) {
+    const { data } = await supabase
+      .from("referral_codes")
+      .select("code, user_id, commission_percent, is_active")
+      .eq("code", metaCode)
+      .maybeSingle();
+    codeRow = data;
+  }
+
+  // Fallback: the buyer typed the code into Stripe's own hosted promo field, so
+  // it isn't in our metadata. Map the applied promotion code back to a referral
+  // code via its stored Stripe id.
+  if (!codeRow) {
+    const promoId = stripeId(session.discounts?.[0]?.promotion_code);
+    if (promoId) {
+      const { data } = await supabase
+        .from("referral_codes")
+        .select("code, user_id, commission_percent, is_active")
+        .eq("stripe_promotion_code_id", promoId)
+        .maybeSingle();
+      codeRow = data;
+    }
+  }
+
   if (!codeRow || !codeRow.is_active) return;
 
   // Don't credit a referrer for their own purchase.
   if (codeRow.user_id && codeRow.user_id === referredUserId) return;
 
+  const code = codeRow.code;
   const amountTotal = session.amount_total ?? 0;
   const commissionCents = Math.round((amountTotal * (codeRow.commission_percent ?? 20)) / 100);
 

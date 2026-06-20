@@ -12,6 +12,7 @@ import { ProductPageSections } from "@/components/product-page-sections";
 import { getPublicCourse, getPublicCourses } from "@/lib/courses";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { parseIncludeLine } from "@/lib/course-includes";
+import { resolveMediaUrl } from "@/lib/storage";
 import { formatEuro, discountPercent } from "@/lib/utils";
 import { Boxes, Package } from "lucide-react";
 
@@ -80,6 +81,106 @@ export default async function CourseDetailPage({
     .map((c) => ({ slug: c.slug, title: c.title, priceCents: c.priceCents }));
 
   const discount = discountPercent(course.priceCents, course.compareAtPriceCents);
+
+  const pp = course.productPage;
+
+  // Proof screenshots → resolved public URLs (storage refs or plain URLs).
+  const proofImageUrls = (
+    await Promise.all((pp?.proofImages ?? []).map((r) => resolveMediaUrl(r)))
+  ).filter((u): u is string => Boolean(u));
+
+  // "Was du danach kannst" falls back to the course "includes" bullets.
+  const fallbackBullets = course.includes.map((i) => parseIncludeLine(i)?.label ?? i);
+
+  const modulesWithHighlights = course.modules.filter((m) => (m.highlights?.length ?? 0) > 0);
+
+  // Section 5 — "Kursinhalt im Detail": preview video + per-module bullets + the
+  // full (locked) curriculum outline.
+  const courseContentNode = (
+    <div>
+      <p className="eyebrow mb-5">Kursinhalt im Detail</p>
+      <h2 className="mb-6 font-heading text-3xl text-white sm:text-4xl">Das steckt drin.</h2>
+
+      {course.promoVideoUrl && (
+        <div className="mb-8 overflow-hidden rounded-2xl border border-gold-500/20 shadow-gold">
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <video src={course.promoVideoUrl} controls playsInline className="aspect-video w-full bg-black" />
+        </div>
+      )}
+
+      {modulesWithHighlights.length > 0 && (
+        <div className="mb-8 grid gap-4">
+          {course.modules.map((m, i) =>
+            (m.highlights?.length ?? 0) > 0 ? (
+              <div key={m.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+                <div className="mb-3 flex items-center gap-3">
+                  <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full border border-gold-300/30 bg-gold-300/[0.06] font-heading text-sm text-gold-300">
+                    {i + 1}
+                  </span>
+                  <h3 className="font-heading text-lg text-white">{m.title}</h3>
+                </div>
+                <ul className="grid gap-2">
+                  {m.highlights!.map((h) => (
+                    <li key={h} className="flex items-start gap-2.5 text-white/70">
+                      <CheckCircle2 aria-hidden className="mt-1 h-4 w-4 flex-none text-gold-300" />
+                      <span className="leading-7">{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null
+          )}
+        </div>
+      )}
+
+      <div className="mb-5 flex items-center gap-3">
+        <PlayCircle aria-hidden className="h-6 w-6 text-gold-300" />
+        <h3 className="font-heading text-2xl text-white">Alle Kursinhalte</h3>
+      </div>
+      <CourseCurriculumOutline modules={course.modules} locked />
+      {owned ? (
+        <div className="mt-5 flex items-start gap-3 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4 text-sm leading-7 text-emerald-100">
+          <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none" />
+          Du hast diesen Kurs freigeschaltet. Videos und Downloads findest du im Dashboard.
+        </div>
+      ) : (
+        <div className="mt-5 flex items-start gap-3 rounded-2xl border border-gold-500/15 bg-gold-500/[0.07] p-4 text-sm leading-7 text-gold-100">
+          <Lock aria-hidden className="mt-1 h-5 w-5 flex-none" />
+          Vorschau der Inhalte. Nach dem Kauf schaltest du Videos und Downloads im Dashboard frei.
+        </div>
+      )}
+    </div>
+  );
+
+  // Section 7 — Testimonials (the component hides itself until ≥1 review exists).
+  const testimonialsNode = <CourseReviews courseSlug={course.slug} />;
+
+  // Section 11 — compact closing CTA + price.
+  const ctaNode = (
+    <div className="rounded-[1.5rem] border border-gold-300/25 bg-gold-300/[0.06] p-7 text-center sm:p-9">
+      <h2 className="font-heading text-2xl leading-snug text-white sm:text-3xl">
+        {pp?.ctaHeadline || "Bereit loszulegen?"}
+      </h2>
+      <div className="mt-5 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
+        <p className="font-heading text-4xl text-gold-300">{formatEuro(course.priceCents)}</p>
+        {discount > 0 && course.compareAtPriceCents && (
+          <span className="text-xl text-white/35 line-through decoration-white/30">
+            {formatEuro(course.compareAtPriceCents)}
+          </span>
+        )}
+      </div>
+      <div className="mx-auto mt-6 max-w-md">
+        {owned ? (
+          <Button href={`/bibliothek/${course.slug}`} size="lg" className="w-full">
+            <PlayCircle aria-hidden className="h-5 w-5" />
+            Jetzt im Dashboard ansehen
+          </Button>
+        ) : (
+          <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" />
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -233,90 +334,15 @@ export default async function CourseDetailPage({
         </div>
       </section>
 
-      {course.promoVideoUrl && (
-        <section className="bg-obsidian border-t border-white/[0.04] py-16 sm:py-24">
-          <div className="mx-auto max-w-4xl px-6">
-            <p className="eyebrow mb-6">Vorschau</p>
-            <h2 className="mb-8 font-heading text-3xl leading-tight text-white sm:text-4xl">
-              Schau rein, was dich erwartet.
-            </h2>
-            <div className="overflow-hidden rounded-2xl border border-gold-500/20 shadow-gold">
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video
-                src={course.promoVideoUrl}
-                controls
-                playsInline
-                className="aspect-video w-full bg-black"
-              />
-            </div>
-          </div>
-        </section>
-      )}
-
-      <ProductPageSections pp={course.productPage} />
-
-      <section className="py-32 bg-obsidian border-t border-white/[0.04]">
-        <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[0.9fr_1.1fr]">
-          <div>
-            <p className="eyebrow mb-6 mx-auto">Ergebnis</p>
-            <h2 className="font-heading text-4xl text-white leading-[1.05]">
-              Was du nach dem Kurs gebaut hast.
-            </h2>
-            <p className="mt-5 text-lg leading-9 text-white/50">{course.outcome}</p>
-            <div className="mt-8 grid gap-3">
-              {course.includes.map((item) => {
-                const parsed = parseIncludeLine(item);
-                const label = parsed?.label ?? item;
-                const href = parsed?.href ?? null;
-                return (
-                  <div key={item} className="flex items-start gap-3 text-white/70">
-                    <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none text-gold-300" />
-                    {href ? (
-                      <Link
-                        href={href}
-                        className="leading-7 text-gold-100 underline decoration-gold-300/40 underline-offset-2 transition-colors hover:text-gold-200"
-                        {...(href.startsWith("http")
-                          ? { target: "_blank", rel: "noopener noreferrer" }
-                          : {})}
-                      >
-                        {label}
-                      </Link>
-                    ) : (
-                      <span className="leading-7">{label}</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div>
-            <div className="mb-8 flex items-center gap-3">
-              <PlayCircle aria-hidden className="h-6 w-6 text-gold-300" />
-              <h2 className="font-heading text-2xl text-white">Kursinhalte</h2>
-            </div>
-            <CourseCurriculumOutline modules={course.modules} locked />
-            {owned ? (
-              <div className="mt-5 flex items-start gap-3 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4 text-sm leading-7 text-emerald-100">
-                <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none" />
-                Du hast diesen Kurs freigeschaltet. Videos und Downloads findest du im Dashboard.
-              </div>
-            ) : (
-              <div className="mt-5 flex items-start gap-3 rounded-2xl border border-gold-500/15 bg-gold-500/[0.07] p-4 text-sm leading-7 text-gold-100">
-                <Lock aria-hidden className="mt-1 h-5 w-5 flex-none" />
-                Vorschau der Inhalte. Nach dem Kauf schaltest du Videos und Downloads im Dashboard frei.
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Bewertungen */}
-      <section className="py-24 bg-cones border-t border-white/[0.04]">
-        <div className="dust-overlay" aria-hidden />
-        <div className="relative mx-auto max-w-3xl px-6">
-          <CourseReviews courseSlug={course.slug} />
-        </div>
-      </section>
+      <ProductPageSections
+        pp={pp}
+        proofImageUrls={proofImageUrls}
+        outcome={course.outcome}
+        fallbackBullets={fallbackBullets}
+        courseContent={courseContentNode}
+        testimonials={testimonialsNode}
+        cta={ctaNode}
+      />
     </>
   );
 }

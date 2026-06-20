@@ -76,6 +76,8 @@ export type Course = {
   modules: Array<{
     id: string;
     title: string;
+    /** 3–5 sales bullets shown for this module on the product page. */
+    highlights?: string[];
     lessons: Lesson[];
   }>;
 };

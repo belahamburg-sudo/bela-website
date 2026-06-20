@@ -14,6 +14,7 @@ import {
   Pencil,
   PlayCircle,
   Plus,
+  Sparkles,
   Trash2,
   Video,
 } from "lucide-react";
@@ -27,6 +28,7 @@ import {
   deleteModule,
   reorderModules,
   updateModuleRecommendation,
+  updateModuleHighlights,
   deleteLesson,
   reorderLessons,
 } from "@/app/admin/kurse/actions";
@@ -383,6 +385,12 @@ export function CurriculumEditor({
                             </button>
                           </div>
 
+                          <ModuleHighlights
+                            module={mod}
+                            courseId={courseId}
+                            courseSlug={courseSlug}
+                          />
+
                           <ModuleRecommendation
                             module={mod}
                             courseId={courseId}
@@ -548,6 +556,75 @@ export function CurriculumEditor({
         />
       )}
     </>
+  );
+}
+
+/**
+ * Per-module sales bullets ("Kursinhalt im Detail" on the product page). One
+ * bullet per line; saves only when changed. Empty = the module shows just its
+ * title in the curriculum section.
+ */
+function ModuleHighlights({
+  module,
+  courseId,
+  courseSlug,
+}: {
+  module: EditorModule;
+  courseId: string;
+  courseSlug: string;
+}) {
+  const router = useRouter();
+  const { success, error } = useToast();
+  const [pending, startTransition] = useTransition();
+  const initial = (module.highlights ?? []).join("\n");
+  const [value, setValue] = useState(initial);
+
+  const dirty = value !== initial;
+
+  function save() {
+    startTransition(async () => {
+      const highlights = value
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const res = await updateModuleHighlights({
+        id: module.id,
+        courseId,
+        courseSlug,
+        highlights,
+      });
+      if (res.ok) {
+        success("Modul-Bullets gespeichert.");
+        router.refresh();
+      } else {
+        error(res.error ?? "Konnte Bullets nicht speichern.");
+      }
+    });
+  }
+
+  return (
+    <div className="mt-1 rounded-lg border border-white/8 bg-obsidian/30 px-3 py-3">
+      <div className="mb-2 flex items-center gap-2">
+        <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-gold-300/70" />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-cream/45">
+          Bullets für die Produktseite (3–5)
+        </span>
+      </div>
+      <textarea
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        rows={3}
+        placeholder={"Eine Zeile pro Bullet\nz. B. Lerne, wie du deine Nische in 48 h validierst"}
+        className={`${inputClass} resize-y`}
+      />
+      {dirty && (
+        <div className="mt-2 flex justify-end">
+          <AdminButton variant="primary" size="sm" onClick={save} loading={pending}>
+            Bullets speichern
+          </AdminButton>
+        </div>
+      )}
+    </div>
   );
 }
 

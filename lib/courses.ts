@@ -45,7 +45,14 @@ function mapModule(m: DbModule): Course["modules"][number] {
   const lessons = [...(m.lessons ?? [])]
     .sort((a, b) => a.position - b.position)
     .map(mapLesson);
-  return { id: m.id, title: m.title, lessons };
+  return {
+    id: m.id,
+    title: m.title,
+    highlights: Array.isArray(m.highlights)
+      ? m.highlights.filter((h): h is string => typeof h === "string" && h.trim().length > 0)
+      : [],
+    lessons,
+  };
 }
 
 /** Map a Supabase course row (with nested modules/lessons) to the Course shape. */

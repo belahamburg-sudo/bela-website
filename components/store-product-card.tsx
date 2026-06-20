@@ -43,9 +43,13 @@ export type StoreCardCourse = {
 export function StoreProductCard({
   course,
   isPurchased,
+  hrefBase = "/bibliothek",
 }: {
   course: StoreCardCourse;
   isPurchased: boolean;
+  /** Route prefix for the card's links. Public catalog passes "/kurse" so cards
+   *  link to the public detail page instead of the auth-gated member route. */
+  hrefBase?: string;
 }) {
   const isVideo = course.format === "video";
   const level = (VALID_LEVELS.includes(course.level as Course["level"])
@@ -70,7 +74,7 @@ export function StoreProductCard({
       )}
 
       <Link
-        href={`/bibliothek/${course.slug}`}
+        href={`${hrefBase}/${course.slug}`}
         className="relative block h-40 overflow-hidden border-b border-white/5"
         aria-label={`${course.title} ansehen`}
       >
@@ -144,7 +148,7 @@ export function StoreProductCard({
 
       <div className="relative z-10 flex flex-1 flex-col p-5">
         <div className="min-h-[5.5rem]">
-          <Link href={`/bibliothek/${course.slug}`}>
+          <Link href={`${hrefBase}/${course.slug}`}>
             <h3
               className={cn(
                 "line-clamp-2 font-heading text-xl leading-tight transition-colors duration-300",
@@ -204,7 +208,7 @@ export function StoreProductCard({
               </div>
             )}
             <Button
-              href={`/bibliothek/${course.slug}`}
+              href={`${hrefBase}/${course.slug}`}
               variant="secondary"
               size="sm"
               className="w-full rounded-lg"
@@ -225,7 +229,7 @@ export function StoreProductCard({
                 </span>
               </div>
               <Button
-                href={`/bibliothek/${course.slug}`}
+                href={`${hrefBase}/${course.slug}`}
                 variant="secondary"
                 size="sm"
                 className="rounded-lg px-5"
@@ -268,7 +272,7 @@ export function StoreProductCard({
                 )}
               </div>
               <Button
-                href={`/bibliothek/${course.slug}`}
+                href={`${hrefBase}/${course.slug}`}
                 variant="secondary"
                 size="sm"
                 className="rounded-lg px-5"

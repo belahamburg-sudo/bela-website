@@ -26,6 +26,8 @@ export type DbModule = {
   recommended_course_slug?: string | null;
   /** Optional note shown with the recommendation ("Bevor du weitermachst …"). */
   recommendation_note?: string | null;
+  /** 3–5 sales bullets shown per module on the product page (migration_022). */
+  highlights?: string[] | null;
   lessons: DbLesson[];
 };
 
