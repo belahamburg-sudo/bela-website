@@ -77,7 +77,7 @@ export function SignupFlow() {
   const [showPw, setShowPw] = useState(false);
   const [newsletter, setNewsletter] = useState(false);
 
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [message, setMessage] = useState("");
 
   const nameValid = name.trim().length >= 2;
@@ -121,15 +121,26 @@ export function SignupFlow() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ name, city, email, password, newsletter }),
       });
-      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: string; mode?: string }
+        | null;
       if (!response.ok) throw new Error(payload?.error || "Registrierung fehlgeschlagen.");
 
+      // mode "confirm" (default in prod): email confirmation required — do NOT
+      // auto-login (that would fail with "email not confirmed"). Show a
+      // "check your inbox" screen. mode "login" only happens with no email
+      // provider configured (local/demo) → the account is already active.
+      if (payload?.mode !== "login") {
+        setStatus("success");
+        setMessage("");
+        return;
+      }
+
       const supabase = getSupabaseBrowserClient();
-      if (!supabase) throw new Error("Supabase ist noch nicht konfiguriert.");
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-
+      if (supabase) {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      }
       router.push(redirect);
     } catch (error) {
       setStatus("error");
@@ -178,6 +189,27 @@ export function SignupFlow() {
 
   if (phoneView) {
     return <PhoneAuth redirect="/dashboard" onBack={() => setPhoneView(false)} />;
+  }
+
+  if (status === "success") {
+    return (
+      <div className="py-6 text-center">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-gold-300/30 bg-gold-300/10 text-2xl">
+          ✉️
+        </div>
+        <h2 className="mb-3 text-xl font-bold uppercase tracking-[0.15em] text-cream">
+          Fast geschafft
+        </h2>
+        <p className="mx-auto mb-2 max-w-sm text-sm leading-relaxed text-cream/70">
+          Wir haben dir eine Bestätigungs-Mail an{" "}
+          <strong className="text-gold-300">{email}</strong> geschickt. Klicke den Link
+          darin, um deinen Zugang zu aktivieren — danach kannst du dich einloggen.
+        </p>
+        <p className="text-xs text-cream/40">
+          Keine Mail erhalten? Schau kurz im Spam-Ordner nach.
+        </p>
+      </div>
+    );
   }
 
   return (

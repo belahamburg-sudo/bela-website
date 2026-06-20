@@ -4,6 +4,8 @@ import { DEFAULT_AVATAR_ID } from "@/lib/avatar-system";
 import { validatePassword } from "@/lib/password";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 import { subscribeNewsletter } from "@/lib/newsletter";
+import { sendTemplateEmail } from "@/lib/email";
+import { absoluteUrl } from "@/lib/utils";
 
 function badRequest(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
@@ -41,14 +43,22 @@ export async function POST(request: NextRequest) {
     return badRequest("Registrierung ist serverseitig noch nicht konfiguriert.", 503);
   }
 
-  const { data, error } = await admin.auth.admin.createUser({
+  // Create the account UNCONFIRMED and email a confirmation link. We no longer
+  // auto-confirm (email_confirm: true) because that let anyone register an email
+  // they don't own — enabling account squatting and, via the webhook's
+  // resolve-by-email, mis-attributing a guest purchase to the squatter.
+  // generateLink(type:"signup") creates the user and returns the verify link.
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "signup",
     email,
     password,
-    email_confirm: true,
-    user_metadata: {
-      avatar_id: DEFAULT_AVATAR_ID,
-      city,
-      ...(name ? { full_name: name } : {}),
+    options: {
+      data: {
+        avatar_id: DEFAULT_AVATAR_ID,
+        city,
+        ...(name ? { full_name: name } : {}),
+      },
+      redirectTo: absoluteUrl("/auth/callback?next=/onboarding"),
     },
   });
 
@@ -64,9 +74,37 @@ export async function POST(request: NextRequest) {
     return badRequest("User konnte nicht erstellt werden.");
   }
 
-  const { error: profileError } = await admin
-    .from("profiles")
-    .upsert(
+  // Prefer our own (PKCE-safe) callback link via the hashed token so the existing
+  // /auth/callback verifyOtp path handles it; fall back to Supabase's action_link.
+  const hashedToken = data.properties?.hashed_token;
+  const confirmationUrl = hashedToken
+    ? absoluteUrl(
+        `/auth/callback?token_hash=${hashedToken}&type=signup&next=${encodeURIComponent("/onboarding")}`
+      )
+    : data.properties?.action_link ?? absoluteUrl("/login");
+
+  // NOTE: the profile + member_state rows are intentionally NOT created here.
+  // They are created in /auth/callback AFTER the user confirms their email
+  // (ensureProfile), so an UNCONFIRMED squatter has no profile row and the Stripe
+  // webhook's resolve-by-email cannot attribute a guest purchase to them. The
+  // name/city/avatar collected here ride along in user_metadata (generateLink
+  // options.data) and are applied at confirmation time.
+
+  // Send the confirmation email.
+  const sent = await sendTemplateEmail({
+    template: "signup-confirmation",
+    to: email,
+    vars: { email, name, confirmationUrl },
+  });
+
+  // No email provider configured (local/demo): we can't run email confirmation,
+  // so the user would be stuck on "check your inbox" forever. Degrade gracefully
+  // — auto-confirm + create the profile inline and let the client log in. In
+  // production (RESEND configured) this branch never runs, so confirmation stays
+  // mandatory there.
+  if (sent.skipped) {
+    await admin.auth.admin.updateUserById(data.user.id, { email_confirm: true });
+    await admin.from("profiles").upsert(
       {
         id: data.user.id,
         email,
@@ -76,14 +114,7 @@ export async function POST(request: NextRequest) {
       },
       { onConflict: "id" }
     );
-
-  if (profileError) {
-    return badRequest("Account wurde erstellt, aber das Profil konnte nicht angelegt werden.", 500);
-  }
-
-  const { error: memberStateError } = await admin
-    .from("member_state")
-    .upsert(
+    await admin.from("member_state").upsert(
       {
         user_id: data.user.id,
         selected_avatar: DEFAULT_AVATAR_ID,
@@ -95,9 +126,17 @@ export async function POST(request: NextRequest) {
       },
       { onConflict: "user_id" }
     );
+    if (newsletter) {
+      await subscribeNewsletter(email, { userId: data.user.id, source: "signup", name });
+    }
+    return NextResponse.json({ ok: true, mode: "login" });
+  }
 
-  if (memberStateError && memberStateError.code !== "42P01") {
-    return badRequest("Account wurde erstellt, aber der Member-State konnte nicht angelegt werden.", 500);
+  if (!sent.ok) {
+    return badRequest(
+      "Account erstellt, aber die Bestätigungs-Mail konnte nicht versendet werden. Bitte versuche es später erneut oder kontaktiere den Support.",
+      502
+    );
   }
 
   // Optional newsletter opt-in via double-opt-in (sends a confirmation email).
@@ -105,5 +144,5 @@ export async function POST(request: NextRequest) {
     await subscribeNewsletter(email, { userId: data.user.id, source: "signup", name });
   }
 
-  return NextResponse.json({ ok: true, mode: "login" });
+  return NextResponse.json({ ok: true, mode: "confirm" });
 }

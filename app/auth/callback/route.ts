@@ -32,6 +32,7 @@ async function ensureProfile(supabase: SupabaseClient): Promise<void> {
       id: user.id,
       email: user.email,
       full_name: meta.full_name ?? meta.name ?? null,
+      city: meta.city ?? null,
       onboarding_complete: false,
     });
     await admin.from("member_state").upsert(
@@ -57,7 +58,11 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type");
-  const next = searchParams.get("next") ?? "/dashboard";
+  // Open-redirect guard: only allow internal absolute paths. Without this a value
+  // like `next=@evil.com` turns `${origin}${next}` into `https://site@evil.com`
+  // (host = evil.com) and redirects the freshly-logged-in user off-site.
+  const rawNext = searchParams.get("next") ?? "/dashboard";
+  const next = /^\/(?!\/)/.test(rawNext) && !rawNext.includes("\\") ? rawNext : "/dashboard";
 
   const supabase = await getSupabaseServerClient();
 
@@ -68,6 +73,9 @@ export async function GET(request: NextRequest) {
   if (token_hash && type) {
     const { error } = await supabase.auth.verifyOtp({ token_hash, type: type as "signup" | "recovery" | "email" });
     if (!error) {
+      // Email-confirmation signups land here: create the profile NOW (post-confirm)
+      // so unconfirmed accounts never get one.
+      await ensureProfile(supabase);
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

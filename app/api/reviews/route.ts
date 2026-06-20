@@ -106,7 +106,16 @@ export async function POST(request: Request) {
     .maybeSingle();
   const authorName = profile?.full_name || user.email?.split("@")[0] || "Mitglied";
 
-  const { error } = await supabase.from("course_reviews").upsert(
+  // Write with the service role AFTER the auth + purchase checks above. Direct
+  // client writes to course_reviews are blocked by RLS (migration_024), so the
+  // "buyers only / verified" gate can't be bypassed by calling Supabase directly
+  // and self-setting is_verified / is_published.
+  const admin = getSupabaseAdminClient();
+  if (!admin) {
+    return NextResponse.json({ message: "Bewertungen sind nicht verfügbar." }, { status: 503 });
+  }
+
+  const { error } = await admin.from("course_reviews").upsert(
     {
       course_slug: courseSlug,
       user_id: user.id,

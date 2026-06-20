@@ -107,8 +107,28 @@ async function recordReferral(
 
   if (!codeRow || !codeRow.is_active) return;
 
-  // Don't credit a referrer for their own purchase.
+  // Don't credit a referrer for their own purchase — by linked account...
   if (codeRow.user_id && codeRow.user_id === referredUserId) return;
+
+  // ...and by email, which catches the guest-checkout self-referral (affiliate
+  // logs out and buys with their own code under their own email to farm both the
+  // discount and the commission).
+  if (codeRow.user_id) {
+    const buyerEmail = (
+      session.customer_details?.email ?? session.metadata?.user_email ?? ""
+    )
+      .trim()
+      .toLowerCase();
+    if (buyerEmail) {
+      const { data: owner } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", codeRow.user_id)
+        .maybeSingle();
+      const ownerEmail = (owner?.email ?? "").trim().toLowerCase();
+      if (ownerEmail && ownerEmail === buyerEmail) return;
+    }
+  }
 
   const code = codeRow.code;
   const amountTotal = session.amount_total ?? 0;

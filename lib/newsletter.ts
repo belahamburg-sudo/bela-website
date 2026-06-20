@@ -1,7 +1,45 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID, createHmac, timingSafeEqual } from "node:crypto";
 import { getSupabaseAdminClient } from "./supabase";
 import { sendTemplateEmail } from "./email";
 import { absoluteUrl } from "./utils";
+
+/**
+ * Signed one-click-unsubscribe links. Without a MAC, `?email=…` lets anyone
+ * unsubscribe any address (list sabotage). The token is an HMAC of the email
+ * keyed by a server-only secret, so only links we generated are honoured.
+ */
+function unsubSecret(): string {
+  return (
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.STRIPE_WEBHOOK_SECRET ||
+    ""
+  );
+}
+
+export function unsubscribeToken(rawEmail: string): string {
+  const secret = unsubSecret();
+  if (!secret) return "";
+  return createHmac("sha256", secret)
+    .update(rawEmail.trim().toLowerCase())
+    .digest("base64url")
+    .slice(0, 32);
+}
+
+export function unsubscribeUrl(rawEmail: string): string {
+  const email = rawEmail.trim().toLowerCase();
+  const token = unsubscribeToken(email);
+  return absoluteUrl(
+    `/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}&token=${token}`
+  );
+}
+
+export function verifyUnsubscribeToken(rawEmail: string, token: string | null): boolean {
+  const expected = unsubscribeToken(rawEmail);
+  if (!expected || !token) return false;
+  const a = Buffer.from(expected);
+  const b = Buffer.from(token);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 export type NewsletterStatus = "pending" | "confirmed" | "unsubscribed" | "none";
 export type NewsletterConfirmation = {
@@ -80,7 +118,7 @@ export async function confirmNewsletter(tok: string): Promise<NewsletterConfirma
     to: data.email,
     vars: {
       email: data.email,
-      unsubscribeUrl: absoluteUrl(`/api/newsletter/unsubscribe?email=${encodeURIComponent(data.email)}`),
+      unsubscribeUrl: unsubscribeUrl(data.email),
     },
   });
   return {

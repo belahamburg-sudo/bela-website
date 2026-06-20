@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getSupabaseAdminClient } from "@/lib/supabase";
 
 export async function updateProfile(
   formData: FormData
@@ -44,7 +45,12 @@ export async function updateProfile(
   if (error) return { ok: false, error: error.message };
 
   if (selectedAvatar) {
-    const { error: avatarError } = await supabase
+    // member_state is written with the service role (client writes are blocked by
+    // RLS in migration_024 so points/level/rewards can't be self-inflated). The
+    // avatar choice is validated by the authenticated user above (user.id).
+    const admin = getSupabaseAdminClient();
+    const writer = admin ?? supabase;
+    const { error: avatarError } = await writer
       .from("member_state")
       .upsert(
         {

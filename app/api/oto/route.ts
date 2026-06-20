@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getPublicCourse } from "@/lib/courses";
 import { OTO, otoPriceCents } from "@/lib/offers";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
@@ -110,6 +111,31 @@ export async function POST(request: Request) {
     });
     if (session.payment_status !== "paid") {
       return NextResponse.json({ message: "Ursprünglicher Kauf ist nicht bestätigt." }, { status: 400 });
+    }
+
+    // Freshness window: the OTO is a 1-click upsell shown right after checkout.
+    // The session id is exposed in the success URL, so reject replay of a stale
+    // or leaked id. 30 min is plenty for the real post-purchase flow.
+    const sessionAgeSeconds = Math.floor(Date.now() / 1000) - (session.created ?? 0);
+    if (sessionAgeSeconds > 60 * 30) {
+      return NextResponse.json({ message: "Dieses Angebot ist abgelaufen." }, { status: 410 });
+    }
+
+    // Bind to the buyer: if the caller is logged in, the session must be theirs.
+    // Stops a logged-in attacker from charging the OTO on someone else's saved
+    // card by replaying that buyer's session id.
+    const sessionUserId = session.metadata?.user_id ?? session.client_reference_id ?? null;
+    const server = await getSupabaseServerClient();
+    if (server) {
+      const {
+        data: { user: caller },
+      } = await server.auth.getUser();
+      if (caller && sessionUserId && caller.id !== sessionUserId) {
+        return NextResponse.json(
+          { message: "Diese Session gehört nicht zu deinem Konto." },
+          { status: 403 }
+        );
+      }
     }
 
     const customerId =

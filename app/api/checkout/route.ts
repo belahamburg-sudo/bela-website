@@ -205,16 +205,37 @@ export async function POST(request: Request) {
       return [{ coupon: coupon.id }];
     }
 
-    function isUsable(row: ReferralRow): boolean {
-      const own = Boolean(row.user_id && row.user_id === userId);
-      return row.is_active && !own && (row.discount_percent ?? 0) > 0;
+    // True when the code belongs to the buyer themselves. Catches both the
+    // logged-in case (user_id match) AND the guest-checkout self-referral, where
+    // an affiliate logs out and buys with their own code under their own email to
+    // farm the buyer discount + commission. We compare the buyer email to the
+    // code owner's profile email.
+    async function isOwnCode(row: ReferralRow): Promise<boolean> {
+      if (!row.user_id) return false;
+      if (row.user_id === userId) return true;
+      const buyerEmail = resolvedEmail?.trim().toLowerCase();
+      if (buyerEmail && adminClient) {
+        const { data } = await adminClient
+          .from("profiles")
+          .select("email")
+          .eq("id", row.user_id)
+          .maybeSingle();
+        const ownerEmail = (data as { email: string | null } | null)?.email?.trim().toLowerCase();
+        if (ownerEmail && ownerEmail === buyerEmail) return true;
+      }
+      return false;
+    }
+
+    async function isUsable(row: ReferralRow): Promise<boolean> {
+      if (!row.is_active || (row.discount_percent ?? 0) <= 0) return false;
+      return !(await isOwnCode(row));
     }
 
     let appliedDiscount: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
 
     if (typedCode) {
       const refRow = await findReferralCode(typedCode);
-      if (refRow && isUsable(refRow)) {
+      if (refRow && (await isUsable(refRow))) {
         attributedReferralCode = typedCode;
         appliedDiscount = await referralDiscount(refRow);
       } else {
@@ -234,9 +255,9 @@ export async function POST(request: Request) {
     if (!appliedDiscount && attributedReferralCode) {
       try {
         const refRow = await findReferralCode(attributedReferralCode);
-        if (refRow && isUsable(refRow)) {
+        if (refRow && (await isUsable(refRow))) {
           appliedDiscount = await referralDiscount(refRow);
-        } else if (refRow?.user_id && refRow.user_id === userId) {
+        } else if (refRow && (await isOwnCode(refRow))) {
           // Never attribute a referrer's own purchase.
           attributedReferralCode = "";
         }

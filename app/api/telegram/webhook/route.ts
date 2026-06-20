@@ -32,6 +32,12 @@ export async function POST(request: Request) {
     if (header !== secret) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+  } else if (process.env.NODE_ENV === "production") {
+    // No secret configured = anyone who knows the URL can POST forged updates.
+    // Telegram lets you set this when registering the webhook (secret_token).
+    console.warn(
+      "[telegram] TELEGRAM_WEBHOOK_SECRET is not set — webhook updates are NOT authenticated. Set it and re-register the webhook with secret_token."
+    );
   }
 
   const supabase = getSupabaseAdminClient();
