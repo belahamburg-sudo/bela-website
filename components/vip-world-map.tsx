@@ -1,14 +1,19 @@
 import { MapPin } from "lucide-react";
 import type { VipLocation } from "@/lib/vip-map";
+import worldLandRaw from "@/lib/world-land.json";
+
+// Simplified world landmasses: array of rings, each ring an array of [lng, lat].
+const LAND = worldLandRaw as unknown as [number, number][][];
 
 const W = 800;
 const H = 440;
 
 /**
- * "Goldminer weltweit" — aggregated VIP-member locations on an auto-zoomed
- * equirectangular map. Dependency-free SVG: faint graticule + pulsing gold dots
- * (SMIL, no client JS) sized by member count, with city labels + a top-cities
- * list. Shows counts only (no names).
+ * "Goldminer weltweit" — aggregated VIP-member locations on a real (dependency-
+ * free) world map: glowing gold continents + pulsing gold member dots (SMIL, no
+ * client JS) sized by count, with labels + a top-cities list. Auto-zooms to the
+ * members' region but never tighter than a continental view, so even a single
+ * city shows in context. Counts only (no names).
  */
 export function VipWorldMap({ points, total }: { points: VipLocation[]; total: number }) {
   if (points.length === 0) {
@@ -22,32 +27,64 @@ export function VipWorldMap({ points, total }: { points: VipLocation[]; total: n
     );
   }
 
-  // Auto-zoom to the members' bounding box (+ padding, clamped to the world).
+  // Member bounding box + padding.
   const lats = points.map((p) => p.lat);
   const lngs = points.map((p) => p.lng);
   let minLat = Math.min(...lats);
   let maxLat = Math.max(...lats);
   let minLng = Math.min(...lngs);
   let maxLng = Math.max(...lngs);
-  const padLat = Math.max((maxLat - minLat) * 0.3, 3);
-  const padLng = Math.max((maxLng - minLng) * 0.3, 5);
-  minLat = Math.max(minLat - padLat, -85);
-  maxLat = Math.min(maxLat + padLat, 85);
-  minLng = Math.max(minLng - padLng, -180);
-  maxLng = Math.min(maxLng + padLng, 180);
-  const spanLat = Math.max(maxLat - minLat, 0.5);
-  const spanLng = Math.max(maxLng - minLng, 0.5);
+  minLat -= (maxLat - minLat) * 0.3 + 2;
+  maxLat += (maxLat - minLat) * 0.3 + 2;
+  minLng -= (maxLng - minLng) * 0.3 + 2;
+  maxLng += (maxLng - minLng) * 0.3 + 2;
+
+  // Never zoom tighter than a continental view (so 1 city → ~Europe-scale map).
+  const MIN_LAT_SPAN = 40;
+  const MIN_LNG_SPAN = 70;
+  const cLat = (minLat + maxLat) / 2;
+  const cLng = (minLng + maxLng) / 2;
+  if (maxLat - minLat < MIN_LAT_SPAN) {
+    minLat = cLat - MIN_LAT_SPAN / 2;
+    maxLat = cLat + MIN_LAT_SPAN / 2;
+  }
+  if (maxLng - minLng < MIN_LNG_SPAN) {
+    minLng = cLng - MIN_LNG_SPAN / 2;
+    maxLng = cLng + MIN_LNG_SPAN / 2;
+  }
+  // Clamp to the world; keep the aspect from collapsing.
+  minLat = Math.max(minLat, -58);
+  maxLat = Math.min(maxLat, 84);
+  minLng = Math.max(minLng, -180);
+  maxLng = Math.min(maxLng, 180);
+  const spanLat = Math.max(maxLat - minLat, 1);
+  const spanLng = Math.max(maxLng - minLng, 1);
 
   const px = (lng: number) => ((lng - minLng) / spanLng) * W;
   const py = (lat: number) => ((maxLat - lat) / spanLat) * H;
 
+  // Build land paths, skipping rings entirely outside the visible window.
+  const landPaths: string[] = [];
+  for (const ring of LAND) {
+    let rMinLng = Infinity, rMaxLng = -Infinity, rMinLat = Infinity, rMaxLat = -Infinity;
+    for (const [lng, lat] of ring) {
+      if (lng < rMinLng) rMinLng = lng;
+      if (lng > rMaxLng) rMaxLng = lng;
+      if (lat < rMinLat) rMinLat = lat;
+      if (lat > rMaxLat) rMaxLat = lat;
+    }
+    if (rMaxLng < minLng || rMinLng > maxLng || rMaxLat < minLat || rMinLat > maxLat) continue;
+    let d = "";
+    for (let i = 0; i < ring.length; i++) {
+      const x = px(ring[i][0]).toFixed(1);
+      const y = py(ring[i][1]).toFixed(1);
+      d += (i === 0 ? "M" : "L") + x + " " + y;
+    }
+    landPaths.push(d + "Z");
+  }
+
   const maxCount = Math.max(...points.map((p) => p.count));
   const radius = (count: number) => 4 + (maxCount > 1 ? (count - 1) / (maxCount - 1) : 0) * 9;
-
-  const cols = 7;
-  const rows = 4;
-  const vlines = Array.from({ length: cols + 1 }, (_, i) => (i / cols) * W);
-  const hlines = Array.from({ length: rows + 1 }, (_, i) => (i / rows) * H);
   const labelled = points.slice(0, 6);
 
   return (
@@ -68,23 +105,24 @@ export function VipWorldMap({ points, total }: { points: VipLocation[]; total: n
         viewBox={`0 0 ${W} ${H}`}
         className="block w-full"
         role="img"
-        aria-label="Karte mit den Standorten der VIP-Mitglieder"
+        aria-label="Weltkarte mit den Standorten der VIP-Mitglieder"
       >
         <defs>
-          <radialGradient id="vipMapBg" cx="50%" cy="38%" r="80%">
-            <stop offset="0%" stopColor="#191207" />
+          <radialGradient id="vipMapBg" cx="50%" cy="40%" r="85%">
+            <stop offset="0%" stopColor="#15110a" />
             <stop offset="100%" stopColor="#0a0806" />
           </radialGradient>
         </defs>
         <rect x={0} y={0} width={W} height={H} fill="url(#vipMapBg)" />
 
-        {vlines.map((x, i) => (
-          <line key={`v${i}`} x1={x} y1={0} x2={x} y2={H} stroke="#E8C040" strokeOpacity={0.06} strokeWidth={1} />
-        ))}
-        {hlines.map((y, i) => (
-          <line key={`h${i}`} x1={0} y1={y} x2={W} y2={y} stroke="#E8C040" strokeOpacity={0.06} strokeWidth={1} />
-        ))}
+        {/* Continents */}
+        <g>
+          {landPaths.map((d, i) => (
+            <path key={`land${i}`} d={d} fill="#E8C040" fillOpacity={0.06} stroke="#E8C040" strokeOpacity={0.22} strokeWidth={0.5} />
+          ))}
+        </g>
 
+        {/* Member dots */}
         {points.map((p, i) => {
           const cx = px(p.lng);
           const cy = py(p.lat);
@@ -93,15 +131,16 @@ export function VipWorldMap({ points, total }: { points: VipLocation[]; total: n
           return (
             <g key={`d${i}`}>
               <title>{`${p.city} — ${p.count} Goldminer`}</title>
-              <circle cx={cx} cy={cy} r={r * 2.4} fill="#E8C040" opacity={0.12}>
-                <animate attributeName="opacity" values="0.05;0.18;0.05" dur="3s" begin={begin} repeatCount="indefinite" />
-                <animate attributeName="r" values={`${r * 2};${r * 3};${r * 2}`} dur="3s" begin={begin} repeatCount="indefinite" />
+              <circle cx={cx} cy={cy} r={r * 2.4} fill="#E8C040" opacity={0.14}>
+                <animate attributeName="opacity" values="0.06;0.22;0.06" dur="3s" begin={begin} repeatCount="indefinite" />
+                <animate attributeName="r" values={`${r * 2};${r * 3.1};${r * 2}`} dur="3s" begin={begin} repeatCount="indefinite" />
               </circle>
-              <circle cx={cx} cy={cy} r={r} fill="#E8C040" stroke="#0a0806" strokeWidth={1} />
+              <circle cx={cx} cy={cy} r={r} fill="#F5D87A" stroke="#0a0806" strokeWidth={1} />
             </g>
           );
         })}
 
+        {/* Labels */}
         {labelled.map((p, i) => {
           const cx = px(p.lng);
           const cy = py(p.lat);
@@ -109,12 +148,15 @@ export function VipWorldMap({ points, total }: { points: VipLocation[]; total: n
           return (
             <text
               key={`l${i}`}
-              x={toRight ? cx + 12 : cx - 12}
+              x={toRight ? cx + 11 : cx - 11}
               y={cy + 3}
               fontSize={12}
               fontWeight={600}
-              fill="#e8d5b0"
+              fill="#f0e0bd"
               textAnchor={toRight ? "start" : "end"}
+              paintOrder="stroke"
+              stroke="#0a0806"
+              strokeWidth={3}
             >
               {p.city}
             </text>
