@@ -1,5 +1,6 @@
 import { Send, CircleCheck, CircleOff, ExternalLink, TriangleAlert } from "lucide-react";
 import { PageHeader, StatCard, Panel, KeyValue } from "@/components/admin/ui";
+import { TelegramWebhookButton } from "@/components/admin/telegram-webhook-button";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { telegramUrl, paidTelegramUrl } from "@/lib/env";
 import { TelegramTable, type TelegramRow } from "@/components/admin/comms/telegram-table";
@@ -114,6 +115,15 @@ export default async function TelegramPage() {
         <StatCard label="Aktiv" value={active} icon={CircleCheck} hint="laufende Abos" />
         <StatCard label="Inaktiv" value={inactive} icon={CircleOff} hint="pausiert / beendet" />
         <StatCard label="Gesamt" value={total} icon={Send} hint="alle Abonnenten" />
+      </div>
+
+      <div className="mt-6">
+        <Panel
+          title="Bot-Webhook"
+          description="Registriert die Webhook-URL bei Telegram, damit der Bot /start, Beitrittsanfragen und Mitgliederänderungen empfängt. Einmal klicken (oder nach Bot-/Domain-Änderungen erneut)."
+        >
+          <TelegramWebhookButton />
+        </Panel>
       </div>
 
       <div className="mt-6">

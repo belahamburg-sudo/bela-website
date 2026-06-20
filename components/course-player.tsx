@@ -2,6 +2,7 @@
 
 import {
   ArrowRight,
+  Award,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -113,6 +114,7 @@ export function CoursePlayer({
   const hasVideo = Boolean(activeLesson?.video_url);
   const resources = activeLesson?.resources ?? [];
   const hasResources = resources.length > 0;
+  const isComplete = lessons.length > 0 && completed.length === lessons.length;
 
   const activeModule = course.modules.find((m) => m.lessons.some((l) => l.id === activeId));
   const onLastLessonOfModule = Boolean(
@@ -231,6 +233,28 @@ export function CoursePlayer({
         {/* ─── Content ─── */}
         {activeLesson ? (
           <section ref={contentRef} className="grid scroll-mt-24 gap-6 lg:col-start-2">
+            {isComplete ? (
+              <a
+                href={`/api/certificate?courseSlug=${encodeURIComponent(course.slug)}`}
+                className="focus-ring flex flex-wrap items-center justify-between gap-4 rounded-[1.35rem] border border-gold-300/40 bg-gradient-to-r from-gold-300/[0.16] to-transparent p-5 transition hover:border-gold-300/70"
+              >
+                <span className="flex items-center gap-3">
+                  <Award aria-hidden className="h-7 w-7 shrink-0 text-gold-300" />
+                  <span>
+                    <span className="block font-heading text-xl font-black text-cream">
+                      Kurs abgeschlossen 🎉
+                    </span>
+                    <span className="block text-sm text-cream/55">
+                      Glückwunsch! Lad dir jetzt dein persönliches Zertifikat herunter.
+                    </span>
+                  </span>
+                </span>
+                <span className="shrink-0 rounded-full bg-gold-gradient px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-obsidian">
+                  Zertifikat herunterladen
+                </span>
+              </a>
+            ) : null}
+
             <div className="panel-surface overflow-hidden rounded-[1.35rem]">
               {hasVideo ? (
                 <div className="aspect-video bg-black">

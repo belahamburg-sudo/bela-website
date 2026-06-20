@@ -77,6 +77,12 @@ export async function POST(request: Request) {
           );
           await sendTelegramMessage(from.id, reply);
         }
+      } else {
+        // Plain /start (no link payload) — guide the user to the proper flow.
+        await sendTelegramMessage(
+          from.id,
+          "Willkommen bei AI Goldmining! 👋\n\nUm deinen VIP-Zugang zu verbinden, öffne deinen persönlichen Link im Member-Bereich: aigoldmining.com/vip → „Telegram verbinden“. Der Link verknüpft dieses Konto automatisch."
+        );
       }
     }
 

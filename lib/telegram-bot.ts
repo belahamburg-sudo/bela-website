@@ -76,6 +76,26 @@ export function buildTelegramBotLink(userId: string): string | null {
   return `https://t.me/${username}?start=link_${token}`;
 }
 
+/** Register this app's webhook with Telegram (so the bot actually receives /start,
+ * join requests and membership changes). Idempotent. */
+export async function setTelegramWebhook(url: string, secret?: string): Promise<boolean> {
+  const result = await telegramApi<boolean>("setWebhook", {
+    url,
+    ...(secret ? { secret_token: secret } : {}),
+    allowed_updates: ["message", "chat_join_request", "chat_member"],
+    drop_pending_updates: false,
+  });
+  return result !== null;
+}
+
+export async function getTelegramWebhookInfo(): Promise<{
+  url?: string;
+  pending_update_count?: number;
+  last_error_message?: string;
+} | null> {
+  return telegramApi("getWebhookInfo");
+}
+
 export async function sendTelegramMessage(chatId: number | string, text: string) {
   return telegramApi("sendMessage", {
     chat_id: chatId,
