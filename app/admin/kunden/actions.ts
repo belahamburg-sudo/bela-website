@@ -17,39 +17,87 @@ export async function grantCourseAccess(input: {
   if (!ctx) return { ok: false, error: "Nicht autorisiert. Bitte neu anmelden." };
   const { user, supabase } = ctx;
 
-  // Avoid duplicate grants for the same user + course.
+  // Grant the parent course (idempotent — skip if already owned).
   const { data: existing } = await supabase
     .from("purchases")
     .select("id")
     .eq("user_id", input.userId)
     .eq("course_slug", input.courseSlug)
-    .eq("status", "paid")
+    .in("status", ["paid", "free"])
     .limit(1);
 
-  if (existing && existing.length > 0) {
-    return { ok: false, error: "Kurs ist für diesen Kunden bereits freigeschaltet." };
+  const alreadyOwned = Boolean(existing && existing.length > 0);
+  let purchaseId: string | null = null;
+
+  if (!alreadyOwned) {
+    const { data, error } = await supabase
+      .from("purchases")
+      .insert({
+        user_id: input.userId,
+        course_slug: input.courseSlug,
+        status: "paid",
+        amount_total: 0,
+        currency: "eur",
+      })
+      .select("id")
+      .single();
+    if (error) return { ok: false, error: error.message };
+    purchaseId = data?.id ?? null;
   }
 
-  const { data, error } = await supabase
-    .from("purchases")
-    .insert({
-      user_id: input.userId,
-      course_slug: input.courseSlug,
-      status: "paid",
-      amount_total: 0,
-      currency: "eur",
-    })
-    .select("id")
-    .single();
+  // Expand bundles: also unlock (free) every course this one includes — even when
+  // the parent was already owned, so re-running tops up missing bundled courses.
+  let bundledGranted = 0;
+  try {
+    const { data: course } = await supabase
+      .from("courses")
+      .select("bundled_courses")
+      .eq("slug", input.courseSlug)
+      .maybeSingle();
+    const bundled = Array.isArray(course?.bundled_courses)
+      ? (course!.bundled_courses as string[])
+      : [];
+    const toCheck = bundled.filter((s) => s && s !== input.courseSlug);
+    if (toCheck.length > 0) {
+      const { data: owned } = await supabase
+        .from("purchases")
+        .select("course_slug")
+        .eq("user_id", input.userId)
+        .in("course_slug", toCheck)
+        .in("status", ["paid", "free"]);
+      const ownedSet = new Set(
+        ((owned ?? []) as { course_slug: string }[]).map((r) => r.course_slug)
+      );
+      const toGrant = toCheck.filter((s) => !ownedSet.has(s));
+      if (toGrant.length > 0) {
+        const { error: bundleErr } = await supabase.from("purchases").upsert(
+          toGrant.map((s) => ({
+            user_id: input.userId,
+            course_slug: s,
+            stripe_session_id: `bundle:${input.userId}:${s}`,
+            amount_total: 0,
+            currency: "eur",
+            status: "paid",
+          })),
+          { onConflict: "stripe_session_id,course_slug", ignoreDuplicates: true }
+        );
+        if (!bundleErr) bundledGranted = toGrant.length;
+      }
+    }
+  } catch (e) {
+    console.error("grantCourseAccess bundle expansion failed:", e instanceof Error ? e.message : e);
+  }
 
-  if (error) return { ok: false, error: error.message };
+  if (alreadyOwned && bundledGranted === 0) {
+    return { ok: false, error: "Kurs (inkl. Bundle) ist für diesen Kunden bereits freigeschaltet." };
+  }
 
   await logAudit({
     actorEmail: user.email,
     action: "course.grant_access",
     entity: "purchases",
-    entityId: data?.id ?? null,
-    meta: { userId: input.userId, courseSlug: input.courseSlug },
+    entityId: purchaseId,
+    meta: { userId: input.userId, courseSlug: input.courseSlug, bundledGranted },
   });
 
   revalidatePath("/admin/kunden");

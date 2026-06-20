@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { absoluteUrl } from "./utils";
 
 export type CertificateInput = {
   name: string;
@@ -8,19 +9,31 @@ export type CertificateInput = {
   certId: string;
 };
 
-// Brand palette (mirrors the site: obsidian / gold / cream).
+// Brand palette.
 const OBSIDIAN = rgb(0.039, 0.031, 0.024);
+const PANEL = rgb(0.07, 0.058, 0.04);
 const GOLD = rgb(0.91, 0.753, 0.251);
-const CREAM = rgb(0.91, 0.835, 0.69);
-const MUTED = rgb(0.659, 0.565, 0.439);
+const GOLD_SOFT = rgb(0.74, 0.62, 0.36);
+const CREAM = rgb(0.93, 0.86, 0.72);
+const MUTED = rgb(0.62, 0.54, 0.41);
 
-/** Stable, verifiable certificate id derived from user + course (no DB row needed). */
 export function certificateId(userId: string, courseSlug: string): string {
   const hex = createHash("sha256").update(`${userId}:${courseSlug}`).digest("hex").toUpperCase();
   return `AG-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${hex.slice(8, 12)}`;
 }
 
-/** Draw centered text with GTA-style letter spacing (pdf-lib has no native tracking). */
+// Fetch over HTTP (not fs): Vercel doesn't bundle public/ into serverless
+// functions, but the static asset is reachable at the site origin.
+async function loadAsset(name: string): Promise<Uint8Array | null> {
+  try {
+    const res = await fetch(absoluteUrl(`/assets/${name}`));
+    if (!res.ok) return null;
+    return new Uint8Array(await res.arrayBuffer());
+  } catch {
+    return null;
+  }
+}
+
 function drawCenteredTracked(
   page: PDFPage,
   text: string,
@@ -40,69 +53,101 @@ function drawCenteredTracked(
   });
 }
 
-/** Truncate a long course title so it always fits on one centered line. */
 function fit(text: string, font: PDFFont, size: number, maxWidth: number): string {
   if (font.widthOfTextAtSize(text, size) <= maxWidth) return text;
   let out = text;
-  while (out.length > 4 && font.widthOfTextAtSize(out + "…", size) > maxWidth) {
-    out = out.slice(0, -1);
-  }
+  while (out.length > 4 && font.widthOfTextAtSize(out + "…", size) > maxWidth) out = out.slice(0, -1);
   return out + "…";
 }
 
 /** Generate a branded A4-landscape completion certificate as PDF bytes. */
 export async function generateCertificatePdf(input: CertificateInput): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
-  const page = pdf.addPage([842, 595]); // A4 landscape (pt)
+  const page = pdf.addPage([842, 595]);
   const { width, height } = page.getSize();
 
   const helv = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
-  const oblique = await pdf.embedFont(StandardFonts.HelveticaOblique);
 
-  // Background + double gold frame.
+  const [logoBytes, sigBytes] = await Promise.all([
+    loadAsset("logo-ai-goldmining.png"),
+    loadAsset("bela-signature-cream.png"),
+  ]);
+  const logo = logoBytes ? await pdf.embedPng(logoBytes).catch(() => null) : null;
+  const sig = sigBytes ? await pdf.embedPng(sigBytes).catch(() => null) : null;
+
+  // Background + inset panel + double gold frame.
   page.drawRectangle({ x: 0, y: 0, width, height, color: OBSIDIAN });
-  page.drawRectangle({ x: 26, y: 26, width: width - 52, height: height - 52, borderColor: GOLD, borderWidth: 2, borderOpacity: 0.9 });
-  page.drawRectangle({ x: 34, y: 34, width: width - 68, height: height - 68, borderColor: GOLD, borderWidth: 0.5, borderOpacity: 0.45 });
+  page.drawRectangle({ x: 18, y: 18, width: width - 36, height: height - 36, color: PANEL });
+  page.drawRectangle({ x: 24, y: 24, width: width - 48, height: height - 48, borderColor: GOLD, borderWidth: 2, borderOpacity: 0.9 });
+  page.drawRectangle({ x: 32, y: 32, width: width - 64, height: height - 64, borderColor: GOLD, borderWidth: 0.5, borderOpacity: 0.4 });
 
-  const inner = width - 2 * 60;
+  // Corner accents.
+  const corner = (cx: number, cy: number, dx: number, dy: number) => {
+    page.drawLine({ start: { x: cx, y: cy }, end: { x: cx + dx, y: cy }, thickness: 1.5, color: GOLD, opacity: 0.8 });
+    page.drawLine({ start: { x: cx, y: cy }, end: { x: cx, y: cy + dy }, thickness: 1.5, color: GOLD, opacity: 0.8 });
+  };
+  corner(40, 40, 26, 26);
+  corner(width - 40, 40, -26, 26);
+  corner(40, height - 40, 26, -26);
+  corner(width - 40, height - 40, -26, -26);
 
-  // Brand wordmark.
-  drawCenteredTracked(page, "AI GOLDMINING", height - 96, bold, 15, GOLD, 6);
+  const cx = width / 2;
+  const inner = width - 160;
 
-  // Title + gold divider.
-  drawCenteredTracked(page, "ZERTIFIKAT", height - 168, bold, 42, CREAM, 10);
-  page.drawRectangle({ x: width / 2 - 40, y: height - 188, width: 80, height: 2, color: GOLD });
+  // Logo.
+  if (logo) {
+    const lw = 196;
+    const lh = lw * (logo.height / logo.width);
+    page.drawImage(logo, { x: cx - lw / 2, y: height - 66 - lh, width: lw, height: lh });
+  } else {
+    drawCenteredTracked(page, "AI GOLDMINING", height - 84, bold, 15, GOLD, 6);
+  }
+
+  // Title + divider.
+  drawCenteredTracked(page, "ZERTIFIKAT", height - 168, bold, 40, CREAM, 12);
+  page.drawRectangle({ x: cx - 46, y: height - 186, width: 92, height: 2, color: GOLD });
 
   // Body.
-  drawCenteredTracked(page, "Hiermit wird bestätigt, dass", height - 232, helv, 13, MUTED, 1);
-  drawCenteredTracked(page, input.name, height - 282, bold, 30, GOLD, 1);
-  drawCenteredTracked(page, "den folgenden Kurs erfolgreich abgeschlossen hat:", height - 322, helv, 13, MUTED, 1);
-  drawCenteredTracked(page, fit(input.courseTitle, bold, 20, inner), height - 360, bold, 20, CREAM, 1);
+  drawCenteredTracked(page, "HIERMIT WIRD BESTÄTIGT, DASS", height - 224, helv, 11, MUTED, 3);
+  drawCenteredTracked(page, input.name, height - 270, bold, 32, GOLD, 1);
+  drawCenteredTracked(page, "den folgenden Kurs erfolgreich abgeschlossen hat", height - 304, helv, 12, MUTED, 1);
+  drawCenteredTracked(page, fit(input.courseTitle, bold, 21, inner), height - 342, bold, 21, CREAM, 1);
 
-  // Signature + date row.
-  const baseY = 120;
-  const colW = 220;
-  const leftCx = 60 + colW / 2;
-  const rightCx = width - 60 - colW / 2;
+  // Verified seal (gold ring + checkmark), centered above the footer row.
+  const sealY = 168;
+  page.drawCircle({ x: cx, y: sealY, size: 27, borderColor: GOLD, borderWidth: 1.5, borderOpacity: 0.95 });
+  page.drawCircle({ x: cx, y: sealY, size: 21, borderColor: GOLD, borderWidth: 0.5, borderOpacity: 0.5 });
+  page.drawLine({ start: { x: cx - 9, y: sealY + 1 }, end: { x: cx - 3, y: sealY - 7 }, thickness: 2.4, color: GOLD, lineCap: 1 });
+  page.drawLine({ start: { x: cx - 3, y: sealY - 7 }, end: { x: cx + 11, y: sealY + 9 }, thickness: 2.4, color: GOLD, lineCap: 1 });
 
-  const centerInCol = (text: string, cx: number, y: number, font: PDFFont, size: number, color: ReturnType<typeof rgb>) => {
+  // Footer signature row.
+  const baseY = 96;
+  const colW = 210;
+  const leftCx = 120 + colW / 2;
+  const rightCx = width - 120 - colW / 2;
+  const centerInCol = (text: string, ccx: number, y: number, font: PDFFont, size: number, color: ReturnType<typeof rgb>) => {
     const w = font.widthOfTextAtSize(text, size);
-    page.drawText(text, { x: cx - w / 2, y, size, font, color });
+    page.drawText(text, { x: ccx - w / 2, y, size, font, color });
   };
 
-  page.drawRectangle({ x: leftCx - colW / 2, y: baseY, width: colW, height: 0.75, color: MUTED, opacity: 0.6 });
-  centerInCol(input.dateStr, leftCx, baseY + 8, helv, 12, CREAM);
-  centerInCol("DATUM", leftCx, baseY - 16, helv, 8, MUTED);
+  page.drawRectangle({ x: leftCx - colW / 2, y: baseY, width: colW, height: 0.75, color: GOLD_SOFT, opacity: 0.7 });
+  centerInCol(input.dateStr, leftCx, baseY + 9, helv, 12, CREAM);
+  centerInCol("DATUM", leftCx, baseY - 15, helv, 8, MUTED);
 
-  page.drawRectangle({ x: rightCx - colW / 2, y: baseY, width: colW, height: 0.75, color: MUTED, opacity: 0.6 });
-  centerInCol("Bela Goldmann", rightCx, baseY + 8, oblique, 14, CREAM);
-  centerInCol("AI GOLDMINING", rightCx, baseY - 16, helv, 8, MUTED);
+  page.drawRectangle({ x: rightCx - colW / 2, y: baseY, width: colW, height: 0.75, color: GOLD_SOFT, opacity: 0.7 });
+  if (sig) {
+    const sw = 150;
+    const sh = sw * (sig.height / sig.width);
+    page.drawImage(sig, { x: rightCx - sw / 2, y: baseY + 6, width: sw, height: sh });
+  } else {
+    centerInCol("B. Goldmann", rightCx, baseY + 9, bold, 13, CREAM);
+  }
+  centerInCol("BELA GOLDMANN · GRÜNDER", rightCx, baseY - 15, helv, 8, MUTED);
 
   // Verification footer.
-  drawCenteredTracked(page, `Zertifikat-ID: ${input.certId}   ·   aigoldmining.com`, 58, helv, 8, MUTED, 1);
+  drawCenteredTracked(page, `ZERTIFIKAT-ID: ${input.certId}   ·   AIGOLDMINING.COM`, 54, helv, 8, MUTED, 1.5);
 
-  // Metadata.
   pdf.setTitle(`Zertifikat – ${input.courseTitle}`);
   pdf.setAuthor("AI Goldmining");
   pdf.setSubject(`Abschlusszertifikat für ${input.name}`);

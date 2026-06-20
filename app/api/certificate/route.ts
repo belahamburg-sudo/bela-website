@@ -90,6 +90,11 @@ export async function GET(request: Request) {
     certId: certificateId(user.id, courseSlug),
   });
 
+  // Mark the certificate as collected so the dashboard banner disappears.
+  await admin
+    .from("certificates")
+    .upsert({ user_id: user.id, course_slug: courseSlug }, { onConflict: "user_id,course_slug", ignoreDuplicates: true });
+
   // Copy into a fresh ArrayBuffer-backed Uint8Array so it satisfies BodyInit.
   return new NextResponse(new Uint8Array(pdf), {
     status: 200,

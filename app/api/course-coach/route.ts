@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { hasZai, zaiChat, type ChatMessage } from "@/lib/zai";
+import { hasZai, zaiChat, parseJsonFromModel, type ChatMessage } from "@/lib/zai";
 import { retrieveContext } from "@/lib/course-coach";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
@@ -69,25 +69,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Bitte stelle eine Frage." }, { status: 400 });
   }
 
-  const context = await retrieveContext(courseSlug, lastUser.content);
+  const { context, sources } = await retrieveContext(courseSlug, lastUser.content);
 
   const system = `Du bist der persönliche AI-Lern-Coach für genau diesen Kurs. Hilf dem Mitglied, den Stoff zu verstehen und umzusetzen.
 Regeln:
 - Beantworte Fragen VORRANGIG auf Basis des Kurs-Kontexts unten.
 - Steht die Antwort nicht im Kontext: sag das ehrlich und gib höchstens einen kurzen, allgemeinen Tipp — erfinde keine Kursinhalte, Zahlen oder Versprechen.
-- Antworte auf Deutsch, konkret, ermutigend, in kurzen Absätzen oder Bulletpoints.
-- Keine internen Details, keine anderen Kurse, keine erfundenen Links.
+- Antworte auf Deutsch, ermutigend und STRUKTURIERT in Markdown: kurze Absätze, **fett** für die wichtigsten Begriffe, Bulletpoints für Schritte/Listen.
+- Halte dich kurz und konkret. Keine internen Details, keine anderen Kurse, keine erfundenen Links.
+
+Gib AUSSCHLIESSLICH gültiges JSON zurück, ohne Text drumherum:
+{"answer":"<deine Antwort als Markdown>","followups":["kurze Folgefrage","kurze Folgefrage","kurze Folgefrage"]}
+"followups": 2-3 naheliegende, kurze Folgefragen aus Nutzersicht (je max. ~8 Wörter), die wirklich zum Kursinhalt passen.
 
 Kurs-Kontext:
 ${context || "(kein Kontext gefunden — sag dem Nutzer, dass du dazu im Kurs nichts findest)"}`;
 
-  const reply = await zaiChat([{ role: "system", content: system }, ...messages], {
+  const raw = await zaiChat([{ role: "system", content: system }, ...messages], {
     temperature: 0.3,
-    maxTokens: 700,
+    maxTokens: 900,
   });
+  const parsed = parseJsonFromModel<{ answer?: string; followups?: string[] }>(raw);
+  const reply = (parsed?.answer ?? raw ?? "").trim();
   if (!reply) {
     return NextResponse.json({ message: "Keine Antwort erhalten. Bitte erneut versuchen." }, { status: 502 });
   }
+  const followups = Array.isArray(parsed?.followups)
+    ? parsed!.followups.filter((f) => typeof f === "string" && f.trim()).slice(0, 3)
+    : [];
 
-  return NextResponse.json({ reply });
+  return NextResponse.json({ reply, followups, sources });
 }

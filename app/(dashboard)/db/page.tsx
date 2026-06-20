@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  Award,
   BookOpen,
   CheckCircle2,
   GraduationCap,
@@ -92,15 +93,33 @@ export default async function DashboardPage() {
 
   const storeTeaser = availableCourses.slice(0, 3);
 
-  // Gamification (streak + quests + leaderboard) — non-critical, never blocks.
+  // Gamification (streak + quests + leaderboard) + pending certificates —
+  // non-critical, never blocks the dashboard.
   let gamification = null;
+  let pendingCerts: { slug: string; title: string }[] = [];
   try {
     const supabase = await getSupabaseServerClient();
     if (supabase) {
       const {
         data: { user: authUser },
       } = await supabase.auth.getUser();
-      if (authUser) gamification = await getGamification(authUser.id);
+      if (authUser) {
+        gamification = await getGamification(authUser.id);
+
+        const completed = purchasedCourses.filter((c) => c?.progress === 100);
+        if (completed.length > 0) {
+          const { data: claimed } = await supabase
+            .from("certificates")
+            .select("course_slug")
+            .eq("user_id", authUser.id);
+          const claimedSet = new Set(
+            ((claimed ?? []) as { course_slug: string }[]).map((r) => r.course_slug)
+          );
+          pendingCerts = completed
+            .filter((c) => c && !claimedSet.has(c.slug))
+            .map((c) => ({ slug: c!.slug, title: c!.title }));
+        }
+      }
     }
   } catch {
     // ignore — dashboard renders fine without it
@@ -165,6 +184,38 @@ export default async function DashboardPage() {
               </div>
             </header>
           </Reveal>
+
+          {/* ─── CERTIFICATE TO COLLECT ─── */}
+          {pendingCerts.length > 0 ? (
+            <Reveal delay={0.04}>
+              <div className="rounded-2xl border border-gold-300/30 bg-gradient-to-r from-gold-300/[0.12] to-transparent p-5">
+                <div className="flex items-center gap-3">
+                  <Award aria-hidden className="h-6 w-6 shrink-0 text-gold-300" />
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-[0.12em] text-cream">
+                      {pendingCerts.length === 1
+                        ? "Dein Zertifikat ist bereit 🎓"
+                        : `${pendingCerts.length} Zertifikate sind bereit 🎓`}
+                    </p>
+                    <p className="text-xs text-cream/50">
+                      Hol dir dein Abschluss-Zertifikat als PDF.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {pendingCerts.map((c) => (
+                    <a
+                      key={c.slug}
+                      href={`/api/certificate?courseSlug=${encodeURIComponent(c.slug)}`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-obsidian transition hover:brightness-110"
+                    >
+                      <Award aria-hidden className="h-3.5 w-3.5" /> {c.title}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+          ) : null}
 
           {/* ─── STAT ROW ─── */}
           <Reveal delay={0.08}>

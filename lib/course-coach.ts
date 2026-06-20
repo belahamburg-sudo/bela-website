@@ -1,8 +1,10 @@
 import { getSupabaseAdminClient } from "./supabase";
 import { hasEmbeddings, embedTexts } from "./embeddings";
 
-type DbLesson = { title: string | null; description: string | null; position: number };
+type DbLesson = { id: string; title: string | null; description: string | null; position: number };
 type DbModule = { title: string | null; position: number; lessons: DbLesson[] };
+
+export type CoachSource = { lessonId: string | null; title: string };
 
 function clip(s: string, max = 1500): string {
   return s.length > max ? s.slice(0, max) : s;
@@ -26,7 +28,7 @@ export async function ingestCourse(
 
   const { data: course, error: courseErr } = await admin
     .from("courses")
-    .select("slug, title, description, modules(title, position, lessons(title, description, position))")
+    .select("slug, title, description, modules(title, position, lessons(id, title, description, position))")
     .eq("slug", courseSlug)
     .maybeSingle();
   if (courseErr) return { ok: false, count: 0, error: courseErr.message };
@@ -37,7 +39,7 @@ export async function ingestCourse(
     (a, b) => (a.position ?? 0) - (b.position ?? 0)
   );
 
-  const chunks: { title: string; content: string }[] = [];
+  const chunks: { title: string; content: string; lessonId: string | null }[] = [];
 
   const overview = [
     `Kurs: ${title}`,
@@ -46,7 +48,7 @@ export async function ingestCourse(
   ]
     .filter(Boolean)
     .join("\n");
-  chunks.push({ title, content: clip(overview) });
+  chunks.push({ title, content: clip(overview), lessonId: null });
 
   for (const m of mods) {
     const lessons = [...(m.lessons ?? [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
@@ -57,7 +59,7 @@ export async function ingestCourse(
         .filter(Boolean)
         .join("\n")
         .trim();
-      chunks.push({ title: l.title ?? m.title ?? title, content: clip(content) });
+      chunks.push({ title: l.title ?? m.title ?? title, content: clip(content), lessonId: l.id });
     }
   }
 
@@ -69,7 +71,7 @@ export async function ingestCourse(
   await admin.from("course_chunks").delete().eq("course_slug", courseSlug);
   const rows = chunks.map((c, i) => ({
     course_slug: courseSlug,
-    lesson_id: null,
+    lesson_id: c.lessonId,
     title: c.title,
     content: c.content,
     embedding: toVectorLiteral(embeddings[i]),
@@ -80,22 +82,35 @@ export async function ingestCourse(
   return { ok: true, count: rows.length };
 }
 
-/** Retrieve the most relevant chunks for a question within one course. */
+/** Retrieve the most relevant chunks for a question within one course, plus the
+ * distinct lessons they came from (for "Zur Lektion" buttons). */
 export async function retrieveContext(
   courseSlug: string,
   question: string
-): Promise<string> {
+): Promise<{ context: string; sources: CoachSource[] }> {
   const admin = getSupabaseAdminClient();
-  if (!admin) return "";
+  if (!admin) return { context: "", sources: [] };
   const emb = await embedTexts([question], "query");
-  if (!emb) return "";
+  if (!emb) return { context: "", sources: [] };
   const { data } = await admin.rpc("match_course_chunks", {
     p_course_slug: courseSlug,
     query_embedding: toVectorLiteral(emb[0]),
     match_count: 6,
   });
-  const rows = (data ?? []) as { title: string | null; content: string }[];
-  return rows.map((r, i) => `[${i + 1}] ${r.title ?? ""}\n${r.content}`).join("\n\n");
+  const rows = (data ?? []) as { lesson_id: string | null; title: string | null; content: string }[];
+
+  const context = rows.map((r, i) => `[${i + 1}] ${r.title ?? ""}\n${r.content}`).join("\n\n");
+
+  const seen = new Set<string>();
+  const sources: CoachSource[] = [];
+  for (const r of rows) {
+    if (!r.lesson_id || !r.title) continue;
+    if (seen.has(r.lesson_id)) continue;
+    seen.add(r.lesson_id);
+    sources.push({ lessonId: r.lesson_id, title: r.title });
+    if (sources.length >= 3) break;
+  }
+  return { context, sources };
 }
 
 /** Whether a course has any indexed chunks (so the UI can show/hide the coach). */
