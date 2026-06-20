@@ -2,12 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, Power, Hash } from "lucide-react";
+import { ExternalLink, Power, Hash, Undo2, Pause } from "lucide-react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { AdminBadge } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
 import { useToast } from "@/components/admin/toast";
-import { updateTelegramStatus } from "@/app/admin/telegram/actions";
+import { updateTelegramStatus, refundTelegramSubscription } from "@/app/admin/telegram/actions";
 
 export type TelegramRow = {
   userId: string;
@@ -54,9 +54,11 @@ function RowActions({ row }: { row: TelegramRow }) {
   const router = useRouter();
   const { success, error } = useToast();
   const [pending, startTransition] = useTransition();
+  const [refunding, startRefund] = useTransition();
 
   const isActive = row?.status === "active";
   const nextStatus: "active" | "inactive" = isActive ? "inactive" : "active";
+  const hasStripe = Boolean(row?.stripeSubscriptionId || row?.stripeCustomerId);
 
   const toggle = () => {
     if (!row?.userId) {
@@ -68,12 +70,30 @@ function RowActions({ row }: { row: TelegramRow }) {
       if (res.ok) {
         success(
           nextStatus === "active"
-            ? "Abo wurde aktiviert."
-            : "Abo wurde deaktiviert."
+            ? "Zugang reaktiviert (entbannt)."
+            : "Zugang pausiert (aus der VIP-Gruppe entfernt). Keine Rückzahlung."
         );
         router.refresh();
       } else {
         error(res.error ?? "Aktualisierung fehlgeschlagen.");
+      }
+    });
+  };
+
+  const refund = () => {
+    if (!row?.userId) return;
+    const ok = window.confirm(
+      `Letzte VIP-Zahlung von ${row.email ?? "diesem Nutzer"} zurückerstatten, das Abo kündigen UND den Zugang entziehen? Das kann nicht rückgängig gemacht werden.`
+    );
+    if (!ok) return;
+    startRefund(async () => {
+      const res = await refundTelegramSubscription({ userId: row.userId });
+      if (res.ok) {
+        success("Zahlung erstattet, Abo gekündigt, Zugang entzogen.");
+        router.refresh();
+      } else {
+        error(res.error ?? "Rückerstattung fehlgeschlagen.");
+        router.refresh();
       }
     });
   };
@@ -83,12 +103,17 @@ function RowActions({ row }: { row: TelegramRow }) {
       <AdminButton
         size="sm"
         variant={isActive ? "danger" : "secondary"}
-        icon={Power}
+        icon={isActive ? Pause : Power}
         onClick={toggle}
         loading={pending}
       >
-        {isActive ? "Deaktivieren" : "Aktivieren"}
+        {isActive ? "Pausieren" : "Reaktivieren"}
       </AdminButton>
+      {hasStripe && (
+        <AdminButton size="sm" variant="danger" icon={Undo2} onClick={refund} loading={refunding}>
+          Refund
+        </AdminButton>
+      )}
       {row?.stripeCustomerId && (
         <a
           href={`https://dashboard.stripe.com/customers/${row.stripeCustomerId}`}
