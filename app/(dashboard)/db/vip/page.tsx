@@ -1,6 +1,8 @@
 import { AuthGate } from "@/components/auth-gate";
 import { SpatialBackground } from "@/components/spatial-background";
 import { TelegramSubscribeCard } from "@/components/telegram-subscribe-card";
+import { VipWorldMap } from "@/components/vip-world-map";
+import { getVipLocations } from "@/lib/vip-map";
 import { Crown, MessageCircle, BookOpen, Users } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +25,8 @@ const PERKS = [
   },
 ];
 
-export default function VipPage() {
+export default async function VipPage() {
+  const { points, total } = await getVipLocations();
   return (
     <AuthGate>
       <section className="relative min-h-screen overflow-hidden bg-obsidian py-16 sm:py-24">
@@ -64,6 +67,10 @@ export default function VipPage() {
             <Crown className="h-3.5 w-3.5 text-gold-300/60" />
             Jederzeit kündbar. Kein Risiko.
           </p>
+
+          <div className="mt-12">
+            <VipWorldMap points={points} total={total} />
+          </div>
         </div>
       </section>
     </AuthGate>

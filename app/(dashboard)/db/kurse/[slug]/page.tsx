@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Layers } from "lucide-react";
+import { ArrowLeft, Award, Layers } from "lucide-react";
 import { AuthGate } from "@/components/auth-gate";
 import { CoursePlayer, type RecommendedCourseCard } from "@/components/course-player";
 import { PaywallScreen } from "@/components/paywall-screen";
 import { ComingSoonScreen } from "@/components/coming-soon-screen";
 import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
 import { CourseReviews } from "@/components/course-reviews";
+import { CourseCoach } from "@/components/course-coach";
+import { courseIsIndexed } from "@/lib/course-coach";
 import { CourseCrossSell, type CrossSellItem } from "@/components/course-cross-sell";
 import { getPublicCourses, getStoreCatalog } from "@/lib/courses";
 import type { DbCourse, DbModule } from "@/lib/db-types";
@@ -93,13 +95,13 @@ async function resolveCourseMedia(course: DbCourse): Promise<DbCourse> {
 
 async function fetchCourseAndAccess(
   slug: string
-): Promise<{ course: DbCourse | null; hasPurchase: boolean; completedLessonIds: string[] }> {
+): Promise<{ course: DbCourse | null; hasPurchase: boolean; completedLessonIds: string[]; isComplete: boolean }> {
   if (!hasSupabasePublicEnv()) {
-    return { course: null, hasPurchase: false, completedLessonIds: [] };
+    return { course: null, hasPurchase: false, completedLessonIds: [], isComplete: false };
   }
 
   const supabase = await getSupabaseServerClient();
-  if (!supabase) return { course: null, hasPurchase: false, completedLessonIds: [] };
+  if (!supabase) return { course: null, hasPurchase: false, completedLessonIds: [], isComplete: false };
   const admin = getSupabaseAdminClient();
 
   const {
@@ -130,7 +132,7 @@ async function fetchCourseAndAccess(
   ]);
 
   if (courseResult.error || !courseResult.data) {
-    return { course: null, hasPurchase: false, completedLessonIds: [] };
+    return { course: null, hasPurchase: false, completedLessonIds: [], isComplete: false };
   }
 
   const rawCourse = courseResult.data as DbCourse & {
@@ -143,12 +145,18 @@ async function fetchCourseAndAccess(
       lessons: [...mod.lessons].sort((a, b) => a.position - b.position),
     }));
 
+  const completedLessonIds = (progressResult.data ?? []).map(
+    (r: { lesson_id: string }) => r.lesson_id
+  );
+  const completedSet = new Set(completedLessonIds);
+  const allLessonIds = rawCourse.modules.flatMap((m) => m.lessons.map((l) => l.id));
+  const isComplete = allLessonIds.length > 0 && allLessonIds.every((id) => completedSet.has(id));
+
   return {
     course: rawCourse,
     hasPurchase: Boolean(purchaseResult.data),
-    completedLessonIds: (progressResult.data ?? []).map(
-      (r: { lesson_id: string }) => r.lesson_id
-    ),
+    completedLessonIds,
+    isComplete: Boolean(purchaseResult.data) && isComplete,
   };
 }
 
@@ -158,11 +166,12 @@ export default async function DashboardCoursePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { course: dbCourse, hasPurchase, completedLessonIds } = await fetchCourseAndAccess(slug);
+  const { course: dbCourse, hasPurchase, completedLessonIds, isComplete } = await fetchCourseAndAccess(slug);
 
   if (dbCourse) {
     if (hasPurchase && dbCourse.is_active) {
       const playableCourse = await resolveCourseMedia(dbCourse);
+      const coachReady = await courseIsIndexed(slug);
 
       // Cross-sell pool: resolve the hand-picked slugs to live course cards.
       const crossSlugs = Array.isArray(dbCourse.cross_sell_slugs) ? dbCourse.cross_sell_slugs : [];
@@ -213,6 +222,29 @@ export default async function DashboardCoursePage({
                 <ArrowLeft aria-hidden className="h-4 w-4" />
                 Zurück zur Übersicht
               </Link>
+
+              {isComplete ? (
+                <a
+                  href={`/api/certificate?courseSlug=${encodeURIComponent(slug)}`}
+                  className="focus-ring mb-7 flex items-center justify-between gap-4 rounded-2xl border border-gold-300/30 bg-gradient-to-r from-gold-300/[0.12] to-transparent px-5 py-4 transition hover:border-gold-300/60 hover:from-gold-300/20"
+                >
+                  <span className="flex items-center gap-3">
+                    <Award aria-hidden className="h-6 w-6 shrink-0 text-gold-300" />
+                    <span>
+                      <span className="block text-sm font-bold uppercase tracking-[0.12em] text-cream">
+                        Kurs abgeschlossen 🎉
+                      </span>
+                      <span className="block text-xs text-cream/50">
+                        Lad dir dein persönliches Zertifikat als PDF herunter.
+                      </span>
+                    </span>
+                  </span>
+                  <span className="shrink-0 rounded-full bg-gold-gradient px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-obsidian">
+                    Zertifikat
+                  </span>
+                </a>
+              ) : null}
+
               <CoursePlayer
                 course={playableCourse}
                 initialCompleted={completedLessonIds}
@@ -221,6 +253,12 @@ export default async function DashboardCoursePage({
 
               {/* Affiliate text + cross-sell pool under the videos (#54). */}
               <CourseCrossSell affiliateText={dbCourse.affiliate_text} items={crossSellItems} />
+
+              {coachReady ? (
+                <div className="mt-12">
+                  <CourseCoach courseSlug={slug} courseTitle={dbCourse.title} />
+                </div>
+              ) : null}
 
               {/* Buyers can rate the course right where they learn (#17). */}
               <div className="mt-14 border-t border-white/[0.06] pt-12">

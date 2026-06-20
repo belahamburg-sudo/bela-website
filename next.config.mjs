@@ -67,6 +67,7 @@ const nextConfig = {
       { source: "/affiliate", destination: "/db/affiliate" },
       { source: "/vip", destination: "/db/vip" },
       { source: "/onboarding", destination: "/db/onboarding" },
+      { source: "/goldmine-finder", destination: "/db/goldmine-finder" },
     ];
   },
   async headers() {

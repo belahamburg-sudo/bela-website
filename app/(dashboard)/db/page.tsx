@@ -14,6 +14,9 @@ import { Reveal } from "@/components/dashboard/reveal";
 import { ReferAFriend } from "@/components/refer-a-friend";
 import { StoreProductCard, type StoreCardCourse } from "@/components/store-product-card";
 import { getUnifiedMemberData } from "@/lib/member-data";
+import { getGamification } from "@/lib/gamification";
+import { GamificationPanel } from "@/components/gamification-panel";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getMemberLevel } from "@/lib/avatar-system";
 import type { Course } from "@/lib/content";
 
@@ -88,6 +91,20 @@ export default async function DashboardPage() {
   ];
 
   const storeTeaser = availableCourses.slice(0, 3);
+
+  // Gamification (streak + quests + leaderboard) — non-critical, never blocks.
+  let gamification = null;
+  try {
+    const supabase = await getSupabaseServerClient();
+    if (supabase) {
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+      if (authUser) gamification = await getGamification(authUser.id);
+    }
+  } catch {
+    // ignore — dashboard renders fine without it
+  }
 
   return (
     <AuthGate>
@@ -171,6 +188,13 @@ export default async function DashboardPage() {
               ))}
             </div>
           </Reveal>
+
+          {/* ─── GAMIFICATION: STREAK · QUESTS · LEADERBOARD ─── */}
+          {gamification ? (
+            <Reveal delay={0.1}>
+              <GamificationPanel data={gamification} />
+            </Reveal>
+          ) : null}
 
           {/* ─── REFER A FRIEND ─── */}
           <Reveal delay={0.1}>

@@ -12,7 +12,8 @@ import {
   Gift,
   Globe,
   Crown,
-  LifeBuoy
+  LifeBuoy,
+  Sparkles
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -33,6 +34,7 @@ type NavLinkConfig = {
 const NAV_LINKS: NavLinkConfig[] = [
   { href: "/dashboard", label: "Übersicht", icon: LayoutDashboard, exact: true },
   { href: "/bibliothek", label: "Goldmine", icon: Pickaxe, exact: false },
+  { href: "/goldmine-finder", label: "Finder", icon: Sparkles, exact: false },
   { href: "/affiliate", label: "Affiliate", icon: Gift, exact: false },
   { href: "/vip", label: "VIP Member", icon: Crown, exact: false },
   { href: "/profil", label: "Mein Profil", icon: User, exact: false },

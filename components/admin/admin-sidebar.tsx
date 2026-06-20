@@ -23,6 +23,7 @@ import {
   Gift,
   Activity,
   BarChart3,
+  BrainCircuit,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,6 +56,7 @@ const NAV_GROUPS: NavGroup[] = [
     links: [
       { href: "/admin/kurse", label: "Kurse", icon: GraduationCap },
       { href: "/admin/webinar", label: "Webinar", icon: CalendarClock },
+      { href: "/admin/coach", label: "AI-Coach", icon: BrainCircuit },
     ],
   },
   {

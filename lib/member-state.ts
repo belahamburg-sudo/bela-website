@@ -13,8 +13,40 @@ export type MemberStateSnapshot = {
   level: number;
   rewardKeys: string[];
   rewardCount: number;
+  currentStreak: number;
+  longestStreak: number;
   persistent: boolean;
 };
+
+/** Date in Europe/Berlin as YYYY-MM-DD, optionally offset by whole days. */
+function berlinDate(offsetDays = 0): string {
+  const d = new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000);
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
+}
+
+/** Advance a daily login streak based on the last active date. */
+function nextStreak(
+  lastActiveOn: string | null,
+  current: number,
+  longest: number
+): { current: number; longest: number; today: string } {
+  const today = berlinDate(0);
+  const yesterday = berlinDate(-1);
+  let cur = current ?? 0;
+  if (lastActiveOn === today) {
+    cur = Math.max(cur, 1); // already counted today
+  } else if (lastActiveOn === yesterday) {
+    cur = (current ?? 0) + 1;
+  } else {
+    cur = 1; // first day or streak broken
+  }
+  return { current: cur, longest: Math.max(longest ?? 0, cur), today };
+}
 
 type SyncInput = {
   supabase: SupabaseClient;
@@ -57,6 +89,8 @@ export async function syncMemberState({
     level,
     rewardKeys,
     rewardCount: rewardKeys.length,
+    currentStreak: 0,
+    longestStreak: 0,
     persistent: false,
   };
 
@@ -69,13 +103,18 @@ export async function syncMemberState({
   try {
     const stateResult = await writer
       .from("member_state")
-      .select("selected_avatar")
+      .select("selected_avatar, current_streak, longest_streak, last_active_on")
       .eq("user_id", userId)
       .maybeSingle();
 
     if (stateResult.error) return fallback;
 
     const selectedAvatarId = stateResult.data?.selected_avatar ?? defaultAvatarId;
+    const streak = nextStreak(
+      stateResult.data?.last_active_on ?? null,
+      stateResult.data?.current_streak ?? 0,
+      stateResult.data?.longest_streak ?? 0
+    );
 
     const upsertResult = await writer.from("member_state").upsert(
       {
@@ -86,13 +125,16 @@ export async function syncMemberState({
         purchased_courses: purchasedCourses,
         completed_lessons: completedLessons,
         completed_courses: completedCourses,
+        current_streak: streak.current,
+        longest_streak: streak.longest,
+        last_active_on: streak.today,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "user_id" }
     );
 
     if (upsertResult.error) {
-      return { ...fallback, selectedAvatarId };
+      return { ...fallback, selectedAvatarId, currentStreak: streak.current, longestStreak: streak.longest };
     }
 
     if (rewardKeys.length > 0) {
@@ -113,7 +155,7 @@ export async function syncMemberState({
       .eq("user_id", userId);
 
     if (claimedRewardsResult.error) {
-      return { ...fallback, selectedAvatarId };
+      return { ...fallback, selectedAvatarId, currentStreak: streak.current, longestStreak: streak.longest };
     }
 
     const claimedRewardKeys = (claimedRewardsResult.data ?? []).map(
@@ -126,6 +168,8 @@ export async function syncMemberState({
       level,
       rewardKeys: claimedRewardKeys,
       rewardCount: claimedRewardKeys.length,
+      currentStreak: streak.current,
+      longestStreak: streak.longest,
       persistent: true,
     };
   } catch {
