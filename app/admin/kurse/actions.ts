@@ -1,5 +1,6 @@
 "use server";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, logAudit, getAdminContext } from "@/lib/admin";
 import {
@@ -113,6 +114,78 @@ function sanitizeProductPage(raw?: Record<string, unknown> | null): Record<strin
     .filter((m): m is { title: string; copy: string } => Boolean(m));
   if (mechCleaned.length > 0) out.mechanism = mechCleaned;
   return out;
+}
+
+/**
+ * Retroactively unlock a course's bundled (linked) courses for everyone who
+ * already owns it — so linking takes effect immediately, exactly like the
+ * webhook does at purchase time. Idempotent: skips courses a user already owns
+ * and uses a synthetic, unique session id per (user, course). Best-effort.
+ */
+async function grantBundledToOwners(
+  supabase: SupabaseClient,
+  parentSlug: string,
+  bundledSlugs: string[]
+): Promise<number> {
+  if (bundledSlugs.length === 0) return 0;
+  try {
+    const { data: owners } = await supabase
+      .from("purchases")
+      .select("user_id")
+      .eq("course_slug", parentSlug)
+      .in("status", ["paid", "free"])
+      .not("user_id", "is", null);
+
+    const userIds = Array.from(
+      new Set(
+        ((owners ?? []) as { user_id: string | null }[])
+          .map((o) => o.user_id)
+          .filter((u): u is string => Boolean(u))
+      )
+    );
+    if (userIds.length === 0) return 0;
+
+    const { data: existing } = await supabase
+      .from("purchases")
+      .select("user_id, course_slug")
+      .in("user_id", userIds)
+      .in("course_slug", bundledSlugs)
+      .in("status", ["paid", "free"]);
+    const owned = new Set(
+      ((existing ?? []) as { user_id: string; course_slug: string }[]).map(
+        (r) => `${r.user_id}|${r.course_slug}`
+      )
+    );
+
+    const rows: Array<{
+      user_id: string;
+      course_slug: string;
+      stripe_session_id: string;
+      amount_total: number;
+      status: string;
+    }> = [];
+    for (const uid of userIds) {
+      for (const s of bundledSlugs) {
+        if (owned.has(`${uid}|${s}`)) continue;
+        rows.push({
+          user_id: uid,
+          course_slug: s,
+          stripe_session_id: `bundle:${uid}:${s}`,
+          amount_total: 0,
+          status: "paid",
+        });
+      }
+    }
+    if (rows.length === 0) return 0;
+
+    await supabase
+      .from("purchases")
+      .upsert(rows, { onConflict: "stripe_session_id,course_slug", ignoreDuplicates: true });
+    return rows.length;
+  } catch (e) {
+    console.error("grantBundledToOwners failed:", e instanceof Error ? e.message : e);
+    return 0;
+  }
 }
 
 function normalizeResources(resources?: ResourceItem[]): ResourceItem[] {
@@ -302,6 +375,10 @@ export async function updateCourse(input: CourseInput): Promise<ActionResult> {
       .from("courses")
       .update({ bundled_courses: bundled })
       .eq("id", input.id);
+
+    // Linking takes effect immediately: unlock the bundled courses for everyone
+    // who already owns this one (future buyers are handled by the Stripe webhook).
+    await grantBundledToOwners(supabase, slug, bundled);
   }
 
   // Rich product-page columns (migration_017) — isolated + best-effort so the

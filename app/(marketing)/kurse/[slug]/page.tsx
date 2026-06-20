@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Lock, PlayCircle } from "lucide-react";
@@ -9,6 +8,8 @@ import { CourseLevelBadge } from "@/components/course-level-badge";
 import { CourseReviews } from "@/components/course-reviews";
 import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
 import { ProductPageSections } from "@/components/product-page-sections";
+import { HeroCover } from "@/components/product-page-fx";
+import { Reveal } from "@/components/dashboard/reveal";
 import { getPublicCourse, getPublicCourses } from "@/lib/courses";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { parseIncludeLine } from "@/lib/course-includes";
@@ -184,98 +185,57 @@ export default async function CourseDetailPage({
 
   return (
     <>
-      <section className="relative py-32 bg-obsidian overflow-hidden">
+      <section className="relative overflow-hidden bg-obsidian pt-28 pb-20 sm:pt-32 sm:pb-28">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-gold-300/5 blur-[140px]" />
+          <div className="absolute top-0 left-1/2 h-[560px] w-[960px] -translate-x-1/2 rounded-full bg-gold-300/[0.06] blur-[160px]" />
         </div>
-        <div className="relative mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <div>
-            <Link
-              href="/kurse"
-              className="group mb-6 flex w-fit items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white/40 transition-colors hover:text-gold-200"
-            >
-              <ArrowLeft
-                aria-hidden
-                className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
-              />
-              Zurück zur Kursübersicht
-            </Link>
-            <CourseLevelBadge level={course.level} />
-            <h1 className="mt-5 font-heading text-4xl leading-tight text-white sm:text-6xl">
+        <div className="relative mx-auto max-w-5xl px-6">
+          <Link
+            href="/kurse"
+            className="group flex w-fit items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white/40 transition-colors hover:text-gold-200"
+          >
+            <ArrowLeft aria-hidden className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+            Zurück zur Kursübersicht
+          </Link>
+
+          {/* Title block */}
+          <Reveal className="mt-8 text-center">
+            <div className="flex justify-center">
+              <CourseLevelBadge level={course.level} />
+            </div>
+            <h1 className="mx-auto mt-5 max-w-4xl font-heading text-4xl leading-[1.05] text-white sm:text-6xl">
               {course.title}
             </h1>
-            <p className="mt-4 text-xl font-semibold text-gold-100">{course.tagline}</p>
-            {course.productPage?.outcomeHeadline && (
-              <p className="mt-5 font-heading text-2xl leading-snug text-white sm:text-3xl">
-                {course.productPage.outcomeHeadline}
+            {pp?.outcomeHeadline ? (
+              <p className="mx-auto mt-5 max-w-3xl font-heading text-2xl leading-snug text-gold-100 sm:text-3xl">
+                {pp.outcomeHeadline}
               </p>
+            ) : (
+              <p className="mx-auto mt-5 max-w-3xl text-xl font-semibold text-gold-100">{course.tagline}</p>
             )}
-            {course.productPage?.subline && (
-              <p className="mt-3 max-w-2xl text-base leading-7 text-gold-100/80">
-                {course.productPage.subline}
-              </p>
+            {pp?.subline && (
+              <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/55">{pp.subline}</p>
             )}
-            <p className="mt-6 max-w-2xl text-lg leading-9 text-white/50">{course.description}</p>
+          </Reveal>
 
-            {bundledCourses.length > 0 && (
-              <div className="mt-8 rounded-2xl border border-gold-500/20 bg-gold-500/[0.05] p-5">
-                <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
-                  <Boxes aria-hidden className="h-4 w-4 text-gold-300" />
-                  Enthält {bundledCourses.length} weitere{bundledCourses.length === 1 ? "n" : ""} Kurs{bundledCourses.length === 1 ? "" : "e"}
-                </div>
-                <p className="mt-1 text-sm text-white/45">
-                  Beim Kauf werden diese Kurse automatisch mit freigeschaltet:
-                </p>
-                <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {bundledCourses.map((c) => (
-                    <li key={c.slug}>
-                      <Link
-                        href={`/kurse/${c.slug}`}
-                        className="flex items-center gap-2 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2 text-sm text-white/80 transition-colors hover:border-gold-300/40 hover:text-gold-100"
-                      >
-                        <CheckCircle2 aria-hidden className="h-4 w-4 flex-none text-gold-300" />
-                        <span className="truncate">{c.title}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          {/* Big header cover */}
+          <div className="mt-12">
+            <HeroCover src={course.image} alt={`Cover für ${course.title}`} />
+          </div>
 
-            {!owned && partOfBundles.length > 0 && (
-              <div className="mt-8 rounded-2xl border border-gold-300/30 bg-gold-300/[0.06] p-5">
-                <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
-                  <Package aria-hidden className="h-4 w-4 text-gold-300" />
-                  Im Bundle günstiger
-                </div>
-                <p className="mt-1 text-sm text-white/50">
-                  Dieser Kurs ist Teil {partOfBundles.length === 1 ? "eines Bundles" : "von Bundles"}.
-                  Hol dir gleich das ganze Paket und schalte mehrere Kurse auf einmal frei:
-                </p>
-                <ul className="mt-3 grid gap-2">
-                  {partOfBundles.map((b) => (
-                    <li key={b.slug}>
-                      <Link
-                        href={`/kurse/${b.slug}`}
-                        className="flex items-center justify-between gap-2 rounded-lg border border-gold-300/20 bg-obsidian/40 px-3 py-2.5 text-sm text-white/85 transition-colors hover:border-gold-300/50 hover:text-gold-100"
-                      >
-                        <span className="flex min-w-0 items-center gap-2">
-                          <Boxes aria-hidden className="h-4 w-4 flex-none text-gold-300" />
-                          <span className="truncate">{b.title}</span>
-                        </span>
-                        <span className="flex-none font-heading text-gold-200">{formatEuro(b.priceCents)}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          {course.description && (
+            <p className="mx-auto mt-12 max-w-3xl text-center text-lg leading-9 text-white/55">
+              {course.description}
+            </p>
+          )}
 
-            <div className="mt-8 grid grid-cols-2 gap-0 divide-x divide-white/[0.06] border-t border-white/[0.06] pt-6">
-              <div className="pr-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/30 mb-1">Preis</p>
-                <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-                  <p className="font-heading text-3xl text-gold-300">{formatEuro(course.priceCents)}</p>
+          {/* Price + audience + CTA */}
+          <div className="mx-auto mt-10 max-w-3xl rounded-[1.6rem] border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-sm sm:p-8">
+            <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/30">Preis</p>
+                <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                  <p className="font-heading text-4xl text-gold-300">{formatEuro(course.priceCents)}</p>
                   {discount > 0 && course.compareAtPriceCents && (
                     <span className="text-lg text-white/35 line-through decoration-white/30">
                       {formatEuro(course.compareAtPriceCents)}
@@ -288,27 +248,21 @@ export default async function CourseDetailPage({
                   </span>
                 )}
               </div>
-              <div className="pl-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/30 mb-1">Für wen</p>
-                <p className="font-semibold text-white/70 text-sm leading-relaxed">{course.audience}</p>
-              </div>
-            </div>
-            <div className="mt-8 space-y-3">
-              {owned ? (
-                <>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/[0.06] px-4 py-1.5 text-sm font-semibold text-emerald-200">
-                    <CheckCircle2 aria-hidden className="h-4 w-4" />
-                    Du besitzt diesen Kurs bereits
-                  </span>
-                  <Button href={`/bibliothek/${course.slug}`} size="lg" className="w-full sm:w-auto">
-                    <PlayCircle aria-hidden className="h-5 w-5" />
-                    Jetzt im Dashboard ansehen
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" autoBuy={autoBuy} />
-                  <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="sm:border-l sm:border-white/[0.06] sm:pl-6">
+                {owned ? (
+                  <div className="space-y-3">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/[0.06] px-4 py-1.5 text-sm font-semibold text-emerald-200">
+                      <CheckCircle2 aria-hidden className="h-4 w-4" />
+                      Du besitzt diesen Kurs bereits
+                    </span>
+                    <Button href={`/bibliothek/${course.slug}`} size="lg" className="w-full">
+                      <PlayCircle aria-hidden className="h-5 w-5" />
+                      Jetzt im Dashboard ansehen
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" autoBuy={autoBuy} />
                     <AddToCartButton
                       course={{
                         slug: course.slug,
@@ -319,18 +273,70 @@ export default async function CourseDetailPage({
                       }}
                     />
                   </div>
-                </>
-              )}
+                )}
+              </div>
             </div>
+            {course.audience && (
+              <p className="mt-5 border-t border-white/[0.06] pt-4 text-sm leading-relaxed text-white/55">
+                <span className="font-semibold uppercase tracking-[0.15em] text-white/30">Für wen </span>
+                <span className="ml-2">{course.audience}</span>
+              </p>
+            )}
           </div>
-          <Image
-            src={course.image}
-            alt={`Cover für ${course.title}`}
-            width={900}
-            height={1100}
-            priority
-            className="mx-auto w-full max-w-md rounded-[1.6rem] border border-gold-500/20 shadow-gold"
-          />
+
+          {bundledCourses.length > 0 && (
+            <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-gold-500/20 bg-gold-500/[0.05] p-5">
+              <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
+                <Boxes aria-hidden className="h-4 w-4 text-gold-300" />
+                Enthält {bundledCourses.length} weitere{bundledCourses.length === 1 ? "n" : ""} Kurs{bundledCourses.length === 1 ? "" : "e"}
+              </div>
+              <p className="mt-1 text-sm text-white/45">
+                Beim Kauf werden diese Kurse automatisch mit freigeschaltet:
+              </p>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                {bundledCourses.map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      href={`/kurse/${c.slug}`}
+                      className="flex items-center gap-2 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2 text-sm text-white/80 transition-colors hover:border-gold-300/40 hover:text-gold-100"
+                    >
+                      <CheckCircle2 aria-hidden className="h-4 w-4 flex-none text-gold-300" />
+                      <span className="truncate">{c.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!owned && partOfBundles.length > 0 && (
+            <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gold-300/30 bg-gold-300/[0.06] p-5">
+              <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
+                <Package aria-hidden className="h-4 w-4 text-gold-300" />
+                Im Bundle günstiger
+              </div>
+              <p className="mt-1 text-sm text-white/50">
+                Dieser Kurs ist Teil {partOfBundles.length === 1 ? "eines Bundles" : "von Bundles"}.
+                Hol dir gleich das ganze Paket und schalte mehrere Kurse auf einmal frei:
+              </p>
+              <ul className="mt-3 grid gap-2">
+                {partOfBundles.map((b) => (
+                  <li key={b.slug}>
+                    <Link
+                      href={`/kurse/${b.slug}`}
+                      className="flex items-center justify-between gap-2 rounded-lg border border-gold-300/20 bg-obsidian/40 px-3 py-2.5 text-sm text-white/85 transition-colors hover:border-gold-300/50 hover:text-gold-100"
+                    >
+                      <span className="flex min-w-0 items-center gap-2">
+                        <Boxes aria-hidden className="h-4 w-4 flex-none text-gold-300" />
+                        <span className="truncate">{b.title}</span>
+                      </span>
+                      <span className="flex-none font-heading text-gold-200">{formatEuro(b.priceCents)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
 

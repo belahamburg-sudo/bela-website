@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { CheckCircle2, XCircle, Gift } from "lucide-react";
 import type { ProductPage } from "@/lib/content";
+import { RevealOnScroll } from "@/components/product-page-fx";
 
 /**
  * The long sales body of a course product page, in the fixed spec order:
@@ -13,6 +14,7 @@ import type { ProductPage } from "@/lib/content";
  * each product page shows only what Bela filled in from the dashboard. The
  * page-level blocks that need server data or client components (course content,
  * testimonials, CTA) are passed in as slots and placed at their spec position.
+ * Each block fades in on scroll for a livelier sales page.
  */
 export function ProductPageSections({
   pp,
@@ -49,14 +51,14 @@ export function ProductPageSections({
     <section className="border-t border-white/[0.04] bg-obsidian py-20 sm:py-28">
       <div className="mx-auto max-w-4xl space-y-16 px-6">
         {p.problem && (
-          <div>
+          <RevealOnScroll>
             <p className="eyebrow mb-5">Status Quo</p>
             <p className="font-heading text-2xl leading-snug text-white sm:text-3xl">{p.problem}</p>
-          </div>
+          </RevealOnScroll>
         )}
 
         {hasVision && (
-          <div>
+          <RevealOnScroll>
             <p className="eyebrow mb-5">Vision</p>
             <h2 className="mb-6 font-heading text-3xl text-white sm:text-4xl">So sieht dein Alltag danach aus.</h2>
             <div className="grid gap-3">
@@ -67,11 +69,11 @@ export function ProductPageSections({
                 </div>
               ))}
             </div>
-          </div>
+          </RevealOnScroll>
         )}
 
         {hasNeeds && (
-          <div>
+          <RevealOnScroll>
             <p className="eyebrow mb-5">Was du wirklich brauchst</p>
             <div className="grid gap-3 sm:grid-cols-2">
               {p.needs!.map((n) => (
@@ -81,11 +83,11 @@ export function ProductPageSections({
                 </div>
               ))}
             </div>
-          </div>
+          </RevealOnScroll>
         )}
 
         {hasMechanism && (
-          <div>
+          <RevealOnScroll>
             <p className="eyebrow mb-5">So funktioniert der Kurs</p>
             <div className="grid gap-5">
               {p.mechanism!.map((step, i) => (
@@ -100,27 +102,27 @@ export function ProductPageSections({
                 </div>
               ))}
             </div>
-          </div>
+          </RevealOnScroll>
         )}
 
         {/* 5 — Kursinhalt im Detail (per-module bullets + preview video + curriculum) */}
-        {courseContent}
+        {courseContent && <RevealOnScroll>{courseContent}</RevealOnScroll>}
 
         {p.bonus && (
-          <div className="flex items-start gap-4 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] p-6">
+          <RevealOnScroll className="flex items-start gap-4 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] p-6">
             <Gift aria-hidden className="mt-0.5 h-6 w-6 flex-none text-gold-300" />
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.16em] text-gold-200">Bonus</p>
               <p className="mt-1 leading-7 text-white/75">{p.bonus}</p>
             </div>
-          </div>
+          </RevealOnScroll>
         )}
 
         {/* 7 — Testimonials (hidden by the component until ≥1 review exists) */}
         {testimonials}
 
         {(hasWhoFor || hasWhoNotFor) && (
-          <div className="grid gap-6 sm:grid-cols-2">
+          <RevealOnScroll className="grid gap-6 sm:grid-cols-2">
             {hasWhoFor && (
               <div className="rounded-2xl border border-gold-300/15 bg-gold-300/[0.03] p-6">
                 <p className="eyebrow mb-4">Für wen</p>
@@ -147,11 +149,11 @@ export function ProductPageSections({
                 </ul>
               </div>
             )}
-          </div>
+          </RevealOnScroll>
         )}
 
         {hasAfter && (
-          <div>
+          <RevealOnScroll>
             <p className="eyebrow mb-5">Was du danach kannst</p>
             {outcome && <p className="mb-6 text-lg leading-9 text-white/55">{outcome}</p>}
             {afterBullets.length > 0 && (
@@ -164,12 +166,12 @@ export function ProductPageSections({
                 ))}
               </div>
             )}
-          </div>
+          </RevealOnScroll>
         )}
 
         {/* 10 — Ergebnis-Proof: real screenshots, the strongest spot right before CTA */}
         {hasProof && (
-          <div>
+          <RevealOnScroll>
             <p className="eyebrow mb-5">Echte Ergebnisse</p>
             <div className="grid gap-4 sm:grid-cols-2">
               {proofImageUrls.map((src) => (
@@ -183,11 +185,11 @@ export function ProductPageSections({
                 />
               ))}
             </div>
-          </div>
+          </RevealOnScroll>
         )}
 
         {/* 11 — Compact CTA + price */}
-        {cta}
+        {cta && <RevealOnScroll>{cta}</RevealOnScroll>}
       </div>
     </section>
   );
