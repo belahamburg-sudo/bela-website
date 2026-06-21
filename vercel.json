@@ -2,8 +2,5 @@
   "framework": "nextjs",
   "buildCommand": "next build",
   "devCommand": "next dev",
-  "installCommand": "npm install --legacy-peer-deps",
-  "crons": [
-    { "path": "/api/cron/all", "schedule": "0 */2 * * *" }
-  ]
+  "installCommand": "npm install --legacy-peer-deps"
 }
