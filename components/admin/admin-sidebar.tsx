@@ -12,6 +12,8 @@ import {
   UserPlus,
   Send,
   Mail,
+  LifeBuoy,
+  MessageSquare,
   CalendarClock,
   Image as ImageIcon,
   Settings,
@@ -77,11 +79,13 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/emails", label: "E-Mails", icon: Mail },
       { href: "/admin/resend", label: "Resend", icon: MailCheck },
       { href: "/admin/telegram", label: "Telegram", icon: Send },
+      { href: "/admin/support", label: "Support", icon: LifeBuoy },
     ],
   },
   {
     label: "System",
     links: [
+      { href: "/admin/kommentare", label: "Kommentare", icon: MessageSquare },
       { href: "/admin/system", label: "Datenbank", icon: Activity },
       { href: "/admin/einstellungen", label: "Einstellungen", icon: Settings },
       { href: "/admin/medien", label: "Medien", icon: ImageIcon },

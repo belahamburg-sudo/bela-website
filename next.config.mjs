@@ -56,6 +56,7 @@ const nextConfig = {
       { source: "/db/affiliate", destination: "/affiliate", permanent: true },
       { source: "/db/vip", destination: "/vip", permanent: true },
       { source: "/db/onboarding", destination: "/onboarding", permanent: true },
+      { source: "/db/benachrichtigungen", destination: "/benachrichtigungen", permanent: true },
     ];
   },
   async rewrites() {
@@ -68,6 +69,7 @@ const nextConfig = {
       { source: "/vip", destination: "/db/vip" },
       { source: "/onboarding", destination: "/db/onboarding" },
       { source: "/goldmine-finder", destination: "/db/goldmine-finder" },
+      { source: "/benachrichtigungen", destination: "/db/benachrichtigungen" },
     ];
   },
   async headers() {

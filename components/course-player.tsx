@@ -43,10 +43,12 @@ export function CoursePlayer({
   course,
   initialCompleted = [],
   recommendedCourses = {},
+  purchaseDate,
 }: {
   course: DbCourse;
   initialCompleted?: string[];
   recommendedCourses?: Record<string, RecommendedCourseCard>;
+  purchaseDate?: string | null;
 }) {
   const lessons = useMemo(
     () =>
@@ -64,6 +66,31 @@ export function CoursePlayer({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const completedSet = useMemo(() => new Set(completed), [completed]);
+
+  const dripLocked = useMemo(() => {
+    if (!course.drip_enabled || !purchaseDate) return new Set<string>();
+    const bought = new Date(purchaseDate).getTime();
+    const now = Date.now();
+    const locked = new Set<string>();
+    for (const mod of course.modules) {
+      if (mod.drip_days && mod.drip_days > 0) {
+        const unlockAt = bought + mod.drip_days * 86400000;
+        if (now < unlockAt) {
+          for (const l of mod.lessons) locked.add(l.id);
+        }
+      }
+    }
+    return locked;
+  }, [course, purchaseDate]);
+
+  function dripUnlockLabel(mod: { drip_days?: number | null }): string | null {
+    if (!course.drip_enabled || !purchaseDate || !mod.drip_days) return null;
+    const unlockAt = new Date(purchaseDate).getTime() + mod.drip_days * 86400000;
+    if (Date.now() >= unlockAt) return null;
+    const daysLeft = Math.ceil((unlockAt - Date.now()) / 86400000);
+    return daysLeft === 1 ? "morgen" : `in ${daysLeft} Tagen`;
+  }
+
   const activeLesson = lessons.find((l) => l.id === activeId) as
     | (DbLesson & { moduleTitle: string; moduleId: string })
     | undefined;
@@ -159,6 +186,8 @@ export function CoursePlayer({
               const done = module.lessons.filter((l) => completedSet.has(l.id)).length;
               const isOpen = expanded.has(module.id);
               const hasActive = module.lessons.some((l) => l.id === activeId);
+              const modDripLabel = dripUnlockLabel(module);
+              const isModLocked = module.lessons.some((l) => dripLocked.has(l.id));
               return (
                 <div
                   key={module.id}

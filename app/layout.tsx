@@ -10,6 +10,7 @@ import { MicrosoftClarity } from "@/components/microsoft-clarity";
 import { SupportChatbot } from "@/components/support-chatbot";
 import { CartProvider } from "@/lib/cart";
 import { ReferralCapture } from "@/components/referral-capture";
+import { SwRegister } from "@/components/sw-register";
 
 const hanken = Hanken_Grotesk({
   subsets: ["latin"],
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
   description:
     "Baue mit AI digitale Produkte und verkaufe sie automatisiert. Templates, Guides, Mini-Kurse. Einmal erstellt, dauerhaft vermarktet.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: "/favicon.png", type: "image/png" },
@@ -34,6 +36,11 @@ export const metadata: Metadata = {
     description:
       "Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen.",
     images: [SITE_LOGO_PATH],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "AI Goldmining",
   },
 };
 
@@ -59,6 +66,7 @@ export default function RootLayout({
         <CartProvider>{children}</CartProvider>
         <SupportChatbot />
         <CookieConsent />
+        <SwRegister />
       </body>
     </html>
   );

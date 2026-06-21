@@ -22,6 +22,8 @@ type CheckoutBody = {
   agbAccepted?: boolean;
   promoCode?: string;
   referralCode?: string;
+  // Installment checkout: pay in N monthly installments.
+  installments?: boolean;
 };
 
 async function stripeImageUrl(image: string | null | undefined): Promise<string | undefined> {
@@ -278,30 +280,86 @@ export async function POST(request: Request) {
 
     const enableTax = process.env.STRIPE_AUTOMATIC_TAX === "1";
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      success_url: absoluteUrl(`/checkout/success?session_id={CHECKOUT_SESSION_ID}&course=${courseSlugs[0]}`),
-      cancel_url: absoluteUrl(`/checkout/cancel?course=${courseSlugs[0]}`),
-      ...(resolvedEmail ? { customer_email: resolvedEmail } : {}),
-      ...(userId ? { client_reference_id: userId } : {}),
-      line_items: lineItems,
-      // Proper invoices with mandatory fields (brief section 1). This also makes
-      // Stripe always create a Customer, which the OTO charge reuses.
-      invoice_creation: { enabled: true },
-      billing_address_collection: "required",
-      tax_id_collection: { enabled: true },
-      ...(enableTax ? { automatic_tax: { enabled: true } } : {}),
-      // Save the card for the post-purchase 1-Click OTO (only when OTO is live).
-      ...(OTO.enabled
-        ? { payment_intent_data: { setup_future_usage: "off_session" as const } }
-        : {}),
-      // Discounts vs. hosted promo entry are mutually exclusive.
-      ...(appliedDiscount ? { discounts: appliedDiscount } : { allow_promotion_codes: true }),
-      ...(process.env.STRIPE_TOS_CONSENT === "1"
-        ? { consent_collection: { terms_of_service: "required" } }
-        : {}),
-      metadata,
-    });
+    // Installment mode: single-course only, course must have installment config.
+    const wantsInstallments = body.installments && valid.length === 1;
+    let installmentConfig: { count: number; priceCents: number } | null = null;
+    if (wantsInstallments && adminClient) {
+      const { data: ic } = await adminClient
+        .from("courses")
+        .select("installment_count, installment_price_cents")
+        .eq("slug", courseSlugs[0])
+        .maybeSingle();
+      if (ic?.installment_count && ic.installment_count > 1 && ic.installment_price_cents) {
+        installmentConfig = { count: ic.installment_count, priceCents: ic.installment_price_cents };
+      }
+    }
+
+    let session: Stripe.Checkout.Session;
+
+    if (installmentConfig) {
+      // Subscription-mode: create a recurring price that auto-cancels after N payments.
+      const course = valid[0].course!;
+      const productId = productBySlug.get(course.slug);
+      const imageUrl = productId ? undefined : await stripeImageUrl(course.image);
+
+      const subscriptionLineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "eur",
+            unit_amount: installmentConfig.priceCents,
+            recurring: { interval: "month" },
+            ...(productId
+              ? { product: productId }
+              : {
+                  product_data: {
+                    name: `${course.title} (${installmentConfig.count} Raten)`,
+                    ...(course.tagline ? { description: course.tagline } : {}),
+                    ...(imageUrl ? { images: [imageUrl] } : {}),
+                  },
+                }),
+          },
+        },
+      ];
+
+      session = await stripe.checkout.sessions.create({
+        mode: "subscription",
+        success_url: absoluteUrl(`/checkout/success?session_id={CHECKOUT_SESSION_ID}&course=${courseSlugs[0]}`),
+        cancel_url: absoluteUrl(`/checkout/cancel?course=${courseSlugs[0]}`),
+        ...(resolvedEmail ? { customer_email: resolvedEmail } : {}),
+        ...(userId ? { client_reference_id: userId } : {}),
+        line_items: subscriptionLineItems,
+        subscription_data: {
+          metadata: { ...metadata, installment_mode: "true", installment_total: String(installmentConfig.count) },
+        },
+        billing_address_collection: "required",
+        tax_id_collection: { enabled: true },
+        ...(enableTax ? { automatic_tax: { enabled: true } } : {}),
+        ...(appliedDiscount ? { discounts: appliedDiscount } : { allow_promotion_codes: true }),
+        metadata,
+      });
+    } else {
+      session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        success_url: absoluteUrl(`/checkout/success?session_id={CHECKOUT_SESSION_ID}&course=${courseSlugs[0]}`),
+        cancel_url: absoluteUrl(`/checkout/cancel?course=${courseSlugs[0]}`),
+        ...(resolvedEmail ? { customer_email: resolvedEmail } : {}),
+        ...(userId ? { client_reference_id: userId } : {}),
+        line_items: lineItems,
+        invoice_creation: { enabled: true },
+        billing_address_collection: "required",
+        tax_id_collection: { enabled: true },
+        ...(enableTax ? { automatic_tax: { enabled: true } } : {}),
+        ...(OTO.enabled
+          ? { payment_intent_data: { setup_future_usage: "off_session" as const } }
+          : {}),
+        ...(appliedDiscount ? { discounts: appliedDiscount } : { allow_promotion_codes: true }),
+        ...(process.env.STRIPE_TOS_CONSENT === "1"
+          ? { consent_collection: { terms_of_service: "required" } }
+          : {}),
+        metadata,
+      });
+    }
 
     return NextResponse.json({ url: session.url });
   } catch (error) {

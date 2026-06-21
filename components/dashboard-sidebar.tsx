@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { NotificationBell } from "@/components/notification-bell";
 import {
   LayoutDashboard,
   Pickaxe,
@@ -252,7 +253,8 @@ export function DashboardSidebar() {
 
       {/* Desktop floating cart — the member area has no marketing header, so the
           cart lives here so members can keep shopping inside /dashboard. */}
-      <div className="fixed right-6 top-6 z-40 hidden lg:block">
+      <div className="fixed right-6 top-6 z-40 hidden lg:flex lg:items-center lg:gap-2">
+        <NotificationBell />
         <CartButton />
       </div>
 
@@ -271,6 +273,7 @@ export function DashboardSidebar() {
         </Link>
 
         <div className="flex items-center gap-1">
+          <NotificationBell />
           <CartButton />
           <button
             onClick={handleLogout}

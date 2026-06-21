@@ -28,6 +28,8 @@ export type DbModule = {
   recommendation_note?: string | null;
   /** 3–5 sales bullets shown per module on the product page (migration_022). */
   highlights?: string[] | null;
+  /** Drip content: days after purchase before this module unlocks (migration_030). */
+  drip_days?: number | null;
   lessons: DbLesson[];
 };
 
@@ -68,6 +70,12 @@ export type DbCourse = {
   sort_order?: number | null;
   updated_at?: string | null;
   created_at?: string | null;
+  /** Drip content: time-gate modules after purchase (migration_030). */
+  drip_enabled?: boolean | null;
+  /** Installment checkout: number of monthly payments (migration_030). */
+  installment_count?: number | null;
+  /** Installment checkout: price per installment in cents (migration_030). */
+  installment_price_cents?: number | null;
   modules: DbModule[];
 };
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import type { DbCourse } from "@/lib/db-types";
+import { WaitlistForm } from "./waitlist-form";
 
 type ComingSoonScreenProps = {
   course: Pick<DbCourse, "slug" | "title" | "tagline" | "description">;
@@ -43,17 +44,8 @@ export function ComingSoonScreen({ course, isFlagship }: ComingSoonScreenProps) 
           </p>
         )}
 
-        <div className="relative overflow-hidden rounded-sm border border-white/10 bg-cream/[0.02] p-6">
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.06] via-transparent to-obsidian/40 backdrop-blur-[1px]" />
-          <p className="relative text-[11px] font-mono uppercase tracking-[0.22em] text-cream/45">
-            Wird bald freigeschaltet
-          </p>
-          <p className="relative mt-3 text-sm leading-relaxed text-cream/55">
-            Dieser Kurs ist bereits in der Roadmap und erscheint in Kürze in deiner Goldmine.
-          </p>
-          <span className="relative mt-5 inline-flex items-center rounded-full border border-gold-300/25 bg-gold-300/[0.08] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-gold-200/90">
-            Coming Soon
-          </span>
+        <div className="mb-8 text-left">
+          <WaitlistForm courseSlug={course.slug} courseTitle={course.title} />
         </div>
 
         <Link
