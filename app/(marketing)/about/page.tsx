@@ -273,6 +273,24 @@ export default async function AboutPage() {
           </div>
         </div>
         <AboutCollage />
+
+        {/* Quote */}
+        <div className="mx-auto mt-16 max-w-2xl px-6 text-center">
+          <div className="relative inline-block">
+            <span className="pointer-events-none absolute -top-6 left-0 font-heading text-7xl leading-none text-gold-300/20 select-none">&ldquo;</span>
+            <blockquote className="relative pt-4">
+              <p className="font-heading tracking-gta text-2xl leading-snug text-cream/70 sm:text-3xl">
+                Die meisten Menschen glauben, dass Ortsunabhängigkeit mehr Geld erfordert.
+              </p>
+              <p className="mt-3 font-heading tracking-gta text-2xl leading-snug text-gold-300 sm:text-3xl">
+                Es erfordert eine andere Einkommensquelle.
+              </p>
+              <footer className="mt-6 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-cream/35">
+                — Bela Goldmann
+              </footer>
+            </blockquote>
+          </div>
+        </div>
       </section>
 
       {/* ── Final CTA ── */}
