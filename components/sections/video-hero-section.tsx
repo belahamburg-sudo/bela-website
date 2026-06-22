@@ -256,7 +256,7 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
           <div className="video-frame-gold aspect-video bg-obsidian">
             <video
               ref={videoRef}
-              src="/assets/ai-goldmining.mp4"
+              src="https://hshkumoipyfocqnhqbql.supabase.co/storage/v1/object/public/public-assets/video/ai-goldmining.mp4"
               poster="/assets/hero-poster.jpg"
               className="absolute inset-0 w-full h-full object-cover"
               playsInline
