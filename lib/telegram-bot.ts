@@ -50,15 +50,17 @@ export function createTelegramLinkToken(userId: string): string {
     .update(userId)
     .digest("base64url")
     .slice(0, 20);
-  return `${userId}.${sig}`;
+  // Telegram ?start= only allows A-Z a-z 0-9 _ - (no dots).
+  // UUID is always 36 chars, so we split at fixed position on verify.
+  return `${userId}--${sig}`;
 }
 
 export function verifyTelegramLinkToken(token: string): string | null {
   if (!LINK_SECRET) return null;
-  const dot = token.indexOf(".");
-  if (dot <= 0) return null;
-  const userId = token.slice(0, dot);
-  const sig = token.slice(dot + 1);
+  // UUID is exactly 36 chars, followed by "--" (2 chars), then the 20-char sig.
+  if (token.length !== 58) return null;
+  const userId = token.slice(0, 36);
+  const sig = token.slice(38);
   const expected = crypto
     .createHmac("sha256", LINK_SECRET)
     .update(userId)
