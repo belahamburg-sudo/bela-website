@@ -8,13 +8,26 @@ export type TrustpilotReview = {
   date: string;
 };
 
-/** Public profile data — synced from de.trustpilot.com/review/aigoldmining.com */
+/**
+ * Public profile data — synced from de.trustpilot.com/review/aigoldmining.com.
+ * Last synced: 2026-06-28. Score/count MUST match the live profile (the section
+ * claims "echte Bewertungen … kein Fake-Social-Proof"). "Gut" is Trustpilot's
+ * official German label for the 3.8–4.2 band; the gap between a 4.1 score and
+ * all-5-star reviews is normal (Trustpilot uses a weighted, not flat, average).
+ */
 export const trustpilotProfile = {
-  trustScore: 4.0,
-  reviewCount: 4,
+  trustScore: 4.1,
+  reviewCount: 5,
   starsLabel: "Gut",
   profileUrl: trustpilotUrl,
   reviews: [
+    {
+      author: "Julia Trost",
+      title: "Alles super",
+      text: "Alles super. Absolute Empfehlung!",
+      rating: 5,
+      date: "2026-06-16",
+    },
     {
       author: "Benni",
       title: "Nichts auszusetzen",
@@ -36,12 +49,7 @@ export const trustpilotProfile = {
       rating: 5,
       date: "2026-05-08",
     },
-    {
-      author: "Lol allah Sksl",
-      title: "Digitale Produkte verkaufen",
-      text: "Hab angefangen, digitale Produkte zu verkaufen — läuft bis jetzt durch die Community richtig gut. Kann nur empfehlen.",
-      rating: 5,
-      date: "2026-05-08",
-    },
+    // Note: the profile has 5 reviews total (see reviewCount); we display the 4
+    // newest in a 2x2 grid. The 5th remains visible via the "all reviews" link.
   ] satisfies TrustpilotReview[],
 } as const;
