@@ -179,7 +179,7 @@ export default function CartPage() {
                 >
                   <div className="relative h-20 w-20 flex-none overflow-hidden rounded-sm border border-white/10 bg-ink">
                     {item.image && !item.image.startsWith("storage://") ? (
-                      <Image src={item.image} alt="" fill sizes="80px" className="object-cover" />
+                      <Image src={item.image} alt={item.title} fill sizes="80px" className="object-cover" />
                     ) : null}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -313,7 +313,7 @@ export default function CartPage() {
                   >
                     <div className="relative h-14 w-14 flex-none overflow-hidden rounded-sm border border-white/10 bg-ink">
                       {c.image && !c.image.startsWith("storage://") ? (
-                        <Image src={c.image} alt="" fill sizes="56px" className="object-cover" />
+                        <Image src={c.image} alt={c.title} fill sizes="56px" className="object-cover" />
                       ) : null}
                     </div>
                     <div className="min-w-0 flex-1">

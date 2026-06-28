@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { navItems } from "@/lib/content";
 import { socialLinks } from "@/lib/env";
 import { contactEmail } from "@/lib/email-addresses";
+import { ObfuscatedEmail } from "@/components/obfuscated-email";
 import { SITE_LOGO_PATH } from "@/lib/brand";
 
 export function Footer() {
@@ -17,8 +18,13 @@ export function Footer() {
     { href: socialLinks.instagram, label: "Instagram" },
     { href: socialLinks.tiktok, label: "TikTok" },
     { href: socialLinks.youtube, label: "YouTube" },
-    { href: socialLinks.telegram, label: "Telegram" }
-  ];
+    { href: socialLinks.telegram, label: "Telegram" },
+    { href: socialLinks.x, label: "X" },
+    { href: socialLinks.linkedin, label: "LinkedIn" },
+    { href: socialLinks.facebook, label: "Facebook" }
+  ].filter((s) => Boolean(s.href));
+
+  const [emailUser, emailDomain] = contactEmail.split("@");
 
   return (
     <footer className="relative mt-0 border-t border-gold-300/10 bg-obsidian">
@@ -42,12 +48,11 @@ export function Footer() {
             <p className="max-w-sm text-sm leading-7 text-cream/40">
               Digitale Produkte mit AI bauen, verpacken und automatisiert verkaufen. Kein Guru-Playbook. Eine Methode mit realistischem Zielrahmen.
             </p>
-            <a
-              href={`mailto:${contactEmail}`}
+            <ObfuscatedEmail
+              user={emailUser}
+              domain={emailDomain}
               className="mt-4 inline-block text-sm text-gold-300/80 transition-colors hover:text-gold-200"
-            >
-              {contactEmail}
-            </a>
+            />
             <p className="mt-6 gta-label opacity-60">Based in Germany</p>
           </div>
 

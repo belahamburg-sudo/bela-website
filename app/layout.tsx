@@ -11,6 +11,12 @@ import { SupportChatbot } from "@/components/support-chatbot";
 import { CartProvider } from "@/lib/cart";
 import { ReferralCapture } from "@/components/referral-capture";
 import { SwRegister } from "@/components/sw-register";
+import {
+  JsonLd,
+  organizationSchema,
+  personSchema,
+  websiteSchema,
+} from "@/lib/seo/structured-data";
 
 const hanken = Hanken_Grotesk({
   subsets: ["latin"],
@@ -58,6 +64,9 @@ export default function RootLayout({
   return (
     <html lang="de" className={`dark scroll-smooth ${hanken.variable}`}>
       <body className="bg-obsidian font-body text-cream antialiased">
+        <JsonLd
+          data={[organizationSchema(), personSchema(), websiteSchema()]}
+        />
         <GoogleAnalytics />
         <MicrosoftClarity />
         <PickaxeCursor />

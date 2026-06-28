@@ -1,21 +1,26 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { VideoHeroSection } from "@/components/sections/video-hero-section";
 import { AiJobsSection } from "@/components/sections/ai-jobs-section";
-import { ProblemSection } from "@/components/sections/problem-section";
-import { IsThisYouSection } from "@/components/sections/is-this-you-section";
-import { HowItWorksSection } from "@/components/sections/how-it-works-section";
-import { AiChangesSection } from "@/components/sections/ai-changes-section";
-import { MethodSection } from "@/components/sections/method-section";
-import { StatsSection } from "@/components/sections/stats-section";
-import { ProductsSection } from "@/components/sections/products-section";
-import { SolutionBannerSection } from "@/components/sections/solution-banner-section";
-import { TrustSection } from "@/components/sections/trust-section";
-import { AntihypeSection } from "@/components/sections/antihype-section";
-import { FaqSection } from "@/components/sections/faq-section";
-import { CtaFooterSection } from "@/components/sections/cta-footer-section";
+
+// Below-fold sections: split into separate JS chunks, loaded after initial paint
+const ProblemSection = dynamic(() => import("@/components/sections/problem-section").then(m => ({ default: m.ProblemSection })));
+const IsThisYouSection = dynamic(() => import("@/components/sections/is-this-you-section").then(m => ({ default: m.IsThisYouSection })));
+const HowItWorksSection = dynamic(() => import("@/components/sections/how-it-works-section").then(m => ({ default: m.HowItWorksSection })));
+const AiChangesSection = dynamic(() => import("@/components/sections/ai-changes-section").then(m => ({ default: m.AiChangesSection })));
+const MethodSection = dynamic(() => import("@/components/sections/method-section").then(m => ({ default: m.MethodSection })));
+const StatsSection = dynamic(() => import("@/components/sections/stats-section").then(m => ({ default: m.StatsSection })));
+const ProductsSection = dynamic(() => import("@/components/sections/products-section").then(m => ({ default: m.ProductsSection })));
+const SolutionBannerSection = dynamic(() => import("@/components/sections/solution-banner-section").then(m => ({ default: m.SolutionBannerSection })));
+const TrustSection = dynamic(() => import("@/components/sections/trust-section").then(m => ({ default: m.TrustSection })));
+const AntihypeSection = dynamic(() => import("@/components/sections/antihype-section").then(m => ({ default: m.AntihypeSection })));
+const FaqSection = dynamic(() => import("@/components/sections/faq-section").then(m => ({ default: m.FaqSection })));
+const CtaFooterSection = dynamic(() => import("@/components/sections/cta-footer-section").then(m => ({ default: m.CtaFooterSection })));
 import { getFeaturedCourses } from "@/lib/courses";
 import { getActiveWebinar } from "@/lib/webinar";
 import { getEffectiveSocials } from "@/lib/settings";
+import { faqItems } from "@/lib/content";
+import { JsonLd, faqPageSchema } from "@/lib/seo/structured-data";
 
 const BASE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com"
@@ -45,6 +50,7 @@ export default async function HomePage() {
   return (
     <>
       <style>{`body > footer { display: none; }`}</style>
+      <JsonLd data={faqPageSchema(faqItems)} />
       <VideoHeroSection webinar={webinar} />
       <AiJobsSection />
       <ProblemSection />

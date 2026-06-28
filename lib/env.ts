@@ -40,6 +40,11 @@ export const socialLinks = {
   tiktok: "https://www.tiktok.com/@belagoldmann",
   instagram: "https://www.instagram.com/belagoldmann",
   youtube: "https://www.youtube.com/@belagoldmann",
+  // Set these env vars once the profiles exist — empty links are hidden
+  // everywhere (footer + structured data) until then.
+  x: process.env.NEXT_PUBLIC_X_URL || "",
+  linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || "",
+  facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "",
 } as const;
 
 /** Direct line to Bela for 1:1 coaching requests (NOT the community group). */

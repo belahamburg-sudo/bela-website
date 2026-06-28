@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, MailX, AlertCircle } from "lucide-react";
+
+// Status/confirmation landing — no SEO value, keep it out of the index.
+export const metadata: Metadata = {
+  title: "Newsletter | AI Goldmining",
+  description: "Newsletter-Status von AI Goldmining.",
+  robots: { index: false, follow: true },
+};
 
 const MESSAGES: Record<string, { icon: typeof CheckCircle2; title: string; copy: string }> = {
   confirmed: {

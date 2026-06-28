@@ -16,14 +16,32 @@ import { parseIncludeLine } from "@/lib/course-includes";
 import { resolveMediaUrl } from "@/lib/storage";
 import { formatEuro, discountPercent } from "@/lib/utils";
 import { Boxes, Package } from "lucide-react";
+import {
+  JsonLd,
+  SITE_URL,
+  courseProductSchema,
+  breadcrumbSchema,
+} from "@/lib/seo/structured-data";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const course = await getPublicCourse(slug);
+  if (!course) return { title: "Kurs | AI Goldmining" };
+  const url = `${SITE_URL}/kurse/${slug}`;
+  const description = (course.description || course.tagline || "").slice(0, 160);
   return {
-    title: course ? `${course.title} | AI Goldmining` : "Kurs | AI Goldmining"
+    title: `${course.title} | AI Goldmining`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${course.title} | AI Goldmining`,
+      description,
+      url,
+      type: "website",
+      images: course.image ? [course.image] : undefined,
+    },
   };
 }
 
@@ -185,6 +203,16 @@ export default async function CourseDetailPage({
 
   return (
     <>
+      <JsonLd
+        data={[
+          courseProductSchema(course),
+          breadcrumbSchema([
+            { name: "Start", url: SITE_URL },
+            { name: "Kurse", url: `${SITE_URL}/kurse` },
+            { name: course.title, url: `${SITE_URL}/kurse/${course.slug}` },
+          ]),
+        ]}
+      />
       <section className="relative overflow-hidden bg-obsidian pt-28 pb-20 sm:pt-32 sm:pb-28">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute top-0 left-1/2 h-[560px] w-[960px] -translate-x-1/2 rounded-full bg-gold-300/[0.06] blur-[160px]" />

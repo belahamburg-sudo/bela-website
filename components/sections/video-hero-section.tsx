@@ -455,7 +455,7 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
                 >
                   <Image
                     src={src}
-                    alt=""
+                    alt="Mitglied der AI Goldmining Community"
                     fill
                     sizes="24px"
                     className="object-cover"

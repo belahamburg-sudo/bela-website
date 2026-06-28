@@ -14,6 +14,14 @@ import type { DbCourse } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
+// Gated lead-magnet claim pages — valuable to visitors with the link, but they
+// should not surface in search. Title set, indexing off.
+export const metadata = {
+  title: "Gratis-Download | AI Goldmining",
+  description: "Sichere dir dein kostenloses Material von AI Goldmining.",
+  robots: { index: false, follow: false },
+};
+
 async function getFreebie(slug: string): Promise<DbCourse | null> {
   const admin = getSupabaseAdminClient();
   if (!admin) return null;

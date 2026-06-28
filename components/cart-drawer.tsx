@@ -101,7 +101,7 @@ export function CartDrawer() {
                     >
                       <div className="relative h-16 w-16 flex-none overflow-hidden rounded-sm border border-white/10 bg-ink">
                         {item.image && !item.image.startsWith("storage://") ? (
-                          <Image src={item.image} alt="" fill sizes="64px" className="object-cover" />
+                          <Image src={item.image} alt={item.title} fill sizes="64px" className="object-cover" />
                         ) : null}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -143,7 +143,7 @@ export function CartDrawer() {
                         >
                           <div className="relative h-11 w-11 flex-none overflow-hidden rounded-md border border-white/10 bg-ink">
                             {c.image && !c.image.startsWith("storage://") ? (
-                              <Image src={c.image} alt="" fill sizes="44px" className="object-cover" />
+                              <Image src={c.image} alt={c.title} fill sizes="44px" className="object-cover" />
                             ) : null}
                           </div>
                           <div className="min-w-0 flex-1">
