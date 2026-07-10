@@ -3,8 +3,31 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/button";
-import { CourseCard } from "@/components/course-card";
+import { StoreProductCard, type StoreCardCourse } from "@/components/store-product-card";
 import type { Course } from "@/lib/content";
+
+/** Map a full Course to the StoreProductCard shape (same mapping the /kurse store
+ *  uses), so homepage suggestions render with the identical catalog card. */
+function toStoreCard(c: Course): StoreCardCourse {
+  const totalLessons = c.modules.reduce((n, m) => n + m.lessons.length, 0);
+  return {
+    slug: c.slug,
+    title: c.title,
+    tagline: c.tagline,
+    image: c.image,
+    price_cents: c.priceCents,
+    compare_at_price_cents: c.compareAtPriceCents ?? null,
+    level: c.level,
+    format: c.format,
+    totalLessons,
+    completedLessons: 0,
+    progress: 0,
+    isBundle: c.level === "Bundle",
+    comingSoon: Boolean(c.comingSoon),
+    isFlagship: c.slug === "ai-goldmining-method",
+    sortOrder: c.sortOrder,
+  };
+}
 
 export function ProductsSection({ courses }: { courses: Course[] }) {
   return (
@@ -34,17 +57,17 @@ export function ProductsSection({ courses }: { courses: Course[] }) {
           </p>
         </motion.div>
 
-        <div className="mt-4 grid gap-6 lg:grid-cols-2">
+        <div className="mt-4 grid items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {courses.map((course, i) => (
             <motion.div
               key={course.slug}
+              className="h-full"
               initial={{ opacity: 0, y: 40, scale: 0.97 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6, delay: i * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-              whileHover={{ y: -6, transition: { duration: 0.2 } }}
             >
-              <CourseCard course={course} />
+              <StoreProductCard course={toStoreCard(course)} isPurchased={false} hrefBase="/kurse" />
             </motion.div>
           ))}
         </div>

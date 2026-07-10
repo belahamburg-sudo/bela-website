@@ -200,6 +200,7 @@ export const navItems = [
   { href: "/kurse", label: "Kurse" },
   { href: "/services", label: "Services" },
   { href: "/webinar", label: "Webinar" },
+  { href: "/community", label: "Community" },
   { href: "/about", label: "Über mich" }
 ];
 
