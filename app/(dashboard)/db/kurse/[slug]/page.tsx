@@ -11,7 +11,7 @@ import { CourseCoach } from "@/components/course-coach";
 import { courseIsIndexed } from "@/lib/course-coach";
 import { CourseCrossSell, type CrossSellItem } from "@/components/course-cross-sell";
 import { getPublicCourses, getStoreCatalog } from "@/lib/courses";
-import type { DbCourse, DbModule } from "@/lib/db-types";
+import { moduleRecommendations, type DbCourse, type DbModule } from "@/lib/db-types";
 import type { Course } from "@/lib/content";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseAdminClient } from "@/lib/supabase";
@@ -95,13 +95,19 @@ async function resolveCourseMedia(course: DbCourse): Promise<DbCourse> {
 
 async function fetchCourseAndAccess(
   slug: string
-): Promise<{ course: DbCourse | null; hasPurchase: boolean; completedLessonIds: string[]; isComplete: boolean }> {
+): Promise<{
+  course: DbCourse | null;
+  hasPurchase: boolean;
+  ownedSlugs: string[];
+  completedLessonIds: string[];
+  isComplete: boolean;
+}> {
   if (!hasSupabasePublicEnv()) {
-    return { course: null, hasPurchase: false, completedLessonIds: [], isComplete: false };
+    return { course: null, hasPurchase: false, ownedSlugs: [], completedLessonIds: [], isComplete: false };
   }
 
   const supabase = await getSupabaseServerClient();
-  if (!supabase) return { course: null, hasPurchase: false, completedLessonIds: [], isComplete: false };
+  if (!supabase) return { course: null, hasPurchase: false, ownedSlugs: [], completedLessonIds: [], isComplete: false };
   const admin = getSupabaseAdminClient();
 
   const {
@@ -117,12 +123,10 @@ async function fetchCourseAndAccess(
     user
       ? supabase
           .from("purchases")
-          .select("id")
+          .select("course_slug")
           .eq("user_id", user.id)
-          .eq("course_slug", slug)
           .in("status", ["paid", "free"])
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
+      : Promise.resolve({ data: [] }),
     user
       ? supabase
           .from("lesson_progress")
@@ -131,8 +135,13 @@ async function fetchCourseAndAccess(
       : Promise.resolve({ data: [] }),
   ]);
 
+  const ownedSlugs = ((purchaseResult.data ?? []) as { course_slug: string }[]).map(
+    (p) => p.course_slug
+  );
+  const hasPurchase = ownedSlugs.includes(slug);
+
   if (courseResult.error || !courseResult.data) {
-    return { course: null, hasPurchase: false, completedLessonIds: [], isComplete: false };
+    return { course: null, hasPurchase: false, ownedSlugs, completedLessonIds: [], isComplete: false };
   }
 
   const rawCourse = courseResult.data as DbCourse & {
@@ -154,9 +163,10 @@ async function fetchCourseAndAccess(
 
   return {
     course: rawCourse,
-    hasPurchase: Boolean(purchaseResult.data),
+    hasPurchase,
+    ownedSlugs,
     completedLessonIds,
-    isComplete: Boolean(purchaseResult.data) && isComplete,
+    isComplete: hasPurchase && isComplete,
   };
 }
 
@@ -166,7 +176,8 @@ export default async function DashboardCoursePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { course: dbCourse, hasPurchase, completedLessonIds, isComplete } = await fetchCourseAndAccess(slug);
+  const { course: dbCourse, hasPurchase, ownedSlugs, completedLessonIds, isComplete } =
+    await fetchCourseAndAccess(slug);
 
   if (dbCourse) {
     if (hasPurchase && dbCourse.is_active) {
@@ -186,13 +197,11 @@ export default async function DashboardCoursePage({
 
       // Per-module recommendations: resolve the picked slugs to live course cards.
       // Uses the full catalog (incl. coming-soon drafts) so a recommended draft
-      // still renders, linking to its "bald verfügbar" page.
+      // still renders, linking to its "bald verfügbar" page. `unlocked` marks
+      // courses the member already owns (inclusive/bought) → "ansehen" vs "kaufen".
+      const ownedSet = new Set(ownedSlugs);
       const recSlugs = Array.from(
-        new Set(
-          playableCourse.modules
-            .map((m) => m.recommended_course_slug)
-            .filter((s): s is string => Boolean(s))
-        )
+        new Set(playableCourse.modules.flatMap((m) => moduleRecommendations(m).map((r) => r.slug)))
       );
       const recommendedCourses: Record<string, RecommendedCourseCard> = {};
       if (recSlugs.length > 0) {
@@ -206,6 +215,7 @@ export default async function DashboardCoursePage({
               image: c.image,
               priceCents: c.priceCents,
               comingSoon: Boolean(c.comingSoon),
+              unlocked: ownedSet.has(recSlug),
             };
           }
         }

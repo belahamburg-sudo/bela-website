@@ -6,7 +6,7 @@ export type Lesson = {
   videoUrl: string;
   resources: Array<{
     label: string;
-    type: "PDF" | "Template" | "Prompt";
+    type: "PDF" | "Template" | "Prompt" | "XLSX" | "TXT" | "HTML";
     href: string;
   }>;
 };
@@ -78,6 +78,8 @@ export type Course = {
     title: string;
     /** 3–5 sales bullets shown for this module on the product page. */
     highlights?: string[];
+    /** Public preview/teaser video shown for this module on the product page. */
+    previewVideoUrl?: string;
     lessons: Lesson[];
   }>;
 };

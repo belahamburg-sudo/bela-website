@@ -13,7 +13,14 @@ import type { EditorLesson, ResourceItem } from "./course-editor";
 const inputClass =
   "w-full rounded-lg border border-white/10 bg-obsidian/60 px-3 py-2 text-sm text-cream placeholder:text-cream/30 focus:border-gold-300/40 focus:outline-none";
 
-const RESOURCE_TYPES: ResourceItem["type"][] = ["PDF", "Template", "Prompt"];
+const RESOURCE_TYPES: ResourceItem["type"][] = [
+  "PDF",
+  "Template",
+  "Prompt",
+  "XLSX",
+  "TXT",
+  "HTML",
+];
 
 export function LessonModal({
   open,

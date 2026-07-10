@@ -51,6 +51,7 @@ function mapModule(m: DbModule): Course["modules"][number] {
     highlights: Array.isArray(m.highlights)
       ? m.highlights.filter((h): h is string => typeof h === "string" && h.trim().length > 0)
       : [],
+    previewVideoUrl: m.preview_video_url ?? undefined,
     lessons,
   };
 }

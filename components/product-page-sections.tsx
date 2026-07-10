@@ -21,8 +21,10 @@ export function ProductPageSections({
   proofImageUrls = [],
   outcome,
   fallbackBullets = [],
+  topMedia,
   courseContent,
   testimonials,
+  inlineCta,
   cta,
 }: {
   pp?: ProductPage;
@@ -32,8 +34,12 @@ export function ProductPageSections({
   outcome?: string;
   /** Course "includes" bullets, shown when afterOutcomes is empty. */
   fallbackBullets?: string[];
+  /** Media block (promo video) shown right under the hero. */
+  topMedia?: ReactNode;
   courseContent?: ReactNode;
   testimonials?: ReactNode;
+  /** Compact buy CTA repeated mid-page (after "So funktioniert's" and the curriculum). */
+  inlineCta?: ReactNode;
   cta?: ReactNode;
 }) {
   const p = pp ?? {};
@@ -50,6 +56,9 @@ export function ProductPageSections({
   return (
     <section className="border-t border-white/[0.04] bg-obsidian py-20 sm:py-28">
       <div className="mx-auto max-w-4xl space-y-16 px-6">
+        {/* 2 — Media block (promo video) right under the hero */}
+        {topMedia && <RevealOnScroll>{topMedia}</RevealOnScroll>}
+
         {p.problem && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">Status Quo</p>
@@ -105,8 +114,14 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
+        {/* Mid-page CTA #1 — after the visitor understands the method */}
+        {inlineCta && hasMechanism && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
+
         {/* 5 — Kursinhalt im Detail (per-module bullets + preview video + curriculum) */}
         {courseContent && <RevealOnScroll>{courseContent}</RevealOnScroll>}
+
+        {/* Mid-page CTA #2 — after the visitor has seen everything that's inside */}
+        {inlineCta && courseContent && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
 
         {p.bonus && (
           <RevealOnScroll className="flex items-start gap-4 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] p-6">

@@ -21,18 +21,26 @@ import {
 import { Panel, AdminBadge, EmptyState } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
 import { Modal } from "@/components/admin/modal";
+import { FileUpload } from "@/components/admin/file-upload";
+import { StoragePicker } from "@/components/admin/storage-picker";
 import { useToast } from "@/components/admin/toast";
 import {
   createModule,
   updateModule,
   deleteModule,
   reorderModules,
-  updateModuleRecommendation,
+  updateModuleRecommendations,
   updateModuleHighlights,
+  updateModulePreviewVideo,
   deleteLesson,
   reorderLessons,
 } from "@/app/admin/kurse/actions";
-import type { CoursePickOption, EditorLesson, EditorModule } from "./course-editor";
+import type {
+  CoursePickOption,
+  EditorLesson,
+  EditorModule,
+  ModuleRecommendationInput,
+} from "./course-editor";
 import { LessonModal } from "./lesson-modal";
 
 const inputClass =
@@ -391,6 +399,12 @@ export function CurriculumEditor({
                             courseSlug={courseSlug}
                           />
 
+                          <ModulePreviewVideo
+                            module={mod}
+                            courseId={courseId}
+                            courseSlug={courseSlug}
+                          />
+
                           <ModuleRecommendation
                             module={mod}
                             courseId={courseId}
@@ -629,9 +643,111 @@ function ModuleHighlights({
 }
 
 /**
- * Per-module course recommendation editor. Lets the admin pick another course
- * to point members to after they finish this module, plus an optional note.
- * Saves only when changed; clearing the selection removes the recommendation.
+ * Per-module public preview video shown on the product page (next to the bullets).
+ * A marketing teaser stored in the public media bucket or as an external embed —
+ * separate from the private paywalled lesson videos. Saves only when changed.
+ */
+function ModulePreviewVideo({
+  module,
+  courseId,
+  courseSlug,
+}: {
+  module: EditorModule;
+  courseId: string;
+  courseSlug: string;
+}) {
+  const router = useRouter();
+  const { success, error } = useToast();
+  const [pending, startTransition] = useTransition();
+  const [value, setValue] = useState(module.previewVideoUrl);
+
+  const dirty = value !== module.previewVideoUrl;
+  const isUploaded = value.startsWith("storage://");
+  const hasVideo = Boolean(value);
+
+  function save() {
+    startTransition(async () => {
+      const res = await updateModulePreviewVideo({
+        id: module.id,
+        courseId,
+        courseSlug,
+        previewVideoUrl: value || null,
+      });
+      if (res.ok) {
+        success(value ? "Modul-Video gespeichert." : "Modul-Video entfernt.");
+        router.refresh();
+      } else {
+        error(res.error ?? "Konnte Video nicht speichern.");
+      }
+    });
+  }
+
+  return (
+    <div className="mt-1 rounded-lg border border-white/8 bg-obsidian/30 px-3 py-3">
+      <div className="mb-2 flex items-center gap-2">
+        <Video className="h-3.5 w-3.5 flex-shrink-0 text-gold-300/70" />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-cream/45">
+          Vorschau-Video für die Produktseite
+        </span>
+      </div>
+
+      {hasVideo ? (
+        <div className="mb-2 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.04] px-3 py-2 text-sm text-cream/80">
+          <PlayCircle className="h-4 w-4 flex-shrink-0 text-emerald-400" />
+          <span className="min-w-0 flex-1 truncate">{isUploaded ? "Video hochgeladen" : value}</span>
+          <button
+            onClick={() => setValue("")}
+            className="flex-shrink-0 text-cream/40 transition-colors hover:text-red-300"
+            aria-label="Video entfernen"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : (
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Embed-URL (YouTube, Vimeo …) oder unten hochladen"
+          className={`${inputClass} mb-2`}
+        />
+      )}
+
+      <FileUpload
+        bucket="media"
+        prefix="module-preview"
+        kind="video"
+        accept="video/*"
+        label={hasVideo ? "Anderes Video hochladen" : "oder Video hochladen"}
+        hint="MP4/WebM — öffentliches Vorschau-Video für die Produktseite"
+        onUploaded={(f) => {
+          setValue(f.ref);
+          success("Video hochgeladen — zum Übernehmen speichern.");
+        }}
+      />
+      <StoragePicker
+        kind="video"
+        buttonLabel="oder bereits hochgeladenes Video wählen"
+        onSelect={(ref) => {
+          setValue(ref);
+          success("Video ausgewählt — zum Übernehmen speichern.");
+        }}
+      />
+
+      {dirty && (
+        <div className="mt-2 flex justify-end">
+          <AdminButton variant="primary" size="sm" onClick={save} loading={pending}>
+            Video speichern
+          </AdminButton>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Per-module course recommendation editor. Lets the admin point members to one
+ * OR MORE next-step courses after they finish this module, each with an optional
+ * note. Saves only when changed; an empty list removes all recommendations.
  */
 function ModuleRecommendation({
   module,
@@ -647,65 +763,96 @@ function ModuleRecommendation({
   const router = useRouter();
   const { success, error } = useToast();
   const [pending, startTransition] = useTransition();
-  const [slug, setSlug] = useState(module.recommendedCourseSlug);
-  const [note, setNote] = useState(module.recommendationNote);
+  const [recs, setRecs] = useState<ModuleRecommendationInput[]>(module.recommendations);
 
-  const dirty = slug !== module.recommendedCourseSlug || note !== module.recommendationNote;
+  const dirty = JSON.stringify(recs) !== JSON.stringify(module.recommendations);
+  const chosen = new Set(recs.map((r) => r.slug));
+  const available = otherCourses.filter((c) => !chosen.has(c.slug));
+
+  function addRec(slug: string) {
+    if (!slug || chosen.has(slug)) return;
+    setRecs((prev) => [...prev, { slug, note: "" }]);
+  }
+  function updateNote(slug: string, note: string) {
+    setRecs((prev) => prev.map((r) => (r.slug === slug ? { ...r, note } : r)));
+  }
+  function removeRec(slug: string) {
+    setRecs((prev) => prev.filter((r) => r.slug !== slug));
+  }
 
   function save() {
     startTransition(async () => {
-      const res = await updateModuleRecommendation({
+      const res = await updateModuleRecommendations({
         id: module.id,
         courseId,
         courseSlug,
-        recommendedCourseSlug: slug || null,
-        note: note || null,
+        recommendations: recs,
       });
       if (res.ok) {
-        success(slug ? "Empfehlung gespeichert." : "Empfehlung entfernt.");
+        success(recs.length ? "Empfehlungen gespeichert." : "Empfehlungen entfernt.");
         router.refresh();
       } else {
-        error(res.error ?? "Konnte Empfehlung nicht speichern.");
+        error(res.error ?? "Konnte Empfehlungen nicht speichern.");
       }
     });
   }
+
+  const titleOf = (slug: string) => otherCourses.find((c) => c.slug === slug)?.title ?? slug;
 
   return (
     <div className="mt-1 rounded-lg border border-white/8 bg-obsidian/30 px-3 py-3">
       <div className="mb-2 flex items-center gap-2">
         <ArrowRightCircle className="h-3.5 w-3.5 flex-shrink-0 text-gold-300/70" />
         <span className="text-[11px] font-bold uppercase tracking-wider text-cream/45">
-          Empfehlung nach diesem Modul
+          Empfehlungen nach diesem Modul
         </span>
       </div>
       {otherCourses.length === 0 ? (
         <p className="text-xs text-cream/35">Es gibt noch keine anderen Kurse zum Empfehlen.</p>
       ) : (
-        <div className="flex flex-col gap-2">
-          <select
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            className={inputClass}
-          >
-            <option value="">— Keine Empfehlung —</option>
-            {otherCourses.map((c) => (
-              <option key={c.slug} value={c.slug}>
-                {c.title}
-              </option>
-            ))}
-          </select>
-          {slug && (
-            <input
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Optionaler Hinweis, z. B. „Bevor du startest, finde deine Nische.“"
+        <div className="flex flex-col gap-2.5">
+          {recs.map((r) => (
+            <div key={r.slug} className="rounded-lg border border-white/10 bg-obsidian/40 p-2.5">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <span className="min-w-0 truncate text-sm font-semibold text-cream">
+                  {titleOf(r.slug)}
+                </span>
+                <button
+                  onClick={() => removeRec(r.slug)}
+                  className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 text-cream/40 transition-colors hover:border-red-500/40 hover:text-red-300"
+                  aria-label="Empfehlung entfernen"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <input
+                value={r.note}
+                onChange={(e) => updateNote(r.slug, e.target.value)}
+                placeholder="Optionaler Hinweis, z. B. „Bevor du startest, finde deine Nische.“"
+                className={inputClass}
+              />
+            </div>
+          ))}
+
+          {available.length > 0 && (
+            <select
+              value=""
+              onChange={(e) => addRec(e.target.value)}
               className={inputClass}
-            />
+            >
+              <option value="">+ Kurs empfehlen …</option>
+              {available.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
           )}
+
           {dirty && (
             <div className="flex justify-end">
               <AdminButton variant="primary" size="sm" onClick={save} loading={pending}>
-                Empfehlung speichern
+                Empfehlungen speichern
               </AdminButton>
             </div>
           )}

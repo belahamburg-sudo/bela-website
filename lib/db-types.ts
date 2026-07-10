@@ -2,7 +2,7 @@
 
 export type DbResource = {
   label: string;
-  type: "PDF" | "Template" | "Prompt";
+  type: "PDF" | "Template" | "Prompt" | "XLSX" | "TXT" | "HTML";
   href: string;
 };
 
@@ -22,16 +22,44 @@ export type DbModule = {
   course_id: string;
   title: string;
   position: number;
-  /** Slug of a course recommended after this module, shown to members (migration_020). */
+  /** Ordered courses recommended after this module, shown to members (migration_031). */
+  recommended_courses?: ModuleRecommendation[] | null;
+  /** @deprecated Legacy single recommendation (migration_020); superseded by recommended_courses. */
   recommended_course_slug?: string | null;
-  /** Optional note shown with the recommendation ("Bevor du weitermachst …"). */
+  /** @deprecated Legacy single-recommendation note (migration_020). */
   recommendation_note?: string | null;
   /** 3–5 sales bullets shown per module on the product page (migration_022). */
   highlights?: string[] | null;
+  /** Public preview video shown per module on the product page (migration_032). */
+  preview_video_url?: string | null;
   /** Drip content: days after purchase before this module unlocks (migration_030). */
   drip_days?: number | null;
   lessons: DbLesson[];
 };
+
+/** One "next step" course recommendation attached to a module. */
+export type ModuleRecommendation = { slug: string; note: string };
+
+/**
+ * Normalize a module's recommendations to a clean list, falling back to the
+ * legacy single-slug columns when the new `recommended_courses` column is empty
+ * or absent (pre-migration_031). Pure — safe to import from server or client.
+ */
+export function moduleRecommendations(m: {
+  recommended_courses?: Array<{ slug?: string | null; note?: string | null }> | null;
+  recommended_course_slug?: string | null;
+  recommendation_note?: string | null;
+}): ModuleRecommendation[] {
+  if (Array.isArray(m.recommended_courses) && m.recommended_courses.length > 0) {
+    return m.recommended_courses
+      .filter((r): r is { slug: string; note?: string | null } => Boolean(r && r.slug))
+      .map((r) => ({ slug: r.slug, note: typeof r.note === "string" ? r.note : "" }));
+  }
+  if (m.recommended_course_slug) {
+    return [{ slug: m.recommended_course_slug, note: m.recommendation_note ?? "" }];
+  }
+  return [];
+}
 
 export type DbCourse = {
   id: string;

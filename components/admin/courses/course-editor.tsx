@@ -23,7 +23,11 @@ import { updateCourse, syncCourseToStripe } from "@/app/admin/kurse/actions";
 import { CurriculumEditor } from "./curriculum-editor";
 import { CourseTestimonialsEditor } from "./testimonials-editor";
 
-export type ResourceItem = { label: string; type: "PDF" | "Template" | "Prompt"; href: string };
+export type ResourceItem = {
+  label: string;
+  type: "PDF" | "Template" | "Prompt" | "XLSX" | "TXT" | "HTML";
+  href: string;
+};
 
 export type EditorLesson = {
   id: string;
@@ -34,15 +38,17 @@ export type EditorLesson = {
   resources: ResourceItem[];
 };
 
+export type ModuleRecommendationInput = { slug: string; note: string };
+
 export type EditorModule = {
   id: string;
   title: string;
-  /** Slug of a course recommended to members after this module ("" = none). */
-  recommendedCourseSlug: string;
-  /** Optional note shown with the recommendation. */
-  recommendationNote: string;
+  /** Courses recommended to members after this module (empty = none). */
+  recommendations: ModuleRecommendationInput[];
   /** 3–5 sales bullets shown for this module on the product page. */
   highlights: string[];
+  /** Public preview/teaser video shown for this module on the product page ("" = none). */
+  previewVideoUrl: string;
   lessons: EditorLesson[];
 };
 

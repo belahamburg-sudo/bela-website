@@ -39,7 +39,11 @@ export type SeedResult = ActionResult & {
   skippedCourses?: SkippedCourse[];
 };
 
-type ResourceItem = { label: string; type: "PDF" | "Template" | "Prompt"; href: string };
+type ResourceItem = {
+  label: string;
+  type: "PDF" | "Template" | "Prompt" | "XLSX" | "TXT" | "HTML";
+  href: string;
+};
 
 function clean(value?: string | null): string | null {
   const trimmed = value?.trim();
@@ -726,22 +730,28 @@ export async function reorderModules(input: {
   return { ok: true };
 }
 
-export async function updateModuleRecommendation(input: {
+export async function updateModuleRecommendations(input: {
   id: string;
   courseId: string;
   courseSlug?: string;
-  recommendedCourseSlug: string | null;
-  note: string | null;
+  recommendations: Array<{ slug: string; note: string }>;
 }): Promise<ActionResult> {
   if (!input.id) return { ok: false, error: "Keine Modul-ID angegeben." };
   const { user, supabase } = await requireAdmin();
 
-  const slug = clean(input.recommendedCourseSlug ?? "") || null;
-  const note = clean(input.note ?? "") || null;
+  // Clean, drop entries without a slug, and de-duplicate by slug (first wins).
+  const seen = new Set<string>();
+  const recommendations: Array<{ slug: string; note: string }> = [];
+  for (const r of Array.isArray(input.recommendations) ? input.recommendations : []) {
+    const slug = clean(r.slug) ?? "";
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    recommendations.push({ slug, note: clean(r.note) ?? "" });
+  }
 
   const { error } = await supabase
     .from("modules")
-    .update({ recommended_course_slug: slug, recommendation_note: note })
+    .update({ recommended_courses: recommendations })
     .eq("id", input.id);
   if (error) return { ok: false, error: error.message };
 
@@ -750,7 +760,7 @@ export async function updateModuleRecommendation(input: {
     action: "module.recommendation",
     entity: "modules",
     entityId: input.id,
-    meta: { recommendedCourseSlug: slug, hasNote: Boolean(note) },
+    meta: { count: recommendations.length },
   });
 
   revalidatePath(`/admin/kurse/${input.courseId}`);
@@ -787,6 +797,41 @@ export async function updateModuleHighlights(input: {
     entity: "modules",
     entityId: input.id,
     meta: { count: highlights.length },
+  });
+
+  revalidatePath(`/admin/kurse/${input.courseId}`);
+  if (input.courseSlug) revalidatePath(`/kurse/${input.courseSlug}`);
+  return { ok: true };
+}
+
+/**
+ * Save a module's public preview video (shown per module on the product page).
+ * Stored as a public URL (media-bucket ref → public URL, or external embed).
+ * Isolated/best-effort so older DBs without migration_032 still save other edits.
+ */
+export async function updateModulePreviewVideo(input: {
+  id: string;
+  courseId: string;
+  courseSlug?: string;
+  previewVideoUrl: string | null;
+}): Promise<ActionResult> {
+  if (!input.id) return { ok: false, error: "Keine Modul-ID angegeben." };
+  const { user, supabase } = await requireAdmin();
+
+  const previewVideoUrl = resolvePublicImage(input.previewVideoUrl);
+
+  const { error } = await supabase
+    .from("modules")
+    .update({ preview_video_url: previewVideoUrl })
+    .eq("id", input.id);
+  if (error) return { ok: false, error: error.message };
+
+  await logAudit({
+    actorEmail: user.email,
+    action: "module.preview_video",
+    entity: "modules",
+    entityId: input.id,
+    meta: { hasVideo: Boolean(previewVideoUrl) },
   });
 
   revalidatePath(`/admin/kurse/${input.courseId}`);

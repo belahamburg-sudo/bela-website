@@ -111,7 +111,9 @@ export default async function CourseDetailPage({
   // "Was du danach kannst" falls back to the course "includes" bullets.
   const fallbackBullets = course.includes.map((i) => parseIncludeLine(i)?.label ?? i);
 
-  const modulesWithHighlights = course.modules.filter((m) => (m.highlights?.length ?? 0) > 0);
+  const modulesWithSalesContent = course.modules.filter(
+    (m) => (m.highlights?.length ?? 0) > 0 || Boolean(m.previewVideoUrl)
+  );
 
   // Section 5 — "Kursinhalt im Detail": preview video + per-module bullets + the
   // full (locked) curriculum outline.
@@ -120,17 +122,13 @@ export default async function CourseDetailPage({
       <p className="eyebrow mb-5">Kursinhalt im Detail</p>
       <h2 className="mb-6 font-heading text-3xl text-white sm:text-4xl">Das steckt drin.</h2>
 
-      {course.promoVideoUrl && (
-        <div className="mb-8 overflow-hidden rounded-2xl border border-gold-500/20 shadow-gold">
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <video src={course.promoVideoUrl} controls playsInline className="aspect-video w-full bg-black" />
-        </div>
-      )}
-
-      {modulesWithHighlights.length > 0 && (
+      {modulesWithSalesContent.length > 0 && (
         <div className="mb-8 grid gap-4">
-          {course.modules.map((m, i) =>
-            (m.highlights?.length ?? 0) > 0 ? (
+          {course.modules.map((m, i) => {
+            const hasBullets = (m.highlights?.length ?? 0) > 0;
+            const hasVideo = Boolean(m.previewVideoUrl);
+            if (!hasBullets && !hasVideo) return null;
+            return (
               <div key={m.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
                 <div className="mb-3 flex items-center gap-3">
                   <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full border border-gold-300/30 bg-gold-300/[0.06] font-heading text-sm text-gold-300">
@@ -138,17 +136,30 @@ export default async function CourseDetailPage({
                   </span>
                   <h3 className="font-heading text-lg text-white">{m.title}</h3>
                 </div>
-                <ul className="grid gap-2">
-                  {m.highlights!.map((h) => (
-                    <li key={h} className="flex items-start gap-2.5 text-white/70">
-                      <CheckCircle2 aria-hidden className="mt-1 h-4 w-4 flex-none text-gold-300" />
-                      <span className="leading-7">{h}</span>
-                    </li>
-                  ))}
-                </ul>
+                {hasVideo && (
+                  <div className="mb-4 overflow-hidden rounded-xl border border-gold-500/20">
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                    <video
+                      src={m.previewVideoUrl}
+                      controls
+                      playsInline
+                      className="aspect-video w-full bg-black"
+                    />
+                  </div>
+                )}
+                {hasBullets && (
+                  <ul className="grid gap-2">
+                    {m.highlights!.map((h) => (
+                      <li key={h} className="flex items-start gap-2.5 text-white/70">
+                        <CheckCircle2 aria-hidden className="mt-1 h-4 w-4 flex-none text-gold-300" />
+                        <span className="leading-7">{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            ) : null
-          )}
+            );
+          })}
         </div>
       )}
 
@@ -168,6 +179,33 @@ export default async function CourseDetailPage({
           Vorschau der Inhalte. Nach dem Kauf schaltest du Videos und Downloads im Dashboard frei.
         </div>
       )}
+    </div>
+  );
+
+  // Section 2 — media block right under the hero (promo/explainer video).
+  const topMediaNode = course.promoVideoUrl ? (
+    <div className="overflow-hidden rounded-2xl border border-gold-500/20 shadow-gold">
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <video src={course.promoVideoUrl} controls playsInline className="aspect-video w-full bg-black" />
+    </div>
+  ) : undefined;
+
+  // Compact buy CTA repeated through the page (spec: CTAs everywhere, not just at
+  // the end). Owners already see "im Dashboard ansehen" at top and bottom, so the
+  // mid-page nudges are only for prospects.
+  const inlineCtaNode = owned ? undefined : (
+    <div className="flex flex-col items-center gap-4 rounded-2xl border border-gold-300/20 bg-gold-300/[0.05] p-6 text-center sm:flex-row sm:justify-between sm:text-left">
+      <div className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
+        <span className="font-heading text-3xl text-gold-300">{formatEuro(course.priceCents)}</span>
+        {discount > 0 && course.compareAtPriceCents && (
+          <span className="text-lg text-white/35 line-through decoration-white/30">
+            {formatEuro(course.compareAtPriceCents)}
+          </span>
+        )}
+      </div>
+      <div className="w-full sm:w-auto sm:min-w-[240px]">
+        <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" />
+      </div>
     </div>
   );
 
@@ -373,8 +411,10 @@ export default async function CourseDetailPage({
         proofImageUrls={proofImageUrls}
         outcome={course.outcome}
         fallbackBullets={fallbackBullets}
+        topMedia={topMediaNode}
         courseContent={courseContentNode}
         testimonials={testimonialsNode}
+        inlineCta={inlineCtaNode}
         cta={ctaNode}
       />
     </>

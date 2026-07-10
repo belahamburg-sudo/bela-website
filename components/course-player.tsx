@@ -15,8 +15,8 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import type { DbCourse, DbLesson } from "@/lib/db-types";
-import { cn } from "@/lib/utils";
+import { moduleRecommendations, type DbCourse, type DbLesson } from "@/lib/db-types";
+import { cn, formatEuro } from "@/lib/utils";
 import { toggleLessonProgress } from "@/app/(dashboard)/db/kurse/[slug]/actions";
 import { Button } from "./button";
 import { DownloadButton } from "./download-button";
@@ -27,6 +27,8 @@ export type RecommendedCourseCard = {
   image: string;
   priceCents: number;
   comingSoon: boolean;
+  /** Whether the member already owns/has this course unlocked (inclusive or bought). */
+  unlocked: boolean;
 };
 
 const VIDEO_FILE_EXTENSIONS = /\.(mp4|webm|ogg|ogv|mov|m4v)$/i;
@@ -147,10 +149,11 @@ export function CoursePlayer({
   const onLastLessonOfModule = Boolean(
     activeModule && activeModule.lessons[activeModule.lessons.length - 1]?.id === activeId
   );
-  const activeModuleRec = activeModule?.recommended_course_slug
-    ? recommendedCourses[activeModule.recommended_course_slug]
-    : undefined;
-  const activeModuleRecNote = activeModule?.recommendation_note ?? "";
+  const activeModuleRecs = activeModule
+    ? moduleRecommendations(activeModule)
+        .map((r) => ({ card: recommendedCourses[r.slug], note: r.note }))
+        .filter((x): x is { card: RecommendedCourseCard; note: string } => Boolean(x.card))
+    : [];
 
   return (
     <div className="grid gap-6">
@@ -417,30 +420,54 @@ export function CoursePlayer({
               </div>
             ) : null}
 
-            {/* End-of-module next-course nudge */}
-            {onLastLessonOfModule && activeModuleRec ? (
+            {/* End-of-module next-course nudge(s) */}
+            {onLastLessonOfModule && activeModuleRecs.length > 0 ? (
               <div className="rounded-2xl border border-gold-300/30 bg-gold-500/[0.07] p-6">
-                <p className="eyebrow text-gold-200">Geschafft — dein nächster Schritt</p>
-                <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
-                  <div className="relative h-36 w-full flex-none overflow-hidden rounded-2xl sm:h-20 sm:w-32">
-                    <Image
-                      src={activeModuleRec.image}
-                      alt={activeModuleRec.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, 128px"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-heading text-xl font-black text-cream">{activeModuleRec.title}</h3>
-                    <p className="mt-1.5 text-sm leading-7 text-cream/70">
-                      {activeModuleRecNote || "Mach genau hier weiter, um auf dem nächsten Level dranzubleiben."}
-                    </p>
-                  </div>
-                  <Button href={`/bibliothek/${activeModuleRec.slug}`} className="flex-none">
-                    {activeModuleRec.comingSoon ? "Bald verfügbar" : "Kurs ansehen"}
-                    <ArrowRight aria-hidden className="h-4 w-4" />
-                  </Button>
+                <p className="eyebrow text-gold-200">
+                  {activeModuleRecs.length > 1 ? "Geschafft — deine nächsten Schritte" : "Geschafft — dein nächster Schritt"}
+                </p>
+                <div className="mt-4 flex flex-col gap-4">
+                  {activeModuleRecs.map(({ card, note }) => (
+                    <div
+                      key={card.slug}
+                      className="flex flex-col gap-5 rounded-2xl border border-white/10 bg-obsidian/30 p-4 sm:flex-row sm:items-center"
+                    >
+                      <div className="relative h-36 w-full flex-none overflow-hidden rounded-2xl sm:h-20 sm:w-32">
+                        <Image
+                          src={card.image}
+                          alt={card.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 100vw, 128px"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-heading text-xl font-black text-cream">{card.title}</h3>
+                        <p className="mt-1.5 text-sm leading-7 text-cream/70">
+                          {note ||
+                            (card.unlocked
+                              ? "Für dich freigeschaltet — mach genau hier weiter."
+                              : "Dein empfohlener nächster Schritt.")}
+                        </p>
+                      </div>
+                      {card.unlocked ? (
+                        <Button href={`/bibliothek/${card.slug}`} className="flex-none">
+                          Kurs ansehen
+                          <ArrowRight aria-hidden className="h-4 w-4" />
+                        </Button>
+                      ) : card.comingSoon ? (
+                        <Button href={`/kurse/${card.slug}`} className="flex-none">
+                          Bald verfügbar
+                          <ArrowRight aria-hidden className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <Button href={`/kurse/${card.slug}`} className="flex-none">
+                          Freischalten · {formatEuro(card.priceCents)}
+                          <ArrowRight aria-hidden className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             ) : null}

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { CourseEditor, type EditorCourse } from "@/components/admin/courses/course-editor";
-import type { DbCourse } from "@/lib/db-types";
+import { moduleRecommendations, type DbCourse } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
@@ -34,11 +34,11 @@ export default async function AdminCourseEditorPage({
     .map((m) => ({
       id: m.id,
       title: m.title,
-      recommendedCourseSlug: m.recommended_course_slug ?? "",
-      recommendationNote: m.recommendation_note ?? "",
+      recommendations: moduleRecommendations(m),
       highlights: Array.isArray(m.highlights)
         ? m.highlights.filter((h): h is string => typeof h === "string")
         : [],
+      previewVideoUrl: m.preview_video_url ?? "",
       lessons: [...(m.lessons ?? [])]
         .sort((a, b) => a.position - b.position)
         .map((l) => ({
