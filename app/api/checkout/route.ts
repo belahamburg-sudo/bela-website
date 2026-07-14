@@ -49,13 +49,8 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as CheckoutBody;
 
-    // AGB is a hard requirement (brief: Pflicht-Checkbox im Checkout).
-    if (!body.agbAccepted) {
-      return NextResponse.json(
-        { message: "Bitte akzeptiere die AGB und das Widerrufsrecht, um fortzufahren." },
-        { status: 400 }
-      );
-    }
+    // AGB / Widerruf consent is now collected by Stripe Checkout itself
+    // (consent_collection below), so no custom pre-check is needed here.
 
     // Normalise the requested items.
     const requestedRaw: CheckoutItem[] =
@@ -296,6 +291,14 @@ export async function POST(request: Request) {
 
     let session: Stripe.Checkout.Session;
 
+    // AGB / Widerruf consent is collected by Stripe Checkout itself (no custom
+    // checkbox). Requires a Terms-of-service URL in Stripe → Branding, else the
+    // API errors — set STRIPE_TOS_CONSENT=0 as an emergency kill-switch.
+    const tosConsent =
+      process.env.STRIPE_TOS_CONSENT === "0"
+        ? {}
+        : { consent_collection: { terms_of_service: "required" as const } };
+
     if (installmentConfig) {
       // Subscription-mode: create a recurring price that auto-cancels after N payments.
       const course = valid[0].course!;
@@ -336,6 +339,7 @@ export async function POST(request: Request) {
         tax_id_collection: { enabled: true },
         ...(enableTax ? { automatic_tax: { enabled: true } } : {}),
         ...(appliedDiscount ? { discounts: appliedDiscount } : { allow_promotion_codes: true }),
+        ...tosConsent,
         metadata,
       });
     } else {
@@ -354,9 +358,7 @@ export async function POST(request: Request) {
           ? { payment_intent_data: { setup_future_usage: "off_session" as const } }
           : {}),
         ...(appliedDiscount ? { discounts: appliedDiscount } : { allow_promotion_codes: true }),
-        ...(process.env.STRIPE_TOS_CONSENT === "1"
-          ? { consent_collection: { terms_of_service: "required" } }
-          : {}),
+        ...tosConsent,
         metadata,
       });
     }

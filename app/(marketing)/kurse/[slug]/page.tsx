@@ -108,6 +108,12 @@ export default async function CourseDetailPage({
     await Promise.all((pp?.proofImages ?? []).map((r) => resolveMediaUrl(r)))
   ).filter((u): u is string => Boolean(u));
 
+  // Bonus screenshots → resolved URLs, kept index-aligned to pp.bonuses (empty
+  // string where a bonus has no image) so the section can pair them up.
+  const bonusImageUrls = (
+    await Promise.all((pp?.bonuses ?? []).map((b) => (b.image ? resolveMediaUrl(b.image) : null)))
+  ).map((u) => u ?? "");
+
   // "Was du danach kannst" falls back to the course "includes" bullets.
   const fallbackBullets = course.includes.map((i) => parseIncludeLine(i)?.label ?? i);
 
@@ -409,6 +415,7 @@ export default async function CourseDetailPage({
       <ProductPageSections
         pp={pp}
         proofImageUrls={proofImageUrls}
+        bonusImageUrls={bonusImageUrls}
         outcome={course.outcome}
         fallbackBullets={fallbackBullets}
         topMedia={topMediaNode}

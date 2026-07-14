@@ -14,6 +14,7 @@ import {
   ChevronUp,
   ChevronDown,
   CreditCard,
+  Plus,
 } from "lucide-react";
 import { Panel } from "@/components/admin/ui";
 import { AdminButton } from "@/components/admin/admin-button";
@@ -39,6 +40,9 @@ export type EditorLesson = {
 };
 
 export type ModuleRecommendationInput = { slug: string; note: string };
+
+/** One value-stacked bonus row in the product-page editor. */
+export type BonusRow = { title: string; value: string; desc: string; image: string };
 
 export type EditorModule = {
   id: string;
@@ -180,11 +184,40 @@ export function CourseEditor({
   const [ppWhoFor, setPpWhoFor] = useState(ppList("whoFor"));
   const [ppWhoNotFor, setPpWhoNotFor] = useState(ppList("whoNotFor"));
   const [ppAfter, setPpAfter] = useState(ppList("afterOutcomes"));
-  const [ppBonus, setPpBonus] = useState(ppStr("bonus"));
   const [ppCta, setPpCta] = useState(ppStr("ctaHeadline"));
+  // Early social-proof strip shown right under the hero.
+  const ppHero = (pp.heroResult ?? {}) as { stat?: string; text?: string };
+  const [ppHeroStat, setPpHeroStat] = useState(ppHero.stat ?? "");
+  const [ppHeroText, setPpHeroText] = useState(ppHero.text ?? "");
+  // Value-stacked bonus list; seeded from the legacy single `bonus` line if set.
+  const [ppBonuses, setPpBonuses] = useState<BonusRow[]>(() => {
+    const rawBonuses = Array.isArray(pp.bonuses) ? (pp.bonuses as Array<Partial<BonusRow>>) : [];
+    if (rawBonuses.length > 0) {
+      return rawBonuses.map((b) => ({
+        title: b.title ?? "",
+        value: b.value ?? "",
+        desc: b.desc ?? "",
+        image: b.image ?? "",
+      }));
+    }
+    if (typeof pp.bonus === "string" && pp.bonus.trim()) {
+      return [{ title: pp.bonus.trim(), value: "", desc: "", image: "" }];
+    }
+    return [];
+  });
   const [ppProof, setPpProof] = useState<string[]>(
     Array.isArray(pp.proofImages) ? (pp.proofImages as string[]) : []
   );
+
+  function updateBonus(i: number, patch: Partial<BonusRow>) {
+    setPpBonuses((prev) => prev.map((b, idx) => (idx === i ? { ...b, ...patch } : b)));
+  }
+  function addBonus() {
+    setPpBonuses((prev) => [...prev, { title: "", value: "", desc: "", image: "" }]);
+  }
+  function removeBonus(i: number) {
+    setPpBonuses((prev) => prev.filter((_, idx) => idx !== i));
+  }
 
   const otherCourses = allCourses.filter((c) => c.slug !== course.slug);
   const bundledTitle = (s: string) => allCourses.find((c) => c.slug === s)?.title ?? s;
@@ -236,7 +269,15 @@ export function CourseEditor({
       whoFor: lines(ppWhoFor),
       whoNotFor: lines(ppWhoNotFor),
       afterOutcomes: lines(ppAfter),
-      bonus: ppBonus,
+      heroResult: { stat: ppHeroStat.trim(), text: ppHeroText.trim() },
+      bonuses: ppBonuses
+        .map((b) => ({
+          title: b.title.trim(),
+          value: b.value.trim(),
+          desc: b.desc.trim(),
+          image: b.image.trim(),
+        }))
+        .filter((b) => b.title || b.desc),
       ctaHeadline: ppCta,
       proofImages: ppProof,
     };
@@ -826,26 +867,123 @@ export function CourseEditor({
               />
             </label>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            {/* Early social-proof strip (Julia-style) shown right under the hero */}
+            <div className="grid gap-4 border-t border-white/5 pt-4 sm:grid-cols-[160px_1fr]">
               <label className="block">
-                <span className="tac-label mb-1.5 block">Bonus</span>
+                <span className="tac-label mb-1.5 block">Hero-Ergebnis (Zahl)</span>
                 <input
-                  value={ppBonus}
-                  onChange={(e) => setPpBonus(e.target.value)}
-                  placeholder="z.B. 1 Monat Community gratis"
+                  value={ppHeroStat}
+                  onChange={(e) => setPpHeroStat(e.target.value)}
+                  placeholder="z.B. 7.000€"
                   className={inputClass}
                 />
               </label>
               <label className="block">
-                <span className="tac-label mb-1.5 block">CTA-Headline</span>
+                <span className="tac-label mb-1.5 block">Hero-Ergebnis (Text)</span>
                 <input
-                  value={ppCta}
-                  onChange={(e) => setPpCta(e.target.value)}
-                  placeholder="Übergangs-Headline vor dem Kauf-Button"
+                  value={ppHeroText}
+                  onChange={(e) => setPpHeroText(e.target.value)}
+                  placeholder="z.B. Umsatz dank Werbeanzeigen, mit niedrigem Budget"
                   className={inputClass}
                 />
               </label>
             </div>
+
+            {/* Value-stacked bonus list */}
+            <div className="space-y-3 border-t border-white/5 pt-4">
+              <div className="flex items-center justify-between">
+                <span className="tac-label block">Boni (mit Wert & Screenshot)</span>
+                <AdminButton variant="ghost" size="sm" icon={Plus} onClick={addBonus}>
+                  Bonus
+                </AdminButton>
+              </div>
+              <p className="text-xs text-cream/40">
+                Jeder Bonus mit Titel, €-Wert (Anker) und optionalem Bild. Leer = Sektion unsichtbar.
+              </p>
+              {ppBonuses.map((b, i) => (
+                <div
+                  key={i}
+                  className="space-y-3 rounded-lg border border-white/10 bg-obsidian/40 p-4"
+                >
+                  <div className="grid gap-3 sm:grid-cols-[1fr_140px_auto]">
+                    <input
+                      value={b.title}
+                      onChange={(e) => updateBonus(i, { title: e.target.value })}
+                      placeholder="Bonus-Titel, z.B. +150 Content-Ideen"
+                      className={inputClass}
+                    />
+                    <input
+                      value={b.value}
+                      onChange={(e) => updateBonus(i, { value: e.target.value })}
+                      placeholder="Wert, z.B. 150€"
+                      className={inputClass}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeBonus(i)}
+                      className="flex h-9 w-9 items-center justify-center self-start rounded-md border border-white/10 text-cream/60 transition-colors hover:border-red-400/40 hover:text-red-300"
+                      aria-label="Bonus entfernen"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <textarea
+                    value={b.desc}
+                    onChange={(e) => updateBonus(i, { desc: e.target.value })}
+                    rows={2}
+                    placeholder="Kurze Beschreibung (optional)"
+                    className={`${inputClass} resize-y`}
+                  />
+                  {b.image ? (
+                    <div className="flex items-center gap-3">
+                      <div className="h-16 w-24 flex-none overflow-hidden rounded-md border border-white/10 bg-obsidian/60">
+                        {toPreview(b.image) ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={toPreview(b.image)!}
+                            alt="Bonus"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-cream/25">
+                            <ImageIcon className="h-5 w-5" />
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => updateBonus(i, { image: "" })}
+                        className="text-xs font-semibold text-cream/50 transition-colors hover:text-red-300"
+                      >
+                        Bild entfernen
+                      </button>
+                    </div>
+                  ) : (
+                    <FileUpload
+                      bucket="media"
+                      prefix="bonus"
+                      kind="image"
+                      accept="image/*"
+                      hint="Bonus-Screenshot (optional)"
+                      onUploaded={(f) => {
+                        updateBonus(i, { image: f.ref });
+                        success("Bild hinzugefügt — zum Übernehmen speichern.");
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <label className="block">
+              <span className="tac-label mb-1.5 block">CTA-Headline</span>
+              <input
+                value={ppCta}
+                onChange={(e) => setPpCta(e.target.value)}
+                placeholder="Übergangs-Headline vor dem Kauf-Button"
+                className={inputClass}
+              />
+            </label>
 
             {/* Ergebnis-Proof screenshots — shown right before dem CTA. Leer = ausgeblendet. */}
             <div className="space-y-3 border-t border-white/5 pt-4">

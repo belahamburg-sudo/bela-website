@@ -27,7 +27,6 @@ export default function CartPage() {
   >("idle");
   const [promoMessage, setPromoMessage] = useState<string | null>(null);
   const [discountCents, setDiscountCents] = useState(0);
-  const [agb, setAgb] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -92,10 +91,6 @@ export default function CartPage() {
 
   async function checkout() {
     setError(null);
-    if (!agb) {
-      setError("Bitte akzeptiere die AGB und das Widerrufsrecht.");
-      return;
-    }
     if (items.length === 0) return;
     if (promo.trim() && promoState !== "valid") {
       setError(promoMessage ?? "Bitte einen gültigen Rabattcode eingeben.");
@@ -122,7 +117,6 @@ export default function CartPage() {
         body: JSON.stringify({
           items: items.map((i) => ({ slug: i.slug, qty: 1 })),
           userEmail,
-          agbAccepted: agb,
           promoCode: promo.trim() || undefined,
           referralCode: getStoredReferral() || undefined,
         }),
@@ -252,31 +246,11 @@ export default function CartPage() {
                 <p className="text-[11px] text-cream/30">inkl. ggf. anfallender USt.</p>
               </div>
 
-              {/* AGB consent */}
-              <label className="mt-5 flex cursor-pointer items-start gap-3 text-xs leading-relaxed text-cream/60">
-                <input
-                  type="checkbox"
-                  checked={agb}
-                  onChange={(e) => setAgb(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 flex-none accent-gold-300"
-                />
-                <span>
-                  Ich akzeptiere die{" "}
-                  <Link href="/agb" target="_blank" className="text-gold-300 underline hover:text-gold-200">
-                    AGB
-                  </Link>{" "}
-                  und stimme zu, dass mit der Ausführung sofort begonnen wird. Mir ist bekannt,
-                  dass mein{" "}
-                  <Link href="/agb" target="_blank" className="text-gold-300 underline hover:text-gold-200">
-                    Widerrufsrecht
-                  </Link>{" "}
-                  damit erlischt.
-                </span>
-              </label>
+              {/* AGB / Widerruf consent is collected inside Stripe Checkout (no custom checkbox). */}
 
               <button
                 onClick={checkout}
-                disabled={loading || !agb}
+                disabled={loading}
                 className="btn-shimmer group mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span className="relative z-[2] inline-flex items-center gap-2">

@@ -35,7 +35,17 @@ export type ProductPage = {
   whoNotFor?: string[];
   /** What you can do afterwards (4-6 outcome bullets, verb first). */
   afterOutcomes?: string[];
-  /** Optional bonus line (e.g. included courses / community month). */
+  /**
+   * Early social-proof strip shown right under the hero (Julia-style): one
+   * headline result, e.g. { stat: "7.000€", text: "Umsatz dank Werbeanzeigen" }.
+   */
+  heroResult?: { stat?: string; text?: string };
+  /**
+   * Value-stacked bonus list (Julia-style): each bonus with a title, a euro
+   * value used as a price anchor, an optional description and screenshot.
+   */
+  bonuses?: Array<{ title: string; value?: string; desc?: string; image?: string }>;
+  /** @deprecated single free-text bonus line — superseded by `bonuses`. */
   bonus?: string;
   /** CTA-block transition headline (one sentence). */
   ctaHeadline?: string;

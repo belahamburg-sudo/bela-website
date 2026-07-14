@@ -4,11 +4,13 @@ import type { ProductPage } from "@/lib/content";
 import { RevealOnScroll } from "@/components/product-page-fx";
 
 /**
- * The long sales body of a course product page, in the fixed spec order:
+ * The long sales body of a course product page, in a conversion-first order
+ * modelled on the Julia Trost reference (structure, not look):
  *
- *   1 Problem · 2 Vision · 3 Was du brauchst · 4 So funktioniert's
- *   5 Kursinhalt im Detail (slot) · 6 Bonus · 7 Testimonials (slot)
- *   8 Für wen / nicht · 9 Was du danach kannst · 10 Ergebnis-Proof · 11 CTA (slot)
+ *   HeroResult (early proof) · Promo video · Problem · Was du brauchst (myth-bust)
+ *   Vision + CTA · So funktioniert's + CTA · Kursinhalt im Detail (slot) + CTA
+ *   Bonus-Stack + CTA · Testimonials (slot) · Für wen / nicht
+ *   Was du danach kannst · Ergebnis-Proof · CTA (slot)
  *
  * Every block is guarded: an empty field (or an absent slot) renders nothing, so
  * each product page shows only what Bela filled in from the dashboard. The
@@ -19,6 +21,7 @@ import { RevealOnScroll } from "@/components/product-page-fx";
 export function ProductPageSections({
   pp,
   proofImageUrls = [],
+  bonusImageUrls = [],
   outcome,
   fallbackBullets = [],
   topMedia,
@@ -30,6 +33,8 @@ export function ProductPageSections({
   pp?: ProductPage;
   /** Already-resolved public URLs for the proof screenshots. */
   proofImageUrls?: string[];
+  /** Already-resolved public URLs for the bonus screenshots, aligned to pp.bonuses by index. */
+  bonusImageUrls?: string[];
   /** Course-level outcome line, used as the lead of "Was du danach kannst". */
   outcome?: string;
   /** Course "includes" bullets, shown when afterOutcomes is empty. */
@@ -53,16 +58,55 @@ export function ProductPageSections({
   const hasAfter = afterBullets.length > 0 || Boolean(outcome);
   const hasProof = proofImageUrls.length > 0;
 
+  // Early social-proof strip (Julia-style) shown right under the hero.
+  const heroResult = p.heroResult;
+  const hasHeroResult = Boolean(heroResult?.stat || heroResult?.text);
+
+  // Value-stacked bonus list; falls back to the legacy single-line `bonus`.
+  const bonuses = (p.bonuses ?? []).filter((b) => b && (b.title || b.desc));
+  const hasBonusStack = bonuses.length > 0;
+
   return (
     <section className="border-t border-white/[0.04] bg-obsidian py-20 sm:py-28">
       <div className="mx-auto max-w-4xl space-y-16 px-6">
-        {/* 2 — Media block (promo video) right under the hero */}
+        {/* Early social proof (Julia-style) — one bold result right under the hero */}
+        {hasHeroResult && (
+          <RevealOnScroll>
+            <div className="flex flex-col items-center gap-2 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] px-6 py-8 text-center">
+              {heroResult!.stat && (
+                <span className="font-heading text-5xl leading-none text-gold-300 sm:text-6xl">
+                  {heroResult!.stat}
+                </span>
+              )}
+              {heroResult!.text && (
+                <span className="max-w-xl text-lg leading-8 text-white/80">{heroResult!.text}</span>
+              )}
+            </div>
+          </RevealOnScroll>
+        )}
+
+        {/* Media block (promo video) right under the hero */}
         {topMedia && <RevealOnScroll>{topMedia}</RevealOnScroll>}
 
         {p.problem && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">Status Quo</p>
             <p className="font-heading text-2xl leading-snug text-white sm:text-3xl">{p.problem}</p>
+          </RevealOnScroll>
+        )}
+
+        {/* Myth-bust early (Julia puts "braucht weniger als du denkst" high up) */}
+        {hasNeeds && (
+          <RevealOnScroll>
+            <p className="eyebrow mb-5">Was du wirklich brauchst</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {p.needs!.map((n) => (
+                <div key={n} className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-white/75">
+                  <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5 flex-none text-gold-300" />
+                  <span className="leading-7">{n}</span>
+                </div>
+              ))}
+            </div>
           </RevealOnScroll>
         )}
 
@@ -81,19 +125,8 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {hasNeeds && (
-          <RevealOnScroll>
-            <p className="eyebrow mb-5">Was du wirklich brauchst</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {p.needs!.map((n) => (
-                <div key={n} className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-white/75">
-                  <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5 flex-none text-gold-300" />
-                  <span className="leading-7">{n}</span>
-                </div>
-              ))}
-            </div>
-          </RevealOnScroll>
-        )}
+        {/* Mid-page CTA — right after the visitor pictures the outcome */}
+        {inlineCta && hasVision && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
 
         {hasMechanism && (
           <RevealOnScroll>
@@ -123,15 +156,58 @@ export function ProductPageSections({
         {/* Mid-page CTA #2 — after the visitor has seen everything that's inside */}
         {inlineCta && courseContent && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
 
-        {p.bonus && (
-          <RevealOnScroll className="flex items-start gap-4 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] p-6">
-            <Gift aria-hidden className="mt-0.5 h-6 w-6 flex-none text-gold-300" />
-            <div>
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-gold-200">Bonus</p>
-              <p className="mt-1 leading-7 text-white/75">{p.bonus}</p>
+        {/* Value-stacked bonus list (Julia-style): title + euro value + optional screenshot */}
+        {hasBonusStack ? (
+          <RevealOnScroll>
+            <p className="eyebrow mb-5">Deine Boni obendrauf</p>
+            <div className="grid gap-4">
+              {bonuses.map((b, i) => {
+                const img = bonusImageUrls[i];
+                return (
+                  <div
+                    key={`${b.title}-${i}`}
+                    className="flex flex-col gap-4 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] p-6 sm:flex-row sm:items-start"
+                  >
+                    {img && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={img}
+                        alt={b.title}
+                        loading="lazy"
+                        className="h-32 w-full flex-none rounded-xl border border-white/10 object-cover sm:w-48"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Gift aria-hidden className="h-5 w-5 flex-none text-gold-300" />
+                        <h3 className="font-heading text-xl text-white">{b.title}</h3>
+                        {b.value && (
+                          <span className="rounded-full border border-gold-300/40 bg-gold-300/10 px-3 py-0.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-200">
+                            Wert: {b.value}
+                          </span>
+                        )}
+                      </div>
+                      {b.desc && <p className="mt-2 leading-7 text-white/70">{b.desc}</p>}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </RevealOnScroll>
+        ) : (
+          p.bonus && (
+            <RevealOnScroll className="flex items-start gap-4 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] p-6">
+              <Gift aria-hidden className="mt-0.5 h-6 w-6 flex-none text-gold-300" />
+              <div>
+                <p className="text-sm font-bold uppercase tracking-[0.16em] text-gold-200">Bonus</p>
+                <p className="mt-1 leading-7 text-white/75">{p.bonus}</p>
+              </div>
+            </RevealOnScroll>
+          )
         )}
+
+        {/* Mid-page CTA — right after the value stack lands */}
+        {inlineCta && (hasBonusStack || p.bonus) && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
 
         {/* 7 — Testimonials (hidden by the component until ≥1 review exists) */}
         {testimonials}

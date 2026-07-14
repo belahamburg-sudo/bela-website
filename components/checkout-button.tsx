@@ -2,7 +2,6 @@
 
 import { CreditCard, Loader2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
@@ -57,17 +56,12 @@ export function CheckoutButton({
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [agb, setAgb] = useState(autoBuy);
   const [promoCode, setPromoCode] = useState("");
   const router = useRouter();
   const autoBuyHandled = useRef(false);
 
   const startCheckout = useCallback(async () => {
     setError(null);
-    if (!agb) {
-      setError("Bitte akzeptiere die AGB und das Widerrufsrecht.");
-      return;
-    }
 
     const { loggedIn, email } = await resolveUserEmail();
     if (!loggedIn) {
@@ -86,7 +80,6 @@ export function CheckoutButton({
         body: JSON.stringify({
           courseSlug,
           userEmail,
-          agbAccepted: agb,
           promoCode: promoCode.trim() || undefined,
           referralCode: getStoredReferral() || undefined,
         }),
@@ -109,7 +102,7 @@ export function CheckoutButton({
     } finally {
       setLoading(false);
     }
-  }, [agb, courseSlug, promoCode, router]);
+  }, [courseSlug, promoCode, router]);
 
   // Resume the purchase automatically after login (page loaded with ?buy=1).
   useEffect(() => {
@@ -136,24 +129,8 @@ export function CheckoutButton({
         />
       </label>
 
-      {/* AGB consent (required) */}
-      <label className="flex cursor-pointer items-start gap-2.5 text-left text-xs leading-relaxed text-cream/60">
-        <input
-          type="checkbox"
-          checked={agb}
-          onChange={(e) => setAgb(e.target.checked)}
-          className="mt-0.5 h-4 w-4 flex-none accent-gold-300"
-        />
-        <span>
-          Ich akzeptiere die{" "}
-          <Link href="/agb" target="_blank" className="text-gold-300 underline hover:text-gold-200">
-            AGB
-          </Link>{" "}
-          und stimme zu, dass mit der Ausführung sofort begonnen wird (Widerrufsrecht erlischt).
-        </span>
-      </label>
-
-      <Button onClick={startCheckout} disabled={loading || !agb} className={cn("w-full sm:w-auto", className)}>
+      {/* AGB / Widerruf consent is collected inside Stripe Checkout (no custom checkbox). */}
+      <Button onClick={startCheckout} disabled={loading} className={cn("w-full sm:w-auto", className)}>
         {loading ? (
           <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
         ) : (
