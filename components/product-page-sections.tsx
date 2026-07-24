@@ -1,32 +1,34 @@
 import type { ReactNode } from "react";
-import { CheckCircle2, XCircle, Gift } from "lucide-react";
+import { CheckCircle2, XCircle, Gift, Quote } from "lucide-react";
 import type { ProductPage } from "@/lib/content";
 import { RevealOnScroll } from "@/components/product-page-fx";
 
 /**
- * The long sales body of a course product page, in a conversion-first order
- * modelled on the Julia Trost reference (structure, not look):
+ * The long sales body of a course product page, in the exact order of Bela's
+ * "Produktseiten-Aufbau" board:
  *
- *   HeroResult (early proof) · Promo video · Problem · Was du brauchst (myth-bust)
- *   Vision + CTA · So funktioniert's + CTA · Kursinhalt im Detail (slot) + CTA
- *   Bonus-Stack + CTA · Testimonials (slot) · Für wen / nicht
- *   Was du danach kannst · Ergebnis-Proof · CTA (slot)
+ *   Outcome-Ergebnis + CTA · Wie es mir/den Kunden geht (+Foto) · Problem/Status-Quo
+ *   Vom Angenommenen befreien (✗) + CTA · Vision · Was du wirklich brauchst (✗)
+ *   So funktioniert der Kurs · Kursinhalt im Detail (slot) + CTA · Bonus (+Cover)
+ *   Testimonials „Selbst wenn…" (+Foto) · Bewertungen (slot) · Kurzer Einblick (+Video+CTA)
+ *   Für wen / nicht · Proof-Screenshots · Kauf-Sektion (slot)
  *
  * Every block is guarded: an empty field (or an absent slot) renders nothing, so
- * each product page shows only what Bela filled in from the dashboard. The
- * page-level blocks that need server data or client components (course content,
- * testimonials, CTA) are passed in as slots and placed at their spec position.
- * Each block fades in on scroll for a livelier sales page.
+ * each product page shows only what Bela filled in from the dashboard. Slots that
+ * need server data or client components (course content, reviews, CTA) are passed
+ * in and placed at their spec position. Every CTA is a scroll link to the buy
+ * section (`#kaufen`) at the very bottom — see the page-level `inlineCta`/`cta`.
  */
 export function ProductPageSections({
   pp,
   proofImageUrls = [],
   bonusImageUrls = [],
-  outcome,
-  fallbackBullets = [],
-  topMedia,
+  selfStoryImageUrl,
+  customerStoryImageUrl,
+  testimonialImageUrls = [],
+  insightVideoUrl,
   courseContent,
-  testimonials,
+  reviews,
   inlineCta,
   cta,
 }: {
@@ -35,16 +37,21 @@ export function ProductPageSections({
   proofImageUrls?: string[];
   /** Already-resolved public URLs for the bonus screenshots, aligned to pp.bonuses by index. */
   bonusImageUrls?: string[];
-  /** Course-level outcome line, used as the lead of "Was du danach kannst". */
-  outcome?: string;
-  /** Course "includes" bullets, shown when afterOutcomes is empty. */
-  fallbackBullets?: string[];
-  /** Media block (promo video) shown right under the hero. */
-  topMedia?: ReactNode;
+  /** Resolved photo for "Wie es mir geht". */
+  selfStoryImageUrl?: string;
+  /** Resolved photo for "Wie es meinen Kunden geht". */
+  customerStoryImageUrl?: string;
+  /** Resolved photos for the curated testimonials, aligned to pp.testimonials by index. */
+  testimonialImageUrls?: string[];
+  /** Resolved video URL for the "Kurzer Einblick gefällig?" section. */
+  insightVideoUrl?: string;
+  /** "Kursinhalt im Detail" block (per-module bullets + preview video + curriculum). */
   courseContent?: ReactNode;
-  testimonials?: ReactNode;
-  /** Compact buy CTA repeated mid-page (after "So funktioniert's" and the curriculum). */
+  /** In-house reviews block (hides itself until ≥1 review exists). */
+  reviews?: ReactNode;
+  /** Scroll-to-#kaufen CTA, repeated at the spec positions. */
   inlineCta?: ReactNode;
+  /** The buy section itself (id="kaufen") — target of every CTA. */
   cta?: ReactNode;
 }) {
   const p = pp ?? {};
@@ -53,23 +60,38 @@ export function ProductPageSections({
   const hasMechanism = (p.mechanism?.length ?? 0) > 0;
   const hasWhoFor = (p.whoFor?.length ?? 0) > 0;
   const hasWhoNotFor = (p.whoNotFor?.length ?? 0) > 0;
-
-  const afterBullets = (p.afterOutcomes?.length ?? 0) > 0 ? p.afterOutcomes! : fallbackBullets;
-  const hasAfter = afterBullets.length > 0 || Boolean(outcome);
   const hasProof = proofImageUrls.length > 0;
 
-  // Early social-proof strip (Julia-style) shown right under the hero.
+  // Outcome-Ergebnis strip right under the hero.
   const heroResult = p.heroResult;
   const hasHeroResult = Boolean(heroResult?.stat || heroResult?.text);
 
-  // Value-stacked bonus list; falls back to the legacy single-line `bonus`.
+  const selfText = p.selfStory?.text?.trim();
+  const hasSelf = Boolean(selfText || selfStoryImageUrl);
+  const custText = p.customerStory?.text?.trim();
+  const hasCust = Boolean(custText || customerStoryImageUrl);
+
+  // "Vom Angenommenen befreien" — headline + ✗ items.
+  const assumptions = p.assumptions;
+  const assumptionItems = (assumptions?.items ?? []).filter((i) => i && (i.title || i.copy));
+  const hasAssumptions = Boolean(assumptions?.headline) || assumptionItems.length > 0;
+
+  // Value-stacked bonus list.
   const bonuses = (p.bonuses ?? []).filter((b) => b && (b.title || b.desc));
   const hasBonusStack = bonuses.length > 0;
+
+  // Curated "Selbst wenn…" testimonials.
+  const testimonials = (p.testimonials ?? []).filter((t) => t && t.text);
+  const hasTestimonials = testimonials.length > 0;
+
+  // "Kurzer Einblick gefällig?" — headline + video.
+  const insightHeadline = p.insight?.headline?.trim();
+  const hasInsight = Boolean(insightVideoUrl || insightHeadline);
 
   return (
     <section className="border-t border-white/[0.04] bg-obsidian py-20 sm:py-28">
       <div className="mx-auto max-w-4xl space-y-16 px-6">
-        {/* Early social proof (Julia-style) — one bold result right under the hero */}
+        {/* 2 — Outcome-Ergebnis + CTA */}
         {hasHeroResult && (
           <RevealOnScroll>
             <div className="flex flex-col items-center gap-2 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] px-6 py-8 text-center">
@@ -84,10 +106,23 @@ export function ProductPageSections({
             </div>
           </RevealOnScroll>
         )}
+        {inlineCta && hasHeroResult && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
 
-        {/* Media block (promo video) right under the hero */}
-        {topMedia && <RevealOnScroll>{topMedia}</RevealOnScroll>}
+        {/* 3 — Wie es mir geht / Wie es meinen Kunden geht (+ Foto) */}
+        {hasSelf && (
+          <RevealOnScroll>
+            <p className="eyebrow mb-5">Wie es mir geht</p>
+            <StoryBlock text={selfText} image={selfStoryImageUrl} />
+          </RevealOnScroll>
+        )}
+        {hasCust && (
+          <RevealOnScroll>
+            <p className="eyebrow mb-5">Wie es meinen Kunden geht</p>
+            <StoryBlock text={custText} image={customerStoryImageUrl} flip />
+          </RevealOnScroll>
+        )}
 
+        {/* 4 — Problem / Status Quo */}
         {p.problem && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">Status Quo</p>
@@ -95,25 +130,44 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {/* Myth-bust early (Julia puts "braucht weniger als du denkst" high up) */}
-        {hasNeeds && (
+        {/* Vom Angenommenen befreien (✗) + CTA */}
+        {hasAssumptions && (
           <RevealOnScroll>
-            <p className="eyebrow mb-5">Was du wirklich brauchst</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {p.needs!.map((n) => (
-                <div key={n} className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-white/75">
-                  <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5 flex-none text-gold-300" />
-                  <span className="leading-7">{n}</span>
-                </div>
-              ))}
-            </div>
+            <p className="eyebrow mb-5">Vom Angenommenen befreien</p>
+            {assumptions?.headline && (
+              <h2 className="mb-6 font-heading text-2xl leading-snug text-white sm:text-3xl">
+                {assumptions.headline}
+              </h2>
+            )}
+            {assumptionItems.length > 0 && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {assumptionItems.map((it, i) => (
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
+                  >
+                    <XCircle aria-hidden className="mt-0.5 h-5 w-5 flex-none text-white/30" />
+                    <span className="leading-7 text-white/75">
+                      {it.title && (
+                        <strong className="font-semibold text-white">{it.title}: </strong>
+                      )}
+                      {it.copy}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </RevealOnScroll>
         )}
+        {inlineCta && hasAssumptions && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
 
+        {/* 5 — Vision */}
         {hasVision && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">Vision</p>
-            <h2 className="mb-6 font-heading text-3xl text-white sm:text-4xl">So sieht dein Alltag danach aus.</h2>
+            <h2 className="mb-6 font-heading text-3xl text-white sm:text-4xl">
+              So sieht dein Alltag danach aus.
+            </h2>
             <div className="grid gap-3">
               {p.vision!.map((v) => (
                 <div key={v} className="flex items-start gap-3 text-white/70">
@@ -125,9 +179,26 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {/* Mid-page CTA — right after the visitor pictures the outcome */}
-        {inlineCta && hasVision && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
+        {/* 6 — Was du wirklich brauchst (was NICHT nötig ist, ✗) */}
+        {hasNeeds && (
+          <RevealOnScroll>
+            <p className="eyebrow mb-5">Was du wirklich brauchst</p>
+            <h2 className="mb-6 font-heading text-2xl text-white sm:text-3xl">Was NICHT nötig ist.</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {p.needs!.map((n) => (
+                <div
+                  key={n}
+                  className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-white/75"
+                >
+                  <XCircle aria-hidden className="mt-0.5 h-5 w-5 flex-none text-white/30" />
+                  <span className="leading-7">{n}</span>
+                </div>
+              ))}
+            </div>
+          </RevealOnScroll>
+        )}
 
+        {/* 7 — So funktioniert der Kurs */}
         {hasMechanism && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">So funktioniert der Kurs</p>
@@ -147,17 +218,12 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {/* Mid-page CTA #1 — after the visitor understands the method */}
-        {inlineCta && hasMechanism && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
-
-        {/* 5 — Kursinhalt im Detail (per-module bullets + preview video + curriculum) */}
+        {/* 8 — Kursinhalt im Detail (slot) + CTA */}
         {courseContent && <RevealOnScroll>{courseContent}</RevealOnScroll>}
-
-        {/* Mid-page CTA #2 — after the visitor has seen everything that's inside */}
         {inlineCta && courseContent && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
 
-        {/* Value-stacked bonus list (Julia-style): title + euro value + optional screenshot */}
-        {hasBonusStack ? (
+        {/* 9 — Bonus (+ Cover) */}
+        {hasBonusStack && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">Deine Boni obendrauf</p>
             <div className="grid gap-4">
@@ -194,24 +260,72 @@ export function ProductPageSections({
               })}
             </div>
           </RevealOnScroll>
-        ) : (
-          p.bonus && (
-            <RevealOnScroll className="flex items-start gap-4 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] p-6">
-              <Gift aria-hidden className="mt-0.5 h-6 w-6 flex-none text-gold-300" />
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[0.16em] text-gold-200">Bonus</p>
-                <p className="mt-1 leading-7 text-white/75">{p.bonus}</p>
-              </div>
-            </RevealOnScroll>
-          )
         )}
 
-        {/* Mid-page CTA — right after the value stack lands */}
-        {inlineCta && (hasBonusStack || p.bonus) && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
+        {/* Testimonials „Selbst wenn…" (+ Foto) */}
+        {hasTestimonials && (
+          <RevealOnScroll>
+            <p className="eyebrow mb-5">Echte Stimmen</p>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {testimonials.map((t, i) => {
+                const img = testimonialImageUrls[i];
+                return (
+                  <figure
+                    key={i}
+                    className="flex flex-col gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6"
+                  >
+                    <Quote aria-hidden className="h-6 w-6 flex-none text-gold-300/70" />
+                    <blockquote className="whitespace-pre-line leading-7 text-white/75">
+                      {t.text}
+                    </blockquote>
+                    {(img || t.author) && (
+                      <figcaption className="mt-auto flex items-center gap-3 pt-2">
+                        {img && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={img}
+                            alt={t.author || "Mitglied"}
+                            loading="lazy"
+                            className="h-11 w-11 flex-none rounded-full border border-white/10 object-cover"
+                          />
+                        )}
+                        {t.author && (
+                          <span className="text-sm font-semibold text-white/80">{t.author}</span>
+                        )}
+                      </figcaption>
+                    )}
+                  </figure>
+                );
+              })}
+            </div>
+          </RevealOnScroll>
+        )}
 
-        {/* 7 — Testimonials (hidden by the component until ≥1 review exists) */}
-        {testimonials}
+        {/* 10 — In-house Bewertungen (hides itself until ≥1 review exists) */}
+        {reviews}
 
+        {/* Kurzer Einblick gefällig? (Überschrift + Video + CTA) */}
+        {hasInsight && (
+          <RevealOnScroll>
+            <h2 className="mb-6 text-center font-heading text-3xl text-white sm:text-4xl">
+              {insightHeadline || "Kurzer Einblick gefällig?"}
+            </h2>
+            {insightVideoUrl && (
+              <div className="overflow-hidden rounded-2xl border border-gold-500/20 shadow-gold">
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                <video
+                  src={insightVideoUrl}
+                  controls
+                  playsInline
+                  className="aspect-video w-full bg-black"
+                />
+              </div>
+            )}
+            {inlineCta && <div className="mt-8">{inlineCta}</div>}
+          </RevealOnScroll>
+        )}
+
+        {/* 11/12 — Für wen / Für wen nicht */}
         {(hasWhoFor || hasWhoNotFor) && (
           <RevealOnScroll className="grid gap-6 sm:grid-cols-2">
             {hasWhoFor && (
@@ -243,24 +357,7 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {hasAfter && (
-          <RevealOnScroll>
-            <p className="eyebrow mb-5">Was du danach kannst</p>
-            {outcome && <p className="mb-6 text-lg leading-9 text-white/55">{outcome}</p>}
-            {afterBullets.length > 0 && (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {afterBullets.map((a) => (
-                  <div key={a} className="flex items-start gap-3 text-white/75">
-                    <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none text-gold-300" />
-                    <span className="leading-7">{a}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </RevealOnScroll>
-        )}
-
-        {/* 10 — Ergebnis-Proof: real screenshots, the strongest spot right before CTA */}
+        {/* Proof-Screenshots — right before the buy section */}
         {hasProof && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">Echte Ergebnisse</p>
@@ -279,9 +376,33 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {/* 11 — Compact CTA + price */}
+        {/* Kauf-Sektion (Ziel aller CTAs) */}
         {cta && <RevealOnScroll>{cta}</RevealOnScroll>}
       </div>
     </section>
+  );
+}
+
+/** Photo + text row used by "Wie es mir geht" / "Wie es meinen Kunden geht". */
+function StoryBlock({ text, image, flip }: { text?: string; image?: string; flip?: boolean }) {
+  return (
+    <div
+      className={`flex flex-col gap-6 sm:items-center ${image ? "sm:flex-row" : ""} ${
+        flip ? "sm:flex-row-reverse" : ""
+      }`}
+    >
+      {image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={image}
+          alt=""
+          loading="lazy"
+          className="w-full flex-none rounded-2xl border border-white/10 object-cover sm:w-64"
+        />
+      )}
+      {text && (
+        <p className="flex-1 whitespace-pre-line text-lg leading-8 text-white/75">{text}</p>
+      )}
+    </div>
   );
 }

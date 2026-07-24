@@ -44,6 +44,9 @@ export type ModuleRecommendationInput = { slug: string; note: string };
 /** One value-stacked bonus row in the product-page editor. */
 export type BonusRow = { title: string; value: string; desc: string; image: string };
 
+/** One curated "Selbst wenn…" testimonial row in the product-page editor. */
+export type TestimonialRow = { text: string; author: string; image: string };
+
 export type EditorModule = {
   id: string;
   title: string;
@@ -171,6 +174,8 @@ export function CourseEditor({
   const ppList = (k: string) => (Array.isArray(pp[k]) ? (pp[k] as string[]).join("\n") : "");
   const [ppOutcome, setPpOutcome] = useState(ppStr("outcomeHeadline"));
   const [ppSubline, setPpSubline] = useState(ppStr("subline"));
+  const [ppProblemStatement, setPpProblemStatement] = useState(ppStr("problemStatement"));
+  const [ppHeroCtaLabel, setPpHeroCtaLabel] = useState(ppStr("heroCtaLabel"));
   const [ppProblem, setPpProblem] = useState(ppStr("problem"));
   const [ppVision, setPpVision] = useState(ppList("vision"));
   const [ppNeeds, setPpNeeds] = useState(ppList("needs"));
@@ -183,7 +188,6 @@ export function CourseEditor({
   );
   const [ppWhoFor, setPpWhoFor] = useState(ppList("whoFor"));
   const [ppWhoNotFor, setPpWhoNotFor] = useState(ppList("whoNotFor"));
-  const [ppAfter, setPpAfter] = useState(ppList("afterOutcomes"));
   const [ppCta, setPpCta] = useState(ppStr("ctaHeadline"));
   // Early social-proof strip shown right under the hero.
   const ppHero = (pp.heroResult ?? {}) as { stat?: string; text?: string };
@@ -208,6 +212,51 @@ export function CourseEditor({
   const [ppProof, setPpProof] = useState<string[]>(
     Array.isArray(pp.proofImages) ? (pp.proofImages as string[]) : []
   );
+
+  // "Wie es mir geht" / "Wie es meinen Kunden geht" — story text + photo.
+  const ppSelf = (pp.selfStory ?? {}) as { text?: string; image?: string };
+  const [ppSelfText, setPpSelfText] = useState(ppSelf.text ?? "");
+  const [ppSelfImage, setPpSelfImage] = useState(ppSelf.image ?? "");
+  const ppCust = (pp.customerStory ?? {}) as { text?: string; image?: string };
+  const [ppCustText, setPpCustText] = useState(ppCust.text ?? "");
+  const [ppCustImage, setPpCustImage] = useState(ppCust.image ?? "");
+
+  // "Vom Angenommenen befreien" — headline + ✗ items (Titel | Beschreibung pro Zeile).
+  const ppAsm = (pp.assumptions ?? {}) as {
+    headline?: string;
+    items?: Array<{ title?: string; copy?: string }>;
+  };
+  const [ppAsmHeadline, setPpAsmHeadline] = useState(ppAsm.headline ?? "");
+  const [ppAsmItems, setPpAsmItems] = useState(
+    Array.isArray(ppAsm.items)
+      ? ppAsm.items.map((m) => `${m.title ?? ""} | ${m.copy ?? ""}`).join("\n")
+      : ""
+  );
+
+  // Curated "Selbst wenn…" testimonials — text + author + photo.
+  const [ppTestimonials, setPpTestimonials] = useState<TestimonialRow[]>(() =>
+    Array.isArray(pp.testimonials)
+      ? (pp.testimonials as Array<Partial<TestimonialRow>>).map((t) => ({
+          text: t.text ?? "",
+          author: t.author ?? "",
+          image: t.image ?? "",
+        }))
+      : []
+  );
+
+  // "Kurzer Einblick gefällig?" — headline (video reuses the promo video above).
+  const ppInsight = (pp.insight ?? {}) as { headline?: string };
+  const [ppInsightHeadline, setPpInsightHeadline] = useState(ppInsight.headline ?? "");
+
+  function updateTestimonial(i: number, patch: Partial<TestimonialRow>) {
+    setPpTestimonials((prev) => prev.map((t, idx) => (idx === i ? { ...t, ...patch } : t)));
+  }
+  function addTestimonial() {
+    setPpTestimonials((prev) => [...prev, { text: "", author: "", image: "" }]);
+  }
+  function removeTestimonial(i: number) {
+    setPpTestimonials((prev) => prev.filter((_, idx) => idx !== i));
+  }
 
   function updateBonus(i: number, patch: Partial<BonusRow>) {
     setPpBonuses((prev) => prev.map((b, idx) => (idx === i ? { ...b, ...patch } : b)));
@@ -256,20 +305,30 @@ export function CourseEditor({
       Number.isFinite(compareEuros) && compareEuros > 0 ? Math.round(compareEuros * 100) : null;
 
     const lines = (t: string) => t.split("\n").map((s) => s.trim()).filter(Boolean);
+    const titleCopy = (t: string) =>
+      lines(t).map((l) => {
+        const [first, ...rest] = l.split("|");
+        return { title: (first ?? "").trim(), copy: rest.join("|").trim() };
+      });
     const productPage = {
       outcomeHeadline: ppOutcome,
       subline: ppSubline,
+      problemStatement: ppProblemStatement,
+      heroCtaLabel: ppHeroCtaLabel,
       problem: ppProblem,
       vision: lines(ppVision),
       needs: lines(ppNeeds),
-      mechanism: lines(ppMechanism).map((l) => {
-        const [first, ...rest] = l.split("|");
-        return { title: (first ?? "").trim(), copy: rest.join("|").trim() };
-      }),
+      mechanism: titleCopy(ppMechanism),
       whoFor: lines(ppWhoFor),
       whoNotFor: lines(ppWhoNotFor),
-      afterOutcomes: lines(ppAfter),
       heroResult: { stat: ppHeroStat.trim(), text: ppHeroText.trim() },
+      selfStory: { text: ppSelfText.trim(), image: ppSelfImage.trim() },
+      customerStory: { text: ppCustText.trim(), image: ppCustImage.trim() },
+      assumptions: { headline: ppAsmHeadline.trim(), items: titleCopy(ppAsmItems) },
+      testimonials: ppTestimonials
+        .map((t) => ({ text: t.text.trim(), author: t.author.trim(), image: t.image.trim() }))
+        .filter((t) => t.text),
+      insight: { headline: ppInsightHeadline.trim() },
       bonuses: ppBonuses
         .map((b) => ({
           title: b.title.trim(),
@@ -789,6 +848,30 @@ export function CourseEditor({
             </div>
 
             <label className="block">
+              <span className="tac-label mb-1.5 block">Provokativer Problem-Statement-Satz (Hero)</span>
+              <textarea
+                value={ppProblemStatement}
+                onChange={(e) => setPpProblemStatement(e.target.value)}
+                rows={2}
+                placeholder="Steht unter dem Cover, z.B. „Wenn du nicht lernst … kannst du dein Geld genauso gut aus dem Fenster werfen“"
+                className={`${inputClass} resize-y`}
+              />
+            </label>
+
+            <label className="block">
+              <span className="tac-label mb-1.5 block">Hero-CTA-Button-Text</span>
+              <input
+                value={ppHeroCtaLabel}
+                onChange={(e) => setPpHeroCtaLabel(e.target.value)}
+                placeholder="Cool! Zeig mir wie's geht!"
+                className={inputClass}
+              />
+              <span className="mt-1.5 block text-xs text-cream/40">
+                Alle CTA-Buttons scrollen zur Kauf-Sektion ganz unten. Leer = Standardtext.
+              </span>
+            </label>
+
+            <label className="block">
               <span className="tac-label mb-1.5 block">Problem / Status-Quo</span>
               <textarea
                 value={ppProblem}
@@ -811,12 +894,12 @@ export function CourseEditor({
                 />
               </label>
               <label className="block">
-                <span className="tac-label mb-1.5 block">Was du wirklich brauchst</span>
+                <span className="tac-label mb-1.5 block">Was du wirklich brauchst (✗ was NICHT nötig ist)</span>
                 <textarea
                   value={ppNeeds}
                   onChange={(e) => setPpNeeds(e.target.value)}
                   rows={4}
-                  placeholder={"Was NICHT nötig ist\n4 Punkte"}
+                  placeholder={"Keine Programmierkenntnisse\nKein großes Startbudget\nKeine Reichweite\nKein jahrelanges Ausprobieren"}
                   className={`${inputClass} resize-y`}
                 />
               </label>
@@ -856,15 +939,206 @@ export function CourseEditor({
               </label>
             </div>
 
-            <label className="block">
-              <span className="tac-label mb-1.5 block">Was du danach kannst (eine Zeile pro Bullet)</span>
+            {/* Wie es mir geht / Wie es meinen Kunden geht (+ Foto) */}
+            <div className="grid gap-4 border-t border-white/5 pt-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <span className="tac-label block">Wie es mir geht (+ Foto)</span>
+                <textarea
+                  value={ppSelfText}
+                  onChange={(e) => setPpSelfText(e.target.value)}
+                  rows={4}
+                  placeholder="Kurze Story: wie es dir geht — mit dem, was im Kurs vorkommt"
+                  className={`${inputClass} resize-y`}
+                />
+                {ppSelfImage ? (
+                  <div className="flex items-center gap-3">
+                    <div className="h-16 w-24 flex-none overflow-hidden rounded-md border border-white/10 bg-obsidian/60">
+                      {toPreview(ppSelfImage) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={toPreview(ppSelfImage)!} alt="Foto" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-cream/25">
+                          <ImageIcon className="h-5 w-5" />
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setPpSelfImage("")}
+                      className="text-xs font-semibold text-cream/50 transition-colors hover:text-red-300"
+                    >
+                      Foto entfernen
+                    </button>
+                  </div>
+                ) : (
+                  <FileUpload
+                    bucket="media"
+                    prefix="story"
+                    kind="image"
+                    accept="image/*"
+                    hint="Dein Foto (optional)"
+                    onUploaded={(f) => {
+                      setPpSelfImage(f.ref);
+                      success("Foto hinzugefügt — zum Übernehmen speichern.");
+                    }}
+                  />
+                )}
+              </div>
+              <div className="space-y-2">
+                <span className="tac-label block">Wie es meinen Kunden geht (+ Foto)</span>
+                <textarea
+                  value={ppCustText}
+                  onChange={(e) => setPpCustText(e.target.value)}
+                  rows={4}
+                  placeholder="Kurze Story: wie es deinen Kunden geht — mit dem, was im Kurs vorkommt"
+                  className={`${inputClass} resize-y`}
+                />
+                {ppCustImage ? (
+                  <div className="flex items-center gap-3">
+                    <div className="h-16 w-24 flex-none overflow-hidden rounded-md border border-white/10 bg-obsidian/60">
+                      {toPreview(ppCustImage) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={toPreview(ppCustImage)!} alt="Foto" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-cream/25">
+                          <ImageIcon className="h-5 w-5" />
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setPpCustImage("")}
+                      className="text-xs font-semibold text-cream/50 transition-colors hover:text-red-300"
+                    >
+                      Foto entfernen
+                    </button>
+                  </div>
+                ) : (
+                  <FileUpload
+                    bucket="media"
+                    prefix="story"
+                    kind="image"
+                    accept="image/*"
+                    hint="Kunden-Foto (optional)"
+                    onUploaded={(f) => {
+                      setPpCustImage(f.ref);
+                      success("Foto hinzugefügt — zum Übernehmen speichern.");
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Vom Angenommenen befreien (✗) */}
+            <div className="space-y-3 border-t border-white/5 pt-4">
+              <span className="tac-label block">Vom Angenommenen befreien (✗) — Mythos-Buster</span>
+              <input
+                value={ppAsmHeadline}
+                onChange={(e) => setPpAsmHeadline(e.target.value)}
+                placeholder="Headline, z.B. „Um … braucht es weniger, als du denkst!“"
+                className={inputClass}
+              />
               <textarea
-                value={ppAfter}
-                onChange={(e) => setPpAfter(e.target.value)}
+                value={ppAsmItems}
+                onChange={(e) => setPpAsmItems(e.target.value)}
                 rows={4}
-                placeholder={"Verb zuerst, 4-6 Outcome-Bullets"}
+                placeholder={
+                  "Täglich posten | Du musst nicht jeden Tag ein Reel raushauen\nDesigner-Branding | Du brauchst keine Agentur fürs Branding"
+                }
                 className={`${inputClass} resize-y`}
               />
+              <span className="block text-xs text-cream/40">
+                Pro Zeile: <code className="font-mono text-cream/60">Fett-Teil | Erklärung</code>. Wird
+                mit ✗ angezeigt.
+              </span>
+            </div>
+
+            {/* Testimonials „Selbst wenn…“ (+ Foto) */}
+            <div className="space-y-3 border-t border-white/5 pt-4">
+              <div className="flex items-center justify-between">
+                <span className="tac-label block">Testimonials „Selbst wenn…“ (+ Foto)</span>
+                <AdminButton variant="ghost" size="sm" icon={Plus} onClick={addTestimonial}>
+                  Testimonial
+                </AdminButton>
+              </div>
+              <p className="text-xs text-cream/40">
+                Kuratierte Stimmen mit Text, Name & optionalem Foto. Leer = Sektion unsichtbar.
+              </p>
+              {ppTestimonials.map((t, i) => (
+                <div key={i} className="space-y-3 rounded-lg border border-white/10 bg-obsidian/40 p-4">
+                  <div className="flex items-start gap-3">
+                    <textarea
+                      value={t.text}
+                      onChange={(e) => updateTestimonial(i, { text: e.target.value })}
+                      rows={3}
+                      placeholder="Zitat / Erfahrung"
+                      className={`${inputClass} resize-y`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeTestimonial(i)}
+                      className="flex h-9 w-9 flex-none items-center justify-center self-start rounded-md border border-white/10 text-cream/60 transition-colors hover:border-red-400/40 hover:text-red-300"
+                      aria-label="Testimonial entfernen"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <input
+                    value={t.author}
+                    onChange={(e) => updateTestimonial(i, { author: e.target.value })}
+                    placeholder="Name (optional)"
+                    className={inputClass}
+                  />
+                  {t.image ? (
+                    <div className="flex items-center gap-3">
+                      <div className="h-14 w-14 flex-none overflow-hidden rounded-full border border-white/10 bg-obsidian/60">
+                        {toPreview(t.image) ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={toPreview(t.image)!} alt="Foto" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-cream/25">
+                            <ImageIcon className="h-5 w-5" />
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => updateTestimonial(i, { image: "" })}
+                        className="text-xs font-semibold text-cream/50 transition-colors hover:text-red-300"
+                      >
+                        Foto entfernen
+                      </button>
+                    </div>
+                  ) : (
+                    <FileUpload
+                      bucket="media"
+                      prefix="testimonial"
+                      kind="image"
+                      accept="image/*"
+                      hint="Foto (optional)"
+                      onUploaded={(f) => {
+                        updateTestimonial(i, { image: f.ref });
+                        success("Foto hinzugefügt — zum Übernehmen speichern.");
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Kurzer Einblick gefällig? (Video = Promo-Video oben) */}
+            <label className="block border-t border-white/5 pt-4">
+              <span className="tac-label mb-1.5 block">„Kurzer Einblick gefällig?“ — Überschrift</span>
+              <input
+                value={ppInsightHeadline}
+                onChange={(e) => setPpInsightHeadline(e.target.value)}
+                placeholder="Kurzer Einblick gefällig?"
+                className={inputClass}
+              />
+              <span className="mt-1.5 block text-xs text-cream/40">
+                Das Video dieser Sektion ist das <span className="text-cream/70">Promo-Video</span> oben
+                („Cover &amp; Promo-Video“). Ohne Video &amp; Überschrift bleibt die Sektion unsichtbar.
+              </span>
             </label>
 
             {/* Early social-proof strip (Julia-style) shown right under the hero */}

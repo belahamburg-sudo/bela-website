@@ -1,18 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Lock, PlayCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, PlayCircle } from "lucide-react";
 import { CheckoutButton } from "@/components/checkout-button";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { Button } from "@/components/button";
 import { CourseLevelBadge } from "@/components/course-level-badge";
 import { CourseReviews } from "@/components/course-reviews";
-import { CourseCurriculumOutline } from "@/components/course-curriculum-outline";
+import { CourseContentDetail } from "@/components/course-content-detail";
 import { ProductPageSections } from "@/components/product-page-sections";
 import { HeroCover } from "@/components/product-page-fx";
 import { Reveal } from "@/components/dashboard/reveal";
 import { getPublicCourse, getPublicCourses } from "@/lib/courses";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { parseIncludeLine } from "@/lib/course-includes";
 import { resolveMediaUrl } from "@/lib/storage";
 import { formatEuro, discountPercent } from "@/lib/utils";
 import { Boxes, Package } from "lucide-react";
@@ -114,134 +113,165 @@ export default async function CourseDetailPage({
     await Promise.all((pp?.bonuses ?? []).map((b) => (b.image ? resolveMediaUrl(b.image) : null)))
   ).map((u) => u ?? "");
 
-  // "Was du danach kannst" falls back to the course "includes" bullets.
-  const fallbackBullets = course.includes.map((i) => parseIncludeLine(i)?.label ?? i);
+  // Story photos, curated-testimonial photos and the "Kurzer Einblick" video →
+  // resolved public/signed URLs (storage refs or plain URLs). The insight video
+  // falls back to the course promo video when no dedicated clip is set.
+  const selfStoryImageUrl =
+    (pp?.selfStory?.image ? await resolveMediaUrl(pp.selfStory.image) : null) ?? undefined;
+  const customerStoryImageUrl =
+    (pp?.customerStory?.image ? await resolveMediaUrl(pp.customerStory.image) : null) ?? undefined;
+  const testimonialImageUrls = (
+    await Promise.all(
+      (pp?.testimonials ?? []).map((t) => (t.image ? resolveMediaUrl(t.image) : null))
+    )
+  ).map((u) => u ?? "");
+  const insightVideoRef = pp?.insight?.videoUrl || course.promoVideoUrl;
+  const insightVideoUrl =
+    (insightVideoRef ? await resolveMediaUrl(insightVideoRef) : null) ?? undefined;
 
-  const modulesWithSalesContent = course.modules.filter(
-    (m) => (m.highlights?.length ?? 0) > 0 || Boolean(m.previewVideoUrl)
+  // Section 5 — "Kursinhalt im Detail": one accordion merging the module
+  // overview with the per-module detail (preview video + bullets + lessons).
+  // Preview videos are resolved to playable URLs (storage refs or plain URLs).
+  const detailModules = await Promise.all(
+    course.modules.map(async (m) => ({
+      id: m.id,
+      title: m.title,
+      highlights: m.highlights ?? [],
+      previewVideoUrl: m.previewVideoUrl
+        ? (await resolveMediaUrl(m.previewVideoUrl)) ?? undefined
+        : undefined,
+      lessons: m.lessons.map((l) => ({ id: l.id, title: l.title, duration: l.duration })),
+    }))
   );
 
-  // Section 5 — "Kursinhalt im Detail": preview video + per-module bullets + the
-  // full (locked) curriculum outline.
-  const courseContentNode = (
-    <div>
-      <p className="eyebrow mb-5">Kursinhalt im Detail</p>
-      <h2 className="mb-6 font-heading text-3xl text-white sm:text-4xl">Das steckt drin.</h2>
+  const courseContentNode = <CourseContentDetail modules={detailModules} owned={owned} />;
 
-      {modulesWithSalesContent.length > 0 && (
-        <div className="mb-8 grid gap-4">
-          {course.modules.map((m, i) => {
-            const hasBullets = (m.highlights?.length ?? 0) > 0;
-            const hasVideo = Boolean(m.previewVideoUrl);
-            if (!hasBullets && !hasVideo) return null;
-            return (
-              <div key={m.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full border border-gold-300/30 bg-gold-300/[0.06] font-heading text-sm text-gold-300">
-                    {i + 1}
-                  </span>
-                  <h3 className="font-heading text-lg text-white">{m.title}</h3>
-                </div>
-                {hasVideo && (
-                  <div className="mb-4 overflow-hidden rounded-xl border border-gold-500/20">
-                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                    <video
-                      src={m.previewVideoUrl}
-                      controls
-                      playsInline
-                      className="aspect-video w-full bg-black"
-                    />
-                  </div>
-                )}
-                {hasBullets && (
-                  <ul className="grid gap-2">
-                    {m.highlights!.map((h) => (
-                      <li key={h} className="flex items-start gap-2.5 text-white/70">
-                        <CheckCircle2 aria-hidden className="mt-1 h-4 w-4 flex-none text-gold-300" />
-                        <span className="leading-7">{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="mb-5 flex items-center gap-3">
-        <PlayCircle aria-hidden className="h-6 w-6 text-gold-300" />
-        <h3 className="font-heading text-2xl text-white">Alle Kursinhalte</h3>
-      </div>
-      <CourseCurriculumOutline modules={course.modules} locked />
-      {owned ? (
-        <div className="mt-5 flex items-start gap-3 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4 text-sm leading-7 text-emerald-100">
-          <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none" />
-          Du hast diesen Kurs freigeschaltet. Videos und Downloads findest du im Dashboard.
-        </div>
-      ) : (
-        <div className="mt-5 flex items-start gap-3 rounded-2xl border border-gold-500/15 bg-gold-500/[0.07] p-4 text-sm leading-7 text-gold-100">
-          <Lock aria-hidden className="mt-1 h-5 w-5 flex-none" />
-          Vorschau der Inhalte. Nach dem Kauf schaltest du Videos und Downloads im Dashboard frei.
-        </div>
-      )}
+  // Every CTA on the page scrolls to the buy section (#kaufen) at the very bottom,
+  // exactly as the board specifies ("Hierhin führen alle CTAs"). A native hash link
+  // is enough — scroll-behavior: smooth is set globally.
+  const inlineCtaNode = (
+    <div className="flex justify-center">
+      <a
+        href="#kaufen"
+        className="btn-shimmer focus-ring relative inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-4 text-[0.9rem] font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
+      >
+        <span className="relative z-[2]">{owned ? "Zum Kurs" : "Ja, das will ich!"}</span>
+      </a>
     </div>
   );
 
-  // Section 2 — media block right under the hero (promo/explainer video).
-  const topMediaNode = course.promoVideoUrl ? (
-    <div className="overflow-hidden rounded-2xl border border-gold-500/20 shadow-gold">
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video src={course.promoVideoUrl} controls playsInline className="aspect-video w-full bg-black" />
-    </div>
-  ) : undefined;
+  // In-house reviews (the component hides itself until ≥1 review exists).
+  const reviewsNode = <CourseReviews courseSlug={course.slug} />;
 
-  // Compact buy CTA repeated through the page (spec: CTAs everywhere, not just at
-  // the end). Owners already see "im Dashboard ansehen" at top and bottom, so the
-  // mid-page nudges are only for prospects.
-  const inlineCtaNode = owned ? undefined : (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-gold-300/20 bg-gold-300/[0.05] p-6 text-center sm:flex-row sm:justify-between sm:text-left">
-      <div className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
-        <span className="font-heading text-3xl text-gold-300">{formatEuro(course.priceCents)}</span>
-        {discount > 0 && course.compareAtPriceCents && (
-          <span className="text-lg text-white/35 line-through decoration-white/30">
-            {formatEuro(course.compareAtPriceCents)}
-          </span>
-        )}
-      </div>
-      <div className="w-full sm:w-auto sm:min-w-[240px]">
-        <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" />
-      </div>
-    </div>
-  );
-
-  // Section 7 — Testimonials (the component hides itself until ≥1 review exists).
-  const testimonialsNode = <CourseReviews courseSlug={course.slug} />;
-
-  // Section 11 — compact closing CTA + price.
+  // The buy section — target of every CTA. Course headline + price + "In den
+  // Warenkorb" / "Direkt kaufen" (or the dashboard link for owners), plus the
+  // bundle nudges. id="kaufen" so every CTA scrolls here.
   const ctaNode = (
-    <div className="rounded-[1.5rem] border border-gold-300/25 bg-gold-300/[0.06] p-7 text-center sm:p-9">
-      <h2 className="font-heading text-2xl leading-snug text-white sm:text-3xl">
-        {pp?.ctaHeadline || "Bereit loszulegen?"}
-      </h2>
-      <div className="mt-5 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
+    <div
+      id="kaufen"
+      className="scroll-mt-24 rounded-[1.5rem] border border-gold-300/25 bg-gold-300/[0.06] p-7 text-center sm:p-9"
+    >
+      <h2 className="font-heading text-3xl leading-tight text-white sm:text-4xl">{course.title}</h2>
+      {pp?.ctaHeadline && (
+        <p className="mx-auto mt-3 max-w-2xl text-lg leading-8 text-white/70">{pp.ctaHeadline}</p>
+      )}
+      <div className="mt-6 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
         <p className="font-heading text-4xl text-gold-300">{formatEuro(course.priceCents)}</p>
         {discount > 0 && course.compareAtPriceCents && (
           <span className="text-xl text-white/35 line-through decoration-white/30">
             {formatEuro(course.compareAtPriceCents)}
           </span>
         )}
-      </div>
-      <div className="mx-auto mt-6 max-w-md">
-        {owned ? (
-          <Button href={`/bibliothek/${course.slug}`} size="lg" className="w-full">
-            <PlayCircle aria-hidden className="h-5 w-5" />
-            Jetzt im Dashboard ansehen
-          </Button>
-        ) : (
-          <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" />
+        {discount > 0 && (
+          <span className="rounded-sm bg-gold-300 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-obsidian">
+            -{discount}% OFF
+          </span>
         )}
       </div>
+      <div className="mx-auto mt-7 max-w-md">
+        {owned ? (
+          <div className="space-y-3">
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/[0.06] px-4 py-1.5 text-sm font-semibold text-emerald-200">
+              <CheckCircle2 aria-hidden className="h-4 w-4" />
+              Du besitzt diesen Kurs bereits
+            </span>
+            <Button href={`/bibliothek/${course.slug}`} size="lg" className="w-full">
+              <PlayCircle aria-hidden className="h-5 w-5" />
+              Jetzt im Dashboard ansehen
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <CheckoutButton courseSlug={course.slug} label="Direkt kaufen" autoBuy={autoBuy} />
+            <AddToCartButton
+              course={{
+                slug: course.slug,
+                title: course.title,
+                priceCents: course.priceCents,
+                image: course.image,
+                format: course.format,
+              }}
+            />
+          </div>
+        )}
+      </div>
+
+      {course.audience && (
+        <p className="mx-auto mt-6 max-w-xl border-t border-white/[0.08] pt-4 text-sm leading-relaxed text-white/55">
+          <span className="font-semibold uppercase tracking-[0.15em] text-white/30">Für wen </span>
+          <span className="ml-2">{course.audience}</span>
+        </p>
+      )}
+
+      {bundledCourses.length > 0 && (
+        <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-gold-500/20 bg-gold-500/[0.05] p-5 text-left">
+          <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
+            <Boxes aria-hidden className="h-4 w-4 text-gold-300" />
+            Enthält {bundledCourses.length} weitere{bundledCourses.length === 1 ? "n" : ""} Kurs
+            {bundledCourses.length === 1 ? "" : "e"}
+          </div>
+          <ul className="mt-3 grid gap-2">
+            {bundledCourses.map((c) => (
+              <li key={c.slug}>
+                <Link
+                  href={`/kurse/${c.slug}`}
+                  className="flex items-center gap-2 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2 text-sm text-white/80 transition-colors hover:border-gold-300/40 hover:text-gold-100"
+                >
+                  <CheckCircle2 aria-hidden className="h-4 w-4 flex-none text-gold-300" />
+                  <span className="truncate">{c.title}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {!owned && partOfBundles.length > 0 && (
+        <div className="mx-auto mt-4 max-w-xl rounded-2xl border border-gold-300/30 bg-gold-300/[0.06] p-5 text-left">
+          <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
+            <Package aria-hidden className="h-4 w-4 text-gold-300" />
+            Im Bundle günstiger
+          </div>
+          <ul className="mt-3 grid gap-2">
+            {partOfBundles.map((b) => (
+              <li key={b.slug}>
+                <Link
+                  href={`/kurse/${b.slug}`}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-gold-300/20 bg-obsidian/40 px-3 py-2.5 text-sm text-white/85 transition-colors hover:border-gold-300/50 hover:text-gold-100"
+                >
+                  <span className="flex min-w-0 items-center gap-2">
+                    <Boxes aria-hidden className="h-4 w-4 flex-none text-gold-300" />
+                    <span className="truncate">{b.title}</span>
+                  </span>
+                  <span className="flex-none font-heading text-gold-200">
+                    {formatEuro(b.priceCents)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 
@@ -295,120 +325,31 @@ export default async function CourseDetailPage({
             <HeroCover src={course.image} alt={`Cover für ${course.title}`} />
           </div>
 
-          {course.description && (
-            <p className="mx-auto mt-12 max-w-3xl text-center text-lg leading-9 text-white/55">
-              {course.description}
+          {/* Provokativer Problem-Statement-Satz */}
+          {pp?.problemStatement && (
+            <p className="mx-auto mt-10 max-w-3xl text-center text-xl font-semibold leading-9 text-white/80 sm:text-2xl">
+              {pp.problemStatement}
             </p>
           )}
 
-          {/* Price + audience + CTA */}
-          <div className="mx-auto mt-10 max-w-3xl rounded-[1.6rem] border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-sm sm:p-8">
-            <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/30">Preis</p>
-                <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-                  <p className="font-heading text-4xl text-gold-300">{formatEuro(course.priceCents)}</p>
-                  {discount > 0 && course.compareAtPriceCents && (
-                    <span className="text-lg text-white/35 line-through decoration-white/30">
-                      {formatEuro(course.compareAtPriceCents)}
-                    </span>
-                  )}
-                </div>
-                {discount > 0 && (
-                  <span className="mt-2 inline-block rounded-sm bg-gold-300 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-obsidian">
-                    -{discount}% OFF
-                  </span>
-                )}
-              </div>
-              <div className="sm:border-l sm:border-white/[0.06] sm:pl-6">
-                {owned ? (
-                  <div className="space-y-3">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/[0.06] px-4 py-1.5 text-sm font-semibold text-emerald-200">
-                      <CheckCircle2 aria-hidden className="h-4 w-4" />
-                      Du besitzt diesen Kurs bereits
-                    </span>
-                    <Button href={`/bibliothek/${course.slug}`} size="lg" className="w-full">
-                      <PlayCircle aria-hidden className="h-5 w-5" />
-                      Jetzt im Dashboard ansehen
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <CheckoutButton courseSlug={course.slug} label="Jetzt kaufen" autoBuy={autoBuy} />
-                    <AddToCartButton
-                      course={{
-                        slug: course.slug,
-                        title: course.title,
-                        priceCents: course.priceCents,
-                        image: course.image,
-                        format: course.format,
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-            {course.audience && (
-              <p className="mt-5 border-t border-white/[0.06] pt-4 text-sm leading-relaxed text-white/55">
-                <span className="font-semibold uppercase tracking-[0.15em] text-white/30">Für wen </span>
-                <span className="ml-2">{course.audience}</span>
-              </p>
+          {/* Hero-CTA — scrollt zur Kauf-Sektion (#kaufen) ganz unten */}
+          <div className="mt-10 flex justify-center">
+            {owned ? (
+              <Button href={`/bibliothek/${course.slug}`} size="lg">
+                <PlayCircle aria-hidden className="h-5 w-5" />
+                Jetzt im Dashboard ansehen
+              </Button>
+            ) : (
+              <a
+                href="#kaufen"
+                className="btn-shimmer focus-ring relative inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-4 text-[0.9rem] font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
+              >
+                <span className="relative z-[2]">
+                  {pp?.heroCtaLabel || "Cool! Zeig mir wie's geht!"}
+                </span>
+              </a>
             )}
           </div>
-
-          {bundledCourses.length > 0 && (
-            <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-gold-500/20 bg-gold-500/[0.05] p-5">
-              <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
-                <Boxes aria-hidden className="h-4 w-4 text-gold-300" />
-                Enthält {bundledCourses.length} weitere{bundledCourses.length === 1 ? "n" : ""} Kurs{bundledCourses.length === 1 ? "" : "e"}
-              </div>
-              <p className="mt-1 text-sm text-white/45">
-                Beim Kauf werden diese Kurse automatisch mit freigeschaltet:
-              </p>
-              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                {bundledCourses.map((c) => (
-                  <li key={c.slug}>
-                    <Link
-                      href={`/kurse/${c.slug}`}
-                      className="flex items-center gap-2 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2 text-sm text-white/80 transition-colors hover:border-gold-300/40 hover:text-gold-100"
-                    >
-                      <CheckCircle2 aria-hidden className="h-4 w-4 flex-none text-gold-300" />
-                      <span className="truncate">{c.title}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {!owned && partOfBundles.length > 0 && (
-            <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gold-300/30 bg-gold-300/[0.06] p-5">
-              <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
-                <Package aria-hidden className="h-4 w-4 text-gold-300" />
-                Im Bundle günstiger
-              </div>
-              <p className="mt-1 text-sm text-white/50">
-                Dieser Kurs ist Teil {partOfBundles.length === 1 ? "eines Bundles" : "von Bundles"}.
-                Hol dir gleich das ganze Paket und schalte mehrere Kurse auf einmal frei:
-              </p>
-              <ul className="mt-3 grid gap-2">
-                {partOfBundles.map((b) => (
-                  <li key={b.slug}>
-                    <Link
-                      href={`/kurse/${b.slug}`}
-                      className="flex items-center justify-between gap-2 rounded-lg border border-gold-300/20 bg-obsidian/40 px-3 py-2.5 text-sm text-white/85 transition-colors hover:border-gold-300/50 hover:text-gold-100"
-                    >
-                      <span className="flex min-w-0 items-center gap-2">
-                        <Boxes aria-hidden className="h-4 w-4 flex-none text-gold-300" />
-                        <span className="truncate">{b.title}</span>
-                      </span>
-                      <span className="flex-none font-heading text-gold-200">{formatEuro(b.priceCents)}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </section>
 
@@ -416,11 +357,12 @@ export default async function CourseDetailPage({
         pp={pp}
         proofImageUrls={proofImageUrls}
         bonusImageUrls={bonusImageUrls}
-        outcome={course.outcome}
-        fallbackBullets={fallbackBullets}
-        topMedia={topMediaNode}
+        selfStoryImageUrl={selfStoryImageUrl}
+        customerStoryImageUrl={customerStoryImageUrl}
+        testimonialImageUrls={testimonialImageUrls}
+        insightVideoUrl={insightVideoUrl}
         courseContent={courseContentNode}
-        testimonials={testimonialsNode}
+        reviews={reviewsNode}
         inlineCta={inlineCtaNode}
         cta={ctaNode}
       />

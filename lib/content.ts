@@ -17,15 +17,19 @@ export type Lesson = {
  * each product page from the dashboard without touching code.
  */
 export type ProductPage = {
-  /** H1 outcome headline (one sentence). */
+  /** H1 outcome headline (one sentence) — hero. */
   outcomeHeadline?: string;
   /** Subline that hints at the "how" / method. */
   subline?: string;
+  /** Provocative problem-statement sentence shown in the hero, under the headline. */
+  problemStatement?: string;
+  /** Label for the hero CTA button (defaults to "Cool! Zeig mir wie's geht!"). */
+  heroCtaLabel?: string;
   /** Problem / status-quo diagnosis (max ~3 sentences). */
   problem?: string;
   /** Vision: how everyday life looks after the course (3 concrete points). */
   vision?: string[];
-  /** What you really need — debunks what is NOT required (4 points). */
+  /** "Was du wirklich brauchst" — what is NOT required (4 ✗ points). */
   needs?: string[];
   /** 3-step mechanic of how the course works (headline + one sentence each). */
   mechanism?: Array<{ title: string; copy: string }>;
@@ -40,6 +44,19 @@ export type ProductPage = {
    * headline result, e.g. { stat: "7.000€", text: "Umsatz dank Werbeanzeigen" }.
    */
   heroResult?: { stat?: string; text?: string };
+  /** "Wie es mir geht" — a short story tied to the course content + a photo. */
+  selfStory?: { text?: string; image?: string };
+  /** "Wie es meinen Kunden geht" — a short story tied to the course content + a photo. */
+  customerStory?: { text?: string; image?: string };
+  /**
+   * "Vom Angenommenem befreien" — myth-bust block: a headline + ✗ items, each
+   * with a bold lead (`title`) and an explanation (`copy`).
+   */
+  assumptions?: { headline?: string; items?: Array<{ title: string; copy: string }> };
+  /** Curated "Selbst wenn…" testimonials, each with text, optional author + photo. */
+  testimonials?: Array<{ text: string; author?: string; image?: string }>;
+  /** "Kurzer Einblick gefällig?" — a headline + a course-content video. */
+  insight?: { headline?: string; videoUrl?: string };
   /**
    * Value-stacked bonus list (Julia-style): each bonus with a title, a euro
    * value used as a price anchor, an optional description and screenshot.

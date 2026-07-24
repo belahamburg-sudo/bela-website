@@ -104,8 +104,51 @@ function sanitizeProductPage(raw?: Record<string, unknown> | null): Record<strin
     const cleaned = arr.map((x) => clean(String(x))).filter((x): x is string => Boolean(x));
     if (cleaned.length > 0) out[k] = cleaned;
   };
-  ["outcomeHeadline", "subline", "problem", "bonus", "ctaHeadline"].forEach(str);
+  ["outcomeHeadline", "subline", "problemStatement", "heroCtaLabel", "problem", "bonus", "ctaHeadline"].forEach(str);
   ["vision", "needs", "whoFor", "whoNotFor", "afterOutcomes", "proofImages"].forEach(list);
+  // selfStory / customerStory: { text, image } — keep if either side is filled.
+  (["selfStory", "customerStory"] as const).forEach((k) => {
+    const row = (raw[k] ?? {}) as { text?: string; image?: string };
+    const text = clean(row.text);
+    const image = clean(row.image);
+    if (text || image) {
+      out[k] = { ...(text ? { text } : {}), ...(image ? { image } : {}) };
+    }
+  });
+  // assumptions: { headline, items: [{ title, copy }] } — "Vom Angenommenem befreien".
+  const asm = (raw.assumptions ?? {}) as { headline?: string; items?: unknown[] };
+  const asmHeadline = clean(asm.headline);
+  const asmItems = (Array.isArray(asm.items) ? asm.items : [])
+    .map((m) => {
+      const row = (m ?? {}) as { title?: string; copy?: string };
+      const title = clean(row.title);
+      const copy = clean(row.copy);
+      return title || copy ? { ...(title ? { title } : {}), ...(copy ? { copy } : {}) } : null;
+    })
+    .filter((m): m is { title?: string; copy?: string } => Boolean(m));
+  if (asmHeadline || asmItems.length > 0) {
+    out.assumptions = { ...(asmHeadline ? { headline: asmHeadline } : {}), ...(asmItems.length ? { items: asmItems } : {}) };
+  }
+  // testimonials: array of { text, author, image } — keep rows with text.
+  const tms = Array.isArray(raw.testimonials) ? (raw.testimonials as unknown[]) : [];
+  const tmsCleaned = tms
+    .map((t) => {
+      const row = (t ?? {}) as { text?: string; author?: string; image?: string };
+      const text = clean(row.text);
+      if (!text) return null;
+      const author = clean(row.author);
+      const image = clean(row.image);
+      return { text, ...(author ? { author } : {}), ...(image ? { image } : {}) };
+    })
+    .filter(Boolean);
+  if (tmsCleaned.length > 0) out.testimonials = tmsCleaned;
+  // insight: { headline, videoUrl } — "Kurzer Einblick gefällig?".
+  const ins = (raw.insight ?? {}) as { headline?: string; videoUrl?: string };
+  const insHeadline = clean(ins.headline);
+  const insVideo = clean(ins.videoUrl);
+  if (insHeadline || insVideo) {
+    out.insight = { ...(insHeadline ? { headline: insHeadline } : {}), ...(insVideo ? { videoUrl: insVideo } : {}) };
+  }
   // mechanism: array of { title, copy } — keep rows where both are present.
   const mech = Array.isArray(raw.mechanism) ? (raw.mechanism as unknown[]) : [];
   const mechCleaned = mech
