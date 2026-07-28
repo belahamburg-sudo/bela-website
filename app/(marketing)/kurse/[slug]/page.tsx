@@ -8,13 +8,15 @@ import { CourseLevelBadge } from "@/components/course-level-badge";
 import { CourseReviews } from "@/components/course-reviews";
 import { CourseContentDetail } from "@/components/course-content-detail";
 import { ProductPageSections } from "@/components/product-page-sections";
+import { ProductStickyBuy } from "@/components/product-sticky-buy";
 import { HeroCover } from "@/components/product-page-fx";
 import { Reveal } from "@/components/dashboard/reveal";
 import { getPublicCourse, getPublicCourses } from "@/lib/courses";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { getSupabaseAdminClient } from "@/lib/supabase";
 import { resolveMediaUrl } from "@/lib/storage";
 import { formatEuro, discountPercent } from "@/lib/utils";
-import { Boxes, Package } from "lucide-react";
+import { Boxes, Package, Sparkles } from "lucide-react";
 import {
   JsonLd,
   SITE_URL,
@@ -98,7 +100,46 @@ export default async function CourseDetailPage({
     .filter((c) => c.slug !== course.slug && (c.bundledCourses ?? []).includes(course.slug))
     .map((c) => ({ slug: c.slug, title: c.title, priceCents: c.priceCents }));
 
+  // Upsell courses shown inside the buy section, from the hand-picked cross-sell
+  // list. Anything already surfaced as a bundle nudge is filtered out so no
+  // course appears twice in the same block.
+  const bundleNudgeSlugs = new Set([
+    ...bundledCourses.map((c) => c.slug),
+    ...partOfBundles.map((c) => c.slug),
+  ]);
+  const upsellCourses = (course.crossSellSlugs ?? [])
+    .filter((s) => s !== course.slug && !bundleNudgeSlugs.has(s))
+    .map((s) => allCourses.find((c) => c.slug === s))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+    .map((c) => ({ slug: c.slug, title: c.title, priceCents: c.priceCents, image: c.image }));
+
   const discount = discountPercent(course.priceCents, course.compareAtPriceCents);
+
+  // Bewertungs-Aggregat für das Produkt-Schema (Sterne im Google-Ergebnis).
+  // Direkt über den Admin-Client statt per fetch auf die eigene API, damit das
+  // serverseitige Rendering keinen zusätzlichen HTTP-Roundtrip braucht.
+  let reviewAggregate: { average: number; count: number } | undefined;
+  try {
+    const admin = getSupabaseAdminClient();
+    if (admin) {
+      const { data } = await admin
+        .from("course_reviews")
+        .select("rating")
+        .eq("course_slug", slug)
+        .eq("is_published", true)
+        .limit(1000);
+      const ratings = (data ?? []) as Array<{ rating: number }>;
+      if (ratings.length > 0) {
+        const sum = ratings.reduce((total, r) => total + (r.rating ?? 0), 0);
+        reviewAggregate = {
+          count: ratings.length,
+          average: Math.round((sum / ratings.length) * 10) / 10,
+        };
+      }
+    }
+  } catch {
+    // Ohne Aggregat wird das Schema einfach ohne Sterne ausgeliefert.
+  }
 
   const pp = course.productPage;
 
@@ -113,17 +154,17 @@ export default async function CourseDetailPage({
     await Promise.all((pp?.bonuses ?? []).map((b) => (b.image ? resolveMediaUrl(b.image) : null)))
   ).map((u) => u ?? "");
 
-  // Story photos, curated-testimonial photos and the "Kurzer Einblick" video →
+  // Story photos, "Selbst wenn…" photos and the "Kurzer Einblick" video →
   // resolved public/signed URLs (storage refs or plain URLs). The insight video
   // falls back to the course promo video when no dedicated clip is set.
   const selfStoryImageUrl =
     (pp?.selfStory?.image ? await resolveMediaUrl(pp.selfStory.image) : null) ?? undefined;
   const customerStoryImageUrl =
     (pp?.customerStory?.image ? await resolveMediaUrl(pp.customerStory.image) : null) ?? undefined;
-  const testimonialImageUrls = (
-    await Promise.all(
-      (pp?.testimonials ?? []).map((t) => (t.image ? resolveMediaUrl(t.image) : null))
-    )
+  // Legacy `testimonials` rows still feed the block for courses saved before the rename.
+  const evenIfItems = pp?.evenIf?.items ?? pp?.testimonials ?? [];
+  const evenIfImageUrls = (
+    await Promise.all(evenIfItems.map((t) => (t.image ? resolveMediaUrl(t.image) : null)))
   ).map((u) => u ?? "");
   const insightVideoRef = pp?.insight?.videoUrl || course.promoVideoUrl;
   const insightVideoUrl =
@@ -160,8 +201,11 @@ export default async function CourseDetailPage({
     </div>
   );
 
-  // In-house reviews (the component hides itself until ≥1 review exists).
-  const reviewsNode = <CourseReviews courseSlug={course.slug} />;
+  // In-house Bewertungen — echte Kundenbewertungen (Sterne, Überschrift, Text,
+  // Foto). Der Block bleibt komplett unsichtbar, solange niemand bewertet hat.
+  const reviewsNode = (
+    <CourseReviews courseSlug={course.slug} hideUntilFirst canReview={owned} />
+  );
 
   // The buy section — target of every CTA. Course headline + price + "In den
   // Warenkorb" / "Direkt kaufen" (or the dashboard link for owners), plus the
@@ -216,13 +260,6 @@ export default async function CourseDetailPage({
         )}
       </div>
 
-      {course.audience && (
-        <p className="mx-auto mt-6 max-w-xl border-t border-white/[0.08] pt-4 text-sm leading-relaxed text-white/55">
-          <span className="font-semibold uppercase tracking-[0.15em] text-white/30">Für wen </span>
-          <span className="ml-2">{course.audience}</span>
-        </p>
-      )}
-
       {bundledCourses.length > 0 && (
         <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-gold-500/20 bg-gold-500/[0.05] p-5 text-left">
           <div className="flex items-center gap-2 text-sm font-bold text-gold-100">
@@ -272,6 +309,40 @@ export default async function CourseDetailPage({
           </ul>
         </div>
       )}
+
+      {/* Upsell-Kurse — direkt in der Kauf-Sektion, wie auf dem Board vermerkt. */}
+      {upsellCourses.length > 0 && (
+        <div className="mx-auto mt-4 max-w-xl rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 text-left">
+          <div className="flex items-center gap-2 text-sm font-bold text-cream/80">
+            <Sparkles aria-hidden className="h-4 w-4 text-gold-300" />
+            Das passt perfekt dazu
+          </div>
+          <ul className="mt-3 grid gap-2">
+            {upsellCourses.map((u) => (
+              <li key={u.slug}>
+                <Link
+                  href={`/kurse/${u.slug}`}
+                  className="flex items-center gap-3 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2.5 text-sm text-white/85 transition-colors hover:border-gold-300/40 hover:text-gold-100"
+                >
+                  {u.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={u.image}
+                      alt=""
+                      loading="lazy"
+                      className="h-10 w-14 flex-none rounded-md border border-white/10 object-cover"
+                    />
+                  )}
+                  <span className="min-w-0 flex-1 truncate">{u.title}</span>
+                  <span className="flex-none font-heading text-gold-200">
+                    {formatEuro(u.priceCents)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 
@@ -279,7 +350,7 @@ export default async function CourseDetailPage({
     <>
       <JsonLd
         data={[
-          courseProductSchema(course),
+          courseProductSchema(course, reviewAggregate),
           breadcrumbSchema([
             { name: "Start", url: SITE_URL },
             { name: "Kurse", url: `${SITE_URL}/kurse` },
@@ -300,24 +371,16 @@ export default async function CourseDetailPage({
             Zurück zur Kursübersicht
           </Link>
 
-          {/* Title block */}
+          {/* Hero-Headline — genau EIN Satz (Board: „Nur 1x Satz"). Kein
+              Kurstitel und keine Subline darüber oder darunter; der Kursname
+              steht auf dem Cover und in der Kauf-Sektion. */}
           <Reveal className="mt-8 text-center">
             <div className="flex justify-center">
               <CourseLevelBadge level={course.level} />
             </div>
             <h1 className="mx-auto mt-5 max-w-4xl font-heading text-4xl leading-[1.05] text-white sm:text-6xl">
-              {course.title}
+              {pp?.outcomeHeadline || course.title}
             </h1>
-            {pp?.outcomeHeadline ? (
-              <p className="mx-auto mt-5 max-w-3xl font-heading text-2xl leading-snug text-gold-100 sm:text-3xl">
-                {pp.outcomeHeadline}
-              </p>
-            ) : (
-              <p className="mx-auto mt-5 max-w-3xl text-xl font-semibold text-gold-100">{course.tagline}</p>
-            )}
-            {pp?.subline && (
-              <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/55">{pp.subline}</p>
-            )}
           </Reveal>
 
           {/* Big header cover */}
@@ -359,13 +422,25 @@ export default async function CourseDetailPage({
         bonusImageUrls={bonusImageUrls}
         selfStoryImageUrl={selfStoryImageUrl}
         customerStoryImageUrl={customerStoryImageUrl}
-        testimonialImageUrls={testimonialImageUrls}
+        evenIfImageUrls={evenIfImageUrls}
         insightVideoUrl={insightVideoUrl}
         courseContent={courseContentNode}
         reviews={reviewsNode}
         inlineCta={inlineCtaNode}
         cta={ctaNode}
       />
+
+      {/* Mobile: eigene Sticky-Leiste statt des generischen Webinar-CTAs —
+          scrollt wie jeder andere CTA zur Kauf-Sektion. */}
+      {owned ? (
+        <ProductStickyBuy label="Zum Kurs" href={`/bibliothek/${course.slug}`} />
+      ) : (
+        <ProductStickyBuy
+          priceCents={course.priceCents}
+          label="Jetzt sichern"
+          href="#kaufen"
+        />
+      )}
     </>
   );
 }

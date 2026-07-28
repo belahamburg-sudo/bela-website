@@ -104,8 +104,17 @@ function sanitizeProductPage(raw?: Record<string, unknown> | null): Record<strin
     const cleaned = arr.map((x) => clean(String(x))).filter((x): x is string => Boolean(x));
     if (cleaned.length > 0) out[k] = cleaned;
   };
-  ["outcomeHeadline", "subline", "problemStatement", "heroCtaLabel", "problem", "bonus", "ctaHeadline"].forEach(str);
-  ["vision", "needs", "whoFor", "whoNotFor", "afterOutcomes", "proofImages"].forEach(list);
+  // NB: no `subline` — the hero carries one sentence only (outcomeHeadline).
+  [
+    "outcomeHeadline",
+    "problemStatement",
+    "heroCtaLabel",
+    "problem",
+    "bonus",
+    "ctaHeadline",
+    "proofHeadline",
+  ].forEach(str);
+  ["vision", "needs", "whoFor", "whoNotFor", "proofImages"].forEach(list);
   // selfStory / customerStory: { text, image } — keep if either side is filled.
   (["selfStory", "customerStory"] as const).forEach((k) => {
     const row = (raw[k] ?? {}) as { text?: string; image?: string };
@@ -129,9 +138,17 @@ function sanitizeProductPage(raw?: Record<string, unknown> | null): Record<strin
   if (asmHeadline || asmItems.length > 0) {
     out.assumptions = { ...(asmHeadline ? { headline: asmHeadline } : {}), ...(asmItems.length ? { items: asmItems } : {}) };
   }
-  // testimonials: array of { text, author, image } — keep rows with text.
-  const tms = Array.isArray(raw.testimonials) ? (raw.testimonials as unknown[]) : [];
-  const tmsCleaned = tms
+  // evenIf: { headline, items: [{ text, author, image }] } — the "Selbst wenn…"
+  // proof block. Legacy `testimonials` rows are folded in so older courses keep
+  // their content after the rename.
+  const evenIf = (raw.evenIf ?? {}) as { headline?: string; items?: unknown[] };
+  const evenIfHeadline = clean(evenIf.headline);
+  const evenIfSource = Array.isArray(evenIf.items)
+    ? evenIf.items
+    : Array.isArray(raw.testimonials)
+      ? (raw.testimonials as unknown[])
+      : [];
+  const evenIfItems = evenIfSource
     .map((t) => {
       const row = (t ?? {}) as { text?: string; author?: string; image?: string };
       const text = clean(row.text);
@@ -141,7 +158,12 @@ function sanitizeProductPage(raw?: Record<string, unknown> | null): Record<strin
       return { text, ...(author ? { author } : {}), ...(image ? { image } : {}) };
     })
     .filter(Boolean);
-  if (tmsCleaned.length > 0) out.testimonials = tmsCleaned;
+  if (evenIfHeadline || evenIfItems.length > 0) {
+    out.evenIf = {
+      ...(evenIfHeadline ? { headline: evenIfHeadline } : {}),
+      ...(evenIfItems.length ? { items: evenIfItems } : {}),
+    };
+  }
   // insight: { headline, videoUrl } — "Kurzer Einblick gefällig?".
   const ins = (raw.insight ?? {}) as { headline?: string; videoUrl?: string };
   const insHeadline = clean(ins.headline);

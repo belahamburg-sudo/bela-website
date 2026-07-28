@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CheckCircle2, XCircle, Gift, Quote } from "lucide-react";
+import { CheckCircle2, XCircle, Gift } from "lucide-react";
 import type { ProductPage } from "@/lib/content";
 import { RevealOnScroll } from "@/components/product-page-fx";
 
@@ -10,7 +10,7 @@ import { RevealOnScroll } from "@/components/product-page-fx";
  *   Outcome-Ergebnis + CTA · Wie es mir/den Kunden geht (+Foto) · Problem/Status-Quo
  *   Vom Angenommenen befreien (✗) + CTA · Vision · Was du wirklich brauchst (✗)
  *   So funktioniert der Kurs · Kursinhalt im Detail (slot) + CTA · Bonus (+Cover)
- *   Testimonials „Selbst wenn…" (+Foto) · Bewertungen (slot) · Kurzer Einblick (+Video+CTA)
+ *   „Selbst wenn…" (+Foto) · Bewertungen (slot) · Kurzer Einblick (+Video+CTA)
  *   Für wen / nicht · Proof-Screenshots · Kauf-Sektion (slot)
  *
  * Every block is guarded: an empty field (or an absent slot) renders nothing, so
@@ -25,7 +25,7 @@ export function ProductPageSections({
   bonusImageUrls = [],
   selfStoryImageUrl,
   customerStoryImageUrl,
-  testimonialImageUrls = [],
+  evenIfImageUrls = [],
   insightVideoUrl,
   courseContent,
   reviews,
@@ -41,8 +41,8 @@ export function ProductPageSections({
   selfStoryImageUrl?: string;
   /** Resolved photo for "Wie es meinen Kunden geht". */
   customerStoryImageUrl?: string;
-  /** Resolved photos for the curated testimonials, aligned to pp.testimonials by index. */
-  testimonialImageUrls?: string[];
+  /** Resolved photos for the "Selbst wenn…" items, aligned to pp.evenIf.items by index. */
+  evenIfImageUrls?: string[];
   /** Resolved video URL for the "Kurzer Einblick gefällig?" section. */
   insightVideoUrl?: string;
   /** "Kursinhalt im Detail" block (per-module bullets + preview video + curriculum). */
@@ -80,9 +80,11 @@ export function ProductPageSections({
   const bonuses = (p.bonuses ?? []).filter((b) => b && (b.title || b.desc));
   const hasBonusStack = bonuses.length > 0;
 
-  // Curated "Selbst wenn…" testimonials.
-  const testimonials = (p.testimonials ?? []).filter((t) => t && t.text);
-  const hasTestimonials = testimonials.length > 0;
+  // "Selbst wenn…" — Bela's curated proof block (legacy `testimonials` rows are
+  // still read so courses saved before the rename keep rendering).
+  const evenIfHeadline = p.evenIf?.headline?.trim();
+  const evenIfItems = (p.evenIf?.items ?? p.testimonials ?? []).filter((t) => t && t.text);
+  const hasEvenIf = evenIfItems.length > 0;
 
   // "Kurzer Einblick gefällig?" — headline + video.
   const insightHeadline = p.insight?.headline?.trim();
@@ -248,8 +250,13 @@ export function ProductPageSections({
                         <Gift aria-hidden className="h-5 w-5 flex-none text-gold-300" />
                         <h3 className="font-heading text-xl text-white">{b.title}</h3>
                         {b.value && (
-                          <span className="rounded-full border border-gold-300/40 bg-gold-300/10 px-3 py-0.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-200">
-                            Wert: {b.value}
+                          <span className="inline-flex items-baseline gap-2 rounded-full border border-gold-300/50 bg-gold-300/15 px-4 py-1.5">
+                            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-gold-300/80">
+                              Wert
+                            </span>
+                            <span className="font-heading text-xl leading-none text-gold-200 sm:text-2xl">
+                              {b.value}
+                            </span>
                           </span>
                         )}
                       </div>
@@ -262,36 +269,36 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {/* Testimonials „Selbst wenn…" (+ Foto) */}
-        {hasTestimonials && (
+        {/* „Selbst wenn…" — Aussage + Foto/Screenshot (keine Zitat-Kacheln) */}
+        {hasEvenIf && (
           <RevealOnScroll>
-            <p className="eyebrow mb-5">Echte Stimmen</p>
+            <p className="eyebrow mb-5">Selbst wenn</p>
+            <h2 className="mb-8 font-heading text-3xl text-white sm:text-4xl">
+              {evenIfHeadline || "Und selbst wenn — der Output ist trotzdem krass."}
+            </h2>
             <div className="grid gap-6 sm:grid-cols-2">
-              {testimonials.map((t, i) => {
-                const img = testimonialImageUrls[i];
+              {evenIfItems.map((t, i) => {
+                const img = evenIfImageUrls[i];
                 return (
                   <figure
                     key={i}
-                    className="flex flex-col gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6"
+                    className="flex flex-col gap-5 rounded-2xl border border-gold-300/15 bg-gold-300/[0.03] p-6"
                   >
-                    <Quote aria-hidden className="h-6 w-6 flex-none text-gold-300/70" />
-                    <blockquote className="whitespace-pre-line leading-7 text-white/75">
+                    <p className="whitespace-pre-line font-heading text-xl leading-snug text-white sm:text-2xl">
                       {t.text}
-                    </blockquote>
-                    {(img || t.author) && (
-                      <figcaption className="mt-auto flex items-center gap-3 pt-2">
-                        {img && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={img}
-                            alt={t.author || "Mitglied"}
-                            loading="lazy"
-                            className="h-11 w-11 flex-none rounded-full border border-white/10 object-cover"
-                          />
-                        )}
-                        {t.author && (
-                          <span className="text-sm font-semibold text-white/80">{t.author}</span>
-                        )}
+                    </p>
+                    {img && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={img}
+                        alt=""
+                        loading="lazy"
+                        className="w-full rounded-xl border border-white/10"
+                      />
+                    )}
+                    {t.author && (
+                      <figcaption className="mt-auto text-sm font-semibold text-white/60">
+                        {t.author}
                       </figcaption>
                     )}
                   </figure>
@@ -361,18 +368,34 @@ export function ProductPageSections({
         {hasProof && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">Echte Ergebnisse</p>
+            <h2 className="mb-8 font-heading text-3xl text-white sm:text-4xl">
+              {p.proofHeadline?.trim() || "Ergebnisse, die für sich sprechen."}
+            </h2>
+            {/* Feste Kachelhöhe: Hochformat-Screenshots würden sonst direkt vor
+                dem Kauf-Button eine endlose Scrollstrecke erzeugen. Klick
+                öffnet das ungeschnittene Bild. */}
             <div className="grid gap-4 sm:grid-cols-2">
               {proofImageUrls.map((src) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <a
                   key={src}
-                  src={src}
-                  alt="Ergebnis-Screenshot"
-                  loading="lazy"
-                  className="w-full rounded-xl border border-white/10"
-                />
+                  href={src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="focus-ring group block overflow-hidden rounded-xl border border-white/10 transition-colors hover:border-gold-300/40"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt="Ergebnis-Screenshot"
+                    loading="lazy"
+                    className="h-[380px] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02] sm:h-[460px]"
+                  />
+                </a>
               ))}
             </div>
+            <p className="mt-3 text-center text-xs text-white/35">
+              Zum Vergrößern auf einen Screenshot tippen
+            </p>
           </RevealOnScroll>
         )}
 

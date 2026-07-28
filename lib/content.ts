@@ -17,9 +17,12 @@ export type Lesson = {
  * each product page from the dashboard without touching code.
  */
 export type ProductPage = {
-  /** H1 outcome headline (one sentence) — hero. */
+  /**
+   * The hero headline — the ONE sentence above the cover. Per the board the hero
+   * carries no second line: no course title, no subline, just this sentence.
+   */
   outcomeHeadline?: string;
-  /** Subline that hints at the "how" / method. */
+  /** @deprecated second hero line — the hero shows one sentence only. */
   subline?: string;
   /** Provocative problem-statement sentence shown in the hero, under the headline. */
   problemStatement?: string;
@@ -37,8 +40,6 @@ export type ProductPage = {
   whoFor?: string[];
   /** Disqualifiers — who it is NOT for (2-4). */
   whoNotFor?: string[];
-  /** What you can do afterwards (4-6 outcome bullets, verb first). */
-  afterOutcomes?: string[];
   /**
    * Early social-proof strip shown right under the hero (Julia-style): one
    * headline result, e.g. { stat: "7.000€", text: "Umsatz dank Werbeanzeigen" }.
@@ -53,7 +54,17 @@ export type ProductPage = {
    * with a bold lead (`title`) and an explanation (`copy`).
    */
   assumptions?: { headline?: string; items?: Array<{ title: string; copy: string }> };
-  /** Curated "Selbst wenn…" testimonials, each with text, optional author + photo. */
+  /**
+   * "Selbst wenn…" — the objection-crushing proof block that sits between the
+   * bonuses and the in-house reviews: a headline plus statements ("Selbst mit
+   * unter 500 Followern…"), each with an optional screenshot / photo. These are
+   * Bela's curated proof points, NOT the reviews customers write themselves.
+   */
+  evenIf?: {
+    headline?: string;
+    items?: Array<{ text: string; author?: string; image?: string }>;
+  };
+  /** @deprecated curated quote list — superseded by `evenIf.items`. */
   testimonials?: Array<{ text: string; author?: string; image?: string }>;
   /** "Kurzer Einblick gefällig?" — a headline + a course-content video. */
   insight?: { headline?: string; videoUrl?: string };
@@ -66,6 +77,8 @@ export type ProductPage = {
   bonus?: string;
   /** CTA-block transition headline (one sentence). */
   ctaHeadline?: string;
+  /** Headline above the proof screenshots. */
+  proofHeadline?: string;
   /** Optional proof screenshots (storage refs / URLs) shown right before the CTA. */
   proofImages?: string[];
 };

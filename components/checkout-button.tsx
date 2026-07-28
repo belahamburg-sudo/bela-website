@@ -124,7 +124,7 @@ export function CheckoutButton({
         <input
           value={promoCode}
           onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-          placeholder="z. B. ELMO"
+          placeholder="Code eingeben"
           className="w-full rounded-lg border border-white/10 bg-obsidian/60 px-3 py-2 text-sm uppercase tracking-wide text-cream placeholder:normal-case placeholder:tracking-normal placeholder:text-cream/25 focus:border-gold-300/50 focus:outline-none"
         />
       </label>

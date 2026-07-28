@@ -31,7 +31,26 @@ function Stars({ value, className = "" }: { value: number; className?: string })
   );
 }
 
-export function CourseReviews({ courseSlug }: { courseSlug: string }) {
+export function CourseReviews({
+  courseSlug,
+  hideUntilFirst = false,
+  canReview,
+}: {
+  courseSlug: string;
+  /**
+   * Board rule for the public product page: "Bis dahin wird der Block einfach
+   * gar nicht angezeigt" — render nothing at all (not even the form or an empty
+   * state) until at least one review exists.
+   */
+  hideUntilFirst?: boolean;
+  /**
+   * Whether this visitor may actually submit. The API allows buyers only, so
+   * showing the form to any signed-in visitor means non-buyers write a review
+   * and then hit an error. Pass the ownership flag; omit to fall back to "any
+   * signed-in user" for places that are already gated by a purchase check.
+   */
+  canReview?: boolean;
+}) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [average, setAverage] = useState(0);
   const [count, setCount] = useState(0);
@@ -104,9 +123,13 @@ export function CourseReviews({ courseSlug }: { courseSlug: string }) {
     }
   }
 
-  // Spec: the testimonials block stays hidden until at least one review exists.
-  // A logged-in buyer still sees the form so they can leave the first one.
-  if (loaded && count === 0 && !loggedIn && !done) return null;
+  // Product page: nothing renders until the first review exists — not even while
+  // loading, so no empty block ever flashes.
+  if (hideUntilFirst && (!loaded || count === 0)) return null;
+  // Elsewhere (dashboard) a logged-in buyer still sees the form so the very
+  // first review can be written somewhere.
+  const mayReview = canReview ?? loggedIn;
+  if (loaded && count === 0 && !mayReview && !done) return null;
 
   return (
     <div>
@@ -130,8 +153,8 @@ export function CourseReviews({ courseSlug }: { courseSlug: string }) {
         )}
       </div>
 
-      {/* Review form (logged-in users; the API enforces buyers-only) */}
-      {loggedIn && !done && (
+      {/* Review form — only for visitors who may actually submit (buyers). */}
+      {mayReview && !done && (
         <div className="mt-8 rounded-md border border-gold-300/20 bg-white/[0.02] p-6">
           <p className="mb-3 text-sm font-semibold text-cream">Deine Bewertung</p>
           <div className="mb-4 flex items-center gap-1">
@@ -195,7 +218,7 @@ export function CourseReviews({ courseSlug }: { courseSlug: string }) {
       <div className="mt-8 grid gap-4">
         {reviews.length === 0 ? (
           <p className="text-sm text-cream/40">
-            Noch keine Bewertungen. {loggedIn ? "Sei der Erste!" : "Käufer können diesen Kurs bewerten."}
+            Noch keine Bewertungen. {mayReview ? "Sei der Erste!" : "Käufer können diesen Kurs bewerten."}
           </p>
         ) : (
           reviews.map((r) => (

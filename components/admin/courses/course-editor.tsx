@@ -173,7 +173,6 @@ export function CourseEditor({
   const ppStr = (k: string) => (typeof pp[k] === "string" ? (pp[k] as string) : "");
   const ppList = (k: string) => (Array.isArray(pp[k]) ? (pp[k] as string[]).join("\n") : "");
   const [ppOutcome, setPpOutcome] = useState(ppStr("outcomeHeadline"));
-  const [ppSubline, setPpSubline] = useState(ppStr("subline"));
   const [ppProblemStatement, setPpProblemStatement] = useState(ppStr("problemStatement"));
   const [ppHeroCtaLabel, setPpHeroCtaLabel] = useState(ppStr("heroCtaLabel"));
   const [ppProblem, setPpProblem] = useState(ppStr("problem"));
@@ -209,6 +208,7 @@ export function CourseEditor({
     }
     return [];
   });
+  const [ppProofHeadline, setPpProofHeadline] = useState(ppStr("proofHeadline"));
   const [ppProof, setPpProof] = useState<string[]>(
     Array.isArray(pp.proofImages) ? (pp.proofImages as string[]) : []
   );
@@ -233,16 +233,25 @@ export function CourseEditor({
       : ""
   );
 
-  // Curated "Selbst wenn…" testimonials — text + author + photo.
-  const [ppTestimonials, setPpTestimonials] = useState<TestimonialRow[]>(() =>
-    Array.isArray(pp.testimonials)
-      ? (pp.testimonials as Array<Partial<TestimonialRow>>).map((t) => ({
-          text: t.text ?? "",
-          author: t.author ?? "",
-          image: t.image ?? "",
-        }))
-      : []
-  );
+  // "Selbst wenn…" — Überschrift + Aussagen mit Foto/Screenshot. Kurse, die vor
+  // der Umbenennung gespeichert wurden, liefern die Zeilen noch als `testimonials`.
+  const ppEvenIf = (pp.evenIf ?? {}) as {
+    headline?: string;
+    items?: Array<Partial<TestimonialRow>>;
+  };
+  const [ppEvenIfHeadline, setPpEvenIfHeadline] = useState(ppEvenIf.headline ?? "");
+  const [ppTestimonials, setPpTestimonials] = useState<TestimonialRow[]>(() => {
+    const rows = Array.isArray(ppEvenIf.items)
+      ? ppEvenIf.items
+      : Array.isArray(pp.testimonials)
+        ? (pp.testimonials as Array<Partial<TestimonialRow>>)
+        : [];
+    return rows.map((t) => ({
+      text: t.text ?? "",
+      author: t.author ?? "",
+      image: t.image ?? "",
+    }));
+  });
 
   // "Kurzer Einblick gefällig?" — headline (video reuses the promo video above).
   const ppInsight = (pp.insight ?? {}) as { headline?: string };
@@ -312,7 +321,6 @@ export function CourseEditor({
       });
     const productPage = {
       outcomeHeadline: ppOutcome,
-      subline: ppSubline,
       problemStatement: ppProblemStatement,
       heroCtaLabel: ppHeroCtaLabel,
       problem: ppProblem,
@@ -325,9 +333,12 @@ export function CourseEditor({
       selfStory: { text: ppSelfText.trim(), image: ppSelfImage.trim() },
       customerStory: { text: ppCustText.trim(), image: ppCustImage.trim() },
       assumptions: { headline: ppAsmHeadline.trim(), items: titleCopy(ppAsmItems) },
-      testimonials: ppTestimonials
-        .map((t) => ({ text: t.text.trim(), author: t.author.trim(), image: t.image.trim() }))
-        .filter((t) => t.text),
+      evenIf: {
+        headline: ppEvenIfHeadline.trim(),
+        items: ppTestimonials
+          .map((t) => ({ text: t.text.trim(), author: t.author.trim(), image: t.image.trim() }))
+          .filter((t) => t.text),
+      },
       insight: { headline: ppInsightHeadline.trim() },
       bonuses: ppBonuses
         .map((b) => ({
@@ -338,6 +349,7 @@ export function CourseEditor({
         }))
         .filter((b) => b.title || b.desc),
       ctaHeadline: ppCta,
+      proofHeadline: ppProofHeadline,
       proofImages: ppProof,
     };
 
@@ -764,14 +776,16 @@ export function CourseEditor({
         </Panel>
       </div>
 
-      {/* Cross-Sell & Affiliate (shown under the lesson videos) */}
+      {/* Cross-Sell & Affiliate (unter den Videos + Upsell in der Kauf-Sektion) */}
       <div className="mt-6">
-        <Panel title="Cross-Sell & Affiliate (unter den Videos)">
+        <Panel title="Cross-Sell & Upsell">
           <div className="space-y-5">
             <div>
               <p className="mb-3 text-sm text-cream/50">
-                Diese Kurse werden Käufern <span className="text-gold-200">unter den Lektions-Videos</span>{" "}
-                als passende Cross-Sells vorgeschlagen. Frei pro Kurs wählbar.
+                Diese Kurse erscheinen an zwei Stellen: Käufern{" "}
+                <span className="text-gold-200">unter den Lektions-Videos</span> und als{" "}
+                <span className="text-gold-200">Upsell in der Kauf-Sektion</span> der öffentlichen
+                Produktseite (&bdquo;Das passt perfekt dazu&ldquo;). Frei pro Kurs wählbar.
               </p>
               {otherCourses.length === 0 ? (
                 <p className="rounded-lg border border-white/10 bg-obsidian/40 px-3 py-3 text-sm text-cream/40">
@@ -826,26 +840,19 @@ export function CourseEditor({
               <span className="text-cream/80"> ausgeblendet</span>. Bei Listen: eine Zeile pro Punkt.
             </p>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block">
-                <span className="tac-label mb-1.5 block">Outcome-Headline</span>
-                <input
-                  value={ppOutcome}
-                  onChange={(e) => setPpOutcome(e.target.value)}
-                  placeholder="Das Ergebnis in einem Satz"
-                  className={inputClass}
-                />
-              </label>
-              <label className="block">
-                <span className="tac-label mb-1.5 block">Subline</span>
-                <input
-                  value={ppSubline}
-                  onChange={(e) => setPpSubline(e.target.value)}
-                  placeholder="Deutet die Methode / das Wie an"
-                  className={inputClass}
-                />
-              </label>
-            </div>
+            <label className="block">
+              <span className="tac-label mb-1.5 block">Outcome-Headline (Hero)</span>
+              <input
+                value={ppOutcome}
+                onChange={(e) => setPpOutcome(e.target.value)}
+                placeholder="Das Ergebnis in einem Satz"
+                className={inputClass}
+              />
+              <span className="mt-1.5 block text-xs text-cream/40">
+                Der <span className="text-cream/70">einzige Satz</span> über dem Cover — kein
+                Kurstitel, keine Subline darunter. Leer = der Kurstitel springt ein.
+              </span>
+            </label>
 
             <label className="block">
               <span className="tac-label mb-1.5 block">Provokativer Problem-Statement-Satz (Hero)</span>
@@ -1053,16 +1060,25 @@ export function CourseEditor({
               </span>
             </div>
 
-            {/* Testimonials „Selbst wenn…“ (+ Foto) */}
+            {/* „Selbst wenn…“ — Aussage + Foto/Screenshot */}
             <div className="space-y-3 border-t border-white/5 pt-4">
               <div className="flex items-center justify-between">
-                <span className="tac-label block">Testimonials „Selbst wenn…“ (+ Foto)</span>
+                <span className="tac-label block">„Selbst wenn…“ (+ Foto)</span>
                 <AdminButton variant="ghost" size="sm" icon={Plus} onClick={addTestimonial}>
-                  Testimonial
+                  Aussage
                 </AdminButton>
               </div>
+              <input
+                value={ppEvenIfHeadline}
+                onChange={(e) => setPpEvenIfHeadline(e.target.value)}
+                placeholder="Überschrift, z.B. „Und selbst wenn — der Output ist trotzdem krass.“"
+                className={inputClass}
+              />
               <p className="text-xs text-cream/40">
-                Kuratierte Stimmen mit Text, Name & optionalem Foto. Leer = Sektion unsichtbar.
+                Deine eigenen Beweis-Aussagen („Selbst mit unter 500 Followern …“) mit
+                Screenshot/Foto. Das sind <span className="text-cream/70">nicht</span> die
+                Bewertungen der Kunden — die stehen weiter unten unter „Bewertungen“. Leer =
+                Sektion unsichtbar.
               </p>
               {ppTestimonials.map((t, i) => (
                 <div key={i} className="space-y-3 rounded-lg border border-white/10 bg-obsidian/40 p-4">
@@ -1071,14 +1087,14 @@ export function CourseEditor({
                       value={t.text}
                       onChange={(e) => updateTestimonial(i, { text: e.target.value })}
                       rows={3}
-                      placeholder="Zitat / Erfahrung"
+                      placeholder="Aussage, z.B. „Selbst mit unter 500 Followern — dank des richtigen Contents!“"
                       className={`${inputClass} resize-y`}
                     />
                     <button
                       type="button"
                       onClick={() => removeTestimonial(i)}
                       className="flex h-9 w-9 flex-none items-center justify-center self-start rounded-md border border-white/10 text-cream/60 transition-colors hover:border-red-400/40 hover:text-red-300"
-                      aria-label="Testimonial entfernen"
+                      aria-label="Aussage entfernen"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -1091,7 +1107,7 @@ export function CourseEditor({
                   />
                   {t.image ? (
                     <div className="flex items-center gap-3">
-                      <div className="h-14 w-14 flex-none overflow-hidden rounded-full border border-white/10 bg-obsidian/60">
+                      <div className="h-16 w-24 flex-none overflow-hidden rounded-md border border-white/10 bg-obsidian/60">
                         {toPreview(t.image) ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={toPreview(t.image)!} alt="Foto" className="h-full w-full object-cover" />
@@ -1115,7 +1131,7 @@ export function CourseEditor({
                       prefix="testimonial"
                       kind="image"
                       accept="image/*"
-                      hint="Foto (optional)"
+                      hint="Screenshot / Foto (optional)"
                       onUploaded={(f) => {
                         updateTestimonial(i, { image: f.ref });
                         success("Foto hinzugefügt — zum Übernehmen speichern.");
@@ -1262,6 +1278,12 @@ export function CourseEditor({
             {/* Ergebnis-Proof screenshots — shown right before dem CTA. Leer = ausgeblendet. */}
             <div className="space-y-3 border-t border-white/5 pt-4">
               <span className="tac-label block">Ergebnis-Proof (Screenshots) — optional</span>
+              <input
+                value={ppProofHeadline}
+                onChange={(e) => setPpProofHeadline(e.target.value)}
+                placeholder="Überschrift, z.B. „So viele Erfolge dank dieses EINEN Kurses“"
+                className={inputClass}
+              />
               <p className="text-xs text-cream/40">
                 Echte Screenshots / Chatverläufe von Kunden. Werden direkt vor dem Kauf-Button
                 angezeigt. Ohne Bilder bleibt die Sektion unsichtbar.

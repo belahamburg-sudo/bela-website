@@ -92,8 +92,17 @@ export function faqPageSchema(items: { q: string; a: string }[]) {
   };
 }
 
-/** Product + Offer schema for a single course (price/availability snippet). */
-export function courseProductSchema(course: Course) {
+/**
+ * Product + Offer schema for a single course (price/availability snippet).
+ *
+ * Pass `rating` to earn the star rating in Google's result. Only emit it when
+ * real reviews exist — an aggregateRating with zero reviews is flagged as
+ * invalid structured data, so the whole snippet would be dropped.
+ */
+export function courseProductSchema(
+  course: Course,
+  rating?: { average: number; count: number }
+) {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -101,6 +110,17 @@ export function courseProductSchema(course: Course) {
     description: course.description || course.tagline,
     image: course.image,
     brand: { "@type": "Brand", name: "AI Goldmining" },
+    ...(rating && rating.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: rating.average,
+            reviewCount: rating.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/kurse/${course.slug}`,

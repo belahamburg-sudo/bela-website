@@ -1,11 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "./button";
 
 export function MobileStickyCta() {
   const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+
+  // Course product pages get their own sticky buy bar (ProductStickyBuy).
+  // Showing the webinar CTA there would pull buyers away from #kaufen, which
+  // every CTA on that page is supposed to lead to.
+  const onProductPage = pathname?.startsWith("/kurse/") ?? false;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,7 +26,7 @@ export function MobileStickyCta() {
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && !onProductPage && (
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
