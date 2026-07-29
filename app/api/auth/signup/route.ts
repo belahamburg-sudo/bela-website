@@ -5,7 +5,7 @@ import { validatePassword } from "@/lib/password";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/rate-limit";
 import { subscribeNewsletter } from "@/lib/newsletter";
 import { sendTemplateEmail } from "@/lib/email";
-import { absoluteUrl } from "@/lib/utils";
+import { absoluteUrl, safeRedirectPath } from "@/lib/utils";
 
 function badRequest(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
   const name = String(body?.name ?? "").trim();
   const city = String(body?.city ?? "").trim();
   const newsletter = Boolean(body?.newsletter);
+  const redirectPath = safeRedirectPath(body?.redirect, "/onboarding");
 
   if (!email || !password || !city) {
     return badRequest("Bitte E-Mail, Passwort und Stadt angeben.");
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
         ...(name ? { full_name: name } : {}),
         ...(newsletter ? { newsletter_optin: true } : {}),
       },
-      redirectTo: absoluteUrl("/auth/callback?next=/onboarding"),
+      redirectTo: absoluteUrl(`/auth/callback?next=${encodeURIComponent(redirectPath)}`),
     },
   });
 
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
   const hashedToken = data.properties?.hashed_token;
   const confirmationUrl = hashedToken
     ? absoluteUrl(
-        `/auth/callback?token_hash=${hashedToken}&type=signup&next=${encodeURIComponent("/onboarding")}`
+        `/auth/callback?token_hash=${hashedToken}&type=signup&next=${encodeURIComponent(redirectPath)}`
       )
     : data.properties?.action_link ?? absoluteUrl("/login");
 

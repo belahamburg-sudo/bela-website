@@ -96,19 +96,23 @@ export function ProductPageSections({
         {/* 2 — Outcome-Ergebnis + CTA */}
         {hasHeroResult && (
           <RevealOnScroll>
-            <div className="flex flex-col items-center gap-2 rounded-2xl border border-gold-300/25 bg-gold-300/[0.06] px-6 py-8 text-center">
-              {heroResult!.stat && (
-                <span className="font-heading text-5xl leading-none text-gold-300 sm:text-6xl">
-                  {heroResult!.stat}
-                </span>
-              )}
-              {heroResult!.text && (
-                <span className="max-w-xl text-lg leading-8 text-white/80">{heroResult!.text}</span>
-              )}
+            <div className="overflow-hidden rounded-[2rem] border border-gold-300/30 bg-gradient-to-br from-gold-400/[0.12] via-gold-300/[0.05] to-obsidian px-6 py-7 sm:px-8 sm:py-8">
+              <div className="text-center lg:text-left">
+                {heroResult!.stat && (
+                  <span className="block font-heading text-5xl leading-none text-gold-200 sm:text-6xl">
+                    {heroResult!.stat}
+                  </span>
+                )}
+                {heroResult!.text && (
+                  <span className="mt-3 block text-lg leading-8 text-white/85 sm:text-[1.24rem]">
+                    {heroResult!.text}
+                  </span>
+                )}
+                {inlineCta && <div className="mt-6">{inlineCta}</div>}
+              </div>
             </div>
           </RevealOnScroll>
         )}
-        {inlineCta && hasHeroResult && <RevealOnScroll>{inlineCta}</RevealOnScroll>}
 
         {/* 3 — Wie es mir geht / Wie es meinen Kunden geht (+ Foto) */}
         {hasSelf && (
@@ -269,41 +273,22 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {/* „Selbst wenn…" — Aussage + Foto/Screenshot (keine Zitat-Kacheln) */}
+        {/* „Selbst wenn…" — Claim links, Testimonial-Karte rechts */}
         {hasEvenIf && (
           <RevealOnScroll>
             <p className="eyebrow mb-5">Selbst wenn</p>
             <h2 className="mb-8 font-heading text-3xl text-white sm:text-4xl">
               {evenIfHeadline || "Und selbst wenn — der Output ist trotzdem krass."}
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {evenIfItems.map((t, i) => {
-                const img = evenIfImageUrls[i];
-                return (
-                  <figure
-                    key={i}
-                    className="flex flex-col gap-5 rounded-2xl border border-gold-300/15 bg-gold-300/[0.03] p-6"
-                  >
-                    <p className="whitespace-pre-line font-heading text-xl leading-snug text-white sm:text-2xl">
-                      {t.text}
-                    </p>
-                    {img && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={img}
-                        alt=""
-                        loading="lazy"
-                        className="w-full rounded-xl border border-white/10"
-                      />
-                    )}
-                    {t.author && (
-                      <figcaption className="mt-auto text-sm font-semibold text-white/60">
-                        {t.author}
-                      </figcaption>
-                    )}
-                  </figure>
-                );
-              })}
+            <div className="space-y-6">
+              {evenIfItems.map((t, i) => (
+                <EvenIfBlock
+                  key={i}
+                  text={t.text}
+                  author={t.author}
+                  image={evenIfImageUrls[i]}
+                />
+              ))}
             </div>
           </RevealOnScroll>
         )}
@@ -403,6 +388,84 @@ export function ProductPageSections({
         {cta && <RevealOnScroll>{cta}</RevealOnScroll>}
       </div>
     </section>
+  );
+}
+
+function splitEvenIfText(text: string): { claim: string; quote?: string } {
+  const parts = text
+    .split(/\n\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length >= 2) {
+    return { claim: parts[0], quote: parts.slice(1).join("\n\n") };
+  }
+  return { claim: text.trim() };
+}
+
+function EvenIfQuote({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <p className="whitespace-pre-line text-sm leading-7 text-obsidian/85 sm:text-[15px]">
+      {parts.map((part, i) =>
+        part.startsWith("**") && part.endsWith("**") ? (
+          <mark key={i} className="rounded-sm bg-gold-300/50 px-1 py-0.5 text-obsidian">
+            {part.slice(2, -2)}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </p>
+  );
+}
+
+function EvenIfBlock({
+  text,
+  author,
+  image,
+}: {
+  text: string;
+  author?: string;
+  image?: string;
+}) {
+  const { claim, quote } = splitEvenIfText(text);
+  const showProofCard = Boolean(quote || image || author);
+
+  return (
+    <figure className="overflow-hidden rounded-[2rem] border border-gold-300/30 bg-gradient-to-br from-gold-400/[0.14] via-gold-300/[0.06] to-obsidian/90 p-5 sm:p-7">
+      <div
+        className={`grid gap-6 ${showProofCard ? "lg:grid-cols-[1fr_1.15fr] lg:items-center" : ""}`}
+      >
+        <blockquote className="flex items-center justify-center px-2 py-4 text-center lg:justify-start lg:px-4 lg:text-left">
+          <p className="font-heading text-2xl leading-snug text-white sm:text-3xl">{claim}</p>
+        </blockquote>
+
+        {showProofCard && (
+          <div className="rounded-2xl bg-[#f4efe6] p-5 shadow-[0_24px_70px_-28px_rgba(0,0,0,0.65)] sm:p-6">
+            {quote ? <EvenIfQuote text={quote} /> : null}
+            {image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={image}
+                alt=""
+                loading="lazy"
+                className={`w-full rounded-xl border border-obsidian/10 object-cover object-top ${quote ? "mt-5" : ""}`}
+              />
+            ) : null}
+            {author ? (
+              <figcaption className={`flex items-center gap-3 ${quote || image ? "mt-5" : ""}`}>
+                {!image ? (
+                  <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full border border-gold-300/40 bg-gold-300/20 font-heading text-sm text-obsidian">
+                    {author.charAt(0).toUpperCase()}
+                  </span>
+                ) : null}
+                <span className="text-sm font-semibold text-obsidian/75">{author}</span>
+              </figcaption>
+            ) : null}
+          </div>
+        )}
+      </div>
+    </figure>
   );
 }
 

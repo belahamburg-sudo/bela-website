@@ -19,6 +19,7 @@ import {
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { passwordMeetsPolicy, validatePassword } from "@/lib/password";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { safeRedirectPath } from "@/lib/utils";
 import { SocialAuthButtons } from "@/components/social-auth-buttons";
 import { PhoneAuth } from "@/components/phone-auth";
 
@@ -63,7 +64,9 @@ const labelClass =
 export function SignupFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/onboarding";
+  const redirect = safeRedirectPath(searchParams.get("redirect"), "/onboarding");
+  const requiresEmail = redirect.startsWith("/freebie/");
+  const phoneRedirect = redirect === "/onboarding" ? "/dashboard" : redirect;
 
   const [step, setStep] = useState<Step>(1);
   const [direction, setDirection] = useState(1);
@@ -119,7 +122,7 @@ export function SignupFlow() {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name, city, email, password, newsletter }),
+        body: JSON.stringify({ name, city, email, password, newsletter, redirect }),
       });
       const payload = (await response.json().catch(() => null)) as
         | { error?: string; mode?: string }
@@ -188,7 +191,7 @@ export function SignupFlow() {
   const loading = status === "loading";
 
   if (phoneView) {
-    return <PhoneAuth redirect="/dashboard" onBack={() => setPhoneView(false)} />;
+    return <PhoneAuth redirect={phoneRedirect} onBack={() => setPhoneView(false)} />;
   }
 
   if (status === "success") {
@@ -203,7 +206,8 @@ export function SignupFlow() {
         <p className="mx-auto mb-2 max-w-sm text-sm leading-relaxed text-cream/70">
           Wir haben dir eine Bestätigungs-Mail an{" "}
           <strong className="text-gold-300">{email}</strong> geschickt. Klicke den Link
-          darin, um deinen Zugang zu aktivieren — danach kannst du dich einloggen.
+          darin, um deinen Zugang zu aktivieren
+          {redirect.startsWith("/freebie/") ? " — danach geht es direkt zu deinem Gratis-Produkt." : " — danach kannst du dich einloggen."}
         </p>
         <p className="text-xs text-cream/40">
           Keine Mail erhalten? Schau kurz im Spam-Ordner nach.
@@ -269,7 +273,10 @@ export function SignupFlow() {
               transition={{ duration: 0.26, ease: "easeOut" }}
               className="grid gap-4"
             >
-              <SocialAuthButtons redirect={redirect} onPhone={() => setPhoneView(true)} />
+              <SocialAuthButtons
+                redirect={redirect}
+                onPhone={requiresEmail ? undefined : () => setPhoneView(true)}
+              />
               <div className="flex items-center gap-3">
                 <span className="h-px flex-1 bg-white/10" />
                 <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-cream/30">

@@ -18,6 +18,7 @@ import { SpatialBackground } from "@/components/spatial-background";
 import { StoreProductCard, type StoreCardCourse } from "@/components/store-product-card";
 import { TelegramSubscribeCard } from "@/components/telegram-subscribe-card";
 import type { Course } from "@/lib/content";
+import { isListedStoreCourse } from "@/lib/store-catalog";
 import { formatEuro } from "@/lib/utils";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
@@ -125,7 +126,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
   }
 
   const purchased = items.filter((i) => i.isPurchased);
-  const available = items.filter((i) => !i.isPurchased && !i.isUnlisted);
+  const available = items.filter((i) => !i.isPurchased && isListedStoreCourse({ isUnlisted: i.isUnlisted }));
   const bundle = available.find((i) => i.isBundle && !i.comingSoon);
   const bundleStatic = bundle ? courses.find((c) => c.slug === bundle.slug) : undefined;
   const catalog = available.filter((i) => !i.isBundle);

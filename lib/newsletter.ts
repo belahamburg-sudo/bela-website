@@ -59,7 +59,7 @@ function token(): string {
  */
 export async function subscribeNewsletter(
   rawEmail: string,
-  opts: { userId?: string | null; source?: string; name?: string } = {}
+  opts: { userId?: string | null; source?: string; name?: string; resend?: boolean } = {}
 ): Promise<void> {
   const admin = getSupabaseAdminClient();
   if (!admin) return;
@@ -69,10 +69,12 @@ export async function subscribeNewsletter(
   try {
     const { data: existing } = await admin
       .from("newsletter_subscribers")
-      .select("status")
+      .select("status, source")
       .eq("email", email)
       .maybeSingle();
-    if (existing?.status === "confirmed") return; // already in — don't re-spam
+    if (existing?.status === "confirmed") return;
+    const nextSource = opts.source ?? null;
+    if (existing?.status === "pending" && existing.source === nextSource && !opts.resend) return;
 
     const confirm_token = token();
     await admin.from("newsletter_subscribers").upsert(

@@ -27,6 +27,13 @@ export function absoluteUrl(path = "") {
   return `${base.replace(/\/$/, "")}${path}`;
 }
 
+/** Allow only same-origin absolute paths — blocks open redirects via `@evil.com`. */
+export function safeRedirectPath(raw: unknown, fallback = "/dashboard"): string {
+  const path = String(raw ?? "").trim();
+  if (/^\/(?!\/)/.test(path) && !path.includes("\\")) return path;
+  return fallback;
+}
+
 export function formatDate(date: Date = new Date()) {
   return new Intl.DateTimeFormat("de-DE", {
     year: "numeric",

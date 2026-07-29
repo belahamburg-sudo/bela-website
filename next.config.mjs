@@ -30,7 +30,7 @@ const nextConfig = {
   },
   // Disabled due to causing 500 Internal Server Errors with framer-motion in some Next 15 setups
   /* experimental: {
-    optimizePackageImports: ["framer-motion", "lucide-react"],
+    optimizePackageImports: ["framer-motion", "lucide-react", "animejs"],
   }, */
   webpack: (config, { nextRuntime, webpack }) => {
     // Fix: next/dist/compiled/cookie includes ncc-compiled code that references

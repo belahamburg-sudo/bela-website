@@ -15,6 +15,7 @@ import { courses as staticCourses } from "@/lib/content";
 import { serializeIncludes, IMPORT_SOURCE_LABEL } from "@/lib/course-includes";
 import { getStripeClient } from "@/lib/stripe";
 import { absoluteUrl } from "@/lib/utils";
+import { revalidatePublicCoursePaths } from "@/lib/course-cache";
 
 type ActionResult = { ok: boolean; error?: string };
 type CreateResult = ActionResult & { id?: string };
@@ -524,9 +525,7 @@ export async function updateCourse(input: CourseInput): Promise<ActionResult> {
 
   revalidatePath("/admin/kurse");
   revalidatePath(`/admin/kurse/${input.id}`);
-  revalidatePath("/kurse");
-  revalidatePath(`/kurse/${slug}`);
-  revalidatePath("/db/kurse");
+  revalidatePublicCoursePaths(slug);
   return { ok: true };
 }
 
@@ -685,8 +684,7 @@ export async function toggleCourseActive(input: {
   });
 
   revalidatePath("/admin/kurse");
-  revalidatePath("/kurse");
-  revalidatePath("/db/kurse");
+  revalidatePublicCoursePaths();
   return { ok: true };
 }
 
@@ -706,8 +704,7 @@ export async function deleteCourse(id: string): Promise<ActionResult> {
   });
 
   revalidatePath("/admin/kurse");
-  revalidatePath("/kurse");
-  revalidatePath("/db/kurse");
+  revalidatePublicCoursePaths();
   return { ok: true };
 }
 
@@ -855,7 +852,7 @@ export async function updateModuleRecommendations(input: {
   });
 
   revalidatePath(`/admin/kurse/${input.courseId}`);
-  if (input.courseSlug) revalidatePath(`/db/kurse/${input.courseSlug}`);
+  if (input.courseSlug) revalidatePublicCoursePaths(input.courseSlug);
   return { ok: true };
 }
 
@@ -891,7 +888,7 @@ export async function updateModuleHighlights(input: {
   });
 
   revalidatePath(`/admin/kurse/${input.courseId}`);
-  if (input.courseSlug) revalidatePath(`/kurse/${input.courseSlug}`);
+  if (input.courseSlug) revalidatePublicCoursePaths(input.courseSlug);
   return { ok: true };
 }
 
@@ -926,7 +923,7 @@ export async function updateModulePreviewVideo(input: {
   });
 
   revalidatePath(`/admin/kurse/${input.courseId}`);
-  if (input.courseSlug) revalidatePath(`/kurse/${input.courseSlug}`);
+  if (input.courseSlug) revalidatePublicCoursePaths(input.courseSlug);
   return { ok: true };
 }
 
@@ -1024,7 +1021,7 @@ export async function upsertCourseTestimonial(input: {
     meta: { courseSlug: slug, authorName, rating },
   });
 
-  revalidatePath(`/kurse/${slug}`);
+  revalidatePublicCoursePaths(slug);
   return { ok: true };
 }
 
@@ -1050,7 +1047,7 @@ export async function deleteCourseTestimonial(input: {
     entityId: input.id,
   });
 
-  if (input.courseSlug) revalidatePath(`/kurse/${input.courseSlug}`);
+  if (input.courseSlug) revalidatePublicCoursePaths(input.courseSlug);
   return { ok: true };
 }
 
@@ -1282,8 +1279,7 @@ export async function seedStarterCatalog(): Promise<SeedResult> {
   });
 
   revalidatePath("/admin/kurse");
-  revalidatePath("/kurse");
-  revalidatePath("/db/kurse");
+  revalidatePublicCoursePaths();
   return {
     ok: true,
     source: IMPORT_SOURCE_LABEL,

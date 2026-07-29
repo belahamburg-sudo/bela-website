@@ -17,11 +17,12 @@ import { SpatialBackground } from "@/components/spatial-background";
 import { StoreProductCard, type StoreCardCourse } from "@/components/store-product-card";
 import { TelegramSubscribeCard } from "@/components/telegram-subscribe-card";
 import type { Course } from "@/lib/content";
+import { isListedStoreCourse } from "@/lib/store-catalog";
 import { formatEuro } from "@/lib/utils";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
-type StoreItem = StoreCardCourse & { featured: boolean; isPurchased: boolean };
+type StoreItem = StoreCardCourse & { featured: boolean; isPurchased: boolean; isUnlisted: boolean };
 
 type Filter = "all" | "video" | "pdf";
 
@@ -91,6 +92,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
           isBundle: c.level === "Bundle",
           featured: Boolean(c.featured),
           isPurchased: purchasedSlugs.has(c.slug),
+          isUnlisted: Boolean(c.isUnlisted),
           comingSoon: Boolean(c.comingSoon),
           isFlagship: c.slug === "ai-goldmining-method",
         };
@@ -116,7 +118,7 @@ export function CoursesStore({ courses }: { courses: Course[] }) {
   }
 
   const purchased = items.filter((i) => i.isPurchased);
-  const available = items.filter((i) => !i.isPurchased);
+  const available = items.filter((i) => !i.isPurchased && isListedStoreCourse({ isUnlisted: i.isUnlisted }));
   const bundle = available.find((i) => i.isBundle);
   const bundleStatic = bundle ? courses.find((c) => c.slug === bundle.slug) : undefined;
   const catalog = available.filter((i) => !i.isBundle);

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2, Phone } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { hasSupabasePublicEnv } from "@/lib/env";
+import { safeRedirectPath } from "@/lib/utils";
 
 type Provider = "google" | "apple" | "github";
 
@@ -81,6 +82,7 @@ export function SocialAuthButtons({
 }) {
   const [pending, setPending] = useState<Provider | null>(null);
   const [error, setError] = useState("");
+  const safeRedirect = safeRedirectPath(redirect, "/dashboard");
 
   async function signIn(provider: Provider) {
     setError("");
@@ -90,7 +92,7 @@ export function SocialAuthButtons({
       return;
     }
     setPending(provider);
-    const next = encodeURIComponent(redirect);
+    const next = encodeURIComponent(safeRedirect);
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo: `${window.location.origin}/auth/callback?next=${next}` },

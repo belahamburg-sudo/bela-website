@@ -410,7 +410,7 @@ export function CourseEditor({
           </h1>
         </div>
         <div className="flex flex-shrink-0 items-center gap-2">
-          <Link href={`/kurse/${course.slug}`} target="_blank">
+          <Link href={isUnlisted ? `/freebie/${course.slug}` : `/kurse/${course.slug}`} target="_blank">
             <AdminButton variant="ghost" size="sm" icon={ExternalLink}>
               Ansehen
             </AdminButton>
@@ -603,6 +603,13 @@ export function CourseEditor({
                 </span>
               </label>
             </div>
+            {isUnlisted && (
+              <p className="text-xs text-cream/45">
+                Teilen-Link:{" "}
+                <code className="font-mono text-gold-300/80">/freebie/{slug || course.slug}</code>
+                {" · "}Keine Produktseite unter /kurse/
+              </p>
+            )}
           </div>
         </Panel>
 

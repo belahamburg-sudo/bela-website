@@ -3,6 +3,7 @@ import { getSupabaseAdminClient } from "./supabase";
 import { getSupabaseServerClient } from "./supabase-server";
 import { courses as staticCourses, getCourse as getStaticCourse, type Course } from "./content";
 import { mapDbCourseToCourse } from "./courses";
+import { isListedStoreCourse } from "./store-catalog";
 import { calculateMemberPoints } from "./avatar-system";
 import { syncMemberState } from "./member-state";
 import type { DbCourse, DbProfile } from "./db-types";
@@ -65,7 +66,9 @@ async function loadMemberData(supabase: SupabaseClient) {
     };
   }).filter(Boolean);
 
-  const availableCourses = catalog.filter((c) => !purchasedSlugs.has(c.slug) && !c.isUnlisted);
+  const availableCourses = catalog.filter(
+    (c) => !purchasedSlugs.has(c.slug) && isListedStoreCourse(c)
+  );
 
   const totalLessonsCompleted = completedLessonIds.size;
   const completedCoursesCount = purchasedCourses.filter((c) => c?.progress === 100).length;

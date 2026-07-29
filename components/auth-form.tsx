@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { safeRedirectPath } from "@/lib/utils";
 import { SocialAuthButtons } from "@/components/social-auth-buttons";
 import { PhoneAuth } from "@/components/phone-auth";
 
@@ -14,8 +15,8 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultRedirect = mode === "signup" ? "/onboarding" : "/dashboard";
-  const redirect = searchParams.get("redirect") || defaultRedirect;
-  // Phone users skip the e-mail onboarding (no profile row yet) and go straight in.
+  const redirect = safeRedirectPath(searchParams.get("redirect"), defaultRedirect);
+  const requiresEmail = redirect.startsWith("/freebie/");
   const phoneRedirect = redirect === "/onboarding" ? "/dashboard" : redirect;
 
   // Password-reset request flow (login screen only) + phone (SMS) sub-view.
@@ -81,7 +82,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         const response = await fetch("/api/auth/signup", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email, password, city }),
+          body: JSON.stringify({ email, password, city, redirect }),
         });
 
         const payload = (await response.json().catch(() => null)) as { error?: string; mode?: string } | null;
@@ -242,11 +243,15 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     <div className="grid gap-5">
       <SocialAuthButtons
         redirect={redirect}
-        onPhone={() => {
-          setView("phone");
-          setStatus("idle");
-          setMessage("");
-        }}
+        onPhone={
+          requiresEmail
+            ? undefined
+            : () => {
+                setView("phone");
+                setStatus("idle");
+                setMessage("");
+              }
+        }
       />
 
       <div className="flex items-center gap-3">

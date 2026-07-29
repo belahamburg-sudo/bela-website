@@ -12,7 +12,16 @@ const REASONS = [
   "Direkter Weg zurück in die Umsetzung",
 ];
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect?: string }>;
+}) {
+  const { redirect } = await searchParams;
+  const signupHref = redirect
+    ? `/signup?redirect=${encodeURIComponent(redirect)}`
+    : "/signup";
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-obsidian">
       <SpatialBackground />
@@ -103,7 +112,7 @@ export default function LoginPage() {
 
                 <p className="mt-2.5 text-sm text-cream/40 font-mono sm:mt-3">
                   Noch kein Account?{" "}
-                  <Link href="/signup" className="font-semibold text-gold-300 transition-colors hover:text-gold-200">
+                  <Link href={signupHref} className="font-semibold text-gold-300 transition-colors hover:text-gold-200">
                     Kostenlos registrieren
                   </Link>
                 </p>

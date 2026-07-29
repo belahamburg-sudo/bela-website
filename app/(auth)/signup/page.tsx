@@ -12,7 +12,16 @@ const REASONS = [
   "Danach geht es direkt ins Dashboard und in die Kurse",
 ];
 
-export default function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect?: string }>;
+}) {
+  const { redirect } = await searchParams;
+  const loginHref = redirect
+    ? `/login?redirect=${encodeURIComponent(redirect)}`
+    : "/login";
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-obsidian">
       <SpatialBackground />
@@ -110,7 +119,7 @@ export default function SignupPage() {
 
                 <p className="mt-2.5 text-sm text-cream/40 font-mono sm:mt-3">
                   Schon registriert?{" "}
-                  <Link href="/login" className="font-semibold text-gold-300 transition-colors hover:text-gold-200">
+                  <Link href={loginHref} className="font-semibold text-gold-300 transition-colors hover:text-gold-200">
                     Direkt einloggen
                   </Link>
                 </p>

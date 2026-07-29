@@ -4,6 +4,7 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { DEFAULT_AVATAR_ID } from "@/lib/avatar-system";
 import { subscribeNewsletter } from "@/lib/newsletter";
+import { safeRedirectPath } from "@/lib/utils";
 
 /**
  * First sign-in via Google/Apple has no profile row yet (those are created by the
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest) {
   // like `next=@evil.com` turns `${origin}${next}` into `https://site@evil.com`
   // (host = evil.com) and redirects the freshly-logged-in user off-site.
   const rawNext = searchParams.get("next") ?? "/dashboard";
-  const next = /^\/(?!\/)/.test(rawNext) && !rawNext.includes("\\") ? rawNext : "/dashboard";
+  const next = safeRedirectPath(rawNext, "/dashboard");
 
   const supabase = await getSupabaseServerClient();
 
