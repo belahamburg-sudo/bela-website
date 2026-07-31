@@ -41,10 +41,10 @@ export type ProductPage = {
   /** Disqualifiers — who it is NOT for (2-4). */
   whoNotFor?: string[];
   /**
-   * Early social-proof strip shown right under the hero (Julia-style): one
-   * headline result, e.g. { stat: "7.000€", text: "Umsatz dank Werbeanzeigen" }.
+   * Outcome strip under the hero (Julia-style): Outcome-Headline + CTA + Foto.
+   * CTA scrolls to #kaufen. e.g. { text: "…", image: "…", stat?: "7.000€" }.
    */
-  heroResult?: { stat?: string; text?: string };
+  heroResult?: { stat?: string; text?: string; image?: string };
   /** "Wie es mir geht" — a short story tied to the course content + a photo. */
   selfStory?: { text?: string; image?: string };
   /** "Wie es meinen Kunden geht" — a short story tied to the course content + a photo. */

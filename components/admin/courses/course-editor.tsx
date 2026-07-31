@@ -189,9 +189,10 @@ export function CourseEditor({
   const [ppWhoNotFor, setPpWhoNotFor] = useState(ppList("whoNotFor"));
   const [ppCta, setPpCta] = useState(ppStr("ctaHeadline"));
   // Early social-proof strip shown right under the hero.
-  const ppHero = (pp.heroResult ?? {}) as { stat?: string; text?: string };
+  const ppHero = (pp.heroResult ?? {}) as { stat?: string; text?: string; image?: string };
   const [ppHeroStat, setPpHeroStat] = useState(ppHero.stat ?? "");
   const [ppHeroText, setPpHeroText] = useState(ppHero.text ?? "");
+  const [ppHeroImage, setPpHeroImage] = useState(ppHero.image ?? "");
   // Value-stacked bonus list; seeded from the legacy single `bonus` line if set.
   const [ppBonuses, setPpBonuses] = useState<BonusRow[]>(() => {
     const rawBonuses = Array.isArray(pp.bonuses) ? (pp.bonuses as Array<Partial<BonusRow>>) : [];
@@ -329,7 +330,7 @@ export function CourseEditor({
       mechanism: titleCopy(ppMechanism),
       whoFor: lines(ppWhoFor),
       whoNotFor: lines(ppWhoNotFor),
-      heroResult: { stat: ppHeroStat.trim(), text: ppHeroText.trim() },
+      heroResult: { stat: ppHeroStat.trim(), text: ppHeroText.trim(), image: ppHeroImage.trim() },
       selfStory: { text: ppSelfText.trim(), image: ppSelfImage.trim() },
       customerStory: { text: ppCustText.trim(), image: ppCustImage.trim() },
       assumptions: { headline: ppAsmHeadline.trim(), items: titleCopy(ppAsmItems) },
@@ -1164,26 +1165,70 @@ export function CourseEditor({
               </span>
             </label>
 
-            {/* Early social-proof strip (Julia-style) shown right under the hero */}
-            <div className="grid gap-4 border-t border-white/5 pt-4 sm:grid-cols-[160px_1fr]">
-              <label className="block">
-                <span className="tac-label mb-1.5 block">Hero-Ergebnis (Zahl)</span>
-                <input
-                  value={ppHeroStat}
-                  onChange={(e) => setPpHeroStat(e.target.value)}
-                  placeholder="z.B. 7.000€"
-                  className={inputClass}
+            {/* Outcome strip (Julia-style): Headline + CTA + Foto */}
+            <div className="space-y-3 border-t border-white/5 pt-4">
+              <span className="tac-label block">Outcome-Ergebnis (+ Foto)</span>
+              <p className="text-xs text-cream/40">
+                Wird als Banner unter dem Hero gezeigt: Text + CTA links, Foto rechts. CTA scrollt
+                zur Kauf-Sektion. Leer = Sektion unsichtbar.
+              </p>
+              <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
+                <label className="block">
+                  <span className="tac-label mb-1.5 block">Zahl (optional)</span>
+                  <input
+                    value={ppHeroStat}
+                    onChange={(e) => setPpHeroStat(e.target.value)}
+                    placeholder="z.B. 7.000€"
+                    className={inputClass}
+                  />
+                </label>
+                <label className="block">
+                  <span className="tac-label mb-1.5 block">Outcome-Headline</span>
+                  <input
+                    value={ppHeroText}
+                    onChange={(e) => setPpHeroText(e.target.value)}
+                    placeholder="z.B. Mein Content sorgt nicht nur für Wachstum, sondern auch für Verkäufe"
+                    className={inputClass}
+                  />
+                </label>
+              </div>
+              {ppHeroImage ? (
+                <div className="flex items-center gap-3">
+                  <div className="h-20 w-32 flex-none overflow-hidden rounded-md border border-white/10 bg-obsidian/60">
+                    {toPreview(ppHeroImage) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={toPreview(ppHeroImage)!}
+                        alt="Outcome-Foto"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-cream/25">
+                        <ImageIcon className="h-5 w-5" />
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPpHeroImage("")}
+                    className="text-xs font-semibold text-cream/50 transition-colors hover:text-red-300"
+                  >
+                    Foto entfernen
+                  </button>
+                </div>
+              ) : (
+                <FileUpload
+                  bucket="media"
+                  prefix="outcome"
+                  kind="image"
+                  accept="image/*"
+                  hint="Outcome-Foto / Insights-Screenshot"
+                  onUploaded={(f) => {
+                    setPpHeroImage(f.ref);
+                    success("Outcome-Foto hinzugefügt — zum Übernehmen speichern.");
+                  }}
                 />
-              </label>
-              <label className="block">
-                <span className="tac-label mb-1.5 block">Hero-Ergebnis (Text)</span>
-                <input
-                  value={ppHeroText}
-                  onChange={(e) => setPpHeroText(e.target.value)}
-                  placeholder="z.B. Umsatz dank Werbeanzeigen, mit niedrigem Budget"
-                  className={inputClass}
-                />
-              </label>
+              )}
             </div>
 
             {/* Value-stacked bonus list */}

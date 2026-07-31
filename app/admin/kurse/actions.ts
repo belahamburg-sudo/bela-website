@@ -183,12 +183,17 @@ function sanitizeProductPage(raw?: Record<string, unknown> | null): Record<strin
     })
     .filter((m): m is { title: string; copy: string } => Boolean(m));
   if (mechCleaned.length > 0) out.mechanism = mechCleaned;
-  // heroResult: { stat, text } — keep if at least one side is filled.
-  const hr = (raw.heroResult ?? {}) as { stat?: string; text?: string };
+  // heroResult: { stat, text, image } — keep if at least one side is filled.
+  const hr = (raw.heroResult ?? {}) as { stat?: string; text?: string; image?: string };
   const hrStat = clean(hr.stat);
   const hrText = clean(hr.text);
-  if (hrStat || hrText) {
-    out.heroResult = { ...(hrStat ? { stat: hrStat } : {}), ...(hrText ? { text: hrText } : {}) };
+  const hrImage = clean(hr.image);
+  if (hrStat || hrText || hrImage) {
+    out.heroResult = {
+      ...(hrStat ? { stat: hrStat } : {}),
+      ...(hrText ? { text: hrText } : {}),
+      ...(hrImage ? { image: hrImage } : {}),
+    };
   }
   // bonuses: array of { title, value, desc, image } — keep rows with a title or description.
   const bonuses = Array.isArray(raw.bonuses) ? (raw.bonuses as unknown[]) : [];

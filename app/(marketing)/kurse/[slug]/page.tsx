@@ -154,13 +154,15 @@ export default async function CourseDetailPage({
     await Promise.all((pp?.bonuses ?? []).map((b) => (b.image ? resolveMediaUrl(b.image) : null)))
   ).map((u) => u ?? "");
 
-  // Story photos, "Selbst wenn…" photos and the "Kurzer Einblick" video →
-  // resolved public/signed URLs (storage refs or plain URLs). The insight video
-  // falls back to the course promo video when no dedicated clip is set.
+  // Story photos, "Selbst wenn…" photos, Outcome-Foto and the "Kurzer Einblick"
+  // video → resolved public/signed URLs (storage refs or plain URLs). The insight
+  // video falls back to the course promo video when no dedicated clip is set.
   const selfStoryImageUrl =
     (pp?.selfStory?.image ? await resolveMediaUrl(pp.selfStory.image) : null) ?? undefined;
   const customerStoryImageUrl =
     (pp?.customerStory?.image ? await resolveMediaUrl(pp.customerStory.image) : null) ?? undefined;
+  const heroResultImageUrl =
+    (pp?.heroResult?.image ? await resolveMediaUrl(pp.heroResult.image) : null) ?? undefined;
   // Legacy `testimonials` rows still feed the block for courses saved before the rename.
   const evenIfItems = pp?.evenIf?.items ?? pp?.testimonials ?? [];
   const evenIfImageUrls = (
@@ -423,6 +425,7 @@ export default async function CourseDetailPage({
         selfStoryImageUrl={selfStoryImageUrl}
         customerStoryImageUrl={customerStoryImageUrl}
         evenIfImageUrls={evenIfImageUrls}
+        heroResultImageUrl={heroResultImageUrl}
         insightVideoUrl={insightVideoUrl}
         courseContent={courseContentNode}
         reviews={reviewsNode}

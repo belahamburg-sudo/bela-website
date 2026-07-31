@@ -15,7 +15,7 @@ export async function GET(request: Request) {
         absoluteUrl(
           granted
             ? `/bibliothek/${slug}?freebie=claimed`
-            : `/freebie/${slug}?status=confirmed&error=grant`
+            : `/freebie/${slug}?start=1&status=confirmed&error=grant`
         )
       );
     }

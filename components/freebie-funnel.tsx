@@ -59,7 +59,7 @@ export function FreebieFunnel({
   status?: string;
   claimAction: (formData: FormData) => Promise<void>;
 }) {
-  const redirectTarget = encodeURIComponent(`/freebie/${slug}`);
+  const redirectTarget = encodeURIComponent(`/freebie/${slug}?start=1`);
   const newsletterConfirmed = newsletterStatus === "confirmed";
   const newsletterPending = newsletterStatus === "pending" || status === "check_email";
 
