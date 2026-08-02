@@ -271,13 +271,15 @@ export default async function CourseDetailPage({
           </div>
           <ul className="mt-3 grid gap-2">
             {bundledCourses.map((c) => (
-              <li key={c.slug}>
+              // min-w-0: ohne das weigert sich der Grid-Eintrag, schmaler als der
+              // Kurstitel zu werden, und schiebt die ganze Seite auf dem Handy auf.
+              <li key={c.slug} className="min-w-0">
                 <Link
                   href={`/kurse/${c.slug}`}
                   className="flex items-center gap-2 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2 text-sm text-white/80 transition-colors hover:border-gold-300/40 hover:text-gold-100"
                 >
                   <CheckCircle2 aria-hidden className="h-4 w-4 flex-none text-gold-300" />
-                  <span className="truncate">{c.title}</span>
+                  <span className="min-w-0 flex-1 truncate">{c.title}</span>
                 </Link>
               </li>
             ))}
@@ -293,14 +295,14 @@ export default async function CourseDetailPage({
           </div>
           <ul className="mt-3 grid gap-2">
             {partOfBundles.map((b) => (
-              <li key={b.slug}>
+              <li key={b.slug} className="min-w-0">
                 <Link
                   href={`/kurse/${b.slug}`}
                   className="flex items-center justify-between gap-2 rounded-lg border border-gold-300/20 bg-obsidian/40 px-3 py-2.5 text-sm text-white/85 transition-colors hover:border-gold-300/50 hover:text-gold-100"
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <Boxes aria-hidden className="h-4 w-4 flex-none text-gold-300" />
-                    <span className="truncate">{b.title}</span>
+                    <span className="min-w-0 flex-1 truncate">{b.title}</span>
                   </span>
                   <span className="flex-none font-heading text-gold-200">
                     {formatEuro(b.priceCents)}
@@ -321,7 +323,7 @@ export default async function CourseDetailPage({
           </div>
           <ul className="mt-3 grid gap-2">
             {upsellCourses.map((u) => (
-              <li key={u.slug}>
+              <li key={u.slug} className="min-w-0">
                 <Link
                   href={`/kurse/${u.slug}`}
                   className="flex items-center gap-3 rounded-lg border border-white/10 bg-obsidian/40 px-3 py-2.5 text-sm text-white/85 transition-colors hover:border-gold-300/40 hover:text-gold-100"
