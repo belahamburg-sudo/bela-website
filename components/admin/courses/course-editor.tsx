@@ -190,7 +190,9 @@ export function CourseEditor({
   const [ppCta, setPpCta] = useState(ppStr("ctaHeadline"));
   // Early social-proof strip shown right under the hero.
   const ppHero = (pp.heroResult ?? {}) as { stat?: string; text?: string; image?: string };
-  const [ppHeroStat, setPpHeroStat] = useState(ppHero.stat ?? "");
+  // Zahl wird auf der Produktseite nicht mehr angezeigt (Belas Review 02.08.).
+  // Wert wird nur noch durchgereicht, damit er beim Speichern nicht verloren geht.
+  const [ppHeroStat] = useState(ppHero.stat ?? "");
   const [ppHeroText, setPpHeroText] = useState(ppHero.text ?? "");
   const [ppHeroImage, setPpHeroImage] = useState(ppHero.image ?? "");
   // Value-stacked bonus list; seeded from the legacy single `bonus` line if set.
@@ -234,39 +236,30 @@ export function CourseEditor({
       : ""
   );
 
-  // "Selbst wenn…" — Überschrift + Aussagen mit Foto/Screenshot. Kurse, die vor
-  // der Umbenennung gespeichert wurden, liefern die Zeilen noch als `testimonials`.
+  // "Selbst wenn…" — genau EINE Aussage plus EIN Proof-Screenshot (Belas Review
+  // 02.08.). Kurse aus der Zeit davor haben hier eine Liste gespeichert, entweder
+  // unter `evenIf.items` oder unter dem noch älteren `testimonials`; davon wird
+  // die erste Zeile übernommen.
   const ppEvenIf = (pp.evenIf ?? {}) as {
     headline?: string;
     items?: Array<Partial<TestimonialRow>>;
   };
-  const [ppEvenIfHeadline, setPpEvenIfHeadline] = useState(ppEvenIf.headline ?? "");
-  const [ppTestimonials, setPpTestimonials] = useState<TestimonialRow[]>(() => {
-    const rows = Array.isArray(ppEvenIf.items)
+  // Überschrift wird auf der Produktseite nicht mehr angezeigt (Belas Review 02.08.).
+  // Wert wird nur noch durchgereicht, damit er beim Speichern nicht verloren geht.
+  const [ppEvenIfHeadline] = useState(ppEvenIf.headline ?? "");
+  const ppEvenIfFirst = (
+    Array.isArray(ppEvenIf.items)
       ? ppEvenIf.items
       : Array.isArray(pp.testimonials)
         ? (pp.testimonials as Array<Partial<TestimonialRow>>)
-        : [];
-    return rows.map((t) => ({
-      text: t.text ?? "",
-      author: t.author ?? "",
-      image: t.image ?? "",
-    }));
-  });
+        : []
+  )[0];
+  const [ppEvenIfText, setPpEvenIfText] = useState(ppEvenIfFirst?.text ?? "");
+  const [ppEvenIfImage, setPpEvenIfImage] = useState(ppEvenIfFirst?.image ?? "");
 
   // "Kurzer Einblick gefällig?" — headline (video reuses the promo video above).
   const ppInsight = (pp.insight ?? {}) as { headline?: string };
   const [ppInsightHeadline, setPpInsightHeadline] = useState(ppInsight.headline ?? "");
-
-  function updateTestimonial(i: number, patch: Partial<TestimonialRow>) {
-    setPpTestimonials((prev) => prev.map((t, idx) => (idx === i ? { ...t, ...patch } : t)));
-  }
-  function addTestimonial() {
-    setPpTestimonials((prev) => [...prev, { text: "", author: "", image: "" }]);
-  }
-  function removeTestimonial(i: number) {
-    setPpTestimonials((prev) => prev.filter((_, idx) => idx !== i));
-  }
 
   function updateBonus(i: number, patch: Partial<BonusRow>) {
     setPpBonuses((prev) => prev.map((b, idx) => (idx === i ? { ...b, ...patch } : b)));
@@ -336,9 +329,12 @@ export function CourseEditor({
       assumptions: { headline: ppAsmHeadline.trim(), items: titleCopy(ppAsmItems) },
       evenIf: {
         headline: ppEvenIfHeadline.trim(),
-        items: ppTestimonials
-          .map((t) => ({ text: t.text.trim(), author: t.author.trim(), image: t.image.trim() }))
-          .filter((t) => t.text),
+        // Weiterhin als einelementige Liste gespeichert, damit die Bild-Auflösung
+        // auf der Produktseite unverändert bleibt.
+        items:
+          ppEvenIfText.trim() || ppEvenIfImage.trim()
+            ? [{ text: ppEvenIfText.trim(), author: "", image: ppEvenIfImage.trim() }]
+            : [],
       },
       insight: { headline: ppInsightHeadline.trim() },
       bonuses: ppBonuses
@@ -1068,86 +1064,59 @@ export function CourseEditor({
               </span>
             </div>
 
-            {/* „Selbst wenn…“ — Aussage + Foto/Screenshot */}
+            {/* „Selbst wenn…“ — eine Aussage links, ein Proof-Screenshot rechts */}
             <div className="space-y-3 border-t border-white/5 pt-4">
-              <div className="flex items-center justify-between">
-                <span className="tac-label block">„Selbst wenn…“ (+ Foto)</span>
-                <AdminButton variant="ghost" size="sm" icon={Plus} onClick={addTestimonial}>
-                  Aussage
-                </AdminButton>
-              </div>
-              <input
-                value={ppEvenIfHeadline}
-                onChange={(e) => setPpEvenIfHeadline(e.target.value)}
-                placeholder="Überschrift, z.B. „Und selbst wenn — der Output ist trotzdem krass.“"
-                className={inputClass}
-              />
+              <span className="tac-label block">„Selbst wenn…“ (+ Screenshot)</span>
               <p className="text-xs text-cream/40">
-                Deine eigenen Beweis-Aussagen („Selbst mit unter 500 Followern …“) mit
-                Screenshot/Foto. Das sind <span className="text-cream/70">nicht</span> die
-                Bewertungen der Kunden — die stehen weiter unten unter „Bewertungen“. Leer =
-                Sektion unsichtbar.
+                Eine einzelne Beweis-Aussage, die einen typischen Einwand entkräftet („Selbst
+                wenn du nur 30 Minuten am Tag investierst …“). Links steht der Text, rechts der
+                Screenshot als Beweis. Das ist <span className="text-cream/70">nicht</span> der
+                Bewertungsblock — der steht weiter unten. Beides leer = Sektion unsichtbar.
               </p>
-              {ppTestimonials.map((t, i) => (
-                <div key={i} className="space-y-3 rounded-lg border border-white/10 bg-obsidian/40 p-4">
-                  <div className="flex items-start gap-3">
-                    <textarea
-                      value={t.text}
-                      onChange={(e) => updateTestimonial(i, { text: e.target.value })}
-                      rows={3}
-                      placeholder="Aussage, z.B. „Selbst mit unter 500 Followern — dank des richtigen Contents!“"
-                      className={`${inputClass} resize-y`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeTestimonial(i)}
-                      className="flex h-9 w-9 flex-none items-center justify-center self-start rounded-md border border-white/10 text-cream/60 transition-colors hover:border-red-400/40 hover:text-red-300"
-                      aria-label="Aussage entfernen"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <input
-                    value={t.author}
-                    onChange={(e) => updateTestimonial(i, { author: e.target.value })}
-                    placeholder="Name (optional)"
-                    className={inputClass}
-                  />
-                  {t.image ? (
-                    <div className="flex items-center gap-3">
-                      <div className="h-16 w-24 flex-none overflow-hidden rounded-md border border-white/10 bg-obsidian/60">
-                        {toPreview(t.image) ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={toPreview(t.image)!} alt="Foto" className="h-full w-full object-cover" />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-cream/25">
-                            <ImageIcon className="h-5 w-5" />
-                          </div>
-                        )}
+              <textarea
+                value={ppEvenIfText}
+                onChange={(e) => setPpEvenIfText(e.target.value)}
+                rows={3}
+                placeholder="z.B. „Selbst wenn du nur 30 Minuten täglich investierst — der Impact ist enorm.“"
+                className={`${inputClass} resize-y`}
+              />
+              {ppEvenIfImage ? (
+                <div className="flex items-center gap-3">
+                  <div className="h-16 w-24 flex-none overflow-hidden rounded-md border border-white/10 bg-obsidian/60">
+                    {toPreview(ppEvenIfImage) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={toPreview(ppEvenIfImage)!}
+                        alt="Screenshot"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-cream/25">
+                        <ImageIcon className="h-5 w-5" />
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => updateTestimonial(i, { image: "" })}
-                        className="text-xs font-semibold text-cream/50 transition-colors hover:text-red-300"
-                      >
-                        Foto entfernen
-                      </button>
-                    </div>
-                  ) : (
-                    <FileUpload
-                      bucket="media"
-                      prefix="testimonial"
-                      kind="image"
-                      accept="image/*"
-                      hint="Screenshot / Foto (optional)"
-                      onUploaded={(f) => {
-                        updateTestimonial(i, { image: f.ref });
-                        success("Foto hinzugefügt — zum Übernehmen speichern.");
-                      }}
-                    />
-                  )}
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPpEvenIfImage("")}
+                    className="text-xs font-semibold text-cream/50 transition-colors hover:text-red-300"
+                  >
+                    Screenshot entfernen
+                  </button>
                 </div>
-              ))}
+              ) : (
+                <FileUpload
+                  bucket="media"
+                  prefix="testimonial"
+                  kind="image"
+                  accept="image/*"
+                  hint="Proof-Screenshot (optional)"
+                  onUploaded={(f) => {
+                    setPpEvenIfImage(f.ref);
+                    success("Screenshot hinzugefügt — zum Übernehmen speichern.");
+                  }}
+                />
+              )}
             </div>
 
             {/* Kurzer Einblick gefällig? (Video = Promo-Video oben) */}
@@ -1172,26 +1141,15 @@ export function CourseEditor({
                 Wird als Banner unter dem Hero gezeigt: Text + CTA links, Foto rechts. CTA scrollt
                 zur Kauf-Sektion. Leer = Sektion unsichtbar.
               </p>
-              <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
-                <label className="block">
-                  <span className="tac-label mb-1.5 block">Zahl (optional)</span>
-                  <input
-                    value={ppHeroStat}
-                    onChange={(e) => setPpHeroStat(e.target.value)}
-                    placeholder="z.B. 7.000€"
-                    className={inputClass}
-                  />
-                </label>
-                <label className="block">
-                  <span className="tac-label mb-1.5 block">Outcome-Headline</span>
-                  <input
-                    value={ppHeroText}
-                    onChange={(e) => setPpHeroText(e.target.value)}
-                    placeholder="z.B. Mein Content sorgt nicht nur für Wachstum, sondern auch für Verkäufe"
-                    className={inputClass}
-                  />
-                </label>
-              </div>
+              <label className="block">
+                <span className="tac-label mb-1.5 block">Outcome-Headline</span>
+                <input
+                  value={ppHeroText}
+                  onChange={(e) => setPpHeroText(e.target.value)}
+                  placeholder="z.B. Mein Content sorgt nicht nur für Wachstum, sondern auch für Verkäufe"
+                  className={inputClass}
+                />
+              </label>
               {ppHeroImage ? (
                 <div className="flex items-center gap-3">
                   <div className="h-20 w-32 flex-none overflow-hidden rounded-md border border-white/10 bg-obsidian/60">

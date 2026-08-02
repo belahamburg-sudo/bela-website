@@ -68,7 +68,7 @@ export function ProductPageSections({
   // Outcome-Ergebnis strip right under the hero (Headline + CTA + Foto).
   const heroResult = p.heroResult;
   const hasHeroResult = Boolean(
-    heroResult?.stat || heroResult?.text || heroResultImageUrl
+    heroResult?.text || heroResultImageUrl
   );
 
   const selfText = p.selfStory?.text?.trim();
@@ -85,11 +85,12 @@ export function ProductPageSections({
   const bonuses = (p.bonuses ?? []).filter((b) => b && (b.title || b.desc));
   const hasBonusStack = bonuses.length > 0;
 
-  // "Selbst wenn…" — Bela's curated proof block (legacy `testimonials` rows are
-  // still read so courses saved before the rename keep rendering).
-  const evenIfHeadline = p.evenIf?.headline?.trim();
-  const evenIfItems = (p.evenIf?.items ?? p.testimonials ?? []).filter((t) => t && t.text);
-  const hasEvenIf = evenIfItems.length > 0;
+  // "Selbst wenn…" — genau EIN Block: Aussage links, Proof-Screenshot rechts.
+  // Ältere Kurse haben hier noch mehrere Zeilen gespeichert (evenIf.items bzw.
+  // das alte `testimonials`); davon wird nur die erste angezeigt.
+  const evenIfText = (p.evenIf?.items ?? p.testimonials ?? [])[0]?.text?.trim();
+  const evenIfImageUrl = evenIfImageUrls[0];
+  const hasEvenIf = Boolean(evenIfText || evenIfImageUrl);
 
   // "Kurzer Einblick gefällig?" — headline + video.
   const insightHeadline = p.insight?.headline?.trim();
@@ -101,37 +102,34 @@ export function ProductPageSections({
         {/* 2 — Outcome Headline + CTA + Outcome Foto (scrollt zu #kaufen) */}
         {hasHeroResult && (
           <RevealOnScroll>
-            <div className="overflow-hidden rounded-[1.75rem] bg-[#c9b07a] p-5 sm:p-7">
-              <div
-                className={`grid items-center gap-6 ${
-                  heroResultImageUrl ? "lg:grid-cols-[1.05fr_0.95fr]" : ""
-                }`}
-              >
-                <div className="flex flex-col justify-center gap-5 px-1 sm:px-2">
-                  {heroResult?.stat && (
-                    <span className="font-heading text-4xl leading-none text-obsidian/90 sm:text-5xl">
-                      {heroResult.stat}
-                    </span>
-                  )}
-                  {heroResult?.text && (
-                    <p className="font-heading text-2xl leading-snug text-obsidian sm:text-[1.7rem]">
-                      {heroResult.text}
-                    </p>
-                  )}
-                  {inlineCta && <div className="flex justify-start">{inlineCta}</div>}
-                </div>
-                {heroResultImageUrl && (
-                  <div className="overflow-hidden rounded-2xl bg-white p-2 shadow-[0_20px_50px_-24px_rgba(0,0,0,0.55)] sm:p-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={heroResultImageUrl}
-                      alt=""
-                      loading="lazy"
-                      className="w-full rounded-xl object-cover object-top"
-                    />
-                  </div>
+            <div
+              className={`flex flex-col gap-6 ${
+                heroResultImageUrl
+                  ? "lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:grid-rows-[auto_auto] lg:items-center"
+                  : ""
+              }`}
+            >
+              <div className="flex flex-col justify-center gap-5 lg:col-start-1 lg:row-start-1">
+                {heroResult?.text && (
+                  <p className="font-heading text-2xl leading-snug text-white sm:text-[1.7rem]">
+                    {heroResult.text}
+                  </p>
                 )}
               </div>
+              {heroResultImageUrl && (
+                <div className="overflow-hidden rounded-2xl lg:col-start-2 lg:row-span-2 lg:row-start-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={heroResultImageUrl}
+                    alt=""
+                    loading="lazy"
+                    className="w-full rounded-xl object-cover object-top"
+                  />
+                </div>
+              )}
+              {inlineCta && (
+                <div className="flex justify-start lg:col-start-1 lg:row-start-2">{inlineCta}</div>
+              )}
             </div>
           </RevealOnScroll>
         )}
@@ -295,27 +293,10 @@ export function ProductPageSections({
           </RevealOnScroll>
         )}
 
-        {/* „Selbst wenn…" — Claim links, Foto/Screenshot rechts */}
+        {/* „Selbst wenn…" — Aussage links, Proof-Screenshot rechts */}
         {hasEvenIf && (
           <RevealOnScroll>
-            {(evenIfHeadline || evenIfItems.length > 0) && (
-              <p className="eyebrow mb-5">Selbst wenn</p>
-            )}
-            {evenIfHeadline && (
-              <h2 className="mb-8 font-heading text-3xl text-white sm:text-4xl">
-                {evenIfHeadline}
-              </h2>
-            )}
-            <div className="space-y-6">
-              {evenIfItems.map((t, i) => (
-                <EvenIfBlock
-                  key={i}
-                  text={t.text}
-                  author={t.author}
-                  image={evenIfImageUrls[i]}
-                />
-              ))}
-            </div>
+            <EvenIfBlock text={evenIfText} image={evenIfImageUrl} />
           </RevealOnScroll>
         )}
 
@@ -417,79 +398,25 @@ export function ProductPageSections({
   );
 }
 
-function splitEvenIfText(text: string): { claim: string; quote?: string } {
-  const parts = text
-    .split(/\n\n+/)
-    .map((part) => part.trim())
-    .filter(Boolean);
-  if (parts.length >= 2) {
-    return { claim: parts[0], quote: parts.slice(1).join("\n\n") };
-  }
-  return { claim: text.trim() };
-}
-
-function EvenIfQuote({ text }: { text: string }) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+function EvenIfBlock({ text, image }: { text?: string; image?: string }) {
   return (
-    <p className="whitespace-pre-line text-sm leading-7 text-obsidian/85 sm:text-[15px]">
-      {parts.map((part, i) =>
-        part.startsWith("**") && part.endsWith("**") ? (
-          <mark key={i} className="rounded-sm bg-gold-300/50 px-1 py-0.5 text-obsidian">
-            {part.slice(2, -2)}
-          </mark>
-        ) : (
-          <span key={i}>{part}</span>
-        )
-      )}
-    </p>
-  );
-}
+    <figure>
+      <div className={`grid items-center gap-6 ${text && image ? "lg:grid-cols-[1fr_1.1fr]" : ""}`}>
+        {text && (
+          <blockquote className="flex flex-col items-center justify-center gap-3 text-center lg:items-start lg:text-left">
+            <p className="font-heading text-2xl leading-snug text-white sm:text-[1.75rem]">{text}</p>
+          </blockquote>
+        )}
 
-function EvenIfBlock({
-  text,
-  author,
-  image,
-}: {
-  text: string;
-  author?: string;
-  image?: string;
-}) {
-  const { claim, quote } = splitEvenIfText(text);
-  const showProof = Boolean(quote || image);
-
-  return (
-    <figure className="overflow-hidden rounded-[1.75rem] bg-[#c9b07a] p-5 sm:p-7">
-      <div
-        className={`grid items-center gap-6 ${showProof ? "lg:grid-cols-[1fr_1.1fr]" : ""}`}
-      >
-        <blockquote className="flex flex-col items-center justify-center gap-3 px-2 py-2 text-center lg:items-start lg:px-3 lg:text-left">
-          <p className="font-heading text-2xl leading-snug text-obsidian sm:text-[1.75rem]">
-            {claim}
-          </p>
-          {author && !showProof ? (
-            <figcaption className="text-sm font-semibold text-obsidian/60">{author}</figcaption>
-          ) : null}
-        </blockquote>
-
-        {showProof && (
-          <div className="overflow-hidden rounded-2xl bg-white p-3 shadow-[0_20px_50px_-24px_rgba(0,0,0,0.55)] sm:p-4">
-            {quote ? <EvenIfQuote text={quote} /> : null}
-            {image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={image}
-                alt=""
-                loading="lazy"
-                className={`w-full rounded-xl object-cover object-top ${quote ? "mt-4" : ""}`}
-              />
-            ) : null}
-            {author ? (
-              <figcaption
-                className={`text-sm font-semibold text-obsidian/65 ${quote || image ? "mt-3" : ""}`}
-              >
-                {author}
-              </figcaption>
-            ) : null}
+        {image && (
+          <div className="overflow-hidden rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={image}
+              alt=""
+              loading="lazy"
+              className="w-full rounded-xl object-cover object-top"
+            />
           </div>
         )}
       </div>
