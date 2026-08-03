@@ -55,7 +55,10 @@ async function claimFreebie(formData: FormData) {
       name: user.user_metadata?.full_name,
       resend: true,
     });
-    redirect(`/freebie/${slug}?start=1&status=check_email`);
+    // Eigener Status, damit die Seite danach sichtbar bestätigt, dass gerade
+    // verschickt wurde. Mit `check_email` sah die Seite nach dem Klick exakt
+    // gleich aus und der Knopf wirkte kaputt.
+    redirect(`/freebie/${slug}?start=1&status=resent`);
   }
 
   const newsletterStatus = await getNewsletterStatus(user.email);

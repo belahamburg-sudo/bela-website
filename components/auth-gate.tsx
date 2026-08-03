@@ -11,11 +11,20 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    // Merkt sich, wo der Besucher eigentlich hinwollte, statt ihn pauschal aufs
+    // Dashboard zu schicken. Ohne das landet z.B. der Bestätigungslink eines
+    // Freebies nach dem Login in der Übersicht statt im freigeschalteten Kurs.
+    function loginUrl() {
+      const target = `${window.location.pathname}${window.location.search}`;
+      const safe = target.startsWith("/") && !target.startsWith("//") ? target : "/dashboard";
+      return `/login?redirect=${encodeURIComponent(safe)}`;
+    }
+
     async function checkAuth() {
       const demoUser = localStorage.getItem("ai-goldmining-demo-user");
       if (!hasSupabasePublicEnv()) {
         if (!demoUser) {
-          router.push("/login?redirect=/dashboard");
+          router.push(loginUrl());
           return;
         }
         setReady(true);
@@ -25,7 +34,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       const supabase = getSupabaseBrowserClient();
       const { data } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
       if (!data.user && !demoUser) {
-        router.push("/login?redirect=/dashboard");
+        router.push(loginUrl());
         return;
       }
       setReady(true);

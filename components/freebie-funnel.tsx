@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, LockKeyhole, Mail, Sparkles } from "lucide-react";
 import { Button } from "@/components/button";
+import { FreebieSubmitButton } from "@/components/freebie-submit-button";
 import type { NewsletterStatus } from "@/lib/newsletter";
 
 type Step = 1 | 2 | 3;
@@ -166,7 +167,18 @@ export function FreebieFunnel({
               Freebies sind serverseitig noch nicht vollständig konfiguriert.
             </p>
           )}
-          {(status === "check_email" || newsletterPending) && !newsletterConfirmed && (
+          {status === "resent" && !newsletterConfirmed && (
+            <p className="flex items-start gap-3 border border-emerald-400/30 bg-emerald-400/[0.08] px-4 py-3 text-sm leading-6 text-emerald-100">
+              <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
+              <span>
+                Mail wurde gerade verschickt
+                {user.email ? ` an ${user.email}` : ""}. Schau in dein Postfach, auch im
+                Spam-Ordner.
+              </span>
+            </p>
+          )}
+
+          {status !== "resent" && (status === "check_email" || newsletterPending) && !newsletterConfirmed && (
             <p className="border border-gold-300/20 bg-gold-300/[0.06] px-4 py-3 text-xs font-semibold text-gold-100">
               Check deine Inbox und bestätige den Newsletter. Danach wirst du automatisch in
               dein Gratis-Produkt weitergeleitet.
@@ -174,8 +186,8 @@ export function FreebieFunnel({
           )}
 
           {!newsletterPending && (
-            <button
-              type="submit"
+            <FreebieSubmitButton
+              pendingLabel="Moment …"
               className="btn-shimmer inline-flex min-h-12 items-center justify-center gap-2 bg-gold-gradient px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition hover:brightness-110"
             >
               {newsletterConfirmed ? (
@@ -189,7 +201,7 @@ export function FreebieFunnel({
                   Weiter
                 </>
               )}
-            </button>
+            </FreebieSubmitButton>
           )}
 
           {newsletterPending && !newsletterConfirmed && (
@@ -197,15 +209,15 @@ export function FreebieFunnel({
               <p className="text-center text-[10px] font-bold uppercase tracking-[0.18em] text-cream/35">
                 Bereits bestätigt? Lade die Seite neu.
               </p>
-              <button
-                type="submit"
+              <FreebieSubmitButton
                 name="resend"
                 value="on"
-                className="inline-flex min-h-11 items-center justify-center gap-2 border border-gold-300/25 bg-gold-300/[0.06] px-5 text-[10px] font-bold uppercase tracking-[0.18em] text-gold-100 transition hover:border-gold-300/40 hover:bg-gold-300/10"
+                pendingLabel="Wird verschickt …"
+                className="inline-flex min-h-12 items-center justify-center gap-2 border border-gold-300/50 bg-gold-300/15 px-5 text-[10px] font-bold uppercase tracking-[0.18em] text-gold-100 transition hover:border-gold-300/80 hover:bg-gold-300/25"
               >
                 <Mail aria-hidden className="h-4 w-4" />
                 Bestätigungs-Mail erneut senden
-              </button>
+              </FreebieSubmitButton>
             </div>
           )}
         </form>
