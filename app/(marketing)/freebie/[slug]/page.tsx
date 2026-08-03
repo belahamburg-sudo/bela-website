@@ -68,6 +68,9 @@ async function claimFreebie(formData: FormData) {
 
   const result = await claimFreebieForUser(user.id, user.email, slug, {
     name: user.user_metadata?.full_name,
+    // Bestätigte Konto-Mail = Adressnachweis liegt vor = keine zweite
+    // Bestätigungsmail nötig (siehe confirmNewsletterWithVerifiedAccount).
+    accountEmailVerified: Boolean(user.email_confirmed_at),
   });
 
   switch (result.status) {
@@ -249,6 +252,7 @@ export default async function FreebiePage({
             courseTitle={course.title}
             courseImage={course.image_url}
             user={user}
+            accountVerified={Boolean(user?.email_confirmed_at)}
             newsletterStatus={newsletterStatus}
             activeStep={activeStep}
             error={error}

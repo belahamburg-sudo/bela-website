@@ -1,4 +1,8 @@
-import { getNewsletterStatus, subscribeNewsletter } from "./newsletter";
+import {
+  confirmNewsletterWithVerifiedAccount,
+  getNewsletterStatus,
+  subscribeNewsletter,
+} from "./newsletter";
 import { getSupabaseAdminClient } from "./supabase";
 
 export type FreebieClaimResult =
@@ -87,7 +91,7 @@ export async function claimFreebieForUser(
   userId: string,
   email: string,
   slug: string,
-  opts: { name?: string }
+  opts: { name?: string; accountEmailVerified?: boolean }
 ): Promise<FreebieClaimResult> {
   const course = await getFreebieCourse(slug);
   if (!course) return { status: "invalid_course" };
@@ -105,6 +109,24 @@ export async function claimFreebieForUser(
   }
 
   const freebieSource = `freebie:${slug.trim()}`;
+
+  // Konto-Mail ist bereits bestätigt: der Adressnachweis liegt vor, eine zweite
+  // Bestätigungsmail wäre reine Reibung. Häkchen genügt, Freischaltung sofort.
+  if (opts.accountEmailVerified) {
+    const consented = await confirmNewsletterWithVerifiedAccount(email, {
+      userId,
+      source: freebieSource,
+    });
+    if (consented) {
+      const granted = await grantFreebieCourse(userId, slug);
+      return granted
+        ? { status: "granted" }
+        : { status: "error", reason: "purchase_insert_failed" };
+    }
+    // Abgemeldete Adresse: nicht stillschweigend reaktivieren, sondern den
+    // regulären Double-Opt-in-Weg gehen.
+  }
+
   await subscribeNewsletter(email, {
     userId,
     source: freebieSource,

@@ -103,6 +103,60 @@ export async function subscribeNewsletter(
   }
 }
 
+/**
+ * Einwilligung ohne zweite Bestätigungsmail eintragen.
+ *
+ * NUR aufrufen, wenn die Adresse dem Nutzer nachweislich gehört, also wenn er
+ * seine Konto-Mail bereits bestätigt hat (`email_confirmed_at` gesetzt). Genau
+ * das ist der einzige Zweck des Double-Opt-ins: nachzuweisen, dass der
+ * Adressinhaber selbst zugestimmt hat. Liegt der Nachweis schon vor, ist eine
+ * zweite Mail reine Reibung.
+ *
+ * Als Beleg bleiben: `status`, `confirmed_at` (Zeitpunkt der Einwilligung),
+ * `source` (an welcher Stelle sie erteilt wurde) und die bestätigte Konto-Mail
+ * in der Auth-Tabelle. Bereits abgemeldete Adressen werden NICHT reaktiviert.
+ */
+export async function confirmNewsletterWithVerifiedAccount(
+  rawEmail: string,
+  opts: { userId: string; source: string }
+): Promise<boolean> {
+  const admin = getSupabaseAdminClient();
+  const email = rawEmail.trim().toLowerCase();
+  if (!admin || !email || !opts.userId) return false;
+
+  try {
+    const { data: existing } = await admin
+      .from("newsletter_subscribers")
+      .select("status")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (existing?.status === "confirmed") return true;
+    // Wer sich aktiv abgemeldet hat, wird hier nicht stillschweigend zurückgeholt.
+    if (existing?.status === "unsubscribed") return false;
+
+    const { error } = await admin.from("newsletter_subscribers").upsert(
+      {
+        email,
+        user_id: opts.userId,
+        status: "confirmed",
+        confirmed_at: new Date().toISOString(),
+        confirm_token: null,
+        source: opts.source,
+        unsubscribed_at: null,
+      },
+      { onConflict: "email" }
+    );
+    if (error) {
+      console.error("confirmNewsletterWithVerifiedAccount failed:", error.message);
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** Confirm a pending subscription by token. Returns subscriber info on success. */
 export async function confirmNewsletter(tok: string): Promise<NewsletterConfirmation | null> {
   const admin = getSupabaseAdminClient();

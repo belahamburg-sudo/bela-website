@@ -44,6 +44,7 @@ export function FreebieFunnel({
   courseTitle,
   courseImage,
   user,
+  accountVerified,
   newsletterStatus,
   activeStep,
   error,
@@ -54,6 +55,8 @@ export function FreebieFunnel({
   courseTitle: string;
   courseImage?: string | null;
   user: { email?: string | null } | null;
+  /** Konto-Mail bestätigt? Dann entfällt die zweite Bestätigungsmail. */
+  accountVerified: boolean;
   newsletterStatus: NewsletterStatus;
   activeStep: Step;
   error?: string;
@@ -62,7 +65,12 @@ export function FreebieFunnel({
 }) {
   const redirectTarget = encodeURIComponent(`/freebie/${slug}?start=1`);
   const newsletterConfirmed = newsletterStatus === "confirmed";
-  const newsletterPending = newsletterStatus === "pending" || status === "check_email";
+  // Bei bestätigter Konto-Mail gibt es keine zweite Mail, auf die man warten
+  // müsste. Ohne diese Bedingung landete jeder mit altem "pending"-Eintrag in
+  // einer Sackgasse: Häkchen und Weiter-Knopf verschwanden, obwohl nie eine
+  // Mail für dieses Freebie verschickt worden war.
+  const newsletterPending =
+    !accountVerified && (newsletterStatus === "pending" || status === "check_email");
 
   return (
     <div className="border border-gold-300/20 bg-ink/70 p-5 shadow-gold backdrop-blur-xl sm:p-7">
@@ -113,14 +121,18 @@ export function FreebieFunnel({
 
           <div>
             <p className="font-heading text-2xl text-cream">
-              {newsletterConfirmed ? "Fast geschafft" : "Schritt 2: Newsletter bestätigen"}
+              {newsletterConfirmed
+                ? "Fast geschafft"
+                : newsletterPending
+                  ? "Schritt 2: Newsletter bestätigen"
+                  : "Schritt 2: Newsletter"}
             </p>
             <p className="mt-2 text-sm leading-7 text-cream/50">
               {newsletterConfirmed
                 ? "Du bist für den Newsletter angemeldet. Klicke auf Weiter — dein Gratis-Produkt wird sofort freigeschaltet."
                 : newsletterPending
                   ? "Wir haben dir eine Bestätigungs-Mail geschickt. Sobald du den Link klickst, wird der Kurs automatisch freigeschaltet."
-                  : "Im Gegenzug für den Gratis-Zugang meldest du dich zum AI Goldmining Newsletter an."}
+                  : "Im Gegenzug für den Gratis-Zugang meldest du dich zum AI Goldmining Newsletter an. Häkchen setzen, auf Weiter klicken, fertig — dein Produkt wird sofort freigeschaltet."}
             </p>
             {user.email && (
               <p className="mt-3 text-xs font-mono uppercase tracking-[0.14em] text-gold-300/70">
