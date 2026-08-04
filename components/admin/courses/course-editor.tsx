@@ -839,13 +839,23 @@ export function CourseEditor({
       <div className="mt-6">
         <Panel title="Produktseite (leere Felder = Sektion ausgeblendet)">
           <div className="grid gap-4">
-            <p className="text-sm text-cream/50">
-              Alles hier landet auf der öffentlichen Produktseite. Was du leer lässt, wird automatisch
-              <span className="text-cream/80"> ausgeblendet</span>. Bei Listen: eine Zeile pro Punkt.
-            </p>
+            {isUnlisted ? (
+              <p className="border border-gold-300/25 bg-gold-300/[0.06] px-4 py-3 text-sm leading-6 text-gold-100">
+                <span className="font-bold">Freebie-Modus.</span> Die Gratis-Seite hat einen
+                eigenen, kurzen Aufbau: Cover, Headline, Button, „Das lernst du“, Proof-Screenshots.
+                Die Verkaufsseiten-Blöcke sind ausgeblendet, weil sie dort nicht angezeigt werden.
+              </p>
+            ) : (
+              <p className="text-sm text-cream/50">
+                Alles hier landet auf der öffentlichen Produktseite. Was du leer lässt, wird automatisch
+                <span className="text-cream/80"> ausgeblendet</span>. Bei Listen: eine Zeile pro Punkt.
+              </p>
+            )}
 
             <label className="block">
-              <span className="tac-label mb-1.5 block">Outcome-Headline (Hero)</span>
+              <span className="tac-label mb-1.5 block">
+                {isUnlisted ? "Headline (der eine Satz neben dem Cover)" : "Outcome-Headline (Hero)"}
+              </span>
               <input
                 value={ppOutcome}
                 onChange={(e) => setPpOutcome(e.target.value)}
@@ -853,69 +863,106 @@ export function CourseEditor({
                 className={inputClass}
               />
               <span className="mt-1.5 block text-xs text-cream/40">
-                Der <span className="text-cream/70">einzige Satz</span> über dem Cover — kein
-                Kurstitel, keine Subline darunter. Leer = der Kurstitel springt ein.
+                {isUnlisted ? (
+                  <>
+                    Beschreibt das Gratis-Produkt. Auf dem Handy über dem Cover, auf dem Rechner
+                    rechts daneben. Leer = der Kurstitel springt ein.
+                  </>
+                ) : (
+                  <>
+                    Der <span className="text-cream/70">einzige Satz</span> über dem Cover — kein
+                    Kurstitel, keine Subline darunter. Leer = der Kurstitel springt ein.
+                  </>
+                )}
               </span>
             </label>
 
-            <label className="block">
-              <span className="tac-label mb-1.5 block">Provokativer Problem-Statement-Satz (Hero)</span>
-              <textarea
-                value={ppProblemStatement}
-                onChange={(e) => setPpProblemStatement(e.target.value)}
-                rows={2}
-                placeholder="Steht unter dem Cover, z.B. „Wenn du nicht lernst … kannst du dein Geld genauso gut aus dem Fenster werfen“"
-                className={`${inputClass} resize-y`}
-              />
-            </label>
+            {!isUnlisted && (
+              <label className="block">
+                <span className="tac-label mb-1.5 block">Provokativer Problem-Statement-Satz (Hero)</span>
+                <textarea
+                  value={ppProblemStatement}
+                  onChange={(e) => setPpProblemStatement(e.target.value)}
+                  rows={2}
+                  placeholder="Steht unter dem Cover, z.B. „Wenn du nicht lernst … kannst du dein Geld genauso gut aus dem Fenster werfen“"
+                  className={`${inputClass} resize-y`}
+                />
+              </label>
+            )}
 
             <label className="block">
-              <span className="tac-label mb-1.5 block">Hero-CTA-Button-Text</span>
+              <span className="tac-label mb-1.5 block">
+                {isUnlisted ? "Text auf dem Button" : "Hero-CTA-Button-Text"}
+              </span>
               <input
                 value={ppHeroCtaLabel}
                 onChange={(e) => setPpHeroCtaLabel(e.target.value)}
-                placeholder="Cool! Zeig mir wie's geht!"
+                placeholder={isUnlisted ? "Jetzt GRATIS sichern" : "Cool! Zeig mir wie's geht!"}
                 className={inputClass}
               />
               <span className="mt-1.5 block text-xs text-cream/40">
-                Alle CTA-Buttons scrollen zur Kauf-Sektion ganz unten. Leer = Standardtext.
+                {isUnlisted
+                  ? "Steht unter der Headline und nochmal ganz unten. Leer = „Jetzt GRATIS sichern“."
+                  : "Alle CTA-Buttons scrollen zur Kauf-Sektion ganz unten. Leer = Standardtext."}
               </span>
             </label>
 
-            <label className="block">
-              <span className="tac-label mb-1.5 block">Problem / Status-Quo</span>
-              <textarea
-                value={ppProblem}
-                onChange={(e) => setPpProblem(e.target.value)}
-                rows={3}
-                placeholder="Sachliche Diagnose, max. 3 Sätze"
-                className={`${inputClass} resize-y`}
-              />
-            </label>
-
-            <div className="grid gap-4 sm:grid-cols-2">
+            {!isUnlisted && (
               <label className="block">
-                <span className="tac-label mb-1.5 block">Vision (eine Zeile pro Punkt)</span>
+                <span className="tac-label mb-1.5 block">Problem / Status-Quo</span>
+                <textarea
+                  value={ppProblem}
+                  onChange={(e) => setPpProblem(e.target.value)}
+                  rows={3}
+                  placeholder="Sachliche Diagnose, max. 3 Sätze"
+                  className={`${inputClass} resize-y`}
+                />
+              </label>
+            )}
+
+            <div className={isUnlisted ? "grid gap-4" : "grid gap-4 sm:grid-cols-2"}>
+              <label className="block">
+                <span className="tac-label mb-1.5 block">
+                  {isUnlisted ? "Das lernst du (eine Zeile pro Punkt)" : "Vision (eine Zeile pro Punkt)"}
+                </span>
                 <textarea
                   value={ppVision}
                   onChange={(e) => setPpVision(e.target.value)}
                   rows={4}
-                  placeholder={"Wie der Alltag danach aussieht\n3 konkrete Punkte"}
+                  placeholder={
+                    isUnlisted
+                      ? "Die ersten Schritte, um erste Kunden zu gewinnen\nWorauf du dich fokussieren solltest\nStruktur: was du wann und wie machst"
+                      : "Wie der Alltag danach aussieht\n3 konkrete Punkte"
+                  }
                   className={`${inputClass} resize-y`}
                 />
+                {isUnlisted && (
+                  <span className="mt-1.5 block text-xs text-cream/40">
+                    Erscheint auf der Gratis-Seite unter der Überschrift
+                    <span className="text-cream/70"> „Das lernst du:“</span>. Drei Punkte sehen am
+                    besten aus.
+                  </span>
+                )}
               </label>
-              <label className="block">
-                <span className="tac-label mb-1.5 block">Was du wirklich brauchst (✗ was NICHT nötig ist)</span>
-                <textarea
-                  value={ppNeeds}
-                  onChange={(e) => setPpNeeds(e.target.value)}
-                  rows={4}
-                  placeholder={"Keine Programmierkenntnisse\nKein großes Startbudget\nKeine Reichweite\nKein jahrelanges Ausprobieren"}
-                  className={`${inputClass} resize-y`}
-                />
-              </label>
+              {!isUnlisted && (
+                <label className="block">
+                  <span className="tac-label mb-1.5 block">Was du wirklich brauchst (✗ was NICHT nötig ist)</span>
+                  <textarea
+                    value={ppNeeds}
+                    onChange={(e) => setPpNeeds(e.target.value)}
+                    rows={4}
+                    placeholder={"Keine Programmierkenntnisse\nKein großes Startbudget\nKeine Reichweite\nKein jahrelanges Ausprobieren"}
+                    className={`${inputClass} resize-y`}
+                  />
+                </label>
+              )}
             </div>
 
+            {/* Ab hier: reine Verkaufsseiten-Blöcke. Auf einer Freebie-Seite
+                werden sie nicht gerendert, deshalb blenden wir sie im Formular
+                aus, sobald „Freebie“ gesetzt ist. */}
+            {!isUnlisted && (
+            <>
             <label className="block">
               <span className="tac-label mb-1.5 block">
                 So funktioniert der Kurs (pro Zeile: Titel | Beschreibung)
@@ -1284,6 +1331,8 @@ export function CourseEditor({
                 className={inputClass}
               />
             </label>
+            </>
+            )}
 
             {/* Ergebnis-Proof screenshots — shown right before dem CTA. Leer = ausgeblendet. */}
             <div className="space-y-3 border-t border-white/5 pt-4">

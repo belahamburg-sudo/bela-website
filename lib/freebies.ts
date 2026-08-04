@@ -12,7 +12,10 @@ export type FreebieClaimResult =
   | { status: "invalid_course" }
   | { status: "error"; reason: string };
 
-const FREEBIE_SELECT = "slug, title, tagline, description, image_url, level, format, modules(*, lessons(*))";
+// `product_page` liefert Headline, CTA-Label, die drei Lern-Punkte und die
+// Proof-Screenshots für die Freebie-Landingpage.
+const FREEBIE_SELECT =
+  "slug, title, tagline, description, image_url, level, format, product_page, modules(*, lessons(*))";
 
 export async function getFreebieCourse(slug: string) {
   const admin = getSupabaseAdminClient();

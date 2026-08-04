@@ -9,10 +9,11 @@ import {
   getFreebieCourse,
   userOwnsFreebie,
 } from "@/lib/freebies";
+import type { ProductPage } from "@/lib/content";
 import { getNewsletterStatus, subscribeNewsletter } from "@/lib/newsletter";
+import { resolveMediaUrl } from "@/lib/storage";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { formatEuro } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -116,10 +117,17 @@ export default async function FreebiePage({
     }
   }
 
-  const lessonCount = (course.modules ?? []).reduce(
-    (sum, mod) => sum + (mod.lessons?.length ?? 0),
-    0
-  );
+  // Inhalte der Landingpage. Alles kommt aus dem Dashboard, leere Felder
+  // blenden ihren Block einfach aus.
+  const productPage = (course.product_page ?? {}) as ProductPage;
+  const headline = productPage.outcomeHeadline?.trim() || course.title;
+  const ctaLabel = productPage.heroCtaLabel?.trim() || "Jetzt GRATIS sichern";
+  const learnPoints = (productPage.vision ?? []).map((p) => p.trim()).filter(Boolean);
+  const coverUrl = (await resolveMediaUrl(course.image_url)) ?? undefined;
+  const proofImageUrls = (
+    await Promise.all((productPage.proofImages ?? []).map((ref) => resolveMediaUrl(ref)))
+  ).filter((url): url is string => Boolean(url));
+
   const started = start === "1" || Boolean(error) || Boolean(status);
   const activeStep = freebieFunnelStep(user, owned);
 
@@ -130,86 +138,98 @@ export default async function FreebiePage({
       </div>
 
       {!started ? (
-        <div className="relative mx-auto max-w-3xl px-6 pb-20">
-          <div className="mb-6 inline-flex items-center gap-2 border border-gold-300/30 bg-gold-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-gold-200">
-            <Gift aria-hidden className="h-3.5 w-3.5" />
-            Gratis-Produkt
-          </div>
-
-          <CourseLevelBadge
-            level={(course.level as "Start" | "Aufbau" | "System" | "Bundle") ?? "Start"}
-          />
-
-          <h1 className="mt-5 font-heading text-4xl leading-tight text-cream sm:text-6xl">
-            {course.title}
-          </h1>
-          {course.tagline && (
-            <p className="mt-4 text-xl font-semibold text-gold-100">{course.tagline}</p>
-          )}
-          {course.description && (
-            <p className="mt-6 max-w-2xl text-lg leading-9 text-cream/55">{course.description}</p>
-          )}
-
-          {course.image_url && (
-            <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-2xl border border-white/10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={course.image_url}
-                alt={course.title}
-                className="h-full w-full object-cover"
-              />
+        <div className="relative mx-auto max-w-5xl px-6 pb-24">
+          {/* Kopf: mobil Headline → Cover → CTA. Ab lg Cover links, Headline
+              rechts, CTA darunter — ein einziger Button im Code, zwei Layouts
+              über die Rasterplatzierung. */}
+          <div
+            className={`flex flex-col gap-8 ${
+              coverUrl
+                ? "lg:grid lg:grid-cols-[1fr_1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-12"
+                : ""
+            }`}
+          >
+            <div className="lg:col-start-2 lg:row-start-1">
+              <div className="mb-5 inline-flex items-center gap-2 border border-gold-300/30 bg-gold-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-gold-200">
+                <Gift aria-hidden className="h-3.5 w-3.5" />
+                Gratis-Produkt
+              </div>
+              <h1 className="font-heading text-4xl leading-tight text-cream sm:text-5xl">
+                {headline}
+              </h1>
             </div>
-          )}
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <div className="border border-white/10 bg-white/[0.03] p-4">
-              <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-cream/30">
-                Preis
-              </p>
-              <p className="mt-1 font-heading text-2xl text-gold-300">{formatEuro(0)}</p>
-            </div>
-            <div className="border border-white/10 bg-white/[0.03] p-4">
-              <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-cream/30">
-                Format
-              </p>
-              <p className="mt-1 font-heading text-2xl text-cream">
-                {course.format === "pdf" ? "PDF" : "Video"}
-              </p>
-            </div>
-            <div className="border border-white/10 bg-white/[0.03] p-4">
-              <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-cream/30">
-                Inhalt
-              </p>
-              <p className="mt-1 font-heading text-2xl text-cream">
-                {lessonCount > 0 ? `${lessonCount} Lektionen` : "Sofortzugang"}
-              </p>
+            {coverUrl && (
+              <div className="overflow-hidden rounded-2xl border border-white/10 lg:col-start-1 lg:row-span-2 lg:row-start-1">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={coverUrl} alt="" className="w-full object-cover" />
+              </div>
+            )}
+
+            <div className="flex flex-col items-stretch gap-4 sm:items-start lg:col-start-2 lg:row-start-2">
+              <Link
+                href={`/freebie/${slug}?start=1`}
+                className="btn-shimmer focus-ring relative inline-flex min-h-[56px] items-center justify-center gap-2 rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-4 text-[0.9rem] font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
+              >
+                <span className="relative z-[2]">{ctaLabel}</span>
+                <ArrowRight aria-hidden className="relative z-[2] h-5 w-5" />
+              </Link>
             </div>
           </div>
 
-          <div className="mt-8 grid gap-3 text-sm leading-7 text-cream/65">
-            <div className="flex items-start gap-3">
-              <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 flex-none text-gold-300" />
-              <span>Nach der Freischaltung findest du das Produkt nur unter „Meine Kurse“.</span>
+          {learnPoints.length > 0 && (
+            <div className="mt-20">
+              <h2 className="text-center font-heading text-3xl text-cream sm:text-4xl">
+                Das lernst du:
+              </h2>
+              <div className="mt-10 grid gap-6 sm:grid-cols-3">
+                {learnPoints.map((point) => (
+                  <div
+                    key={point}
+                    className="flex items-start gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5"
+                  >
+                    <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5 flex-none text-gold-300" />
+                    <span className="text-base leading-8 text-cream/75">{point}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex items-start gap-3">
-              <Mail aria-hidden className="mt-1 h-5 w-5 flex-none text-gold-300" />
-              <span>Danach: Account → Newsletter bestätigen → Sofortzugang.</span>
-            </div>
-          </div>
+          )}
 
-          <div className="mt-10 flex flex-col items-stretch gap-4 sm:items-start">
+          {proofImageUrls.length > 0 && (
+            <div className="mt-20">
+              <h2 className="text-center font-heading text-3xl text-cream sm:text-4xl">
+                {productPage.proofHeadline?.trim() || "Das sagen andere:"}
+              </h2>
+              <div className="mt-10 grid gap-4 sm:grid-cols-2">
+                {proofImageUrls.map((src) => (
+                  <a
+                    key={src}
+                    href={src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="focus-ring group block overflow-hidden rounded-xl border border-white/10 transition-colors hover:border-gold-300/40"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt="Ergebnis-Screenshot"
+                      loading="lazy"
+                      className="h-[380px] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02] sm:h-[460px]"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-16 flex justify-center">
             <Link
               href={`/freebie/${slug}?start=1`}
               className="btn-shimmer focus-ring relative inline-flex min-h-[56px] items-center justify-center gap-2 rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-4 text-[0.9rem] font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
             >
-              <span className="relative z-[2]">Ja, das will ich gratis!</span>
+              <span className="relative z-[2]">{ctaLabel}</span>
               <ArrowRight aria-hidden className="relative z-[2] h-5 w-5" />
-            </Link>
-            <Link
-              href="/kurse"
-              className="text-center text-[10px] font-bold uppercase tracking-[0.18em] text-cream/35 transition-colors hover:text-gold-200 sm:text-left"
-            >
-              Zur Kursübersicht
             </Link>
           </div>
         </div>

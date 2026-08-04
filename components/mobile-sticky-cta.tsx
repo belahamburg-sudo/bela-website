@@ -11,8 +11,10 @@ export function MobileStickyCta() {
 
   // Course product pages get their own sticky buy bar (ProductStickyBuy).
   // Showing the webinar CTA there would pull buyers away from #kaufen, which
-  // every CTA on that page is supposed to lead to.
-  const onProductPage = pathname?.startsWith("/kurse/") ?? false;
+  // every CTA on that page is supposed to lead to. Dasselbe gilt für
+  // Freebie-Landingpages: dort ist der Gratis-Button das einzige Ziel.
+  const onProductPage =
+    (pathname?.startsWith("/kurse/") || pathname?.startsWith("/freebie/")) ?? false;
 
   useEffect(() => {
     const handleScroll = () => {
