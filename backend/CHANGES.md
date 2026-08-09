@@ -62,3 +62,32 @@ angezeigte Einwilligungstext werden nicht gespeichert.** Für die
 Nachweispflicht wäre beides sinnvoll, erfordert aber zwei zusätzliche Spalten
 und damit eine Migration auf der Produktiv-Datenbank. Bewusst offengelassen,
 bis Bela das freigibt.
+
+---
+
+## 2026-08-09 — Z.ai (GLM) Denkmodus abschalten: Chatbot, Kurs-Coach, Goldmine-Finder
+
+**Anlass:** Bela meldete "Chat funktioniert nicht". Die Oberfläche zeigte
+"Keine Antwort erhalten." Ein direkter Testaufruf gegen die Live-API lieferte
+dagegen eine korrekte Antwort — in **22 Sekunden** und **mitten im Satz
+abgeschnitten**.
+
+**Ursache:** `glm-4.5-flash` hat den Denkmodus standardmäßig aktiv. In diesem
+Modus landet die Antwort in `reasoning_content`, während `content` leer
+bleibt. Beide Aufrufstellen lasen ausschließlich `content`. Da das Modell
+selbst entscheidet, ob es denkt, fiel die Antwort mal aus und mal nicht —
+daher das sprunghafte Fehlerbild.
+
+**Änderung an beiden Aufrufstellen** (`lib/zai.ts` und
+`app/api/support-chat/route.ts`):
+
+- `thinking: { type: "disabled" }` mitsenden
+- Rückfallebene: ist `content` leer, wird `reasoning_content` genommen
+- Fehlerfälle werden jetzt per `console.error` protokolliert (vorher stiller
+  Ausfall, dieselbe Klasse Fehler wie beim Mailversand)
+- `max_tokens` im Support-Chat von 700 auf 1200, weil Antworten abbrachen
+
+**Betroffen waren drei Funktionen**, nicht nur der Chatbot: Support-Chat,
+AI-Kurs-Coach und Goldmine-Finder teilen sich denselben Aufruf.
+
+Quelle: Z.AI Developer Docs, "Core Parameters".

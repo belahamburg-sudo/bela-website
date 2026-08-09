@@ -163,24 +163,38 @@ ${context}
       model: ZAI_MODEL,
       messages: [{ role: "system", content: system }, ...messages],
       temperature: 0.35,
-      max_tokens: 700,
+      // 700 war zu knapp: Antworten brachen mitten im Satz ab.
+      max_tokens: 1200,
       stream: false,
+      // GLM denkt standardmäßig und legt die Antwort dann in
+      // `reasoning_content` ab, `content` bleibt leer. Das Modell entscheidet
+      // selbst, ob es denkt — deshalb kam mal eine Antwort und mal
+      // "Keine Antwort erhalten". Denkmodus aus.
+      thinking: { type: "disabled" },
     }),
   });
 
   const payload = (await response.json().catch(() => null)) as
-    | { choices?: Array<{ message?: { content?: string } }>; error?: { message?: string } }
+    | {
+        choices?: Array<{ message?: { content?: string; reasoning_content?: string } }>;
+        error?: { message?: string };
+      }
     | null;
 
   if (!response.ok) {
+    console.error("support-chat: ZAI antwortete mit", response.status, payload?.error?.message);
     return NextResponse.json(
       { message: payload?.error?.message || "Chatbot-Antwort fehlgeschlagen." },
       { status: 502 }
     );
   }
 
-  const reply = cleanReply(payload?.choices?.[0]?.message?.content?.trim() ?? "");
+  const message = payload?.choices?.[0]?.message;
+  // Sicherheitsnetz, falls der Anbieter den Denkmodus doch erzwingt.
+  const raw = message?.content?.trim() || message?.reasoning_content?.trim() || "";
+  const reply = cleanReply(raw);
   if (!reply) {
+    console.error("support-chat: leere Antwort vom Modell", ZAI_MODEL);
     return NextResponse.json({ message: "Keine Antwort erhalten." }, { status: 502 });
   }
 

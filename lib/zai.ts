@@ -30,14 +30,28 @@ export async function zaiChat(
         temperature: opts.temperature ?? 0.5,
         max_tokens: opts.maxTokens ?? 1400,
         stream: false,
+        // GLM denkt standardmäßig und schreibt die Antwort dann nach
+        // `reasoning_content` statt nach `content` — `content` bleibt leer.
+        // Weil das Modell selbst entscheidet, ob es denkt, fiel die Antwort
+        // mal aus und mal nicht. Denkmodus aus: verlässlich und deutlich
+        // schneller.
+        thinking: { type: "disabled" },
       }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error("zaiChat failed:", res.status, (await res.text().catch(() => "")).slice(0, 300));
+      return null;
+    }
     const data = (await res.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
+      choices?: Array<{ message?: { content?: string; reasoning_content?: string } }>;
     };
-    return data.choices?.[0]?.message?.content?.trim() ?? null;
-  } catch {
+    const message = data.choices?.[0]?.message;
+    // Sicherheitsnetz, falls der Anbieter den Denkmodus doch erzwingt.
+    const text = (message?.content?.trim() || message?.reasoning_content?.trim()) ?? "";
+    if (!text) console.error("zaiChat: leere Antwort vom Modell", ZAI_MODEL);
+    return text || null;
+  } catch (error) {
+    console.error("zaiChat threw:", error instanceof Error ? error.message : String(error));
     return null;
   }
 }
