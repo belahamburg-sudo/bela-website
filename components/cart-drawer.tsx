@@ -2,17 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Plus, Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react";
+import { X, Plus, Trash2, ShoppingBag, ArrowRight, Tag, Loader2, AlertCircle } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatEuro } from "@/lib/utils";
+import { hasSupabasePublicEnv } from "@/lib/env";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getStoredReferral } from "@/components/referral-capture";
 import { featuredCourses } from "@/lib/content";
 
 const PROMO_KEY = "ai-goldmining-promo";
 
 export function CartDrawer() {
-  const { items, isOpen, close, remove, subtotalCents, count, add, has } = useCart();
+  const { items, isOpen, close, remove, subtotalCents, count, add, has, clear } = useCart();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Promo code entered here is carried over to the cart/checkout page.
   const [promo, setPromo] = useState("");
@@ -36,6 +43,62 @@ export function CartDrawer() {
 
   // Upsell suggestions: featured courses the customer hasn't added yet.
   const upsells = featuredCourses.filter((c) => !has(c.slug)).slice(0, 2);
+
+  /**
+   * "Zur Kasse" führt direkt zu Stripe. Die frühere Zwischenseite /warenkorb
+   * hat nur nochmal dasselbe gezeigt und einen zusätzlichen Klick gekostet.
+   * Die Seite bleibt erreichbar (Lesezeichen, Direktlinks), sie ist nur nicht
+   * mehr Teil des Kaufwegs.
+   */
+  async function checkout() {
+    if (items.length === 0 || loading) return;
+    setError(null);
+
+    // Kauf muss an ein Konto gebunden werden, sonst kann der Kurs später
+    // niemandem freigeschaltet werden.
+    let userEmail: string | null = null;
+    if (hasSupabasePublicEnv()) {
+      const supabase = getSupabaseBrowserClient();
+      const { data } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+      if (!data.user) {
+        // Nach dem Login dorthin zurück, wo der Warenkorb geöffnet wurde.
+        const back = `${window.location.pathname}${window.location.search}`;
+        close();
+        router.push(`/login?redirect=${encodeURIComponent(back)}`);
+        return;
+      }
+      userEmail = data.user.email ?? null;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({ slug: i.slug, qty: 1 })),
+          userEmail,
+          promoCode: promo.trim() || undefined,
+          referralCode: getStoredReferral() || undefined,
+        }),
+      });
+      const result = (await response.json()) as { url?: string; message?: string };
+      if (!response.ok) {
+        setError(result.message || "Checkout konnte nicht gestartet werden.");
+        return;
+      }
+      if (result.url) {
+        clear();
+        window.location.href = result.url;
+        return;
+      }
+      setError("Kein Checkout-Link erhalten. Bitte versuche es erneut.");
+    } catch {
+      setError("Verbindungsfehler. Bitte versuche es erneut.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -196,16 +259,33 @@ export function CartDrawer() {
                     {formatEuro(subtotalCents)}
                   </span>
                 </div>
-                <Link
-                  href="/warenkorb"
-                  onClick={close}
-                  className="btn-shimmer group flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
+                {error && (
+                  <p className="mb-3 flex items-start gap-2 border border-red-400/25 bg-red-400/[0.07] px-3 py-2.5 text-xs leading-5 text-red-200">
+                    <AlertCircle aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
+                    {error}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={checkout}
+                  disabled={loading}
+                  aria-busy={loading}
+                  className="btn-shimmer group flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 active:scale-[0.99] disabled:cursor-wait disabled:opacity-70"
                 >
                   <span className="relative z-[2] inline-flex items-center gap-2">
-                    Zur Kasse
-                    <ArrowRight className="h-4 w-4" />
+                    {loading ? (
+                      <>
+                        <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
+                        Weiterleitung zu Stripe …
+                      </>
+                    ) : (
+                      <>
+                        Zur Kasse
+                        <ArrowRight className="h-4 w-4" />
+                      </>
+                    )}
                   </span>
-                </Link>
+                </button>
                 <p className="mt-3 text-center text-[11px] text-cream/30">
                   Sichere Zahlung über Stripe · SSL-verschlüsselt
                 </p>
