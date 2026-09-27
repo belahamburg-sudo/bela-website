@@ -66,7 +66,7 @@ export function ReferAFriend() {
           <span className="min-w-0 flex-1 truncate font-mono text-xs text-cream/70">{link}</span>
           <button
             onClick={copy}
-            className="inline-flex items-center gap-1.5 bg-gold-300 px-3 py-2 text-[11px] font-semibold text-obsidian transition-all hover:bg-gold-200"
+            className="inline-flex items-center gap-1.5 bg-gold-gradient px-3 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110"
           >
             {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
             {copied ? "Kopiert" : "Kopieren"}

@@ -186,7 +186,7 @@ function ServiceCard({
           href={ctaHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-auto flex min-h-14 w-full items-center justify-center gap-2 rounded-[6px] bg-gold-300 px-5 py-3 text-center text-[0.72rem] font-semibold leading-tight text-obsidian transition-all hover:bg-gold-200"
+          className="btn-shimmer group mt-auto flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-gold-gradient px-5 py-3 text-center text-[0.72rem] font-bold uppercase leading-tight tracking-[0.12em] text-obsidian transition-all hover:brightness-110"
         >
           <span className="relative z-[2] inline-flex min-w-0 items-center justify-center gap-2">
             <span className="min-w-0 break-words">{ctaLabel}</span>

@@ -9,6 +9,7 @@ import { LeadForm } from "@/components/lead-form";
 import { navItems } from "@/lib/content";
 import { telegramUrl, socialLinks } from "@/lib/env";
 import { SITE_LOGO_PATH } from "@/lib/brand";
+import { Meteors } from "@/components/ui/meteors";
 
 const LEGAL = [
   { href: "/impressum", label: "Impressum" },
@@ -60,6 +61,8 @@ export function CtaFooterSection({
           <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 60% at 50% 45%, transparent 0%, rgba(8,6,4,0.55) 100%)" }} />
         </div>
 
+        {/* gold meteor shower */}
+        <Meteors number={16} angle={235} minDuration={3} maxDuration={9} />
 
 
         <div className="relative mx-auto max-w-3xl px-6 py-20 lg:py-28 text-center">

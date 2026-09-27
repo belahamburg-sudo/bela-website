@@ -14,7 +14,7 @@ export function CartButton({ className = "" }: { className?: string }) {
     >
       <ShoppingBag className="h-[18px] w-[18px]" />
       {count > 0 && (
-        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-[6px] bg-gold-300 px-1 text-[10px] font-semibold leading-none text-obsidian">
+        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold-gradient px-1 text-[10px] font-bold leading-none text-obsidian">
           {count}
         </span>
       )}

@@ -46,7 +46,7 @@ export default async function NewsletterPage({
         <p className="mt-4 leading-relaxed text-cream/55">{m.copy}</p>
         <Link
           href="/"
-          className="mt-8 inline-flex items-center gap-2 rounded-[6px] border border-gold-300/30 px-6 py-3 text-sm font-semibold r text-cream/70 transition hover:border-gold-300/60 hover:text-cream"
+          className="mt-8 inline-flex items-center gap-2 rounded-full border border-gold-300/30 px-6 py-3 text-sm font-bold uppercase tracking-wider text-cream/70 transition hover:border-gold-300/60 hover:text-cream"
         >
           Zur Startseite
         </Link>

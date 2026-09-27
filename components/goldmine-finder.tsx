@@ -70,7 +70,7 @@ export function GoldmineFinder() {
           type="button"
           onClick={generate}
           disabled={loading}
-          className="mt-4 inline-flex items-center justify-center gap-2.5 bg-gold-300 px-6 py-3.5 text-[11px] font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-shimmer mt-4 inline-flex items-center justify-center gap-2.5 bg-gold-gradient px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pickaxe className="h-4 w-4" />}
           {loading ? "Schürfe Ideen …" : ideas ? "Neue Ideen schürfen" : "Goldader finden"}
@@ -114,7 +114,7 @@ export function GoldmineFinder() {
               {idea.course ? (
                 <Link
                   href={idea.course.href}
-                  className="mt-4 inline-flex items-center gap-1.5 self-start rounded-[6px] border border-gold-300/30 px-3.5 py-1.5 text-[10px] font-semibold text-gold-200 transition hover:border-gold-300/60 hover:text-gold-100"
+                  className="mt-4 inline-flex items-center gap-1.5 self-start rounded-full border border-gold-300/30 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-gold-200 transition hover:border-gold-300/60 hover:text-gold-100"
                 >
                   Passender Kurs: {idea.course.title}
                   <ArrowRight className="h-3 w-3" />

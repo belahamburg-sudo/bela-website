@@ -33,6 +33,7 @@ export function ProductsSection({ courses }: { courses: Course[] }) {
   return (
     <section className="relative py-20 lg:py-28 sec-raised overflow-hidden scratch-border">
       <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/[0.05] blur-[120px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6">

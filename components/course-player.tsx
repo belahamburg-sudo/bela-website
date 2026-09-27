@@ -281,7 +281,7 @@ export function CoursePlayer({
                     </span>
                   </span>
                 </span>
-                <span className="shrink-0 rounded-[6px] bg-gold-300 px-5 py-2.5 text-[11px] font-semibold text-obsidian">
+                <span className="shrink-0 rounded-full bg-gold-gradient px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-obsidian">
                   Zertifikat herunterladen
                 </span>
               </a>
@@ -314,7 +314,7 @@ export function CoursePlayer({
 
               <div className="p-6 sm:p-7">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-[6px] border border-gold-300/25 bg-gold-300/[0.06] px-2.5 py-0.5 text-[9px] font-semibold text-gold-200/80">
+                  <span className="rounded-full border border-gold-300/25 bg-gold-300/[0.06] px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.16em] text-gold-200/80">
                     {activeLesson.moduleTitle}
                   </span>
                   {completedSet.has(activeId) ? (

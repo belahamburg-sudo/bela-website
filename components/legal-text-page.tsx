@@ -68,7 +68,7 @@ export async function LegalTextPage({
             href={`/legal/${slug}.txt`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-[6px] border border-gold-300/30 px-4 py-2 text-[0.7rem] font-semibold text-cream/60 transition-colors hover:border-gold-300/60 hover:text-cream"
+            className="inline-flex items-center gap-2 rounded-full border border-gold-300/30 px-4 py-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-cream/60 transition-colors hover:border-gold-300/60 hover:text-cream"
           >
             <FileText className="h-3.5 w-3.5 text-gold-300/70" />
             Als .txt öffnen

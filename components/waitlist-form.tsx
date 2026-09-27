@@ -79,7 +79,7 @@ export function WaitlistForm({ courseSlug, courseTitle }: { courseSlug: string; 
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold-300 px-6 py-3 text-sm font-semibold r text-obsidian transition hover:bg-gold-200 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold-gradient px-6 py-3 text-sm font-bold uppercase tracking-wider text-obsidian transition hover:brightness-110 disabled:opacity-50"
         >
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Erinnere mich"}
         </button>

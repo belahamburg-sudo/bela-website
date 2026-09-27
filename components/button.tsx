@@ -16,18 +16,18 @@ type ButtonProps = {
 
 const variants = {
   primary:
-    "bg-gold-300 text-obsidian border border-gold-300 hover:bg-gold-200 hover:border-gold-200",
+    "btn-shimmer bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 text-obsidian hover:brightness-110 shadow-[0_10px_50px_-10px_rgba(201, 169, 97,0.6)] border border-gold-300/60",
   secondary:
-    "border border-cream/20 bg-cream/[0.03] text-cream hover:border-cream/40 hover:bg-cream/[0.06]",
+    "btn-shimmer border border-gold-300/25 bg-panel/60 text-cream hover:border-gold-300/60 hover:bg-gold-300/[0.06] backdrop-blur-md",
   outline:
-    "border border-cream/25 bg-transparent text-cream hover:border-cream/50",
-  ghost: "text-cream/80 hover:text-cream hover:bg-cream/[0.04]"
+    "btn-shimmer border border-gold-300/35 bg-transparent text-cream hover:border-gold-300 hover:bg-gold-300/[0.05]",
+  ghost: "btn-shimmer text-cream hover:bg-cream/[0.04]"
 };
 
 const sizes = {
-  sm: "min-h-9 px-4 py-2 text-[0.85rem]",
-  md: "min-h-11 px-5 py-2.5 text-[0.95rem]",
-  lg: "min-h-[52px] px-7 py-3.5 text-base"
+  sm: "min-h-9 px-5 py-2 text-[0.78rem]",
+  md: "min-h-11 px-6 py-3 text-sm",
+  lg: "min-h-[52px] px-8 py-4 text-[0.9rem]"
 };
 
 export function Button({
@@ -43,7 +43,7 @@ export function Button({
   rel
 }: ButtonProps) {
   const classes = cn(
-    "focus-ring relative inline-flex items-center justify-center gap-2 rounded-[6px] font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50",
+    "focus-ring relative inline-flex items-center justify-center gap-2 rounded-full font-bold uppercase tracking-[0.12em] transition-all duration-300 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50",
     variants[variant],
     sizes[size],
     className

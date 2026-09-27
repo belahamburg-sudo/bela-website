@@ -21,7 +21,7 @@ export function AddToCartButton({
       type="button"
       onClick={() => (inCart ? open() : add(course))}
       className={cn(
-        "focus-ring inline-flex items-center justify-center gap-2 rounded-[6px] border border-gold-300/40 px-6 py-3 text-sm font-semibold text-cream transition-all hover:border-gold-300/80 hover:bg-gold-300/[0.06]",
+        "btn-shimmer focus-ring inline-flex items-center justify-center gap-2 rounded-full border border-gold-300/40 px-6 py-3 text-sm font-bold uppercase tracking-[0.12em] text-cream transition-all hover:border-gold-300/80 hover:bg-gold-300/[0.06]",
         className
       )}
     >

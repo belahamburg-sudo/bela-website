@@ -132,7 +132,7 @@ export function OtoOffer({
               type="button"
               onClick={accept}
               disabled={state === "loading"}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[6px] bg-gold-300 px-5 py-3 text-sm font-semibold r text-obsidian transition hover:bg-gold-200 disabled:opacity-60"
+              className="btn-shimmer inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gold-gradient px-5 py-3 text-sm font-bold uppercase tracking-wider text-obsidian transition hover:brightness-110 disabled:opacity-60"
             >
               {state === "loading" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

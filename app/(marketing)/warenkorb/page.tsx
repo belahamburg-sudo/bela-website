@@ -251,7 +251,7 @@ export default function CartPage() {
               <button
                 onClick={checkout}
                 disabled={loading}
-                className="group mt-6 flex w-full items-center justify-center gap-2 rounded-[6px] bg-gold-300 px-6 py-3.5 text-sm font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:cursor-not-allowed disabled:opacity-50"
+                className="btn-shimmer group mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span className="relative z-[2] inline-flex items-center gap-2">
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}

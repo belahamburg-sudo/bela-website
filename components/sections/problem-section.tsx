@@ -91,7 +91,7 @@ export function ProblemSection() {
         <div ref={solutionRef} className="flex justify-center" style={{ opacity: 0 }}>
           <a
             href="/webinar"
-            className="group inline-flex max-w-3xl items-center justify-center rounded-[6px] bg-gold-300 px-10 py-6 text-center text-base font-semibold leading-snug text-obsidian transition-all hover:bg-gold-200 sm:px-14 sm:py-7 sm:text-lg lg:text-xl"
+            className="btn-shimmer group inline-flex max-w-3xl items-center justify-center rounded-full bg-gold-gradient px-10 py-6 text-center text-base font-bold leading-snug text-obsidian shadow-[0_30px_80px_-30px_rgba(201,169,97,0.6)] transition-all hover:brightness-110 sm:px-14 sm:py-7 sm:text-lg lg:text-xl"
           >
             <span className="relative z-[2] inline-flex items-center gap-3">
               Jedes Modell oben kostet dich Jahre, Kapital oder beides. Es gibt genau einen Weg, der das überspringt.

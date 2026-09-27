@@ -64,7 +64,7 @@ export function ProductStickyBuy({
         <a
           href={href}
           tabIndex={visible ? 0 : -1}
-          className="focus-ring relative inline-flex min-h-[44px] flex-1 items-center justify-center rounded-[6px] border border-gold-300/60 bg-gold-300 px-5 text-[0.8rem] font-semibold text-obsidian transition-all duration-300 hover:bg-gold-200"
+          className="btn-shimmer focus-ring relative inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-5 text-[0.8rem] font-bold uppercase tracking-[0.12em] text-obsidian transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
         >
           <span className="relative z-[2]">{label}</span>
         </a>

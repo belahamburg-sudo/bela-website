@@ -13,7 +13,7 @@ const labelClass =
   "mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-gold-300/70";
 
 const submitClass =
-  "relative mt-1 flex w-full items-center justify-center gap-2.5 bg-gold-300 px-6 py-4 text-[11px] font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:cursor-not-allowed disabled:opacity-50";
+  "btn-shimmer relative mt-1 flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-6 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50";
 
 /** Strip everything but digits and a leading +. */
 function normalizePhone(value: string): string {
