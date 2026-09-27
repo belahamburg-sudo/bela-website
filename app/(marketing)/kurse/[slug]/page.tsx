@@ -196,7 +196,7 @@ export default async function CourseDetailPage({
     <div className="flex justify-center">
       <a
         href="#kaufen"
-        className="btn-shimmer focus-ring relative inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-4 text-[0.9rem] font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
+        className="focus-ring relative inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[6px] border border-gold-300/60 bg-gold-300 px-8 py-4 text-[0.9rem] font-semibold text-obsidian transition-all duration-300 hover:bg-gold-200"
       >
         <span className="relative z-[2]">{owned ? "Zum Kurs" : "Ja, das will ich!"}</span>
       </a>
@@ -409,7 +409,7 @@ export default async function CourseDetailPage({
             ) : (
               <a
                 href="#kaufen"
-                className="btn-shimmer focus-ring relative inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-4 text-[0.9rem] font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
+                className="focus-ring relative inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[6px] border border-gold-300/60 bg-gold-300 px-8 py-4 text-[0.9rem] font-semibold text-obsidian transition-all duration-300 hover:bg-gold-200"
               >
                 <span className="relative z-[2]">
                   {pp?.heroCtaLabel || "Cool! Zeig mir wie's geht!"}

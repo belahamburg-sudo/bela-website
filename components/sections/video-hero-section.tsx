@@ -6,8 +6,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { telegramUrl } from "@/lib/env";
-import { Particles } from "@/components/ui/particles";
-import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import type { Webinar } from "@/lib/webinar";
 
 const SOCIAL_PROOF_IMAGES = [
@@ -28,7 +26,7 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
         day: "numeric",
         month: "long",
         timeZone: "Europe/Berlin",
-      })} · ${webinarStart.toLocaleString("de-DE", {
+      })}, ${webinarStart.toLocaleString("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
         timeZone: "Europe/Berlin",
@@ -165,27 +163,6 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
       className="relative flex flex-col items-center justify-center overflow-hidden sec-hero px-6"
       style={{ minHeight: "calc(100svh - 92px)", paddingTop: "clamp(5rem, 7vw, 6.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
     >
-      {/* Subtle gold radial glow */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        aria-hidden
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 55% at 50% 35%, rgba(201, 169, 97,0.07) 0%, transparent 70%)",
-        }}
-      />
-
-      {/* Atmospheric gold dust */}
-      <Particles
-        className="absolute inset-0"
-        quantity={90}
-        ease={70}
-        staticity={40}
-        size={0.5}
-        color="#C9A961"
-        refresh
-      />
-
       <div className="relative w-full mx-auto max-w-4xl flex flex-col items-center gap-3 text-center">
 
         {/* ── Live Mission Badge ── */}
@@ -196,31 +173,10 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
         >
           <Link
             href={webinarUrl}
-            className="group relative inline-flex items-center gap-3 rounded-full border border-gold-300/25 bg-gradient-to-b from-white/[0.07] to-white/[0.02] px-1.5 py-1.5 pr-4 backdrop-blur-md"
-            style={{ boxShadow: "0 1px 0 0 rgba(255,255,255,0.06) inset, 0 8px 30px -12px rgba(201, 169, 97,0.4)" }}
+            className="inline-flex items-center gap-2 text-sm text-cream/70 transition-colors hover:text-cream"
           >
-            {/* Live indicator pill */}
-            <span className="flex items-center gap-1.5 rounded-full bg-gold-gradient px-2.5 py-1">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-obsidian/70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-obsidian" />
-              </span>
-              <span className="text-[0.6rem] font-extrabold uppercase tracking-[0.2em] text-obsidian">Live</span>
-            </span>
-            <span className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-cream/90">
-              Nächstes Webinar
-            </span>
-            {webinarDateLabel && (
-              <>
-                <span className="h-3 w-px bg-gold-300/30" aria-hidden />
-                <AnimatedGradientText
-                  speed={1}
-                  className="text-[0.68rem] font-bold uppercase tracking-[0.14em]"
-                >
-                  {webinarDateLabel}
-                </AnimatedGradientText>
-              </>
-            )}
+            <span className="font-semibold text-gold-200">Live-Webinar</span>
+            {webinarDateLabel && <span>{webinarDateLabel}</span>}
           </Link>
         </motion.div>
 
@@ -291,10 +247,10 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
                 aria-label="Video abspielen"
                 className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-20"
               >
-                <span className="play-btn-gold h-20 w-24">
-                  <Play className="h-10 w-10 text-obsidian translate-x-1" fill="currentColor" />
+                <span className="play-btn-gold h-16 w-16">
+                  <Play className="h-7 w-7 text-obsidian translate-x-0.5" fill="currentColor" />
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-100 drop-shadow-md">Jetzt ansehen · 5 Min</span>
+                <span className="text-sm font-medium text-cream drop-shadow-md">Video ansehen, 5 Min</span>
               </button>
             )}
 
@@ -389,19 +345,19 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
           transition={{ duration: 0.45, delay: 0.62, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
         >
-          <span className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/40">
+          <span className="flex items-center gap-1.5 text-[0.8rem] text-cream/50">
             <Sparkles className="h-3.5 w-3.5 text-gold-300/80" />
             Geld verdienen mit AI
           </span>
-          <span className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/40">
+          <span className="flex items-center gap-1.5 text-[0.8rem] text-cream/50">
             <Globe className="h-3.5 w-3.5 text-gold-300/80" />
             Remote von überall
           </span>
-          <span className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/40">
+          <span className="flex items-center gap-1.5 text-[0.8rem] text-cream/50">
             <Zap className="h-3.5 w-3.5 text-gold-300/80" />
             Keine Vorerfahrung nötig
           </span>
-          <span className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-cream/40">
+          <span className="flex items-center gap-1.5 text-[0.8rem] text-cream/50">
             <EyeOff className="h-3.5 w-3.5 text-gold-300/80" />
             Kein Gesicht zeigen
           </span>
@@ -418,23 +374,22 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
           <div className="flex flex-col items-center gap-3 sm:flex-row mb-1">
             <Link
               href={webinarUrl}
-              className="btn-shimmer group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(201, 169, 97,0.35)] relative overflow-hidden"
+              className="focus-ring inline-flex min-h-[48px] items-center rounded-[6px] border border-gold-300 bg-gold-300 px-7 text-[0.95rem] font-semibold text-obsidian transition-colors hover:border-gold-200 hover:bg-gold-200"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative">Webinar starten</span> →
+              Webinar starten
             </Link>
             
             <a
               href={telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-shimmer inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
+              className="focus-ring inline-flex min-h-[48px] items-center rounded-[6px] border border-cream/20 px-7 text-[0.95rem] font-semibold text-cream/90 transition-colors hover:border-cream/40 hover:text-cream"
             >
               Free Telegram Community
             </a>
           </div>
 
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-cream/25">
+          <p className="text-[0.8rem] text-cream/40">
             Kostenlos · ohne Bullshit{hasValidDate
               ? ` · live am ${webinarStart.toLocaleString("de-DE", { day: "numeric", month: "long", timeZone: "Europe/Berlin" })}`
               : ""}
@@ -447,7 +402,7 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
               {SOCIAL_PROOF_IMAGES.map((src, i) => (
                 <span
                   key={src}
-                  className="relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-obsidian bg-gold-300/10 shadow-[0_0_12px_rgba(201, 169, 97,0.18)]"
+                  className="relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-obsidian bg-gold-300/10"
                   style={{
                     opacity: 0.85 + i * 0.03,
                     zIndex: SOCIAL_PROOF_IMAGES.length - i,
@@ -463,7 +418,7 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
                 </span>
               ))}
             </div>
-            <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-cream/35">
+            <span className="text-[0.8rem] text-cream/50">
               Schließe dich 10.000+ Umsetzern an
             </span>
           </div>

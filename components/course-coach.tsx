@@ -85,7 +85,7 @@ export function CourseCoach({ courseSlug, courseTitle }: { courseSlug: string; c
             </span>
           </span>
         </span>
-        <span className="shrink-0 rounded-full border border-gold-300/30 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-gold-200">
+        <span className="shrink-0 rounded-[6px] border border-gold-300/30 px-3 py-1 text-[10px] font-semibold text-gold-200">
           {open ? "Schließen" : "Fragen"}
         </span>
       </button>

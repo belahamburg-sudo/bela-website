@@ -48,7 +48,7 @@ export function SolutionBannerSection() {
 
             <a
               href="/webinar"
-              className="btn-shimmer group inline-flex shrink-0 items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110"
+              className="group inline-flex shrink-0 items-center gap-2 rounded-[6px] bg-gold-300 px-8 py-3.5 text-sm font-semibold text-obsidian transition-all hover:bg-gold-200"
             >
               <span className="relative z-[2] inline-flex items-center gap-2">
                 Webinar starten

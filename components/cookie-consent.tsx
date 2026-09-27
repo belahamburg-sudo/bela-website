@@ -84,14 +84,14 @@ export function CookieConsent() {
             <button
               type="button"
               onClick={() => choose("declined")}
-              className="flex-1 whitespace-nowrap rounded-full border border-gold-300/30 px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.12em] text-cream/70 transition-all hover:border-gold-300/60 hover:text-cream sm:flex-none"
+              className="flex-1 whitespace-nowrap rounded-[6px] border border-gold-300/30 px-5 py-2 text-[0.7rem] font-semibold text-cream/70 transition-all hover:border-gold-300/60 hover:text-cream sm:flex-none"
             >
               Nur notwendige
             </button>
             <button
               type="button"
               onClick={() => choose("accepted")}
-              className="btn-shimmer flex-1 whitespace-nowrap rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_18px_rgba(201, 169, 97,0.28)] sm:flex-none"
+              className="flex-1 whitespace-nowrap rounded-[6px] bg-gold-300 px-5 py-2 text-[0.7rem] font-semibold text-obsidian transition-all hover:bg-gold-200 sm:flex-none"
             >
               Alle akzeptieren
             </button>

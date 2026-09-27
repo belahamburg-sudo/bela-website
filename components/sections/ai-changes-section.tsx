@@ -51,7 +51,6 @@ export function AiChangesSection() {
 
   return (
     <section className="relative py-20 lg:py-28 sec-aurora overflow-hidden">
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full bg-gold-300/[0.04] blur-[150px]" />
 
       <div className="relative mx-auto max-w-5xl px-6">
         <div ref={headingRef} className="text-center mb-10 lg:mb-14" style={{ opacity: 0 }}>
@@ -103,7 +102,7 @@ export function AiChangesSection() {
           </p>
           <Link
             href="/webinar"
-            className="btn-shimmer inline-flex items-center gap-2 rounded-full bg-gold-gradient px-10 py-4 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(201, 169, 97,0.35)]"
+            className="inline-flex items-center gap-2 rounded-[6px] bg-gold-300 px-10 py-4 text-sm font-semibold text-obsidian transition-all hover:bg-gold-200"
           >
             Webinar starten <ArrowRight className="h-4 w-4" />
           </Link>

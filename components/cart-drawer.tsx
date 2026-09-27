@@ -270,7 +270,7 @@ export function CartDrawer() {
                   onClick={checkout}
                   disabled={loading}
                   aria-busy={loading}
-                  className="btn-shimmer group flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 active:scale-[0.99] disabled:cursor-wait disabled:opacity-70"
+                  className="group flex w-full items-center justify-center gap-2 rounded-[6px] bg-gold-300 px-6 py-3.5 text-sm font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:cursor-wait disabled:opacity-70"
                 >
                   <span className="relative z-[2] inline-flex items-center gap-2">
                     {loading ? (

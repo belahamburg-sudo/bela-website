@@ -482,7 +482,7 @@ export function SignupFlow() {
           <button
             type="submit"
             disabled={loading}
-            className="btn-shimmer relative flex min-h-12 flex-1 items-center justify-center gap-2.5 bg-gold-gradient px-6 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian shadow-[0_8px_30px_-8px_rgba(201, 169, 97,0.5)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+            className="relative flex min-h-12 flex-1 items-center justify-center gap-2.5 bg-gold-300 px-6 text-[11px] font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -194,7 +194,7 @@ export function QuizPlayer({
               <button
                 type="button"
                 onClick={handleRetry}
-                className="focus-ring inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-6 py-3 text-sm font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
+                className="focus-ring inline-flex items-center gap-2 rounded-[6px] bg-gold-300 px-6 py-3 text-sm font-semibold text-obsidian transition-all duration-300 hover:bg-gold-200"
               >
                 <RefreshCw className="h-4 w-4" />
                 Erneut versuchen
@@ -204,7 +204,7 @@ export function QuizPlayer({
               <button
                 type="button"
                 onClick={handleRetry}
-                className="focus-ring inline-flex items-center gap-2 rounded-full border border-gold-300/25 bg-panel/60 px-6 py-3 text-sm font-bold uppercase tracking-[0.12em] text-cream backdrop-blur-md transition-all duration-300 hover:border-gold-300/60 hover:bg-gold-300/[0.06] active:scale-[0.97]"
+                className="focus-ring inline-flex items-center gap-2 rounded-[6px] border border-gold-300/25 bg-panel/60 px-6 py-3 text-sm font-semibold text-cream backdrop-blur-md transition-all duration-300 hover:border-gold-300/60 hover:bg-gold-300/[0.06]"
               >
                 <RefreshCw className="h-4 w-4" />
                 Nochmal spielen
@@ -344,7 +344,7 @@ export function QuizPlayer({
               type="button"
               disabled={selected === null}
               onClick={handleSubmitAnswer}
-              className="focus-ring inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-6 py-3 text-sm font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40"
+              className="focus-ring inline-flex items-center gap-2 rounded-[6px] bg-gold-300 px-6 py-3 text-sm font-semibold text-obsidian transition-all duration-300 hover:bg-gold-200 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Antwort prüfen
             </button>

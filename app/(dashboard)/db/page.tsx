@@ -207,7 +207,7 @@ export default async function DashboardPage() {
                     <a
                       key={c.slug}
                       href={`/api/certificate?courseSlug=${encodeURIComponent(c.slug)}`}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-obsidian transition hover:brightness-110"
+                      className="inline-flex items-center gap-1.5 rounded-[6px] bg-gold-300 px-4 py-2 text-[10px] font-semibold text-obsidian transition hover:bg-gold-200"
                     >
                       <Award aria-hidden className="h-3.5 w-3.5" /> {c.title}
                     </a>

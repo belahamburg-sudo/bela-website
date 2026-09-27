@@ -132,7 +132,7 @@ export function SiteHeader() {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="focus-ring flex items-center gap-1.5 rounded-full border border-gold-300/30 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-cream/60 transition-all hover:border-gold-300/60 hover:text-cream hover:bg-gold-300/5"
+                    className="focus-ring flex items-center gap-1.5 rounded-[6px] border border-gold-300/30 px-4 py-2 text-xs font-semibold text-cream/60 transition-all hover:border-gold-300/60 hover:text-cream hover:bg-gold-300/5"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                     Logout
@@ -150,7 +150,7 @@ export function SiteHeader() {
                     href="/login"
                     size="sm"
                     variant="outline"
-                    className="flex items-center gap-1.5 rounded-full px-4"
+                    className="flex items-center gap-1.5 px-4"
                   >
                     <LogIn className="h-3.5 w-3.5" />
                     Login
@@ -243,7 +243,7 @@ export function SiteHeader() {
                     transition={{ delay: 0.4 }}
                     className="flex flex-col gap-3"
                   >
-                    <Button href="/login" size="lg" variant="outline" className="w-full rounded-full" onClick={() => setOpen(false)}>
+                    <Button href="/login" size="lg" variant="outline" className="w-full" onClick={() => setOpen(false)}>
                       Login
                     </Button>
                     <Link

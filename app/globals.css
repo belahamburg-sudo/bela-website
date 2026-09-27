@@ -47,14 +47,7 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  /* Warm "mine black" + two soft cones: goldish top-left, brownish bottom-right.
-     Exact brief values — deliberately faint (0.08–0.10) for depth, not show. */
   background-color: #0c0805;
-  background-image:
-    radial-gradient(ellipse 90% 70% at 25% 15%, rgba(201, 169, 97, 0.10), transparent 60%),
-    radial-gradient(ellipse 70% 60% at 80% 90%, rgba(138, 115, 64, 0.08), transparent 70%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
   color: var(--foreground);
   font-family: var(--font-body), Inter, ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -73,11 +66,10 @@ body::after {
   inset: -20%;
   pointer-events: none;
   z-index: 2;
-  opacity: 0.06;
+  opacity: 0.035;
   mix-blend-mode: screen;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.79  0 0 0 0 0.66  0 0 0 0 0.38  0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 200px 200px;
-  animation: grain 1.2s steps(6) infinite;
 }
 
 @keyframes grain {
@@ -225,25 +217,17 @@ select {
 
   /* GTA-style eyebrow: heavy caps, notched left border */
   .eyebrow {
-    @apply inline-flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-gold-200;
-    @apply px-3 py-1.5 sm:px-4 rounded-full border border-gold-300/30 bg-gold-400/10 backdrop-blur-md;
+    @apply inline-flex items-center text-sm font-medium text-gold-200;
     @apply w-fit whitespace-nowrap;
-    box-shadow: 0 0 15px rgba(201, 169, 97,0.1), inset 0 0 10px rgba(201, 169, 97,0.05);
+  }
+  /* Decorative diamond markers inside eyebrows are dropped: plain text label. */
+  .eyebrow > [aria-hidden] {
+    display: none;
   }
 
   /* Button / surface foil — starts + ends dark, bright glint mid (brief spec). */
   .bg-gold-gradient {
-    background: linear-gradient(
-      135deg,
-      var(--gold-dark) 0%,
-      var(--gold) 18%,
-      var(--gold-light) 38%,
-      var(--gold-bright) 52%,
-      var(--gold-light) 66%,
-      var(--gold) 84%,
-      var(--gold-dark) 100%
-    );
-    box-shadow: inset 0 0 0 1px rgba(106, 85, 48, 0.6);
+    background: var(--gold);
   }
 
   /* Metallic shimmer-foil for accent words: starts AND ends deep, with a single
@@ -341,6 +325,7 @@ select {
   }
 
   .btn-shimmer::before {
+    display: none;
     content: "";
     position: absolute;
     inset: 0;
@@ -438,75 +423,29 @@ select {
     background: linear-gradient(90deg, transparent, rgba(201, 169, 97,0.6) 30%, rgba(245, 230, 168,0.9) 50%, rgba(201, 169, 97,0.6) 70%, transparent);
   }
 
-  /* ── Section background variants — atmospheric depth, never flat black ── */
+  /* ── Section background variants — flat tones, rhythm through light/dark
+     alternation instead of glows, orbs or drifting light. ── */
   .sec-obsidian {
     background-color: #0a0806;
   }
 
-  /* Hero: cinematic vault-light gradient */
   .sec-hero {
-    background:
-      radial-gradient(58% 48% at 50% 36%, rgba(201, 169, 97,0.10) 0%, transparent 62%),
-      radial-gradient(90% 60% at 50% 122%, rgba(106, 85, 48,0.16) 0%, transparent 60%),
-      linear-gradient(180deg, #0d0a07 0%, #090705 58%, #0a0806 100%);
+    background-color: #0c0805;
   }
 
-  /* Warm raised panel: gold corner spotlight + ambient depth */
   .sec-raised {
     position: relative;
-    background:
-      radial-gradient(72% 60% at 86% 0%, rgba(138, 115, 64,0.18) 0%, transparent 56%),
-      radial-gradient(58% 55% at 4% 100%, rgba(106, 85, 48,0.13) 0%, transparent 54%),
-      linear-gradient(180deg, #13100b 0%, #0c0907 55%, #0a0806 100%);
-  }
-  .sec-raised::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background: radial-gradient(40% 38% at 80% 8%, rgba(201, 169, 97,0.10), transparent 60%);
-    animation: glow-pulse 11s ease-in-out infinite;
+    background-color: #120e09;
   }
 
-  /* Centered top bloom with ambient side glows */
   .sec-glow {
     position: relative;
-    background:
-      radial-gradient(58% 46% at 50% -6%, rgba(201, 169, 97,0.16) 0%, transparent 60%),
-      radial-gradient(46% 64% at 100% 38%, rgba(138, 115, 64,0.09) 0%, transparent 55%),
-      radial-gradient(46% 64% at 0% 62%, rgba(138, 115, 64,0.09) 0%, transparent 55%),
-      linear-gradient(180deg, #0c0907 0%, #0a0806 100%);
-  }
-  .sec-glow::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background: radial-gradient(50% 40% at 50% 0%, rgba(201, 169, 97,0.12) 0%, transparent 62%);
-    animation: glow-pulse 9s ease-in-out infinite;
+    background-color: #0c0805;
   }
 
-  /* Aurora: drifting gold light mesh on a warm diagonal base */
   .sec-aurora {
     position: relative;
-    background:
-      radial-gradient(50% 60% at 18% 22%, rgba(138, 115, 64,0.16) 0%, transparent 55%),
-      radial-gradient(46% 56% at 86% 82%, rgba(201, 169, 97,0.11) 0%, transparent 55%),
-      linear-gradient(135deg, #120e09 0%, #0a0806 55%, #0d0a07 100%);
-  }
-  .sec-aurora::before {
-    content: "";
-    position: absolute;
-    inset: -30%;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(40% 50% at 30% 40%, rgba(201, 169, 97,0.12), transparent 60%),
-      radial-gradient(40% 50% at 70% 60%, rgba(138, 115, 64,0.10), transparent 60%);
-    filter: blur(30px);
-    animation: aurora-drift 16s ease-in-out infinite alternate;
+    background-color: #0a0806;
   }
 
   /* Deep vignette base for image-backed sections */
@@ -522,21 +461,16 @@ select {
 
   /* Gold video frame as seen on SS */
   .video-frame-gold {
-    @apply relative overflow-hidden rounded-[4px] border-[3px];
-    border-image: linear-gradient(to bottom, #6A5530, #FFF4C9, #6A5530) 1;
-    box-shadow: 0 0 30px rgba(201, 169, 97,0.25), inset 0 0 20px rgba(0,0,0,0.5);
+    @apply relative overflow-hidden rounded-[6px] border border-gold-300/30;
   }
 
   .play-btn-gold {
-    @apply flex items-center justify-center rounded-[8px] border border-gold-300/50 shadow-lg transition-all;
-    background: linear-gradient(135deg, #6A5530 0%, #FFF4C9 50%, #6A5530 100%);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 20px rgba(201, 169, 97,0.3);
+    @apply flex items-center justify-center rounded-full transition-colors;
+    background: #C9A961;
   }
 
   .play-btn-gold:hover {
-    @apply scale-105;
-    filter: brightness(1.1);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(201, 169, 97,0.5);
+    background: #E5C97E;
   }
 
   /* Tactical UI Utilities */

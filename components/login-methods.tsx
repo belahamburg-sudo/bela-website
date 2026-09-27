@@ -46,7 +46,7 @@ const connectedPill =
   "inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.14em] text-emerald-300/90";
 
 const linkBtn =
-  "inline-flex items-center gap-2 rounded-full bg-gold-gradient px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-obsidian transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center gap-2 rounded-[6px] bg-gold-300 px-4 py-2 text-[10px] font-semibold text-obsidian transition hover:bg-gold-200 disabled:cursor-not-allowed disabled:opacity-50";
 
 const ghostBtn =
   "inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-cream/55 transition hover:border-white/30 hover:text-cream/85 disabled:cursor-not-allowed disabled:opacity-50";

@@ -186,7 +186,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         <button
           type="submit"
           disabled={status === "loading"}
-          className="btn-shimmer relative mt-1 flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-6 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          className="relative mt-1 flex w-full items-center justify-center gap-2.5 bg-gold-300 px-6 py-4 text-[11px] font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {status === "loading" ? <Loader2 aria-hidden className="h-4 w-4 animate-spin" /> : <Mail aria-hidden className="h-4 w-4" />}
           Reset-Link senden
@@ -335,7 +335,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="btn-shimmer relative mt-2 flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-6 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian shadow-[0_8px_30px_-8px_rgba(201, 169, 97,0.5)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+        className="relative mt-2 flex w-full items-center justify-center gap-2.5 bg-gold-300 px-6 py-4 text-[11px] font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === "loading" ? (
           <Loader2 aria-hidden className="h-4 w-4 animate-spin" />

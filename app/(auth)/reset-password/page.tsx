@@ -119,7 +119,7 @@ export default function ResetPasswordPage() {
             <button
               type="submit"
               disabled={status === "loading"}
-              className="btn-shimmer mt-1 flex w-full items-center justify-center gap-2.5 bg-gold-gradient px-6 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-obsidian transition-all hover:brightness-110 disabled:opacity-50"
+              className="mt-1 flex w-full items-center justify-center gap-2.5 bg-gold-300 px-6 py-4 text-[11px] font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:opacity-50"
             >
               {status === "loading" ? (
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />

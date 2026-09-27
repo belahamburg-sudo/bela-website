@@ -104,7 +104,7 @@ function CommentForm({
         <button
           type="submit"
           disabled={!content.trim() || submitting}
-          className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-obsidian transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 rounded-[6px] bg-gold-300 px-5 py-2 text-[11px] font-semibold text-obsidian transition-all hover:bg-gold-200 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {submitting ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -185,13 +185,13 @@ function SingleComment({
               {displayName(comment.author)}
             </span>
             {comment.is_admin && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-gold-300/25 bg-gold-300/[0.08] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-gold-300">
+              <span className="inline-flex items-center gap-1 rounded-[6px] border border-gold-300/25 bg-gold-300/[0.08] px-2 py-0.5 text-[9px] font-semibold text-gold-300">
                 <Shield className="h-2.5 w-2.5" />
                 Admin
               </span>
             )}
             {comment.is_pinned && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-gold-300/25 bg-gold-300/[0.08] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-gold-300">
+              <span className="inline-flex items-center gap-1 rounded-[6px] border border-gold-300/25 bg-gold-300/[0.08] px-2 py-0.5 text-[9px] font-semibold text-gold-300">
                 <Pin className="h-2.5 w-2.5" />
                 Angepinnt
               </span>

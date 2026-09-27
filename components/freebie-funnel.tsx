@@ -200,7 +200,7 @@ export function FreebieFunnel({
           {!newsletterPending && (
             <FreebieSubmitButton
               pendingLabel="Moment …"
-              className="btn-shimmer inline-flex min-h-12 items-center justify-center gap-2 bg-gold-gradient px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-obsidian transition hover:brightness-110"
+              className="inline-flex min-h-12 items-center justify-center gap-2 bg-gold-300 px-6 text-[11px] font-semibold text-obsidian transition hover:bg-gold-200"
             >
               {newsletterConfirmed ? (
                 <>

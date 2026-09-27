@@ -249,7 +249,7 @@ export default async function DashboardCoursePage({
                       </span>
                     </span>
                   </span>
-                  <span className="shrink-0 rounded-full bg-gold-gradient px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-obsidian">
+                  <span className="shrink-0 rounded-[6px] bg-gold-300 px-4 py-2 text-[10px] font-semibold text-obsidian">
                     Zertifikat
                   </span>
                 </a>

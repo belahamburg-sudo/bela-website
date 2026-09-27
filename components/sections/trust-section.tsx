@@ -41,7 +41,6 @@ export function TrustSection() {
 
   return (
     <section className="relative py-20 lg:py-28 sec-glow overflow-hidden scratch-border">
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-gold-300/[0.04] blur-[130px]" />
 
       <div className="relative mx-auto max-w-5xl px-6">
         <div ref={headingRef} className="text-center mb-12 lg:mb-16" style={{ opacity: 0 }}>
@@ -70,7 +69,7 @@ export function TrustSection() {
                 href={trustpilotUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-shimmer inline-flex items-center gap-2 rounded-full border border-gold-300/40 px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
+                className="inline-flex items-center gap-2 rounded-[6px] border border-gold-300/40 px-7 py-3 text-xs font-semibold text-cream/80 transition-all hover:border-gold-300/80 hover:text-cream hover:bg-gold-300/5"
               >
                 Alle Bewertungen auf Trustpilot →
               </a>

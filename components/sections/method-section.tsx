@@ -74,8 +74,6 @@ export function MethodSection() {
   return (
     <section className="relative py-20 lg:py-28 sec-glow overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-gold-300/[0.04] blur-[150px]" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-gold-300/[0.03] blur-[140px]" />
       </div>
 
       {/* perspective goldmine floor grid */}
@@ -144,7 +142,7 @@ export function MethodSection() {
                   >
                     <h3 className="font-heading tracking-gta text-lg text-cream mb-2 leading-tight">{step.title}</h3>
                     <p className="text-cream/50 text-sm leading-relaxed mb-4 flex-grow">{step.copy}</p>
-                    <span className="inline-flex items-center justify-center gap-1.5 rounded-full border border-gold-300/20 bg-gold-300/5 px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.15em] text-gold-300/70">
+                    <span className="inline-flex items-center justify-center gap-1.5 rounded-[6px] border border-gold-300/20 bg-gold-300/5 px-3 py-1.5 text-[0.6rem] font-semibold text-gold-300/70">
                       {step.detail}
                     </span>
                   </div>

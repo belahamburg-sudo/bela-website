@@ -60,7 +60,7 @@ export async function WebinarCta() {
           <Link
             href={href}
             {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className="btn-shimmer group inline-flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-obsidian transition-all hover:brightness-110 shadow-[0_0_30px_rgba(201, 169, 97,0.35)] relative overflow-hidden"
+            className="group inline-flex shrink-0 items-center gap-2 rounded-[6px] bg-gold-300 px-8 py-3 text-sm font-semibold text-obsidian transition-all hover:bg-gold-200 relative overflow-hidden"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <span className="relative">Platz sichern</span>

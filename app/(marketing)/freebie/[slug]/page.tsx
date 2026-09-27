@@ -169,7 +169,7 @@ export default async function FreebiePage({
             <div className="flex flex-col items-stretch gap-4 sm:items-start lg:col-start-2 lg:row-start-2">
               <Link
                 href={`/freebie/${slug}?start=1`}
-                className="btn-shimmer focus-ring relative inline-flex min-h-[56px] items-center justify-center gap-2 rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-4 text-[0.9rem] font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
+                className="focus-ring relative inline-flex min-h-[56px] items-center justify-center gap-2 rounded-[6px] border border-gold-300/60 bg-gold-300 px-8 py-4 text-[0.9rem] font-semibold text-obsidian transition-all duration-300 hover:bg-gold-200"
               >
                 <span className="relative z-[2]">{ctaLabel}</span>
                 <ArrowRight aria-hidden className="relative z-[2] h-5 w-5" />
@@ -226,7 +226,7 @@ export default async function FreebiePage({
           <div className="mt-16 flex justify-center">
             <Link
               href={`/freebie/${slug}?start=1`}
-              className="btn-shimmer focus-ring relative inline-flex min-h-[56px] items-center justify-center gap-2 rounded-full border border-gold-300/60 bg-gradient-to-b from-gold-600 via-gold-50 to-gold-600 px-8 py-4 text-[0.9rem] font-bold uppercase tracking-[0.12em] text-obsidian shadow-[0_10px_50px_-10px_rgba(201,169,97,0.6)] transition-all duration-300 hover:brightness-110 active:scale-[0.97]"
+              className="focus-ring relative inline-flex min-h-[56px] items-center justify-center gap-2 rounded-[6px] border border-gold-300/60 bg-gold-300 px-8 py-4 text-[0.9rem] font-semibold text-obsidian transition-all duration-300 hover:bg-gold-200"
             >
               <span className="relative z-[2]">{ctaLabel}</span>
               <ArrowRight aria-hidden className="relative z-[2] h-5 w-5" />
