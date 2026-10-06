@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { resolveSiteLogoUrl } from "./brand";
 import { belaEmail, contactEmail, noreplyEmail, resolveEmailEnvelope } from "./email-addresses";
+import { deliverEmail, type SendResult } from "./email-send";
 
 export type EmailTemplate =
   | "change-email" | "checkout-abandoned" | "course-completed" | "course-unlocked"
@@ -32,12 +33,7 @@ export async function sendTemplateEmail(opts: {
   subject?: string;
   from?: string;
   replyTo?: string;
-}): Promise<{ ok: boolean; skipped?: boolean; error?: string; id?: string }> {
-  // No-op in demo mode when no API key is configured.
-  if (!process.env.RESEND_API_KEY) {
-    return { ok: true, skipped: true };
-  }
-
+}): Promise<SendResult> {
   // Read the template HTML from disk.
   let html: string;
   try {
@@ -85,37 +81,12 @@ export async function sendTemplateEmail(opts: {
     replyTo: opts.replyTo,
   });
 
-  // Send via Resend REST API. Never throw — return an error object instead.
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: envelope.from,
-        to: opts.to,
-        subject,
-        html,
-        reply_to: envelope.replyTo,
-      }),
-    });
-
-    if (!res.ok) {
-      let error: string;
-      try {
-        const errJson = (await res.json()) as { message?: string; error?: string };
-        error = errJson?.message || errJson?.error || `Resend responded with ${res.status}`;
-      } catch {
-        error = (await res.text().catch(() => "")) || `Resend responded with ${res.status}`;
-      }
-      return { ok: false, error };
-    }
-
-    const json = (await res.json()) as { id?: string };
-    return { ok: true, id: json?.id };
-  } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) };
-  }
+  return deliverEmail({
+    from: envelope.from,
+    to: opts.to,
+    subject,
+    html,
+    replyTo: envelope.replyTo,
+    label: opts.template,
+  });
 }

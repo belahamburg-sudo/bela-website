@@ -1,11 +1,23 @@
 import { getSupabaseAdminClient } from "./supabase";
 
-export type ResendDomain = {
+export type BrevoDomain = {
   id: string;
   name: string;
-  status: string;
-  region: string;
-  created_at: string;
+  authenticated: boolean;
+  verified: boolean;
+};
+
+export type BrevoPlan = {
+  type: string;
+  credits: number;
+  creditsType: string;
+};
+
+export type BrevoAccount = {
+  /** true = key accepted, false = key rejected (401/403), null = Brevo unreachable. */
+  keyValid: boolean | null;
+  email: string | null;
+  plans: BrevoPlan[];
 };
 
 export type CronEmailStat = {
@@ -23,10 +35,11 @@ export type BroadcastRecord = {
   sentBy: string | null;
 };
 
-export type ResendDashboardData = {
+export type BrevoDashboardData = {
   configured: boolean;
   apiKeySet: boolean;
-  domains: ResendDomain[];
+  account: BrevoAccount;
+  domains: BrevoDomain[];
   cronStats: CronEmailStat[];
   recentBroadcasts: BroadcastRecord[];
   totalCronEmails: number;
@@ -34,9 +47,10 @@ export type ResendDashboardData = {
   templateCount: number;
 };
 
-const EMPTY: ResendDashboardData = {
+const EMPTY: BrevoDashboardData = {
   configured: false,
   apiKeySet: false,
+  account: { keyValid: null, email: null, plans: [] },
   domains: [],
   cronStats: [],
   recentBroadcasts: [],
@@ -55,42 +69,53 @@ const TEMPLATES = [
   "webinar-registration-confirmed", "webinar-reminder-1h", "webinar-reminder-24h",
 ];
 
-async function fetchResendDomains(apiKey: string): Promise<ResendDomain[]> {
+const BREVO_API = "https://api.brevo.com/v3";
+
+async function fetchBrevoAccount(apiKey: string): Promise<BrevoAccount> {
   try {
-    const res = await fetch("https://api.resend.com/domains", {
-      headers: { authorization: `Bearer ${apiKey}` },
+    const res = await fetch(`${BREVO_API}/account`, {
+      headers: { "api-key": apiKey, accept: "application/json" },
+      cache: "no-store",
+    });
+    if (res.status === 401 || res.status === 403) return { keyValid: false, email: null, plans: [] };
+    if (!res.ok) return { keyValid: null, email: null, plans: [] };
+    const data = (await res.json()) as { email?: string; plan?: BrevoPlan[] };
+    return { keyValid: true, email: data.email ?? null, plans: data.plan ?? [] };
+  } catch {
+    return { keyValid: null, email: null, plans: [] };
+  }
+}
+
+async function fetchBrevoDomains(apiKey: string): Promise<BrevoDomain[]> {
+  try {
+    const res = await fetch(`${BREVO_API}/senders/domains`, {
+      headers: { "api-key": apiKey, accept: "application/json" },
       cache: "no-store",
     });
     if (!res.ok) return [];
-    const data = (await res.json()) as { data?: ResendDomain[] };
-    return data.data ?? [];
+    const data = (await res.json()) as {
+      domains?: { id: string | number; domain_name: string; authenticated: boolean; verified: boolean }[];
+    };
+    return (data.domains ?? []).map((d) => ({
+      id: String(d.id),
+      name: d.domain_name,
+      authenticated: d.authenticated,
+      verified: d.verified,
+    }));
   } catch {
     return [];
   }
 }
 
-async function fetchResendApiKeys(apiKey: string): Promise<{ id: string; name: string; created_at: string }[]> {
-  try {
-    const res = await fetch("https://api.resend.com/api-keys", {
-      headers: { authorization: `Bearer ${apiKey}` },
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    const data = (await res.json()) as { data?: { id: string; name: string; created_at: string }[] };
-    return data.data ?? [];
-  } catch {
-    return [];
-  }
-}
-
-export async function getResendDashboard(): Promise<ResendDashboardData> {
-  const apiKey = process.env.RESEND_API_KEY;
+export async function getBrevoDashboard(): Promise<BrevoDashboardData> {
+  const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) return EMPTY;
 
   const admin = getSupabaseAdminClient();
 
-  const [domains, cronStats, broadcasts] = await Promise.all([
-    fetchResendDomains(apiKey),
+  const [account, domains, cronStats, broadcasts] = await Promise.all([
+    fetchBrevoAccount(apiKey),
+    fetchBrevoDomains(apiKey),
     loadCronStats(admin),
     loadBroadcasts(admin),
   ]);
@@ -100,6 +125,7 @@ export async function getResendDashboard(): Promise<ResendDashboardData> {
   return {
     configured: true,
     apiKeySet: true,
+    account,
     domains,
     cronStats,
     recentBroadcasts: broadcasts,

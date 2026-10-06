@@ -53,19 +53,32 @@ export function checkTelegramHealth(): ServiceHealth {
   };
 }
 
-/** Resend (transactional email). */
-export function checkResendHealth(): ServiceHealth {
-  return {
-    service: "E-Mail (Resend)",
-    status: process.env.RESEND_API_KEY ? "ok" : "not_configured",
-  };
+/** Brevo (transactional email): /account confirms the key is accepted. */
+export async function checkBrevoHealth(): Promise<ServiceHealth> {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) return { service: "E-Mail (Brevo)", status: "not_configured" };
+  try {
+    const res = await fetch("https://api.brevo.com/v3/account", {
+      headers: { "api-key": apiKey, accept: "application/json" },
+      cache: "no-store",
+    });
+    if (res.ok) return { service: "E-Mail (Brevo)", status: "ok" };
+    return { service: "E-Mail (Brevo)", status: "down", detail: `Brevo antwortet mit ${res.status}` };
+  } catch (e) {
+    return {
+      service: "E-Mail (Brevo)",
+      status: "down",
+      detail: e instanceof Error ? e.message : "Unbekannter Fehler",
+    };
+  }
 }
 
-/** All integration health in one call (Stripe + Supabase run in parallel). */
+/** All integration health in one call (Stripe, Supabase and Brevo run in parallel). */
 export async function checkAllHealth(): Promise<ServiceHealth[]> {
-  const [stripe, supabase] = await Promise.all([
+  const [stripe, supabase, brevo] = await Promise.all([
     checkStripeHealth(),
     checkSupabaseHealth(),
+    checkBrevoHealth(),
   ]);
-  return [supabase, stripe, checkTelegramHealth(), checkResendHealth()];
+  return [supabase, stripe, checkTelegramHealth(), brevo];
 }

@@ -253,7 +253,7 @@ async function handleCoursePurchase(
 
   await recordReferral(supabase, session, userId, upserted?.[0]?.id ?? null);
 
-  // Confirmation email (no-op without RESEND_API_KEY).
+  // Confirmation email (no-op without BREVO_API_KEY).
   const { name, email } = await getRecipient(
     supabase,
     userId,

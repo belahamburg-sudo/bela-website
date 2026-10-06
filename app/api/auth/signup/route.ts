@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
   // No email provider configured (local/demo): we can't run email confirmation,
   // so the user would be stuck on "check your inbox" forever. Degrade gracefully
   // — auto-confirm + create the profile inline and let the client log in. In
-  // production (RESEND configured) this branch never runs, so confirmation stays
+  // production (BREVO_API_KEY set) this branch never runs, so confirmation stays
   // mandatory there.
   if (sent.skipped) {
     await admin.auth.admin.updateUserById(data.user.id, { email_confirm: true });

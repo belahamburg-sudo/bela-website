@@ -77,7 +77,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Kommunikation",
     links: [
       { href: "/admin/emails", label: "E-Mails", icon: Mail },
-      { href: "/admin/resend", label: "Resend", icon: MailCheck },
+      { href: "/admin/brevo", label: "Brevo", icon: MailCheck },
       { href: "/admin/telegram", label: "Telegram", icon: Send },
       { href: "/admin/support", label: "Support", icon: LifeBuoy },
     ],

@@ -4,6 +4,7 @@ import { getSupabaseAdminClient } from "./supabase";
 import type { EmailTemplate, EmailVars } from "./email";
 import { resolveSiteLogoUrl } from "./brand";
 import { belaEmail, contactEmail, emailSenders, noreplyEmail } from "./email-addresses";
+import { deliverEmail, type SendResult } from "./email-send";
 
 /**
  * Per-template content overrides. The default email content lives in
@@ -92,8 +93,7 @@ function interpolate(input: string, vars: EmailVars): string {
 
 /**
  * Send a raw HTML email (used when a template has an override). Replicates the
- * minimal Resend send from lib/email.ts: no-op when RESEND_API_KEY is missing,
- * auto-injects the same default variables, then interpolates subject + html.
+ * variable handling of lib/email.ts: auto-injects the same default variables, then interpolates subject + html.
  * Never throws — returns an error object instead.
  */
 export async function sendRawEmail(opts: {
@@ -103,12 +103,7 @@ export async function sendRawEmail(opts: {
   vars?: EmailVars;
   from?: string;
   replyTo?: string;
-}): Promise<{ ok: boolean; skipped?: boolean; error?: string; id?: string }> {
-  // No-op in demo mode when no API key is configured.
-  if (!process.env.RESEND_API_KEY) {
-    return { ok: true, skipped: true };
-  }
-
+}): Promise<SendResult> {
   // Auto-injected defaults first, then caller overrides — mirrors lib/email.ts.
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://aigoldmining.com").replace(/\/$/, "");
   const merged: EmailVars = {
@@ -131,38 +126,7 @@ export async function sendRawEmail(opts: {
   const from = opts.from ?? process.env.EMAIL_FROM ?? emailSenders.brand;
   const replyTo = opts.replyTo ?? contactEmail;
 
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from,
-        to: opts.to,
-        subject,
-        html,
-        reply_to: replyTo,
-      }),
-    });
-
-    if (!res.ok) {
-      let error: string;
-      try {
-        const errJson = (await res.json()) as { message?: string; error?: string };
-        error = errJson?.message || errJson?.error || `Resend responded with ${res.status}`;
-      } catch {
-        error = (await res.text().catch(() => "")) || `Resend responded with ${res.status}`;
-      }
-      return { ok: false, error };
-    }
-
-    const json = (await res.json()) as { id?: string };
-    return { ok: true, id: json?.id };
-  } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) };
-  }
+  return deliverEmail({ from, to: opts.to, subject, html, replyTo, label: "override" });
 }
 
 export type { EmailTemplate };

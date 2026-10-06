@@ -1,17 +1,17 @@
 import {
-  Mail, Globe, Send, Clock, Hash,
-  CircleCheck, CircleOff, TriangleAlert, ExternalLink,
+  Mail, Globe, Send, Clock, KeyRound, Gauge,
+  CircleCheck, ExternalLink,
 } from "lucide-react";
 import { PageHeader, StatCard, Panel, AdminBadge, EmptyState, KeyValue } from "@/components/admin/ui";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { FunnelBars } from "@/components/admin/charts";
 import {
-  getResendDashboard,
+  getBrevoDashboard,
   TEMPLATES,
-  type ResendDomain,
+  type BrevoDomain,
   type CronEmailStat,
   type BroadcastRecord,
-} from "@/lib/resend-dashboard";
+} from "@/lib/brevo-dashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -59,50 +59,46 @@ const TEMPLATE_LABELS: Record<string, { name: string; desc: string; auto: boolea
   "webinar-reminder-24h": { name: "Webinar in 24h", desc: "Erinnerung 24 Stunden vorher (Cron)", auto: true },
 };
 
-export default async function AdminResendPage() {
-  const d = await getResendDashboard();
+export default async function AdminBrevoPage() {
+  const d = await getBrevoDashboard();
 
   if (!d.configured) {
     return (
       <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
-        <PageHeader eyebrow="Kommunikation" title="E-Mail (Resend)" description="Versand-Übersicht, Domains und Templates." />
+        <PageHeader eyebrow="Kommunikation" title="E-Mail (Brevo)" description="Versand-Übersicht, Domains und Templates." />
         <div className="mt-8">
           <Panel>
-            <EmptyState icon={Mail} title="Resend nicht verbunden" description="Setze RESEND_API_KEY in den Umgebungsvariablen." />
+            <EmptyState icon={Mail} title="Brevo nicht verbunden" description="Setze BREVO_API_KEY in den Umgebungsvariablen." />
           </Panel>
         </div>
       </div>
     );
   }
 
-  const domainColumns: Column<ResendDomain>[] = [
+  const domainColumns: Column<BrevoDomain>[] = [
     {
       key: "name",
       header: "Domain",
       render: (r) => <span className="font-medium text-cream/90">{r.name}</span>,
     },
     {
-      key: "status",
-      header: "Status",
-      render: (r) => {
-        const ok = r.status === "verified";
-        return (
-          <AdminBadge tone={ok ? "green" : "amber"}>
-            {ok ? "Verifiziert" : r.status}
-          </AdminBadge>
-        );
-      },
+      key: "authenticated",
+      header: "DNS (Authentifiziert)",
+      render: (r) => (
+        <AdminBadge tone={r.authenticated ? "green" : "amber"}>
+          {r.authenticated ? "Ja" : "Nein"}
+        </AdminBadge>
+      ),
     },
     {
-      key: "region",
-      header: "Region",
-      render: (r) => <span className="text-xs text-cream/50">{r.region}</span>,
-    },
-    {
-      key: "created_at",
-      header: "Erstellt",
+      key: "verified",
+      header: "Verifiziert",
       align: "right",
-      render: (r) => <span className="text-xs text-cream/50">{fmtDate(r.created_at)}</span>,
+      render: (r) => (
+        <AdminBadge tone={r.verified ? "green" : "amber"}>
+          {r.verified ? "Ja" : "Nein"}
+        </AdminBadge>
+      ),
     },
   ];
 
@@ -153,28 +149,42 @@ export default async function AdminResendPage() {
 
   const autoTemplates = TEMPLATES.filter((t) => TEMPLATE_LABELS[t]?.auto);
   const manualTemplates = TEMPLATES.filter((t) => !TEMPLATE_LABELS[t]?.auto);
-  const verified = d.domains.filter((dom) => dom.status === "verified").length;
+  const verified = d.domains.filter((dom) => dom.authenticated).length;
+  const sendPlan = d.account.plans.find((p) => p.creditsType === "sendLimit") ?? d.account.plans[0];
+  const keyLabel = d.account.keyValid === true ? "Gültig" : d.account.keyValid === false ? "Abgelehnt" : "Unbekannt";
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
       <PageHeader
         eyebrow="Kommunikation"
-        title="E-Mail (Resend)"
+        title="E-Mail (Brevo)"
         description="Domains, Templates und Versandhistorie — alles an einem Ort."
         actions={
           <a
-            href="https://resend.com/overview"
+            href="https://app.brevo.com"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-bold text-cream/50 hover:text-gold-300 hover:border-gold-300/30"
           >
-            Resend öffnen <ExternalLink className="h-3 w-3" />
+            Brevo öffnen <ExternalLink className="h-3 w-3" />
           </a>
         }
       />
 
       {/* KPIs */}
-      <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <StatCard
+          label="API-Schlüssel"
+          value={keyLabel}
+          icon={KeyRound}
+          hint={d.account.email ?? (d.account.keyValid === null ? "Brevo nicht erreichbar" : undefined)}
+        />
+        <StatCard
+          label="Mails übrig"
+          value={sendPlan ? sendPlan.credits : "—"}
+          icon={Gauge}
+          hint={sendPlan ? `Tarif: ${sendPlan.type}` : "Kein Tarif gelesen"}
+        />
         <StatCard label="Domains" value={d.domains.length} icon={Globe} hint={`${verified} verifiziert`} />
         <StatCard label="Templates" value={d.templateCount} icon={Mail} hint={`${autoTemplates.length} auto, ${manualTemplates.length} manuell`} />
         <StatCard label="Cron-Emails" value={d.totalCronEmails} icon={Clock} hint="automatisch versandt" />
@@ -183,9 +193,9 @@ export default async function AdminResendPage() {
 
       {/* Domains */}
       <SectionLabel>Domains</SectionLabel>
-      <Panel title="Versand-Domains" description="Von Resend verifizierte Absender-Domains" noPadding>
+      <Panel title="Versand-Domains" description="In Brevo hinterlegte Absender-Domains" noPadding>
         {d.domains.length === 0 ? (
-          <EmptyState icon={Globe} title="Keine Domains" description="Füge eine Domain in Resend hinzu um Emails zu versenden." />
+          <EmptyState icon={Globe} title="Keine Domains" description="Füge die Domain in Brevo hinzu, um Emails zu versenden." />
         ) : (
           <DataTable columns={domainColumns} rows={d.domains} getRowKey={(r) => r.id} />
         )}
