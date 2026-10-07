@@ -1,5 +1,6 @@
 "use client";
 
+import { MineSceneBackground } from "@/components/mine-scene-background";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Volume2, VolumeX, Play, Pause, SkipBack, SkipForward, Sparkles, Globe, Zap, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
@@ -165,6 +166,8 @@ export function VideoHeroSection({ webinar }: { webinar?: Webinar | null }) {
       className="relative flex flex-col items-center justify-center overflow-hidden sec-hero px-6"
       style={{ minHeight: "calc(100svh - 92px)", paddingTop: "clamp(5rem, 7vw, 6.5rem)", paddingBottom: "clamp(1rem, 2vw, 1.75rem)" }}
     >
+      <MineSceneBackground />
+
       {/* Subtle gold radial glow */}
       <div
         className="pointer-events-none absolute inset-0"
